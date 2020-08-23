@@ -6,8 +6,10 @@ from statistics import mode
 from collections import Counter
 from tkinter import filedialog
 from tkinter.tix import *
+import getpass
 import scrapy
 from selenium import webdriver
+from PIL import Image, ImageTk
 
 from junodownloadSearch import junodownloadSearch
 from beatportSearch import beatportSearch
@@ -45,13 +47,28 @@ def selectFileOrDirectory(CONFIG_FILE, subdirectories, closeScrapingWindow):
     ws = window.winfo_screenwidth()  # width of the screen
     hs = window.winfo_screenheight()  # height of the screen
     x = (ws / 2) - (520 / 2)
-    y = (hs / 2) - (500 / 2)
-    window.geometry('%dx%d+%d+%d' % (520, 400, x, y))
+    y = (hs / 2) - (400 / 2)
+    window.geometry('%dx%d+%d+%d' % (520, 300, x, y))
     window.columnconfigure(1, weight=1)
     window.columnconfigure(2, weight=1)
-    Label(window, text="What type of item do you want to search for?").grid(row=0, column=1, columnspan=2, pady=(10, 3))
-    Button(window, text="Select File", command=lambda: scanTagsOnline(subdirectories, "file", window, closeScrapingWindow, CONFIG_FILE)).grid(row=2, column=1, pady=(5, 3))
-    Button(window, text="Select Directory", command=lambda: scanTagsOnline(subdirectories, "directory", window, closeScrapingWindow, CONFIG_FILE)).grid(row=2,column=2, pady=(5, 3))
+    Label(window, text="What type of item do you want to search for?").grid(row=0, column=1, columnspan=2, pady=(10, 35))
+    #load file icon
+    fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/fileIconSmall.png")
+    fileImageImport = fileImageImport.resize((150, 150), Image.ANTIALIAS)
+    photo = ImageTk.PhotoImage(fileImageImport)
+    fileImage = Label(window, image=photo)
+    fileImage.image = photo
+    fileImage.grid(row=1, column=1)
+    #load directory icon
+    directoryImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/folderIconSmall.png")
+    directoryImageImport = directoryImageImport.resize((150,150), Image.ANTIALIAS)
+    photo = ImageTk.PhotoImage(directoryImageImport)
+    directoryImage = Label(window, image=photo)
+    directoryImage.image = photo
+    directoryImage.grid(row=1, column=2)
+
+    Button(window, text="Files", command=lambda: scanTagsOnline(subdirectories, "file", window, closeScrapingWindow, CONFIG_FILE)).grid(row=2, column=1, pady=(5, 3))
+    Button(window, text="Directories", command=lambda: scanTagsOnline(subdirectories, "directory", window, closeScrapingWindow, CONFIG_FILE)).grid(row=2,column=2, pady=(5, 3))
 
 def completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow):
     finalReportWindow.destroy()
@@ -63,10 +80,10 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
     if type=="file":
         #scan for a file
         window.lift()
-        directory = filedialog.askopenfilename(parent=window, title="Select File")
-        if directory != '':
+        directories = filedialog.askopenfilenames(parent=window, title="Select File")
+        if directories != '':
             window.destroy()
-            var = os.path.basename(directory)
+            results = ''
             webScrapingWindow = Toplevel()
             frame = ScrollableFrame(webScrapingWindow)
             frame.grid(row=0, column=0)
@@ -78,26 +95,32 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
             y = (hs / 2) - (800 / 2)
             webScrapingWindow.geometry('%dx%d+%d+%d' % (700, 650, x, y))
             Label(frame.scrollable_frame, text="Beginning web scraping procedure...", wraplength=300, justify='left').pack(anchor='w')
-            #handle FLAC files
-            if var.endswith('.flac'):
-                result, webScrapingWindow = scanFLACFile(var, os.path.dirname(directory), frame, webScrapingWindow)
+            row = 0
+            for directory in directories:
+                var = os.path.basename(directory)
+                #handle FLAC files
+                if var.endswith('.flac'):
+                    row+=1
+                    result, webScrapingWindow = scanFLACFile(var, os.path.dirname(directory), frame, webScrapingWindow)
+                    results += result + '\n\n'
                 # only print a report if the process was not cancelled
-                if cancel==False:
-                    finalReportWindow = Toplevel()
-                    webScrapingWindow.lift()
-                    finalReportWindow.lift()
-                    finalReportWindow.title("Final Report")
-                    finalReportWindow.columnconfigure(0, weight=1)
-                    ws = finalReportWindow.winfo_screenwidth()  # width of the screen
-                    hs = finalReportWindow.winfo_screenheight()  # height of the screen
-                    x = (ws / 2) - (450 / 2)
-                    y = (hs / 2) - (320 / 2)
-                    finalReportWindow.geometry('%dx%d+%d+%d' % (450, 220, x, y))
-                    Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, pady=(15,0))
-                    Label(finalReportWindow, text=result).grid(row=1, column=0)
-                    Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow)).grid(row=2, column=0, pady=(20, 5))
-                    Checkbutton(finalReportWindow, text="Close scraping window", var=closeScrapingWindow, command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).grid(row=3, column=0)
-                    finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closeFinalReport(finalReportWindow, webScrapingWindow))
+            if cancel==False:
+                finalReportWindow = Toplevel()
+                webScrapingWindow.lift()
+                finalReportWindow.lift()
+                finalReportWindow.title("Final Report")
+                finalReportWindow.columnconfigure(0, weight=1)
+                ws = finalReportWindow.winfo_screenwidth()  # width of the screen
+                hs = finalReportWindow.winfo_screenheight()  # height of the screen
+                print(row)
+                x = (ws / 2) - (450 / 2)
+                y = (hs / 2) - (200+((row-1)*75)/ 2)
+                finalReportWindow.geometry('%dx%d+%d+%d' % (450, 250+((row-1)*100), x, y))
+                Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, pady=(15,0))
+                Label(finalReportWindow, text=results).grid(row=1, column=0)
+                Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow)).grid(row=2, column=0, pady=(0, 5))
+                Checkbutton(finalReportWindow, text="Close scraping window", var=closeScrapingWindow, command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).grid(row=3, column=0)
+                finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closeFinalReport(finalReportWindow, webScrapingWindow))
     elif type=="directory":
         #scan for a directory
         window.lift()
@@ -344,10 +367,10 @@ def scanFLACFile(var, directory, frame, webScrapingWindow):
     #         print("Unidentified input, closing")
     # else:
     # check year for false values
-    finalResults = buildTrackReport(yearList, BPMList, keyList, genreList, imageList, artist, title, audio)
+    finalResults, webScrapingWindow = buildTrackReport(yearList, BPMList, keyList, genreList, imageList, artist, title, audio, webScrapingWindow)
     return finalResults, webScrapingWindow
 
-def buildTrackReport(yearList, BPMList, keyList, genreList, imageList, artist, title, audio):
+def buildTrackReport(yearList, BPMList, keyList, genreList, imageList, artist, title, audio, webScrapingWindow):
     yearValue = False
     BPMValue = False
     keyValue = False
@@ -400,20 +423,19 @@ def buildTrackReport(yearList, BPMList, keyList, genreList, imageList, artist, t
                 ws = window.winfo_screenwidth()  # width of the screen
                 hs = window.winfo_screenheight()  # height of the screen
                 x = (ws / 2) - (550 / 2)
-                y = (hs / 2) - (350 / 2)
-                y = (hs / 2) - (350 / 2)
+                y = (hs / 2) - (320 / 2)
                 window.geometry('%dx%d+%d+%d' % (550, 220, x, y))
                 window.columnconfigure(0, weight=1)
                 window.columnconfigure(1, weight=1)
                 window.columnconfigure(2, weight=1)
                 window.columnconfigure(3, weight=1)
-                Label(window, text="Conflicting tags in " + str(artist) + " - " + str(title)).grid(row=0, column=0, columnspan=4, pady=(10,0))
+                Label(window, text="Conflicting tags in " + str(artist) + " - " + str(title), font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, columnspan=4, pady=(10,0))
                 Label(window, text="CURRENT TAGS: \nYear: " + str(audio['date'])[2:-2] + "\nBPM: " + str(audio['bpm'])[2:-2] + "\nKey: " + str(audio['initialkey'])[2:-2] + "\nGenre: " + str(audio['genre'])[2:-2]).grid(row=1, column=1, pady=(10,35))
                 Label(window, text="NEW TAGS: \nYear: " + str(year) + "\nBPM: " + str(BPM) + "\nKey: " + str(key) + "\nGenre: " + str(genre)).grid(row=1, column=2, pady=(10,35))
-                Button(window, text="Overwrite", command=lambda: overwriteOption(audio, year, BPM, key, genre, window)).grid(row=2, column=0)
-                Button(window, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, year, BPM, key, genre, window)).grid(row=2, column=1)
-                Button(window, text="Merge (favor source data)", command=lambda: mergeSourceOption(audio, year, BPM, key, genre, window)).grid(row=2, column=2)
-                Button(window, text="Skip", command=lambda: window.destroy()).grid(row=2, column=3)
+                Button(window, text="Overwrite", command=lambda: overwriteOption(audio, year, BPM, key, genre, window, webScrapingWindow)).grid(row=2, column=0)
+                Button(window, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, year, BPM, key, genre, window, webScrapingWindow)).grid(row=2, column=1)
+                Button(window, text="Merge (favor source data)", command=lambda: mergeSourceOption(audio, year, BPM, key, genre, window, webScrapingWindow)).grid(row=2, column=2)
+                Button(window, text="Skip", command=lambda: skipOption(window, webScrapingWindow)).grid(row=2, column=3)
                 window.wait_window()
         else:
             audio['date'] = str(year)
@@ -423,7 +445,7 @@ def buildTrackReport(yearList, BPMList, keyList, genreList, imageList, artist, t
             audio.pprint()
             audio.save()
     # return "\nTrack: " + str(artist) + " - " + str(title) + "\nYear: " + str(year) + "\nBPM: " + str(BPM) + "\nKey: " + str(key) + "\nGenre: " + str(genre) + "\nImage Links: " + str(images)
-    return "\nTrack: " + str(artist) + " - " + str(title) + "\nYear: " + str(year) + "\nBPM: " + str(BPM) + "\nKey: " + str(key) + "\nGenre: " + str(genre)
+    return "\nTrack: " + str(artist) + " - " + str(title) + "\nYear: " + str(year) + "\nBPM: " + str(BPM) + "\nKey: " + str(key) + "\nGenre: " + str(genre), webScrapingWindow
 
 def buildVariations(artist, title):
     # strip title of common prefixes like "Original Mix" or "Extended Mix"
@@ -455,7 +477,7 @@ def buildVariations(artist, title):
         titleVariations.append(str(title[0:title.lower().index("-mix")]) + "-Remix" + str(title[title.lower().index("-mix") + 4:]))
     return artistVariations, titleVariations
 
-def overwriteOption(audio, year, BPM, key, genre, window):
+def overwriteOption(audio, year, BPM, key, genre, window, webScrapingWindow):
     audio['date'] = str(year)
     audio['bpm'] = str(BPM)
     audio['initialkey'] = key
@@ -463,8 +485,9 @@ def overwriteOption(audio, year, BPM, key, genre, window):
     audio.pprint()
     audio.save()
     window.destroy()
+    webScrapingWindow.lift()
 
-def mergeScrapeOption(audio, year, BPM, key, genre, window):
+def mergeScrapeOption(audio, year, BPM, key, genre, window, webScrapingWindow):
     if str(year) != '':
         audio['date'] = str(year)
     if str(BPM) != '':
@@ -476,8 +499,9 @@ def mergeScrapeOption(audio, year, BPM, key, genre, window):
     audio.pprint()
     audio.save()
     window.destroy()
+    webScrapingWindow.lift()
 
-def mergeSourceOption(audio, year, BPM, key, genre, window):
+def mergeSourceOption(audio, year, BPM, key, genre, window, webScrapingWindow):
     if audio['date'] == '':
         audio['date'] = str(year)
     else:
@@ -497,6 +521,11 @@ def mergeSourceOption(audio, year, BPM, key, genre, window):
     audio.pprint()
     audio.save()
     window.destroy()
+    webScrapingWindow.lift()
+
+def skipOption(window, webScrapingWindow):
+    window.destroy()
+    webScrapingWindow.lift()
 
 def reverseImageSearch(link):
     print("in progress")

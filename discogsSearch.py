@@ -5,7 +5,7 @@ import webbrowser
 
 def discogsSearch(artist, title, yearList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, window):
     # THIRD QUERY - DISCOGS
-    Label(frame.scrollable_frame, text="\nSearching Beatport for " + str(artist) + " - " + str(title), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
+    Label(frame.scrollable_frame, text="\nSearching Discogs for " + str(artist) + " - " + str(title), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
     url = "https://www.google.co.in/search?q=" + search + " Discogs"
     soup = sendRequest(url, headers, frame, window)

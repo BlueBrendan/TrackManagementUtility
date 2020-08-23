@@ -20,7 +20,7 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
                     label.pack(anchor='w')
                     window.update()
                     soup = sendRequest(link, headers, frame, window)
-                    if soup != '':
+                    if soup != '' and "Oops... the page you were looking for could not be found" not in str(soup):
                         #check if page is track (single), release (album), or classic beatport format
                         #case 1: release
                         if link[25:32] == "release":
