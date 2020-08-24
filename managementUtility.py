@@ -12,7 +12,7 @@ root.title("Track Management Utility V1.0")
 ws = root.winfo_screenwidth() # width of the screen
 hs = root.winfo_screenheight() # height of the screen
 x = (ws/2) - (570/2)
-y = (hs/2) - (450/2)
+y = (hs/2) - (420/2)
 root.geometry('%dx%d+%d+%d' % (570, 320, x, y))
 
 # set preferences
@@ -28,6 +28,8 @@ if not os.path.exists(CONFIG_FILE):
     file = open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt", 'w')
     file.write("Subdirectories:True\n")
     file.write("Close scraping window:True\n")
+    file.write("First Default Directory:\n")
+    file.write("Second Default Directory:\n")
     file.close()
 
 config_file=open(CONFIG_FILE, 'r').read()
@@ -37,7 +39,10 @@ term = "Subdirectories:"
 subdirectories = BooleanVar(value=config_file[config_file.index(term)+len(term):config_file.find('\n', config_file.index(term)+len(term))])
 term = "Close scraping window:"
 closeScrapingWindow = BooleanVar(value=config_file[config_file.index(term)+len(term):config_file.index('\n', config_file.index(term)+len(term))])
-
+term = "First Default Directory:"
+firstDefaultDirectory = config_file[config_file.index(term)+len(term):config_file.index('\n', config_file.index(term) + len(term))]
+term = "Second Default Directory:"
+secondDefaultDirectory = config_file[config_file.index(term)+len(term):config_file.index('\n', config_file.index(term) + len(term))]
 
 #file topmenu button
 menufile.menu = Menu(menufile, tearoff=0)
@@ -73,7 +78,7 @@ titleLabel = Label(root, text="Track Management Utility").grid(row=1, column=1, 
 Button(root, text="Search Web for Tags", command=lambda: selectFileOrDirectory(CONFIG_FILE, subdirectories, closeScrapingWindow)).grid(row=2, column=1, pady=(5,3))
 Label(root, text="Scan for files in a directory and find their tags online").grid(row=3, column=1, pady=(3,15))
 # Scans for differences in files between two separate directories
-Button(root, text="Compare Directories", command=lambda: compareDrives(False)).grid(row=4, column=1, pady=(5,3))
+Button(root, text="Compare Directories", command=lambda: compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory)).grid(row=4, column=1, pady=(5,3))
 Label(root, text="Scan for differences in files and folders between two separate directories").grid(row=5, column=1, pady=(3, 15))
 # Scans the tags of the files in a directory and reformats/deletes extraneous tags
 Button(root, text="Scan Tags", padx=29, command=lambda: scanDirectoryFiles(subdirectories)).grid(row=6, column=1, pady=(5,3))
