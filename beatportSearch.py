@@ -18,6 +18,7 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
                     label = Label(frame.scrollable_frame, text="\n" + str(link), cursor="hand2")
                     label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
                     label.pack(anchor='w')
+                    # refresh(frame, window)
                     window.update()
                     soup = sendRequest(link, headers, frame, window)
                     if soup != False and "Oops... the page you were looking for could not be found" not in str(soup):
@@ -90,17 +91,17 @@ def beatportSingle(soup, yearList, BPMList, keyList, genreList, imageList, frame
         release = link.find('li', class_="interior-track-content-item interior-track-released")
         release = release.find('span', class_="value").get_text()
         Label(frame.scrollable_frame, text="Year: " + str(release[0:4])).pack(anchor='w')
-        window.update()
+        refresh(frame, window)
         yearList.append(int(release[0:4]))
         BPM = link.find('li', class_="interior-track-content-item interior-track-bpm")
         BPM = BPM.find('span', class_="value").get_text()
         Label(frame.scrollable_frame, text="BPM: " + str(BPM)).pack(anchor='w')
-        window.update()
+        refresh(frame, window)
         BPMList.append(int(BPM))
         key = link.find('li', class_="interior-track-content-item interior-track-key")
         key = key.find('span', class_="value").get_text()
         Label(frame.scrollable_frame, text="Key: " + str(key)).pack(anchor='w')
-        window.update()
+        refresh(frame.scrollable_frame, window)
         keyList.append(key)
         genre = link.find('li', class_="interior-track-content-item interior-track-genre")
         if genre.find('span', class_="value sep"):
@@ -109,20 +110,20 @@ def beatportSingle(soup, yearList, BPMList, keyList, genreList, imageList, frame
             secondGenre = genre.find('span', class_="value sep")
             secondGenre = secondGenre.find('a').get_text()
             Label(frame.scrollable_frame, text="Genre: " + str(firstGenre) + ' | ' + str(secondGenre)).pack(anchor='w')
-            window.update()
+            refresh(frame.scrollable_frame, window)
             genreList.append(firstGenre)
             genreList.append(secondGenre)
         else:
             genre = genre.find('span', class_="value")
             genre = genre.find('a').get_text()
             Label(frame.scrollable_frame, text="Genre: " + str(genre)).pack(anchor='w')
-            window.update()
+            refresh(frame.scrollable_frame, window)
             genreList.append(genre)
     link = soup.find('img', class_="interior-track-release-artwork")
     if link!=None:
         link = link['src']
         Label(frame.scrollable_frame, text="Image Link: " + str(link)).pack(anchor='w')
-        window.update()
+        refresh(frame.scrollable_frame, window)
         imageList.append(link)
     return yearList, BPMList, keyList, genreList, imageList
 
@@ -132,12 +133,12 @@ def beatportClassicSingle(soup, yearList, BPMList, keyList, genreList, imageList
             if link.find('span', class_="meta-label txt-grey fontCondensed").get_text() == "Release Date":
                 release = link.find('span', class_="meta-value txt-dark-grey fontCondensed").get_text()
                 Label(frame.scrollable_frame, text="Year: " + str(release[0:4])).pack(anchor='w')
-                window.update()
+                refresh(frame.scrollable_frame, window)
                 yearList.append(int(release[0:4]))
             elif link.find('span', class_="meta-label txt-grey fontCondensed").get_text() == "BPM":
                 BPM = link.find('span', class_="meta-value txt-dark-grey fontCondensed").get_text()
                 Label(frame.scrollable_frame, text="BPM: " + str(BPM)).pack(anchor='w')
-                window.update()
+                refresh(frame.scrollable_frame, window)
                 BPMList.append(int(BPM))
             elif link.find('span', class_="meta-label txt-grey fontCondensed").get_text() == "Key":
                 key = link.find('span', class_="key").get_text()
@@ -153,12 +154,12 @@ def beatportClassicSingle(soup, yearList, BPMList, keyList, genreList, imageList
                 elif 'maj' in key:
                     key = key[0:key.index('maj')] + " " + key[key.index('maj'):]
                 Label(frame.scrollable_frame, text="Key: " + str(key)).pack(anchor='w')
-                window.update()
+                refresh(frame.scrollable_frame, window)
                 keyList.append(key)
             elif link.find('span', class_="meta-label txt-grey fontCondensed").get_text() == "Genre":
                 genre = link.find('span', class_="meta-value txt-dark-grey fontCondensed").get_text()
                 Label(frame.scrollable_frame, text="Genre: " + str(genre)).pack(anchor='w')
-                window.update()
+                refresh(frame.scrollable_frame, window)
                 genreList.append(genre)
     return yearList, BPMList, keyList, genreList, imageList
 
@@ -212,5 +213,8 @@ def sendRequest(url, headers, frame, window):
         Label(frame.scrollable_frame, text="Connection refused").pack(anchor='w')
         window.update()
         return False
+
+def refresh(frame, window):
+    window.update()
 
 

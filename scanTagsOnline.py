@@ -73,6 +73,7 @@ def selectFileOrDirectory(CONFIG_FILE, subdirectories, closeScrapingWindow):
 
 def completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow):
     finalReportWindow.destroy()
+    webScrapingWindow.lift()
     if closeScrapingWindow.get()!=False:
         webScrapingWindow.destroy()
 
@@ -615,22 +616,14 @@ def mergeScrapeOption(audio, year, BPM, key, genre, window, webScrapingWindow):
     webScrapingWindow.lift()
 
 def mergeSourceOption(audio, year, BPM, key, genre, window, webScrapingWindow):
-    if audio['date'] == '':
+    if audio['date'] == ['']:
         audio['date'] = str(year)
-    else:
-        year = audio['date'][2:-2]
-    if audio['bpm'] == '':
+    if audio['bpm'] == ['']:
         audio['bpm'] = str(BPM)
-    else:
-        BPM = audio['bpm'][2:-2]
-    if audio['initialkey'] == '':
+    if audio['initialkey'] == ['']:
         audio['initialkey'] = key
-    else:
-        key = audio['initialkey'][2:-2]
-    if audio['genre'] == '':
+    if audio['genre'] == ['']:
         audio['genre'] = genre
-    else:
-        genre = audio['genre'][2:-2]
     audio.pprint()
     audio.save()
     window.destroy()
