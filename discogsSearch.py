@@ -9,7 +9,7 @@ def discogsSearch(artist, title, yearList, genreList, imageList, artistVariation
     window.update()
     url = "https://www.google.co.in/search?q=" + search + " Discogs"
     soup = sendRequest(url, headers, frame, window)
-    if soup!='':
+    if soup != False:
         for link in soup.find_all('a'):
             if "https://www.discogs" in link.get('href').lower().split('&')[0] and (any(variation in link.get('href').split('&')[0].lower() for variation in artistVariations) or any(variation in link.get('href').split('&')[0].lower() for variation in titleVariations)):
                 link = link.get('href').split('&')[0].split('=')[1]
@@ -17,35 +17,31 @@ def discogsSearch(artist, title, yearList, genreList, imageList, artistVariation
                 label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
                 label.pack(anchor='w')
                 window.update()
-                try:
-                    response = requests.get(link, headers=headers)
-                except requests.exceptions.ConnectionError:
-                    print("Connection refused")
-                    break
-                soup = BeautifulSoup(response.text, "html.parser")
-                # first check if the title is in the tracklist, push data if it is
-                link = soup.find('table', class_="playlist")
-                # handle 404 links
-                if link != None:
-                    for link in link.find_all('td', class_="track tracklist_track_title"):
-                        name = link.find('span', class_="tracklist_track_title").get_text()
-                        if link.find('a') != None:
-                            remix = link.find('a').get_text()
-                            if remix.lower() not in name.lower():
-                                if '(' in name:
-                                    name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
-                        # check if title and name are exact matches
-                        if title.lower() == name.lower():
-                            yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window)
-                            break
-                        else:
-                            # test 1: compare tracklist title with track title word for word
-                            tokens = name.split(" ")
-                            mismatch = False
-                            mismatch = compareTokens(title, name, mismatch)
-                            if mismatch == False:
+                soup = sendRequest(url, headers, frame, window)
+                if soup!=False:
+                    # first check if the title is in the tracklist, push data if it is
+                    link = soup.find('table', class_="playlist")
+                    # handle 404 links
+                    if link != None:
+                        for link in link.find_all('td', class_="track tracklist_track_title"):
+                            name = link.find('span', class_="tracklist_track_title").get_text()
+                            if link.find('a') != None:
+                                remix = link.find('a').get_text()
+                                if remix.lower() not in name.lower():
+                                    if '(' in name:
+                                        name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
+                            # check if title and name are exact matches
+                            if title.lower() == name.lower():
                                 yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window)
                                 break
+                            else:
+                                # test 1: compare tracklist title with track title word for word
+                                tokens = name.split(" ")
+                                mismatch = False
+                                mismatch = compareTokens(title, name, mismatch)
+                                if mismatch == False:
+                                    yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window)
+                                    break
     return yearList, genreList, imageList, window
 
 def discogsRelease(soup, yearList, genreList, frame, window):
@@ -116,4 +112,4 @@ def sendRequest(url, headers, frame, window):
     except requests.exceptions.ConnectionError:
         Label(frame.scrollable_frame, text="Connection refused").pack(anchor='w')
         window.update()
-        return
+        return False

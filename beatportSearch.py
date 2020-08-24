@@ -10,7 +10,7 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
     window.update()
     url = "https://www.google.co.in/search?q=" + search + " Beatport"
     soup = sendRequest(url, headers, frame, window)
-    if soup != '':
+    if soup != False:
         for link in soup.find_all('a'):
             if "beatport" in link.get('href').split('&')[0] and (any(variation in link.get('href').split('&')[0].lower() for variation in artistVariations) or any(variation in link.get('href').split('&')[0].lower() for variation in titleVariations)):
                 link = link.get('href').split('&')[0].split('=')[1]
@@ -20,7 +20,7 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
                     label.pack(anchor='w')
                     window.update()
                     soup = sendRequest(link, headers, frame, window)
-                    if soup != '' and "Oops... the page you were looking for could not be found" not in str(soup):
+                    if soup != False and "Oops... the page you were looking for could not be found" not in str(soup):
                         #check if page is track (single), release (album), or classic beatport format
                         #case 1: release
                         if link[25:32] == "release":
@@ -31,7 +31,7 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
                                 if link.find('a')['href'] in titleVariations:
                                     url = "https://www.beatport.com" + str(link.find('a')['href'])
                                     soup = sendRequest(url, headers, frame, window)
-                                    if soup != '':
+                                    if soup !=False:
                                         yearList, BPMList, keyList, genreList, imageList = beatportSingle(soup, yearList, BPMList, keyList, genreList, imageList, frame, window)
                         #case 2: classic
                         elif link[7:14] == "classic":
@@ -43,7 +43,7 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
                                     if link['href'] in titleVariations:
                                         url = link['href']
                                         soup = sendRequest(url, headers, frame, window)
-                                        if soup != '':
+                                        if soup != False:
                                             yearList, BPMList, keyList, genreList, imageList = beatportClassicSingle(soup, yearList, BPMList, keyList, genreList, imageList, frame, window)
                             #case 2.2: classic page release
                             elif link[28:35] == "release":
@@ -52,7 +52,7 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
                                     if link.find('a', class_="txt-larger")['href'] in titleVariations:
                                         url = link.find('a', class_="txt-larger")['href']
                                         soup = sendRequest(url, headers, frame, window)
-                                        if soup!=False:
+                                        if soup != False:
                                             yearList, BPMList, keyList, genreList, imageList = beatportClassicSingle(soup, yearList,BPMList, keyList, genreList, imageList, frame, window)
                             #case 2.3: classic page track
                             # verify that the page is correct

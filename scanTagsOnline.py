@@ -2,6 +2,7 @@ import os
 import requests
 from bs4 import BeautifulSoup
 from mutagen.flac import FLAC
+from mutagen.id3 import ID3, TIT2, TKEY
 from statistics import mode
 from collections import Counter
 from tkinter import filedialog
@@ -53,14 +54,14 @@ def selectFileOrDirectory(CONFIG_FILE, subdirectories, closeScrapingWindow):
     window.columnconfigure(2, weight=1)
     Label(window, text="What type of item do you want to search for?").grid(row=0, column=1, columnspan=2, pady=(10, 35))
     #load file icon
-    fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/fileIconSmall.png")
+    fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/fileIcon.png")
     fileImageImport = fileImageImport.resize((150, 150), Image.ANTIALIAS)
     photo = ImageTk.PhotoImage(fileImageImport)
     fileImage = Label(window, image=photo)
     fileImage.image = photo
     fileImage.grid(row=1, column=1)
     #load directory icon
-    directoryImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/folderIconSmall.png")
+    directoryImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/folderIcon.png")
     directoryImageImport = directoryImageImport.resize((150,150), Image.ANTIALIAS)
     photo = ImageTk.PhotoImage(directoryImageImport)
     directoryImage = Label(window, image=photo)
@@ -103,6 +104,12 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
                     row+=1
                     result, webScrapingWindow = scanFLACFile(var, os.path.dirname(directory), frame, webScrapingWindow)
                     results += result + '\n\n'
+                #handle MP3 files
+                elif var.endswith('.mp3'):
+                    row+=1
+                    result, webScrapingWindow = scanMP3File(var, os.path.dirname(directory), frame, webScrapingWindow)
+                    results += result + '\n\n'
+
                 # only print a report if the process was not cancelled
             if cancel==False:
                 finalReportWindow = Toplevel()
@@ -112,7 +119,6 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
                 finalReportWindow.columnconfigure(0, weight=1)
                 ws = finalReportWindow.winfo_screenwidth()  # width of the screen
                 hs = finalReportWindow.winfo_screenheight()  # height of the screen
-                print(row)
                 x = (ws / 2) - (450 / 2)
                 y = (hs / 2) - (200+((row-1)*75)/ 2)
                 finalReportWindow.geometry('%dx%d+%d+%d' % (450, 250+((row-1)*100), x, y))
@@ -196,6 +202,9 @@ def onClose(popup):
 
 def scanFLACFile(var, directory, frame, webScrapingWindow):
     global newArtistName, cancel
+    audio = checkFileValidity(directory, var)
+    if type(audio)==str:
+        return audio, webScrapingWindow
     # check if artist and title are in filename
     filename = var
     if ' - ' in var:
@@ -228,14 +237,143 @@ def scanFLACFile(var, directory, frame, webScrapingWindow):
                     break
     # check file tags for artist
     else:
-        try: audio = FLAC(str(directory) + '/' + str(var))
-        except:
-            print("Invalid or corrupt file")
-            return
         if audio['artist'] == '':
             print("No artist information found in file")
             return
         artist = str(audio['artist'])[2:-2]
+        title = var[:-5]
+        if ' ' in title or '.' in title:
+            if ' ' in artist:
+                titlePrefix = title.split(' ', 1)[0]
+                titlePostfix = title.split(' ', 1)[1]
+            else:
+                titlePrefix = title.split('.')[0]
+                titlePostfix = title.split('.')[1]
+            for character in titlePrefix:
+                if character.isdigit() or character == '.':
+                    popup = Toplevel()
+                    popup.title("Potential Misspell in File Name")
+                    ws = popup.winfo_screenwidth()  # width of the screen
+                    hs = popup.winfo_screenheight()  # height of the screen
+                    x = (ws / 2) - (450 / 2)
+                    y = (hs / 2) - (280 / 2)
+                    popup.geometry('%dx%d+%d+%d' % (450, 180, x, y))
+                    popup.columnconfigure(1, weight=1)
+                    popup.columnconfigure(2, weight=1)
+                    Label(popup,text="A potential typo was found in the file name. Rename\n\n" + str(title) + "\nto\n" + str(titlePostfix) + "?").grid(row=0, column=1,columnspan=2,pady=(10, 0))
+                    Button(popup, text='Yes', command=lambda: resetTitleName(titlePostfix, popup)).grid(row=1, column=1,pady=(20, 10))
+                    Button(popup, text='No', command=popup.destroy).grid(row=1, column=2)
+                    popup.protocol("WM_DELETE_WINDOW", lambda: onClose(popup))
+                    popup.wait_window()
+                    break
+    if cancel==True:
+        return
+    if newArtistName != '':
+        renameArtist(directory, var, newArtistName, title)
+        artist = newArtistName
+        filename = newArtistName + ' - ' + title + '.flac'
+    elif newTitleName != '':
+        renameFile(directory, var, newTitleName+".flac")
+        title = newTitleName
+        filename = newTitleName + '.flac'
+    if "featuring" in artist:
+        artist = artist.replace("featuring", "feat.")
+        renameArtist(directory, var, artist, title)
+    if '’' in filename:
+        filename = filename.replace("’", "'")
+        renameFile(directory, var, filename)
+    audio["artist"] = artist
+    audio["title"] = title
+    audio.pprint()
+    audio.save()
+
+    interestParameters = ['artist', 'title', 'date', 'bpm', 'initialkey', 'genre', 'replaygain_track_gain']
+    fileParameters = []
+    for x in audio:
+        fileParameters.append(x)
+    for x in fileParameters:
+        #delete extraneous tags
+        if x not in interestParameters:
+            print("Deleting " + str(x))
+            audio[x]= ""
+            audio.pop(x)
+            audio.save()
+    for x in interestParameters:
+        #add tags of interest if missing
+        if x not in fileParameters:
+            audio[x] = ""
+            audio.save()
+    search = str(artist) + " - " + str(title)
+    #clean search query of ampersands
+    ampersand = re.finditer("&", search)
+    ampersandPositions = [match.start() for match in ampersand]
+    for var in ampersandPositions:
+        search = search[0:var] + " " + search[var + 1:]
+    yearList = []
+    BPMList = []
+    keyList = []
+    genreList = []
+    imageList = []
+    #build list of artist and track title variations to prepare for scraping
+    artistVariations, titleVariations = buildVariations(artist,title)
+    #Perform scraping
+    headers = {'User-Agent': "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1b3pre) Gecko/20090109 Shiretoko/3.1b3pre"}
+
+    #web scraping
+    #junodownload
+    yearList, BPMList, genreList, imageList = junodownloadSearch(artist, title, yearList, BPMList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow)
+    # window.update()
+    # # #beatport
+    yearList, BPMList, keyList, genreList, imageList = beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow)
+    # #discogs
+    yearList, genreList, imageList, window = discogsSearch(artist, title, yearList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow)
+    #spotify
+    #apple music
+    finalResults, webScrapingWindow = buildTrackReport(yearList, BPMList, keyList, genreList, imageList, artist, title, audio, webScrapingWindow)
+    return finalResults, webScrapingWindow
+
+def scanMP3File(var, directory, frame, webScrapingWindow):
+    global newArtistName, cancel
+    # check if artist and title are in filename
+    filename = var
+    if ' - ' in var:
+        artist = var.split(' - ')[0]
+        title = var.split(' - ')[1][:-5]
+        # scan artist for numbering prefix
+        if ' ' in artist or '.' in artist:
+            if ' ' in artist:
+                artistPrefix = artist.split(' ', 1)[0]
+                artistPostfix = artist.split(' ', 1)[1]
+            else:
+                artistPrefix = artist.split('.')[0]
+                artistPostfix = artist.split('.')[1]
+            for character in artistPrefix:
+                if character.isdigit() or character == '.':
+                    popup = Toplevel()
+                    popup.title("Potential Misspell in File Name")
+                    ws = popup.winfo_screenwidth()  # width of the screen
+                    hs = popup.winfo_screenheight()  # height of the screen
+                    x = (ws / 2) - (450 / 2)
+                    y = (hs / 2) - (280 / 2)
+                    popup.geometry('%dx%d+%d+%d' % (450, 180, x, y))
+                    popup.columnconfigure(1, weight=1)
+                    popup.columnconfigure(2, weight=1)
+                    Label(popup,text="A potential typo was found in the file name. Rename\n\n" + str(artist) + " - " + str(title) + "\nto\n" + str(artistPostfix) + ' - ' + str(title) + "?").grid(row=0, column=1,columnspan=2,pady=(10, 0))
+                    Button(popup, text='Yes', command=lambda: resetArtistName(artistPostfix, popup)).grid(row=1, column=1,pady=(20, 10))
+                    Button(popup, text='No', command=popup.destroy).grid(row=1, column=2)
+                    popup.protocol("WM_DELETE_WINDOW", lambda: onClose(popup))
+                    popup.wait_window()
+                    break
+    # check file tags for artist
+    else:
+        try: audio = ID3(str(directory) + '/' + str(var))
+        except:
+            print("Invalid or corrupt file")
+            return
+        if audio['TPE1'].text[0] == '':
+            print("No artist information found in file")
+            return
+
         title = var[:-5]
         if ' ' in title or '.' in title:
             if ' ' in artist:
@@ -332,8 +470,7 @@ def scanFLACFile(var, directory, frame, webScrapingWindow):
     #Perform scraping
     headers = {'User-Agent': "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1b3pre) Gecko/20090109 Shiretoko/3.1b3pre"}
 
-    #web scraping window
-
+    #web scraping
     #junodownload
     yearList, BPMList, genreList, imageList = junodownloadSearch(artist, title, yearList, BPMList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow)
     # window.update()
@@ -343,30 +480,6 @@ def scanFLACFile(var, directory, frame, webScrapingWindow):
     yearList, genreList, imageList, window = discogsSearch(artist, title, yearList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow)
     #spotify
     #apple music
-    # if len(misspell) >= 5:
-    #     newTitle = [word for word, word_count in Counter(misspell).most_common(1)][0]
-    #     #append possible missing phrases after direct title to newTitle
-    #     listOne = title.split(' ')
-    #     listTwo = newTitle.split(' ')
-    #     if len(listOne) > len(listTwo):
-    #         for i in range(len(listTwo), len(listOne)):
-    #             newTitle += ' ' + listOne[i]
-    #     print("\nWeb query found that track title is possibly misspelled")
-    #     print("Current track name: " + str(artist) + " - " + str(title))
-    #     print("Identified track name: " + str(artist) + " - " + str(newTitle))
-    #     user_input = input("Would you like to rename the track and reperform the search? (y/n): ")
-    #     if user_input.lower() == 'y':
-    #         try:
-    #             os.rename(directory + str(artist) + " - " + str(title) + ".flac", str(directory) + str(artist) + " - " + str(newTitle) + ".flac")
-    #         except PermissionError:
-    #             print("The file is open in another application, close it and try again")
-    #             return
-    #     elif user_input.lower() == 'n':
-    #         finalResults = buildTrackReport(yearList, BPMList, keyList, genreList, imageList, artist, title, finalResults, audio)
-    #     else:
-    #         print("Unidentified input, closing")
-    # else:
-    # check year for false values
     finalResults, webScrapingWindow = buildTrackReport(yearList, BPMList, keyList, genreList, imageList, artist, title, audio, webScrapingWindow)
     return finalResults, webScrapingWindow
 
@@ -416,7 +529,7 @@ def buildTrackReport(yearList, BPMList, keyList, genreList, imageList, artist, t
     #update audio tags
     if yearValue == True or BPMValue == True or keyValue == True or genreValue == True:
         if audio['date']!=[''] or audio['bpm']!=[''] or audio['initialkey']!=[''] or audio['genre']!=['']:
-            if str(audio['date'])[2:-2]!=str(year) or str(audio['bpm'])[2:-2]!=str(BPM) or str(audio['initialkey'])[2:-2]!=key or str(audio['genre'])[2:-2]!=genre:
+            if str(audio['DATE'])[2:-2]!=str(year) or str(audio['bpm'])[2:-2]!=str(BPM) or str(audio['initialkey'])[2:-2]!=key or str(audio['genre'])[2:-2]!=genre:
                 window = Toplevel()
                 window.lift()
                 window.title("Conflicting Tags")
@@ -571,6 +684,26 @@ def closeScrapingWindowSelection(CONFIG_FILE):
         with open(CONFIG_FILE, 'wt') as file:
             file.write(config_file.replace(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term)) + 1]) + "False", str(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term)) + 1])) + "True"))
         file.close()
+
+def renameArtist(directory, var, artist, title):
+    try: os.rename(directory + '/' + var, str(directory) + str(artist) + " - " + str(title) + ".flac")
+    except PermissionError:
+        print("The file is open in another application, close it and try again")
+    return
+
+def renameFile(directory, var, filename):
+    try:os.rename(directory + '/' + var, str(directory) + '/' + str(filename))
+    except PermissionError:
+        print("The file is open in another application, close it and try again")
+    return
+
+def checkFileValidity(directory, var):
+    try:
+        audio = FLAC(str(directory) + '/' + str(var))
+        return audio
+    except:
+        print("Invalid or corrupt file")
+        return "Invalid or corrupt file\n"
 
 def closeFinalReport(finalReportWindow, webScrapingWindow):
     finalReportWindow.destroy()
