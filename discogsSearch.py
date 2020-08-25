@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 from tkinter import *
 import webbrowser
+import time
+import random
 
 def discogsSearch(artist, title, yearList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, window):
     # THIRD QUERY - DISCOGS
@@ -108,8 +110,12 @@ def sendRequest(url, headers, frame, window):
     try:
         response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, "html.parser")
+        #generate random waiting time to avoid being blocked
+        time.sleep(random.uniform(1.5, 4.5))
         return soup
     except requests.exceptions.ConnectionError:
         Label(frame.scrollable_frame, text="Connection refused").pack(anchor='w')
         window.update()
+        # generate random waiting time to avoid being blocked
+        time.sleep(random.uniform(1.5, 4.5))
         return False

@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 from tkinter import *
 import webbrowser
+import time
+import random
 
 def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, window):
 #SECOND QUERY - BEATPORT
@@ -78,7 +80,7 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
                                 if trackMix != '' and 'original' not in trackMix.lower():
                                     # verify that the page is correct
                                     if '(' in title and ')' in title:
-                                        remix = title[title.index('(') + 1:title.index(')')]
+                                        remix = title[title.rfind('(') + 1:title.rfind(')')]
                                         mismatch = compareTokens(remix, trackMix)
                                         if mismatch == False:
                                             yearList, BPMList, keyList, genreList, imageList = beatportSingle(soup, yearList, BPMList, keyList,genreList, imageList, frame, window)
@@ -208,10 +210,14 @@ def sendRequest(url, headers, frame, window):
     try:
         response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, "html.parser")
+        # generate random waiting time to avoid being blocked
+        time.sleep(random.uniform(1.5, 4.5))
         return soup
     except requests.exceptions.ConnectionError:
         Label(frame.scrollable_frame, text="Connection refused").pack(anchor='w')
         window.update()
+        # generate random waiting time to avoid being blocked
+        time.sleep(random.uniform(1.5, 4.5))
         return False
 
 def refresh(frame, window):

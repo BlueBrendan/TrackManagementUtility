@@ -98,19 +98,19 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
             webScrapingWindow.geometry('%dx%d+%d+%d' % (700, 650, x, y))
             Label(frame.scrollable_frame, text="Beginning web scraping procedure...", wraplength=300, justify='left').pack(anchor='w')
             row = 0
+            characters = 0
             for directory in directories:
                 var = os.path.basename(directory)
                 #handle FLAC files
                 if var.endswith('.flac'):
                     row+=1
-                    result, webScrapingWindow = scanFLACFile(var, os.path.dirname(directory), frame, webScrapingWindow)
+                    result, webScrapingWindow, characters = scanFLACFile(var, os.path.dirname(directory), frame, webScrapingWindow, characters)
                     results += result + '\n\n'
                 #handle MP3 files
-                elif var.endswith('.mp3'):
-                    row+=1
-                    result, webScrapingWindow = scanMP3File(var, os.path.dirname(directory), frame, webScrapingWindow)
-                    results += result + '\n\n'
-
+                # elif var.endswith('.mp3'):
+                #     row+=1
+                #     result, webScrapingWindow, characters = scanMP3File(var, os.path.dirname(directory), frame, webScrapingWindow, characters)
+                #     results += result + '\n\n'
                 # only print a report if the process was not cancelled
             if cancel==False:
                 finalReportWindow = Toplevel()
@@ -120,9 +120,13 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
                 finalReportWindow.columnconfigure(0, weight=1)
                 ws = finalReportWindow.winfo_screenwidth()  # width of the screen
                 hs = finalReportWindow.winfo_screenheight()  # height of the screen
-                x = (ws / 2) - (450 / 2)
                 y = (hs / 2) - (200+((row-1)*75)/ 2)
-                finalReportWindow.geometry('%dx%d+%d+%d' % (450, 250+((row-1)*100), x, y))
+                if characters <= 40:
+                    x = (ws / 2) - (450 / 2)
+                    finalReportWindow.geometry('%dx%d+%d+%d' % (450, 250+((row-1)*100), x, y))
+                else:
+                    x = (ws / 2) - ((450 + (characters * 1.5)) / 2)
+                    finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters*1.5), 250 + ((row - 1) * 100), x, y))
                 Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, pady=(15,0))
                 Label(finalReportWindow, text=results).grid(row=1, column=0)
                 Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow)).grid(row=2, column=0, pady=(0, 5))
@@ -135,6 +139,7 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
         if directory != '':
             window.destroy()
             results = []
+            characters = 0
             webScrapingWindow = Toplevel()
             frame = ScrollableFrame(webScrapingWindow)
             frame.grid(row=0, column=0)
@@ -146,7 +151,7 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
             y = (hs / 2) - (800 / 2)
             webScrapingWindow.geometry('%dx%d+%d+%d' % (700, 650, x, y))
             Label(frame.scrollable_frame, text="Beginning web scraping procedure...", wraplength=300, justify='left').pack(anchor='w')
-            finalReport, webScrapingWindow = directorySearch(directory, subdirectories, results, frame, webScrapingWindow)
+            finalReport, webScrapingWindow, characters = directorySearch(directory, subdirectories, results, frame, webScrapingWindow, characters)
             if cancel == False:
                 finalReportWindow = Toplevel()
                 webScrapingWindow.lift()
@@ -155,9 +160,13 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
                 finalReportWindow.columnconfigure(0, weight=1)
                 ws = finalReportWindow.winfo_screenwidth()  # width of the screen
                 hs = finalReportWindow.winfo_screenheight()  # height of the screen
-                x = (ws / 2) - (450 / 2)
                 y = (hs / 2) - (800 / 2)
-                finalReportWindow.geometry('%dx%d+%d+%d' % (450, 650, x, y))
+                if characters <= 60:
+                    x = (ws / 2) - (450 / 2)
+                    finalReportWindow.geometry('%dx%d+%d+%d' % (450, 650, x, y))
+                else:
+                    x = (ws / 2) - (450 + (characters * 1.5) / 2)
+                    finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters*1.5), 650, x, y))
                 Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, pady=(15, 0))
                 row=0
                 for i in range(len(finalReport)):
@@ -170,20 +179,20 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
                 Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow)).grid(row=row+1, column=0, pady=(15,10))
                 finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closeFinalReport(finalReportWindow, webScrapingWindow))
 
-def directorySearch(directory, subdirectories, results, frame, webScrapingWindow):
+def directorySearch(directory, subdirectories, results, frame, webScrapingWindow, characters):
     global newArtistName, newTitleName, cancel
     files = os.listdir(directory)
     for var in files:
         if os.path.isdir(directory + '/' + var) and subdirectories.get() == True:
-            directorySearch(directory + '/' + var, subdirectories, results, frame, webScrapingWindow)
+            directorySearch(directory + '/' + var, subdirectories, results, frame, webScrapingWindow, characters)
         else:
             #handle FLAC files
             if var.endswith(".flac"):
-                result, webScrapingWindow = scanFLACFile(var, directory, frame, webScrapingWindow)
+                result, webScrapingWindow, characters = scanFLACFile(var, directory, frame, webScrapingWindow, characters)
                 results.append(result)
         newArtistName = ''
         newTitleName = ''
-    return results, webScrapingWindow
+    return results, webScrapingWindow, characters
 
 
 def resetArtistName(artistPostfix, popup):
@@ -201,9 +210,9 @@ def onClose(popup):
     cancel = True
     popup.destroy()
 
-def scanFLACFile(var, directory, frame, webScrapingWindow):
+def scanFLACFile(var, directory, frame, webScrapingWindow, characters):
     global newArtistName, cancel
-    audio = checkFileValidity(directory, var)
+    audio = checkFileValidity(directory, var, frame, webScrapingWindow)
     if type(audio)==str:
         return audio, webScrapingWindow
     # check if artist and title are in filename
@@ -227,10 +236,15 @@ def scanFLACFile(var, directory, frame, webScrapingWindow):
                     hs = popup.winfo_screenheight()  # height of the screen
                     x = (ws / 2) - (450 / 2)
                     y = (hs / 2) - (280 / 2)
-                    popup.geometry('%dx%d+%d+%d' % (450, 180, x, y))
+                    print(len(str(artist) + " - " + str(title)))
+                    if len(str(artist) + " - " + str(title)) <= 30:
+                        popup.geometry('%dx%d+%d+%d' % (450, 180, x, y))
+                    else:
+                        x = (ws / 2) - ((450 + (len(str(artist) + " - " + str(title)) * 1.5)) / 2)
+                        popup.geometry('%dx%d+%d+%d' % (450 + (len(str(artist) + " - " + str(title)) * 1.5), 180, x, y))
                     popup.columnconfigure(1, weight=1)
                     popup.columnconfigure(2, weight=1)
-                    Label(popup,text="A potential typo was found in the file name. Rename\n\n" + str(artist) + " - " + str(title) + "\nto\n" + str(artistPostfix) + ' - ' + str(title) + "?").grid(row=0, column=1,columnspan=2,pady=(10, 0))
+                    Label(popup, text="A potential typo was found in the file name. Rename\n\n" + str(artist) + " - " + str(title) + "\nto\n" + str(artistPostfix) + ' - ' + str(title) + "?").grid(row=0, column=1,columnspan=2,pady=(10, 0))
                     Button(popup, text='Yes', command=lambda: resetArtistName(artistPostfix, popup)).grid(row=1, column=1,pady=(20, 10))
                     Button(popup, text='No', command=popup.destroy).grid(row=1, column=2)
                     popup.protocol("WM_DELETE_WINDOW", lambda: onClose(popup))
@@ -258,7 +272,11 @@ def scanFLACFile(var, directory, frame, webScrapingWindow):
                     hs = popup.winfo_screenheight()  # height of the screen
                     x = (ws / 2) - (450 / 2)
                     y = (hs / 2) - (280 / 2)
-                    popup.geometry('%dx%d+%d+%d' % (450, 180, x, y))
+                    if len(str(artist) + " - " + str(title)) <= 30:
+                        popup.geometry('%dx%d+%d+%d' % (450, 180, x, y))
+                    else:
+                        x = (ws / 2) - ((450 + (len(str(artist) + " - " + str(title))*1.5)) / 2)
+                        popup.geometry('%dx%d+%d+%d' % (450 + (len(str(artist) + " - " + str(title))*1.5), 180, x, y))
                     popup.columnconfigure(1, weight=1)
                     popup.columnconfigure(2, weight=1)
                     Label(popup,text="A potential typo was found in the file name. Rename\n\n" + str(title) + "\nto\n" + str(titlePostfix) + "?").grid(row=0, column=1,columnspan=2,pady=(10, 0))
@@ -270,19 +288,19 @@ def scanFLACFile(var, directory, frame, webScrapingWindow):
     if cancel==True:
         return
     if newArtistName != '':
-        renameArtist(directory, var, newArtistName, title)
+        renameArtist(directory, var, newArtistName, title, frame, webScrapingWindow)
         artist = newArtistName
         filename = newArtistName + ' - ' + title + '.flac'
     elif newTitleName != '':
-        renameFile(directory, var, newTitleName+".flac")
+        renameFile(directory, var, newTitleName+".flac", frame, webScrapingWindow)
         title = newTitleName
         filename = newTitleName + '.flac'
     if "featuring" in artist:
         artist = artist.replace("featuring", "feat.")
-        renameArtist(directory, var, artist, title)
+        renameArtist(directory, var, artist, title, frame, webScrapingWindow)
     if '’' in filename:
         filename = filename.replace("’", "'")
-        renameFile(directory, var, filename)
+        renameFile(directory, var, filename, frame, webScrapingWindow)
     audio["artist"] = artist
     audio["title"] = title
     audio.pprint()
@@ -330,161 +348,161 @@ def scanFLACFile(var, directory, frame, webScrapingWindow):
     yearList, genreList, imageList, window = discogsSearch(artist, title, yearList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow)
     #spotify
     #apple music
-    finalResults, webScrapingWindow = buildTrackReport(yearList, BPMList, keyList, genreList, imageList, artist, title, audio, webScrapingWindow)
-    return finalResults, webScrapingWindow
+    finalResults, webScrapingWindow, characters = buildTrackReport(yearList, BPMList, keyList, genreList, imageList, artist, title, audio, webScrapingWindow, characters)
+    return finalResults, webScrapingWindow, characters
 
-def scanMP3File(var, directory, frame, webScrapingWindow):
-    global newArtistName, cancel
-    # check if artist and title are in filename
-    filename = var
-    if ' - ' in var:
-        artist = var.split(' - ')[0]
-        title = var.split(' - ')[1][:-5]
-        # scan artist for numbering prefix
-        if ' ' in artist or '.' in artist:
-            if ' ' in artist:
-                artistPrefix = artist.split(' ', 1)[0]
-                artistPostfix = artist.split(' ', 1)[1]
-            else:
-                artistPrefix = artist.split('.')[0]
-                artistPostfix = artist.split('.')[1]
-            for character in artistPrefix:
-                if character.isdigit() or character == '.':
-                    popup = Toplevel()
-                    popup.title("Potential Misspell in File Name")
-                    ws = popup.winfo_screenwidth()  # width of the screen
-                    hs = popup.winfo_screenheight()  # height of the screen
-                    x = (ws / 2) - (450 / 2)
-                    y = (hs / 2) - (280 / 2)
-                    popup.geometry('%dx%d+%d+%d' % (450, 180, x, y))
-                    popup.columnconfigure(1, weight=1)
-                    popup.columnconfigure(2, weight=1)
-                    Label(popup,text="A potential typo was found in the file name. Rename\n\n" + str(artist) + " - " + str(title) + "\nto\n" + str(artistPostfix) + ' - ' + str(title) + "?").grid(row=0, column=1,columnspan=2,pady=(10, 0))
-                    Button(popup, text='Yes', command=lambda: resetArtistName(artistPostfix, popup)).grid(row=1, column=1,pady=(20, 10))
-                    Button(popup, text='No', command=popup.destroy).grid(row=1, column=2)
-                    popup.protocol("WM_DELETE_WINDOW", lambda: onClose(popup))
-                    popup.wait_window()
-                    break
-    # check file tags for artist
-    else:
-        try: audio = ID3(str(directory) + '/' + str(var))
-        except:
-            print("Invalid or corrupt file")
-            return
-        if audio['TPE1'].text[0] == '':
-            print("No artist information found in file")
-            return
+# def scanMP3File(var, directory, frame, webScrapingWindow, characters):
+#     global newArtistName, cancel
+#     # check if artist and title are in filename
+#     filename = var
+#     if ' - ' in var:
+#         artist = var.split(' - ')[0]
+#         title = var.split(' - ')[1][:-5]
+#         # scan artist for numbering prefix
+#         if ' ' in artist or '.' in artist:
+#             if ' ' in artist:
+#                 artistPrefix = artist.split(' ', 1)[0]
+#                 artistPostfix = artist.split(' ', 1)[1]
+#             else:
+#                 artistPrefix = artist.split('.')[0]
+#                 artistPostfix = artist.split('.')[1]
+#             for character in artistPrefix:
+#                 if character.isdigit() or character == '.':
+#                     popup = Toplevel()
+#                     popup.title("Potential Misspell in File Name")
+#                     ws = popup.winfo_screenwidth()  # width of the screen
+#                     hs = popup.winfo_screenheight()  # height of the screen
+#                     x = (ws / 2) - (450 / 2)
+#                     y = (hs / 2) - (280 / 2)
+#                     popup.geometry('%dx%d+%d+%d' % (450, 180, x, y))
+#                     popup.columnconfigure(1, weight=1)
+#                     popup.columnconfigure(2, weight=1)
+#                     Label(popup,text="A potential typo was found in the file name. Rename\n\n" + str(artist) + " - " + str(title) + "\nto\n" + str(artistPostfix) + ' - ' + str(title) + "?").grid(row=0, column=1,columnspan=2,pady=(10, 0))
+#                     Button(popup, text='Yes', command=lambda: resetArtistName(artistPostfix, popup)).grid(row=1, column=1,pady=(20, 10))
+#                     Button(popup, text='No', command=popup.destroy).grid(row=1, column=2)
+#                     popup.protocol("WM_DELETE_WINDOW", lambda: onClose(popup))
+#                     popup.wait_window()
+#                     break
+#     # check file tags for artist
+#     else:
+#         try: audio = ID3(str(directory) + '/' + str(var))
+#         except:
+#             print("Invalid or corrupt file")
+#             return
+#         if audio['TPE1'].text[0] == '':
+#             print("No artist information found in file")
+#             return
+#
+#         title = var[:-5]
+#         if ' ' in title or '.' in title:
+#             if ' ' in artist:
+#                 titlePrefix = title.split(' ', 1)[0]
+#                 titlePostfix = title.split(' ', 1)[1]
+#             else:
+#                 titlePrefix = title.split('.')[0]
+#                 titlePostfix = title.split('.')[1]
+#             for character in titlePrefix:
+#                 if character.isdigit() or character == '.':
+#                     popup = Toplevel()
+#                     popup.title("Potential Misspell in File Name")
+#                     ws = popup.winfo_screenwidth()  # width of the screen
+#                     hs = popup.winfo_screenheight()  # height of the screen
+#                     x = (ws / 2) - (450 / 2)
+#                     y = (hs / 2) - (280 / 2)
+#                     popup.geometry('%dx%d+%d+%d' % (450, 180, x, y))
+#                     popup.columnconfigure(1, weight=1)
+#                     popup.columnconfigure(2, weight=1)
+#                     Label(popup,text="A potential typo was found in the file name. Rename\n\n" + str(title) + "\nto\n" + str(titlePostfix) + "?").grid(row=0, column=1,columnspan=2,pady=(10, 0))
+#                     Button(popup, text='Yes', command=lambda: resetTitleName(titlePostfix, popup)).grid(row=1, column=1,pady=(20, 10))
+#                     Button(popup, text='No', command=popup.destroy).grid(row=1, column=2)
+#                     popup.protocol("WM_DELETE_WINDOW", lambda: onClose(popup))
+#                     popup.wait_window()
+#                     break
+#     if cancel==True:
+#         return
+#     if newArtistName != '':
+#         try: os.rename(directory + '/' + var, directory + '/' + newArtistName + ' - ' + title + '.flac')
+#         except PermissionError:
+#             print("The file is open in another application, close it and try again")
+#             return
+#         artist = newArtistName
+#         filename = newArtistName + ' - ' + title + '.flac'
+#     elif newTitleName != '':
+#         try: os.rename(directory + '/' + var, directory + '/' + newTitleName + '.flac')
+#         except PermissionError:
+#             print("The file is open in another application, close it and try again")
+#             return
+#         title = newTitleName
+#         filename = newTitleName + '.flac'
+#
+#     if "featuring" in artist:
+#         artist = artist.replace("featuring", "feat.")
+#         try: os.rename(directory + '/' + var, str(directory) + str(artist) + " - " + str(title) + ".flac")
+#         except PermissionError:
+#             print("The file is open in another application, close it and try again")
+#             return
+#     if '’' in filename:
+#         filename = filename.replace("’", "'")
+#         try:
+#             (directory + '/' + var, str(directory) + '/' + str(filename))
+#         except PermissionError:
+#             print("The file is open in another application, close it and try again")
+#             return
+#     try: audio = FLAC(str(directory) + '/' + str(filename))
+#     except:
+#         print("Invalid or corrupt file")
+#         return
+#     audio["artist"] = artist
+#     audio["title"] = title
+#     audio.pprint()
+#     audio.save()
+#
+#     interestParameters = ['artist', 'title', 'date', 'bpm', 'initialkey', 'genre', 'replaygain_track_gain']
+#     fileParameters = []
+#     for x in audio:
+#         fileParameters.append(x)
+#     for x in fileParameters:
+#         #delete extraneous tags
+#         if x not in interestParameters:
+#             print("Deleting " + str(x))
+#             audio[x]= ""
+#             audio.pop(x)
+#             audio.save()
+#     for x in interestParameters:
+#         #add tags of interest if missing
+#         if x not in fileParameters:
+#             audio[x] = ""
+#             audio.save()
+#     search = str(artist) + " - " + str(title)
+#     #clean search query of ampersands
+#     ampersand = re.finditer("&", search)
+#     ampersandPositions = [match.start() for match in ampersand]
+#     for var in ampersandPositions:
+#         search = search[0:var] + " " + search[var + 1:]
+#     yearList = []
+#     BPMList = []
+#     keyList = []
+#     genreList = []
+#     imageList = []
+#     #build list of artist and track title variations to prepare for scraping
+#     artistVariations, titleVariations = buildVariations(artist,title)
+#     #Perform scraping
+#     headers = {'User-Agent': "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1b3pre) Gecko/20090109 Shiretoko/3.1b3pre"}
+#
+#     #web scraping
+#     #junodownload
+#     yearList, BPMList, genreList, imageList = junodownloadSearch(artist, title, yearList, BPMList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow)
+#     # window.update()
+#     # # #beatport
+#     yearList, BPMList, keyList, genreList, imageList = beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow)
+#     # #discogs
+#     yearList, genreList, imageList, window = discogsSearch(artist, title, yearList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow)
+#     #spotify
+#     #apple music
+#     finalResults, webScrapingWindow, characters = buildTrackReport(yearList, BPMList, keyList, genreList, imageList, artist, title, audio, webScrapingWindow, characters)
+#     return finalResults, webScrapingWindow
 
-        title = var[:-5]
-        if ' ' in title or '.' in title:
-            if ' ' in artist:
-                titlePrefix = title.split(' ', 1)[0]
-                titlePostfix = title.split(' ', 1)[1]
-            else:
-                titlePrefix = title.split('.')[0]
-                titlePostfix = title.split('.')[1]
-            for character in titlePrefix:
-                if character.isdigit() or character == '.':
-                    popup = Toplevel()
-                    popup.title("Potential Misspell in File Name")
-                    ws = popup.winfo_screenwidth()  # width of the screen
-                    hs = popup.winfo_screenheight()  # height of the screen
-                    x = (ws / 2) - (450 / 2)
-                    y = (hs / 2) - (280 / 2)
-                    popup.geometry('%dx%d+%d+%d' % (450, 180, x, y))
-                    popup.columnconfigure(1, weight=1)
-                    popup.columnconfigure(2, weight=1)
-                    Label(popup,text="A potential typo was found in the file name. Rename\n\n" + str(title) + "\nto\n" + str(titlePostfix) + "?").grid(row=0, column=1,columnspan=2,pady=(10, 0))
-                    Button(popup, text='Yes', command=lambda: resetTitleName(titlePostfix, popup)).grid(row=1, column=1,pady=(20, 10))
-                    Button(popup, text='No', command=popup.destroy).grid(row=1, column=2)
-                    popup.protocol("WM_DELETE_WINDOW", lambda: onClose(popup))
-                    popup.wait_window()
-                    break
-    if cancel==True:
-        return
-    if newArtistName != '':
-        try: os.rename(directory + '/' + var, directory + '/' + newArtistName + ' - ' + title + '.flac')
-        except PermissionError:
-            print("The file is open in another application, close it and try again")
-            return
-        artist = newArtistName
-        filename = newArtistName + ' - ' + title + '.flac'
-    elif newTitleName != '':
-        try: os.rename(directory + '/' + var, directory + '/' + newTitleName + '.flac')
-        except PermissionError:
-            print("The file is open in another application, close it and try again")
-            return
-        title = newTitleName
-        filename = newTitleName + '.flac'
-
-    if "featuring" in artist:
-        artist = artist.replace("featuring", "feat.")
-        try: os.rename(directory + '/' + var, str(directory) + str(artist) + " - " + str(title) + ".flac")
-        except PermissionError:
-            print("The file is open in another application, close it and try again")
-            return
-    if '’' in filename:
-        filename = filename.replace("’", "'")
-        try:
-            (directory + '/' + var, str(directory) + '/' + str(filename))
-        except PermissionError:
-            print("The file is open in another application, close it and try again")
-            return
-    try: audio = FLAC(str(directory) + '/' + str(filename))
-    except:
-        print("Invalid or corrupt file")
-        return
-    audio["artist"] = artist
-    audio["title"] = title
-    audio.pprint()
-    audio.save()
-
-    interestParameters = ['artist', 'title', 'date', 'bpm', 'initialkey', 'genre', 'replaygain_track_gain']
-    fileParameters = []
-    for x in audio:
-        fileParameters.append(x)
-    for x in fileParameters:
-        #delete extraneous tags
-        if x not in interestParameters:
-            print("Deleting " + str(x))
-            audio[x]= ""
-            audio.pop(x)
-            audio.save()
-    for x in interestParameters:
-        #add tags of interest if missing
-        if x not in fileParameters:
-            audio[x] = ""
-            audio.save()
-    search = str(artist) + " - " + str(title)
-    #clean search query of ampersands
-    ampersand = re.finditer("&", search)
-    ampersandPositions = [match.start() for match in ampersand]
-    for var in ampersandPositions:
-        search = search[0:var] + " " + search[var + 1:]
-    yearList = []
-    BPMList = []
-    keyList = []
-    genreList = []
-    imageList = []
-    #build list of artist and track title variations to prepare for scraping
-    artistVariations, titleVariations = buildVariations(artist,title)
-    #Perform scraping
-    headers = {'User-Agent': "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1b3pre) Gecko/20090109 Shiretoko/3.1b3pre"}
-
-    #web scraping
-    #junodownload
-    yearList, BPMList, genreList, imageList = junodownloadSearch(artist, title, yearList, BPMList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow)
-    # window.update()
-    # # #beatport
-    yearList, BPMList, keyList, genreList, imageList = beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow)
-    # #discogs
-    yearList, genreList, imageList, window = discogsSearch(artist, title, yearList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow)
-    #spotify
-    #apple music
-    finalResults, webScrapingWindow = buildTrackReport(yearList, BPMList, keyList, genreList, imageList, artist, title, audio, webScrapingWindow)
-    return finalResults, webScrapingWindow
-
-def buildTrackReport(yearList, BPMList, keyList, genreList, imageList, artist, title, audio, webScrapingWindow):
+def buildTrackReport(yearList, BPMList, keyList, genreList, imageList, artist, title, audio, webScrapingWindow, characters):
     yearValue = False
     BPMValue = False
     keyValue = False
@@ -538,7 +556,11 @@ def buildTrackReport(yearList, BPMList, keyList, genreList, imageList, artist, t
                 hs = window.winfo_screenheight()  # height of the screen
                 x = (ws / 2) - (550 / 2)
                 y = (hs / 2) - (320 / 2)
-                window.geometry('%dx%d+%d+%d' % (550, 220, x, y))
+                if len(str(artist) + " - " + str(title)) <= 30:
+                    window.geometry('%dx%d+%d+%d' % (550, 220, x, y))
+                else:
+                    x = (ws / 2) - ((550 + (len(str(artist) + " - " + str(title)) * 1.5)) / 2)
+                    window.geometry('%dx%d+%d+%d' % (550 + (len(str(artist) + " - " + str(title)) * 1.5), 220, x, y))
                 window.columnconfigure(0, weight=1)
                 window.columnconfigure(1, weight=1)
                 window.columnconfigure(2, weight=1)
@@ -559,7 +581,9 @@ def buildTrackReport(yearList, BPMList, keyList, genreList, imageList, artist, t
             audio.pprint()
             audio.save()
     # return "\nTrack: " + str(artist) + " - " + str(title) + "\nYear: " + str(year) + "\nBPM: " + str(BPM) + "\nKey: " + str(key) + "\nGenre: " + str(genre) + "\nImage Links: " + str(images)
-    return "\nTrack: " + str(artist) + " - " + str(title) + "\nYear: " + str(year) + "\nBPM: " + str(BPM) + "\nKey: " + str(key) + "\nGenre: " + str(genre), webScrapingWindow
+    if len(str(artist) + " - " + str(title)) > characters:
+        characters = len(str(artist) + " - " + str(title))
+    return "\nTrack: " + str(artist) + " - " + str(title) + "\nYear: " + str(year) + "\nBPM: " + str(BPM) + "\nKey: " + str(key) + "\nGenre: " + str(genre), webScrapingWindow, characters
 
 def buildVariations(artist, title):
     # strip title of common prefixes like "Original Mix" or "Extended Mix"
@@ -678,24 +702,27 @@ def closeScrapingWindowSelection(CONFIG_FILE):
             file.write(config_file.replace(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term)) + 1]) + "False", str(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term)) + 1])) + "True"))
         file.close()
 
-def renameArtist(directory, var, artist, title):
+def renameArtist(directory, var, artist, title, frame, window):
     try: os.rename(directory + '/' + var, str(directory) + str(artist) + " - " + str(title) + ".flac")
     except PermissionError:
-        print("The file is open in another application, close it and try again")
+        Label(frame.scrollable_frame, text="The file is open in another application, close it and try again").pack(anchor='w')
+        window.update()
     return
 
-def renameFile(directory, var, filename):
+def renameFile(directory, var, filename, frame, window):
     try:os.rename(directory + '/' + var, str(directory) + '/' + str(filename))
     except PermissionError:
-        print("The file is open in another application, close it and try again")
+        Label(frame.scrollable_frame, text="The file is open in another application, close it and try again").pack(anchor='w')
+        window.update()
     return
 
-def checkFileValidity(directory, var):
+def checkFileValidity(directory, var, frame, window):
     try:
         audio = FLAC(str(directory) + '/' + str(var))
         return audio
     except:
-        print("Invalid or corrupt file")
+        Label(frame.scrollable_frame, text="Invalid or Corrupt File").pack(anchor='w')
+        window.update()
         return "Invalid or corrupt file\n"
 
 def closeFinalReport(finalReportWindow, webScrapingWindow):
