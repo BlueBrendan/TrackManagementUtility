@@ -4,16 +4,20 @@ from tkinter import *
 import webbrowser
 import time
 import random
+import threading
+import concurrent.futures
 
 def discogsSearch(artist, title, yearList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, window):
     # THIRD QUERY - DISCOGS
     Label(frame.scrollable_frame, text="\nSearching Discogs for " + str(artist) + " - " + str(title), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
     url = "https://www.google.co.in/search?q=" + search + " Discogs"
-    soup = sendRequest(url, headers, frame, window)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future = executor.submit(sendRequest, url, headers, frame, window)
+        soup = future.result()
     if soup != False:
         for link in soup.find_all('a'):
-            if "https://www.discogs" in link.get('href').lower().split('&')[0] and (any(variation in link.get('href').split('&')[0].lower() for variation in artistVariations) or any(variation in link.get('href').split('&')[0].lower() for variation in titleVariations)):
+            if "discogs.com" in link.get('href').lower().split('&')[0] and (any(variation in link.get('href').split('&')[0].lower() for variation in artistVariations) or any(variation in link.get('href').split('&')[0].lower() for variation in titleVariations)):
                 link = link.get('href').split('&')[0].split('=')[1]
                 label = Label(frame.scrollable_frame, text="\n" + str(link), cursor="hand2")
                 label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
@@ -111,11 +115,11 @@ def sendRequest(url, headers, frame, window):
         response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, "html.parser")
         #generate random waiting time to avoid being blocked
-        time.sleep(random.uniform(1.5, 4.5))
+        threading.Thread(time.sleep(random.uniform(1.5, 4.5))).start()
         return soup
     except requests.exceptions.ConnectionError:
         Label(frame.scrollable_frame, text="Connection refused").pack(anchor='w')
         window.update()
         # generate random waiting time to avoid being blocked
-        time.sleep(random.uniform(1.5, 4.5))
+        threading.Thread(time.sleep(random.uniform(1.5, 4.5))).start()
         return False

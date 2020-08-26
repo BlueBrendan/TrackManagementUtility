@@ -165,8 +165,8 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
                     x = (ws / 2) - (450 / 2)
                     finalReportWindow.geometry('%dx%d+%d+%d' % (450, 650, x, y))
                 else:
-                    x = (ws / 2) - (450 + (characters * 1.5) / 2)
-                    finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters*1.5), 650, x, y))
+                    x = (ws / 2) - ((450 + (characters * 1.5)) / 2)
+                    finalReportWindow.geometry('%dx%d+%d+%d' % ((450 + (characters*1.5)), 650, x, y))
                 Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, pady=(15, 0))
                 row=0
                 for i in range(len(finalReport)):

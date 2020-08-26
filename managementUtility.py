@@ -6,6 +6,8 @@ from checkForUpdates import checkForUpdates
 from updatePreferences import updatePreferences
 import getpass
 import os
+import time
+import threading
 
 root = Tk()
 root.title("Track Management Utility V1.0")
@@ -58,6 +60,8 @@ menuoption['menu'] = menuoption.menu
 menuoption.menu.add_command(label="Preferences", command=updatePreferences)
 menufile.grid(row=0, column=0, columnspan=1, sticky=W)
 menuoption.grid(row=0, column=0, columnspan=1, sticky=W, padx=(30,0))
+
+    # threading.Thread(target=test, args=('Z',)).start()
 
 #handle subdirectory selection
 def subdirectorySelection(CONFIG_FILE, config_file):

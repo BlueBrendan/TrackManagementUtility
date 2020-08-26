@@ -4,6 +4,8 @@ from tkinter import *
 import webbrowser
 import time
 import random
+import threading
+import concurrent.futures
 
 def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, window):
 #SECOND QUERY - BEATPORT
@@ -11,10 +13,12 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
     Label(frame.scrollable_frame, text="\nSearching Beatport for " + str(artist) + " - " + str(title), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
     url = "https://www.google.co.in/search?q=" + search + " Beatport"
-    soup = sendRequest(url, headers, frame, window)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future = executor.submit(sendRequest, url, headers, frame, window)
+        soup = future.result()
     if soup != False:
         for link in soup.find_all('a'):
-            if "beatport" in link.get('href').split('&')[0] and (any(variation in link.get('href').split('&')[0].lower() for variation in artistVariations) or any(variation in link.get('href').split('&')[0].lower() for variation in titleVariations)):
+            if "beatport.com" in link.get('href').split('&')[0] and (any(variation in link.get('href').split('&')[0].lower() for variation in artistVariations) or any(variation in link.get('href').split('&')[0].lower() for variation in titleVariations)):
                 link = link.get('href').split('&')[0].split('=')[1]
                 if "remix" in link and "remix" in title.lower() or "remix" not in title.lower() and "remix" not in link:
                     label = Label(frame.scrollable_frame, text="\n" + str(link), cursor="hand2")
@@ -211,13 +215,13 @@ def sendRequest(url, headers, frame, window):
         response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, "html.parser")
         # generate random waiting time to avoid being blocked
-        time.sleep(random.uniform(1.5, 4.5))
+        threading.Thread(time.sleep(random.uniform(1.5, 4.5))).start()
         return soup
     except requests.exceptions.ConnectionError:
         Label(frame.scrollable_frame, text="Connection refused").pack(anchor='w')
         window.update()
         # generate random waiting time to avoid being blocked
-        time.sleep(random.uniform(1.5, 4.5))
+        threading.Thread(time.sleep(random.uniform(1.5, 4.5))).start()
         return False
 
 def refresh(frame, window):

@@ -5,16 +5,33 @@ from tkinter.tix import *
 import webbrowser
 import time
 import random
+import threading
+import concurrent.futures
+import queue
+
+def TESTING(token, que):
+    print('LA')
+    print(token)
+    time.sleep(5)
+    print("HERE")
+    que.put("Five")
 
 def junodownloadSearch(artist, title, yearList, BPMList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, window):
 #FIRST QUERY - JUNO DOWNLOAD
     Label(frame.scrollable_frame, text="\nSearching Juno Download for " + str(artist) + " - " + str(title), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
     url = "https://www.google.co.in/search?q=" + search + " Junodownload"
-    soup = sendRequest(url, headers, frame, window)
+
+    que = queue.Queue()
+    thread = threading.Thread(target=TESTING, args=('Z',que, ))
+    thread.start()
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future = executor.submit(sendRequest, url, headers, frame, window)
+        soup = future.result()
     if soup!=False:
         for link in soup.find_all('div', class_="ZINbbc xpd O9g5cc uUPGi"):
-            if 'junodownload' and 'products' in link.find('a').get('href').split('&')[0].lower() and (any(variation in link.find('div', class_="BNeawe s3v9rd AP7Wnd").get_text().lower() for variation in artistVariations) or any(variation in link.find('div', class_="BNeawe s3v9rd AP7Wnd").get_text().lower() for variation in titleVariations) or any(variation in link.find('div', class_="BNeawe vvjwJb AP7Wnd").get_text().lower() for variation in artistVariations) or any(variation in link.find('div', class_="BNeawe vvjwJb AP7Wnd").get_text().lower() for variation in titleVariations)):
+            if 'junodownload.com' and 'products' in link.find('a').get('href').split('&')[0].lower() and (any(variation in link.find('div', class_="BNeawe s3v9rd AP7Wnd").get_text().lower() for variation in artistVariations) or any(variation in link.find('div', class_="BNeawe s3v9rd AP7Wnd").get_text().lower() for variation in titleVariations) or any(variation in link.find('div', class_="BNeawe vvjwJb AP7Wnd").get_text().lower() for variation in artistVariations) or any(variation in link.find('div', class_="BNeawe vvjwJb AP7Wnd").get_text().lower() for variation in titleVariations)):
                 link = link.find('a').get('href').split('&')[0][7:]
                 label = Label(frame.scrollable_frame, text="\n" + str(link), cursor="hand2")
                 label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
@@ -22,7 +39,8 @@ def junodownloadSearch(artist, title, yearList, BPMList, genreList, imageList, a
                 # label.pack(anchor='w')
                 # label.bind("<Button-1>", lambda e: webbrowser.open_new(link))
                 window.update()
-                soup = sendRequest(url, headers, frame, window)
+                threading.Thread(target=sendRequest, args=(url, headers, frame, window, que)).start()
+                soup = que.get()
                 if soup!=False:
                     #scrape release date and genre
                     found = False
@@ -101,7 +119,8 @@ def junodownloadSearch(artist, title, yearList, BPMList, genreList, imageList, a
                             # label.pack(anchor='w')
                             # label.bind("<Button-1>", lambda e: webbrowser.open_new(link))
                             window.update()
-                            soup = sendRequest(sublink, headers, frame, window)
+                            threading.Thread(target=sendRequest, args=(url, headers, frame, window, que)).start()
+                            soup = que.get()
                             if soup != False:
                                 # scrape release date and genre
                                 found = False
@@ -208,16 +227,17 @@ def compareTokens(title, name, mismatch):
             mismatch = True
         return mismatch
 
-def sendRequest(url, headers, frame, window):
+def sendRequest(url, headers, frame, window, que):
+    print("HERE")
     try:
         response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, "html.parser")
         # generate random waiting time to avoid being blocked
-        time.sleep(random.uniform(1.5, 4.5))
-        return soup
+        threading.Thread(time.sleep(random.uniform(1.5, 4.5))).start()
+        que.put(soup)
     except requests.exceptions.ConnectionError:
         Label(frame.scrollable_frame, text="Connection refused").pack(anchor='w')
         window.update()
         # generate random waiting time to avoid being blocked
-        time.sleep(random.uniform(1.5, 4.5))
-        return False
+        threading.Thread(time.sleep(random.uniform(1.5, 4.5))).start()
+        que.put(False)
