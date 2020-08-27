@@ -5,7 +5,6 @@ import webbrowser
 import time
 import random
 import threading
-import concurrent.futures
 
 def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, window):
 #SECOND QUERY - BEATPORT
@@ -13,9 +12,7 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
     Label(frame.scrollable_frame, text="\nSearching Beatport for " + str(artist) + " - " + str(title), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
     url = "https://www.google.co.in/search?q=" + search + " Beatport"
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        future = executor.submit(sendRequest, url, headers, frame, window)
-        soup = future.result()
+    soup = sendRequest(url, headers, frame, window)
     if soup != False:
         for link in soup.find_all('a'):
             if "beatport.com" in link.get('href').split('&')[0] and (any(variation in link.get('href').split('&')[0].lower() for variation in artistVariations) or any(variation in link.get('href').split('&')[0].lower() for variation in titleVariations)):

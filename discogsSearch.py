@@ -12,9 +12,7 @@ def discogsSearch(artist, title, yearList, genreList, imageList, artistVariation
     Label(frame.scrollable_frame, text="\nSearching Discogs for " + str(artist) + " - " + str(title), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
     url = "https://www.google.co.in/search?q=" + search + " Discogs"
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        future = executor.submit(sendRequest, url, headers, frame, window)
-        soup = future.result()
+    soup = sendRequest(url, headers, frame, window)
     if soup != False:
         for link in soup.find_all('a'):
             if "discogs.com" in link.get('href').lower().split('&')[0] and (any(variation in link.get('href').split('&')[0].lower() for variation in artistVariations) or any(variation in link.get('href').split('&')[0].lower() for variation in titleVariations)):

@@ -13,9 +13,9 @@ root = Tk()
 root.title("Track Management Utility V1.0")
 ws = root.winfo_screenwidth() # width of the screen
 hs = root.winfo_screenheight() # height of the screen
-x = (ws/2) - (570/2)
-y = (hs/2) - (420/2)
-root.geometry('%dx%d+%d+%d' % (570, 320, x, y))
+x = (ws/2) - (520/2)
+y = (hs/2) - (330/2)
+root.geometry('%dx%d+%d+%d' % (520, 250, x, y))
 
 # set preferences
 CONFIG_FILE = r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt"
@@ -83,11 +83,8 @@ Button(root, text="Search Web for Tags", command=lambda: selectFileOrDirectory(C
 Label(root, text="Scan for files in a directory and find their tags online").grid(row=3, column=1, pady=(3,15))
 # Scans for differences in files between two separate directories
 Button(root, text="Compare Directories", command=lambda: compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory)).grid(row=4, column=1, pady=(5,3))
-Label(root, text="Scan for differences in files and folders between two separate directories").grid(row=5, column=1, pady=(3, 15))
-# Scans the tags of the files in a directory and reformats/deletes extraneous tags
-Button(root, text="Scan Tags", padx=29, command=lambda: scanDirectoryFiles(subdirectories)).grid(row=6, column=1, pady=(5,3))
-Label(root, text="Scan the files in a directory and reformat/delete extraneous tags").grid(row=7, column=1, pady=(3,5))
-Checkbutton(root, text="Include Subdirectories: ", var=subdirectories, command=lambda: subdirectorySelection(CONFIG_FILE, config_file)).grid(row=8, column=0, columnspan=2, padx=(10,0), pady=(15, 0), sticky=W)
+Label(root, text="Scan for differences in files and folders between two separate directories").grid(row=5, column=1, pady=(3, 20))
+Checkbutton(root, text="Include Subdirectories: ", var=subdirectories, command=lambda: subdirectorySelection(CONFIG_FILE, config_file)).grid(row=6, column=0, columnspan=2, padx=(10,0), pady=(0, 0), sticky=W)
 root.mainloop()
 
 

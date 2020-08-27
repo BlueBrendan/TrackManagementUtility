@@ -6,29 +6,14 @@ import webbrowser
 import time
 import random
 import threading
-import concurrent.futures
-import queue
 
-def TESTING(token, que):
-    print('LA')
-    print(token)
-    time.sleep(5)
-    print("HERE")
-    que.put("Five")
 
 def junodownloadSearch(artist, title, yearList, BPMList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, window):
 #FIRST QUERY - JUNO DOWNLOAD
     Label(frame.scrollable_frame, text="\nSearching Juno Download for " + str(artist) + " - " + str(title), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
     url = "https://www.google.co.in/search?q=" + search + " Junodownload"
-
-    que = queue.Queue()
-    thread = threading.Thread(target=TESTING, args=('Z',que, ))
-    thread.start()
-
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        future = executor.submit(sendRequest, url, headers, frame, window)
-        soup = future.result()
+    soup = sendRequest(url, headers, frame, window)
     if soup!=False:
         for link in soup.find_all('div', class_="ZINbbc xpd O9g5cc uUPGi"):
             if 'junodownload.com' and 'products' in link.find('a').get('href').split('&')[0].lower() and (any(variation in link.find('div', class_="BNeawe s3v9rd AP7Wnd").get_text().lower() for variation in artistVariations) or any(variation in link.find('div', class_="BNeawe s3v9rd AP7Wnd").get_text().lower() for variation in titleVariations) or any(variation in link.find('div', class_="BNeawe vvjwJb AP7Wnd").get_text().lower() for variation in artistVariations) or any(variation in link.find('div', class_="BNeawe vvjwJb AP7Wnd").get_text().lower() for variation in titleVariations)):
@@ -39,8 +24,7 @@ def junodownloadSearch(artist, title, yearList, BPMList, genreList, imageList, a
                 # label.pack(anchor='w')
                 # label.bind("<Button-1>", lambda e: webbrowser.open_new(link))
                 window.update()
-                threading.Thread(target=sendRequest, args=(url, headers, frame, window, que)).start()
-                soup = que.get()
+                soup = sendRequest(url, headers, frame, window)
                 if soup!=False:
                     #scrape release date and genre
                     found = False
@@ -119,8 +103,7 @@ def junodownloadSearch(artist, title, yearList, BPMList, genreList, imageList, a
                             # label.pack(anchor='w')
                             # label.bind("<Button-1>", lambda e: webbrowser.open_new(link))
                             window.update()
-                            threading.Thread(target=sendRequest, args=(url, headers, frame, window, que)).start()
-                            soup = que.get()
+                            soup = sendRequest(url, headers, frame, window)
                             if soup != False:
                                 # scrape release date and genre
                                 found = False
@@ -227,17 +210,16 @@ def compareTokens(title, name, mismatch):
             mismatch = True
         return mismatch
 
-def sendRequest(url, headers, frame, window, que):
-    print("HERE")
+def sendRequest(url, headers, frame, window):
     try:
         response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, "html.parser")
         # generate random waiting time to avoid being blocked
         threading.Thread(time.sleep(random.uniform(1.5, 4.5))).start()
-        que.put(soup)
+        return soup
     except requests.exceptions.ConnectionError:
         Label(frame.scrollable_frame, text="Connection refused").pack(anchor='w')
         window.update()
         # generate random waiting time to avoid being blocked
         threading.Thread(time.sleep(random.uniform(1.5, 4.5))).start()
-        que.put(False)
+        return False

@@ -37,7 +37,26 @@ class ScrollableFrame(Frame):
         canvas.create_window((0, 0), window=self.scrollable_frame, anchor="w")
         canvas.configure(yscrollcommand=scrollbar.set)
         canvas.pack(side="left", fill="both", expand=True)
-        canvas.config(width=680, height=500)
+        canvas.config(width=680, height=650)
+        scrollbar.pack(side="right", fill="y")
+
+class SmallScrollableFrame(Frame):
+    def __init__(self, container, *args, **kwargs):
+        super().__init__(container, *args, **kwargs)
+        canvas = Canvas(self)
+        scrollbar = Scrollbar(self, orient="vertical", command=canvas.yview)
+        self.scrollable_frame = Frame(canvas)
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="w")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.pack(fill="both", expand=True)
+        canvas.config(width=450, height=550)
         scrollbar.pack(side="right", fill="y")
 
 def selectFileOrDirectory(CONFIG_FILE, subdirectories, closeScrapingWindow):
@@ -67,7 +86,6 @@ def selectFileOrDirectory(CONFIG_FILE, subdirectories, closeScrapingWindow):
     directoryImage = Label(window, image=photo)
     directoryImage.image = photo
     directoryImage.grid(row=1, column=2)
-
     Button(window, text="Files", command=lambda: scanTagsOnline(subdirectories, "file", window, closeScrapingWindow, CONFIG_FILE)).grid(row=2, column=1, pady=(5, 3))
     Button(window, text="Directories", command=lambda: scanTagsOnline(subdirectories, "directory", window, closeScrapingWindow, CONFIG_FILE)).grid(row=2,column=2, pady=(5, 3))
 
@@ -123,12 +141,13 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
                 y = (hs / 2) - (200+((row-1)*75)/ 2)
                 if characters <= 40:
                     x = (ws / 2) - (450 / 2)
-                    finalReportWindow.geometry('%dx%d+%d+%d' % (450, 250+((row-1)*100), x, y))
+                    finalReportWindow.geometry('%dx%d+%d+%d' % (450, 250+((row-1)*75), x, y))
                 else:
                     x = (ws / 2) - ((450 + (characters * 1.5)) / 2)
-                    finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters*1.5), 250 + ((row - 1) * 100), x, y))
+                    finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters*1.5), 250 + ((row - 1) * 75), x, y))
                 Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, pady=(15,0))
                 Label(finalReportWindow, text=results).grid(row=1, column=0)
+
                 Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow)).grid(row=2, column=0, pady=(0, 5))
                 Checkbutton(finalReportWindow, text="Close scraping window", var=closeScrapingWindow, command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).grid(row=3, column=0)
                 finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closeFinalReport(finalReportWindow, webScrapingWindow))
@@ -154,6 +173,8 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
             finalReport, webScrapingWindow, characters = directorySearch(directory, subdirectories, results, frame, webScrapingWindow, characters)
             if cancel == False:
                 finalReportWindow = Toplevel()
+                frame = SmallScrollableFrame(finalReportWindow)
+                frame.pack()
                 webScrapingWindow.lift()
                 finalReportWindow.lift()
                 finalReportWindow.title("Final Report")
@@ -167,16 +188,14 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
                 else:
                     x = (ws / 2) - ((450 + (characters * 1.5)) / 2)
                     finalReportWindow.geometry('%dx%d+%d+%d' % ((450 + (characters*1.5)), 650, x, y))
-                Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, pady=(15, 0))
-                row=0
+                Label(frame.scrollable_frame, text="Final Report", font=("TkDefaultFont", 9, 'bold')).pack(side="top")
                 for i in range(len(finalReport)):
-                    Label(finalReportWindow, text=finalReport[i]).grid(row=i+1, column=0, pady=(15,10))
-                    row+=1
+                    Label(frame.scrollable_frame, text=finalReport[i]).pack(side="top")
+                    Label(frame.scrollable_frame, text="\n").pack(side="top")
                 #empty directory provided
                 if len(finalReport)==0:
-                    Label(finalReportWindow, text="No tracks were found in the provided directory").grid(row=1, column=0, pady=(15, 10))
-                    row += 1
-                Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow)).grid(row=row+1, column=0, pady=(15,10))
+                    Label(finalReportWindow, text="No tracks were found in the provided directory").pack()
+                Button(frame.scrollable_frame, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow)).pack(side="top")
                 finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closeFinalReport(finalReportWindow, webScrapingWindow))
 
 def directorySearch(directory, subdirectories, results, frame, webScrapingWindow, characters):
