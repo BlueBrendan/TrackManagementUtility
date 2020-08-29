@@ -1,3 +1,4 @@
+from compareTokens import compareTokens
 import requests
 from bs4 import BeautifulSoup
 from tkinter import *
@@ -8,7 +9,6 @@ import threading
 
 def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, window):
 #SECOND QUERY - BEATPORT
-
     Label(frame.scrollable_frame, text="\nSearching Beatport for " + str(artist) + " - " + str(title), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
     url = "https://www.google.co.in/search?q=" + search + " Beatport"
@@ -81,10 +81,7 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
                                 if trackMix != '' and 'original' not in trackMix.lower():
                                     # verify that the page is correct
                                     if '(' in title and ')' in title:
-                                        print(trackMix)
-
                                         remix = title[title.rfind('(') + 1:title.rfind(')')]
-                                        print(remix)
                                         mismatch = compareTokens(remix, trackMix)
                                         if mismatch == False:
                                             yearList, BPMList, keyList, genreList, imageList = beatportSingle(soup, yearList, BPMList, keyList,genreList, imageList, frame, window)
@@ -168,56 +165,6 @@ def beatportClassicSingle(soup, yearList, BPMList, keyList, genreList, imageList
                 refresh(frame.scrollable_frame, window)
                 genreList.append(genre)
     return yearList, BPMList, keyList, genreList, imageList
-
-def compareTokens(one, two):
-    mismatch = False
-    tokens = two.split(' ')
-    comparisonTokens = one.split(' ')
-    for i in range(len(tokens)):
-        if "(" in tokens[i]:
-            tokens[i] = str(tokens[i][0:tokens[i].index("(")]) + str(tokens[i][tokens[i].index("(") + 1:])
-        elif ")" in tokens[i]:
-            tokens[i] = str(tokens[i][0:tokens[i].index(")")]) + str(tokens[i][tokens[i].index(")") + 1:])
-    difference = 0
-    for index, var in enumerate(tokens):
-        if var.lower() not in one.lower():
-            # edge case: mix and remix are synonymous or original/extended mix is absent in one or another
-            if (var.lower() != "remix" and var.lower() != "mix") or ("remix" not in one.lower() and "mix" not in one.lower()) and ('extended' not in var.lower() and 'original' not in var.lower() and var.lower() != 'mix'):
-                # compare index of token lists character by character
-                if len(tokens) >= index and len(comparisonTokens) >= index:
-                    common = 0
-                    for i in range(min(len(tokens[index]), len(comparisonTokens[index]))):
-                        if tokens[index][i] != comparisonTokens[index][i]: break
-                        common += 1
-                    difference += len(var) - common
-                else:
-                    difference += len(var)
-    if difference/len(one) > 0.10:
-        mismatch = True
-        return mismatch
-
-    tokens = one.split(' ')
-    comparisonTokens = two.split(' ')
-    for i in range(len(tokens)):
-        if "(" in tokens[i]:tokens[i] = str(tokens[i][0:tokens[i].index("(")]) + str(tokens[i][tokens[i].index("(") + 1:])
-        elif ")" in tokens[i]:tokens[i] = str(tokens[i][0:tokens[i].index(")")]) + str(tokens[i][tokens[i].index(")") + 1:])
-
-    difference = 0
-    for index, var in enumerate(tokens):
-        if var.lower() not in two.lower():
-            # edge case: mix and remix are synonymous or original/extended mix is absent in one or another
-            if (var.lower() != "remix" and var.lower() != "mix") or ("remix" not in two.lower() and "mix" not in two.lower()) and ('extended' not in var.lower() and 'original' not in var.lower() and var.lower() != 'mix'):
-                # compare index of token lists character by character
-                if len(tokens) >= index and len(comparisonTokens) >= index:
-                    common = 0
-                    for i in range(min(len(tokens[index]), len(comparisonTokens[index]))):
-                        if tokens[index][i] != comparisonTokens[index][i]:break
-                        common+=1
-                    difference += len(var) - common
-                else:
-                    difference += len(var)
-    if difference / len(one) > 0.15: mismatch = True
-    return mismatch
 
 def sendRequest(url, headers, frame, window):
     try:

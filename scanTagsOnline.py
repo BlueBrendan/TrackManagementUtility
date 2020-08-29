@@ -127,7 +127,7 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
                 #handle MP3 files
                 # elif var.endswith('.mp3'):
                 #     row+=1
-                #     result, webScrapingWindow, characters = scanMP3File(var, os.path.dirname(directory), frame, webScrapingWindow, characters)
+                #     result, webScrapingWindow, characters = scanMP3File(var, os.path.dirname(directory), frame, webScrapingWindow, characters)f
                 #     results += result + '\n\n'
                 # only print a report if the process was not cancelled
             if cancel==False:
@@ -255,7 +255,6 @@ def scanFLACFile(var, directory, frame, webScrapingWindow, characters):
                     hs = popup.winfo_screenheight()  # height of the screen
                     x = (ws / 2) - (450 / 2)
                     y = (hs / 2) - (280 / 2)
-                    print(len(str(artist) + " - " + str(title)))
                     if len(str(artist) + " - " + str(title)) <= 30:
                         popup.geometry('%dx%d+%d+%d' % (450, 180, x, y))
                     else:
@@ -354,11 +353,11 @@ def scanFLACFile(var, directory, frame, webScrapingWindow, characters):
     imageList = []
     #build list of artist and track title variations to prepare for scraping
     artistVariations, titleVariations = buildVariations(artist,title)
-    print(titleVariations)
-    #Perform scraping
-    headers = {'User-Agent': "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1b3pre) Gecko/20090109 Shiretoko/3.1b3pre"}
+
+
 
     #web scraping
+    headers = {'User-Agent': "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1b3pre) Gecko/20090109 Shiretoko/3.1b3pre"}
     #junodownload
     yearList, BPMList, genreList, imageList = junodownloadSearch(artist, title, yearList, BPMList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow)
     # window.update()
@@ -627,7 +626,13 @@ def buildVariations(artist, title):
     newTitle = title
     for string in triggerStrings:
         if string in title:
-            if string == "&":
+            # unique character that implies the existence of )
+            if string == "(":
+                if ")" in title:
+                    newTitle = str(newTitle[0:newTitle.index("(")]) + str(newTitle[newTitle.index("(") + len("("):])
+                    newTitle = str(newTitle[0:newTitle.index(")")]) + str(newTitle[newTitle.index(")") + len(")"):])
+                    titleVariations.append(newTitle.lower())
+            elif string == "&":
                 titleVariations.append(newTitle.replace("&", "and").lower())
                 titleVariations.append(title.replace("&", "and").lower())
                 newTitle = str(newTitle[0:newTitle.index(string)]) + str(newTitle[newTitle.index(string) + len(string):])
@@ -637,11 +642,6 @@ def buildVariations(artist, title):
                 newTitle = str(newTitle[0:newTitle.index(string)]) + str(newTitle[newTitle.index(string) + len(string):])
                 titleVariations.append(newTitle.lower())
                 titleVariations.append(str(title[0:title.index(string)]).lower() + str(title[title.index(string) + len(string):]).lower())
-                #unique character that implies the existence of )
-                if string == "(" and ")" in title:
-                    newTitle = str(newTitle[0:newTitle.index(")")]) + str(newTitle[newTitle.index(")") + len(")"):])
-                    titleVariations.append(newTitle.lower())
-                    titleVariations.append(str(title[0:title.index(")")]).lower() + str(title[title.index(")") + len(")"):]).lower())
 
     # if "-(" and ")" in title:
     #     titleVariations.append(str(title[0:title.index("-(")]).lower())

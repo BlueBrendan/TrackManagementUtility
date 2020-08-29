@@ -8,7 +8,6 @@ from mutagen.flac import FLAC
 from PIL import Image, ImageTk
 
 complete = False
-
 def compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory):
     global complete
     if firstDefaultDirectory == '':
@@ -101,11 +100,7 @@ def directorySearch(first_directory, second_directory, fileCount, directoryCount
                 Button(popup, text='Ignore', command=popup.destroy).grid(row=4, column=2)
                 popup.protocol("WM_DELETE_WINDOW", lambda arg=popup: on_exit(arg))
                 popup.wait_window()
-
-
     return fileCount, directoryCount
-
-
 
 def copyFile(first_directory, second_directory, var, popup):
     #copy file var from first_directory to second_directory
@@ -135,13 +130,13 @@ def on_exit(popup):
 def writeFirstDefaultDirectory(CONFIG_FILE, first_directory):
     config_file=open(CONFIG_FILE, 'r').read()
     term = "First Default Directory:"
-    with open(CONFIG_FILE, 'wt') as file:
+    with open(CONFIG_FILE, 'wt', encoding='utf-8') as file:
         file.write(config_file.replace(str(config_file[config_file.index(term):config_file.index('\n', config_file.index(term))]), term + first_directory))
     file.close()
 
 def writeSecondDefaultDirectory(CONFIG_FILE, second_directory):
     config_file=open(CONFIG_FILE, 'r').read()
     term = "Second Default Directory:"
-    with open(CONFIG_FILE, 'wt') as file:
+    with open(CONFIG_FILE, 'wt', encoding='utf-8') as file:
         file.write(config_file.replace(str(config_file[config_file.index(term):config_file.index('\n', config_file.index(term))]), term + second_directory))
     file.close()

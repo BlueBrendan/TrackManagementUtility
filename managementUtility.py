@@ -1,13 +1,10 @@
 from tkinter import *
 from compareDrives import compareDrives
-from scanDirectoryFiles import scanDirectoryFiles
 from scanTagsOnline import selectFileOrDirectory
 from checkForUpdates import checkForUpdates
 from updatePreferences import updatePreferences
 import getpass
 import os
-import time
-import threading
 
 root = Tk()
 root.title("Track Management Utility V1.0")
@@ -77,15 +74,25 @@ def subdirectorySelection(CONFIG_FILE, config_file):
             file.write(config_file.replace(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term)) + 1]) + "False", str(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term)) + 1])) + "True"))
         file.close()
 
+def compareDirectories(CONFIG_FILE):
+    config_file = open(CONFIG_FILE, 'r').read()
+    term = "First Default Directory:"
+    firstDefaultDirectory = config_file[config_file.index(term) + len(term):config_file.index('\n', config_file.index(term) + len(term))]
+    term = "Second Default Directory:"
+    secondDefaultDirectory = config_file[config_file.index(term) + len(term):config_file.index('\n', config_file.index(term) + len(term))]
+    compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory)
+
 titleLabel = Label(root, text="Track Management Utility").grid(row=1, column=1, pady=(5,13))
 # Scans for files in a directory and find their tags online
 Button(root, text="Search Web for Tags", command=lambda: selectFileOrDirectory(CONFIG_FILE, subdirectories, closeScrapingWindow)).grid(row=2, column=1, pady=(5,3))
 Label(root, text="Scan for files in a directory and find their tags online").grid(row=3, column=1, pady=(3,15))
 # Scans for differences in files between two separate directories
-Button(root, text="Compare Directories", command=lambda: compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory)).grid(row=4, column=1, pady=(5,3))
+Button(root, text="Compare Directories", command=lambda: compareDirectories(CONFIG_FILE)).grid(row=4, column=1, pady=(5,3))
 Label(root, text="Scan for differences in files and folders between two separate directories").grid(row=5, column=1, pady=(3, 20))
 Checkbutton(root, text="Include Subdirectories: ", var=subdirectories, command=lambda: subdirectorySelection(CONFIG_FILE, config_file)).grid(row=6, column=0, columnspan=2, padx=(10,0), pady=(0, 0), sticky=W)
 root.mainloop()
+
+
 
 
 
