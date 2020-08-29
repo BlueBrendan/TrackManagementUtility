@@ -81,7 +81,10 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
                                 if trackMix != '' and 'original' not in trackMix.lower():
                                     # verify that the page is correct
                                     if '(' in title and ')' in title:
+                                        print(trackMix)
+
                                         remix = title[title.rfind('(') + 1:title.rfind(')')]
+                                        print(remix)
                                         mismatch = compareTokens(remix, trackMix)
                                         if mismatch == False:
                                             yearList, BPMList, keyList, genreList, imageList = beatportSingle(soup, yearList, BPMList, keyList,genreList, imageList, frame, window)
@@ -166,46 +169,55 @@ def beatportClassicSingle(soup, yearList, BPMList, keyList, genreList, imageList
                 genreList.append(genre)
     return yearList, BPMList, keyList, genreList, imageList
 
-def compareTokens(title, name):
+def compareTokens(one, two):
     mismatch = False
-    tokens = name.split(' ')
+    tokens = two.split(' ')
+    comparisonTokens = one.split(' ')
     for i in range(len(tokens)):
         if "(" in tokens[i]:
             tokens[i] = str(tokens[i][0:tokens[i].index("(")]) + str(tokens[i][tokens[i].index("(") + 1:])
         elif ")" in tokens[i]:
             tokens[i] = str(tokens[i][0:tokens[i].index(")")]) + str(tokens[i][tokens[i].index(")") + 1:])
     difference = 0
-    for var in tokens:
-        if var.lower() not in title.lower():
-            # edge case: mix and remix are synonymous
-            if (var.lower() != "remix" and var.lower() != "mix") or ("remix" not in title.lower() and "mix" not in title.lower()):
-                # edge case: original/extended mix is absent in one or another
-                if ('extended' not in var.lower() and 'original' not in var.lower() and var.lower() != 'mix'):
-                    # loop through each word in title, check if difference in strings is more than 2 characters
+    for index, var in enumerate(tokens):
+        if var.lower() not in one.lower():
+            # edge case: mix and remix are synonymous or original/extended mix is absent in one or another
+            if (var.lower() != "remix" and var.lower() != "mix") or ("remix" not in one.lower() and "mix" not in one.lower()) and ('extended' not in var.lower() and 'original' not in var.lower() and var.lower() != 'mix'):
+                # compare index of token lists character by character
+                if len(tokens) >= index and len(comparisonTokens) >= index:
+                    common = 0
+                    for i in range(min(len(tokens[index]), len(comparisonTokens[index]))):
+                        if tokens[index][i] != comparisonTokens[index][i]: break
+                        common += 1
+                    difference += len(var) - common
+                else:
                     difference += len(var)
-    if difference/len(title) > 0.10:
+    if difference/len(one) > 0.10:
         mismatch = True
         return mismatch
-    else:
-        tokens = title.split(' ')
-        for i in range(len(tokens)):
-            if "(" in tokens[i]:
-                tokens[i] = str(tokens[i][0:tokens[i].index("(")]) + str(tokens[i][tokens[i].index("(") + 1:])
-            elif ")" in tokens[i]:
-                tokens[i] = str(tokens[i][0:tokens[i].index(")")]) + str(tokens[i][tokens[i].index(")") + 1:])
-        difference = 0
-        for var in tokens:
-            if var.lower() not in name.lower():
-                # edge case: mix and remix are synonymous
-                if (var.lower() != "remix" and var.lower() != "mix") or (
-                        "remix" not in name.lower() and "mix" not in name.lower()):
-                    # edge case: original/extended mix is absent in one or another
-                    if ('extended' not in var.lower() and 'original' not in var.lower() and var.lower() != 'mix'):
-                        # loop through each word in title, check if difference in strings is more than 2 characters
-                        difference += len(var)
-        if difference / len(title) > 0.10:
-            mismatch = True
-        return mismatch
+
+    tokens = one.split(' ')
+    comparisonTokens = two.split(' ')
+    for i in range(len(tokens)):
+        if "(" in tokens[i]:tokens[i] = str(tokens[i][0:tokens[i].index("(")]) + str(tokens[i][tokens[i].index("(") + 1:])
+        elif ")" in tokens[i]:tokens[i] = str(tokens[i][0:tokens[i].index(")")]) + str(tokens[i][tokens[i].index(")") + 1:])
+
+    difference = 0
+    for index, var in enumerate(tokens):
+        if var.lower() not in two.lower():
+            # edge case: mix and remix are synonymous or original/extended mix is absent in one or another
+            if (var.lower() != "remix" and var.lower() != "mix") or ("remix" not in two.lower() and "mix" not in two.lower()) and ('extended' not in var.lower() and 'original' not in var.lower() and var.lower() != 'mix'):
+                # compare index of token lists character by character
+                if len(tokens) >= index and len(comparisonTokens) >= index:
+                    common = 0
+                    for i in range(min(len(tokens[index]), len(comparisonTokens[index]))):
+                        if tokens[index][i] != comparisonTokens[index][i]:break
+                        common+=1
+                    difference += len(var) - common
+                else:
+                    difference += len(var)
+    if difference / len(one) > 0.15: mismatch = True
+    return mismatch
 
 def sendRequest(url, headers, frame, window):
     try:

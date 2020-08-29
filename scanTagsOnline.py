@@ -37,7 +37,7 @@ class ScrollableFrame(Frame):
         canvas.create_window((0, 0), window=self.scrollable_frame, anchor="w")
         canvas.configure(yscrollcommand=scrollbar.set)
         canvas.pack(side="left", fill="both", expand=True)
-        canvas.config(width=680, height=650)
+        canvas.config(width=680, height=640)
         scrollbar.pack(side="right", fill="y")
 
 class SmallScrollableFrame(Frame):
@@ -45,18 +45,18 @@ class SmallScrollableFrame(Frame):
         super().__init__(container, *args, **kwargs)
         canvas = Canvas(self)
         scrollbar = Scrollbar(self, orient="vertical", command=canvas.yview)
-        self.scrollable_frame = Frame(canvas)
+        self.small_scrollable_frame = Frame(canvas)
 
-        self.scrollable_frame.bind(
+        self.small_scrollable_frame.bind(
             "<Configure>",
             lambda e: canvas.configure(
                 scrollregion=canvas.bbox("all")
             )
         )
-        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="w")
+        canvas.create_window((0, 0), window=self.small_scrollable_frame, anchor="center")
         canvas.configure(yscrollcommand=scrollbar.set)
-        canvas.pack(fill="both", expand=True)
-        canvas.config(width=450, height=550)
+        canvas.pack(side="left", fill="both", expand=True)
+        canvas.config(width=420, height=230)
         scrollbar.pack(side="right", fill="y")
 
 def selectFileOrDirectory(CONFIG_FILE, subdirectories, closeScrapingWindow):
@@ -174,28 +174,28 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
             if cancel == False:
                 finalReportWindow = Toplevel()
                 frame = SmallScrollableFrame(finalReportWindow)
-                frame.pack()
+                frame.pack(anchor="center")
                 webScrapingWindow.lift()
                 finalReportWindow.lift()
                 finalReportWindow.title("Final Report")
-                finalReportWindow.columnconfigure(0, weight=1)
                 ws = finalReportWindow.winfo_screenwidth()  # width of the screen
                 hs = finalReportWindow.winfo_screenheight()  # height of the screen
-                y = (hs / 2) - (800 / 2)
-                if characters <= 60:
-                    x = (ws / 2) - (450 / 2)
-                    finalReportWindow.geometry('%dx%d+%d+%d' % (450, 650, x, y))
-                else:
-                    x = (ws / 2) - ((450 + (characters * 1.5)) / 2)
-                    finalReportWindow.geometry('%dx%d+%d+%d' % ((450 + (characters*1.5)), 650, x, y))
-                Label(frame.scrollable_frame, text="Final Report", font=("TkDefaultFont", 9, 'bold')).pack(side="top")
+                y = (hs / 2) - (320 / 2)
+                x = (ws / 2) - (450 / 2)
+                finalReportWindow.geometry('%dx%d+%d+%d' % (450, 250, x, y))
+                # if characters <= 60:
+                # else:
+                #     x = (ws / 2) - ((450 + (characters * 1.5)) / 2)
+                #     finalReportWindow.geometry('%dx%d+%d+%d' % ((450 + (characters*1.5)), 250, x, y))
+                #     frame.config(width=450 + (characters*1.5))
+                Label(frame.small_scrollable_frame, text="Final Report", font=("TkDefaultFont", 9, 'bold')).pack(anchor="center")
                 for i in range(len(finalReport)):
-                    Label(frame.scrollable_frame, text=finalReport[i]).pack(side="top")
-                    Label(frame.scrollable_frame, text="\n").pack(side="top")
+                    Label(frame.small_scrollable_frame, text=finalReport[i]).pack(anchor="center")
+                    Label(frame.small_scrollable_frame, text="\n").pack(anchor="center")
                 #empty directory provided
                 if len(finalReport)==0:
                     Label(finalReportWindow, text="No tracks were found in the provided directory").pack()
-                Button(frame.scrollable_frame, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow)).pack(side="top")
+                Button(frame.small_scrollable_frame, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow)).pack(anchor="center")
                 finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closeFinalReport(finalReportWindow, webScrapingWindow))
 
 def directorySearch(directory, subdirectories, results, frame, webScrapingWindow, characters):
@@ -354,6 +354,7 @@ def scanFLACFile(var, directory, frame, webScrapingWindow, characters):
     imageList = []
     #build list of artist and track title variations to prepare for scraping
     artistVariations, titleVariations = buildVariations(artist,title)
+    print(titleVariations)
     #Perform scraping
     headers = {'User-Agent': "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1b3pre) Gecko/20090109 Shiretoko/3.1b3pre"}
 
@@ -621,17 +622,41 @@ def buildVariations(artist, title):
     for var in spacePositions:
         artist = artist[0:var] + "-" + artist[var + 1:]
     artistVariations.append(artist.lower())
-    if "-(" in title:
-        titleVariations.append(str(title[0:title.index("-(")]).lower())
-        string = str(title[0:title.index("(")]) + str(title[title.index("(") + 1:])
-        string = str(string[0:string.index(")")]) + str(string[string.index(")") + 1:])
-        titleVariations.append(string.lower())
-    if "." in title.lower():
-        titleVariations.append(str(title[0:title.index(".")]).lower() + str(title[title.index(".") + 1:]).lower())
-    if "&" in title:
-        titleVariations.append(str(title[0:title.index("&")]).lower() + str(title[title.index("&") + 1:]).lower())
-    if "-mix" in title.lower():
-        titleVariations.append(str(title[0:title.lower().index("-mix")]) + "-Remix" + str(title[title.lower().index("-mix") + 4:]))
+
+    triggerStrings = ["(", "'s", ".", "&", "-mix"]
+    newTitle = title
+    for string in triggerStrings:
+        if string in title:
+            if string == "&":
+                titleVariations.append(newTitle.replace("&", "and").lower())
+                titleVariations.append(title.replace("&", "and").lower())
+                newTitle = str(newTitle[0:newTitle.index(string)]) + str(newTitle[newTitle.index(string) + len(string):])
+                titleVariations.append(newTitle.lower())
+                titleVariations.append(str(title[0:title.index(string)]).lower() + str(title[title.index(string) + len(string):]).lower())
+            else:
+                newTitle = str(newTitle[0:newTitle.index(string)]) + str(newTitle[newTitle.index(string) + len(string):])
+                titleVariations.append(newTitle.lower())
+                titleVariations.append(str(title[0:title.index(string)]).lower() + str(title[title.index(string) + len(string):]).lower())
+                #unique character that implies the existence of )
+                if string == "(" and ")" in title:
+                    newTitle = str(newTitle[0:newTitle.index(")")]) + str(newTitle[newTitle.index(")") + len(")"):])
+                    titleVariations.append(newTitle.lower())
+                    titleVariations.append(str(title[0:title.index(")")]).lower() + str(title[title.index(")") + len(")"):]).lower())
+
+    # if "-(" and ")" in title:
+    #     titleVariations.append(str(title[0:title.index("-(")]).lower())
+    #     title = str(title[0:title.index("(")]) + str(title[title.index("(") + 1:])
+    #     title = str(title[0:title.index(")")]) + str(title[title.index(")") + 1:])
+    #     titleVariations.append(title.lower())
+    # if "'s" in title:
+    #     title =
+    #     titleVariations.append(str(title[0:title.index("'s")]).lower() + str(title[title.index("'s") + 2:]).lower())
+    # if "." in title.lower():
+    #     titleVariations.append(str(title[0:title.index(".")]).lower() + str(title[title.index(".") + 1:]).lower())
+    # if "&" in title:
+    #     titleVariations.append(str(title[0:title.index("&")]).lower() + str(title[title.index("&") + 1:]).lower())
+    # if "-mix" in title.lower():
+    #     titleVariations.append(str(title[0:title.lower().index("-mix")]) + "-Remix" + str(title[title.lower().index("-mix") + 4:]))
     return artistVariations, titleVariations
 
 def overwriteOption(audio, year, BPM, key, genre, window, webScrapingWindow):
