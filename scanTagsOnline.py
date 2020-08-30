@@ -353,7 +353,7 @@ def scanFLACFile(var, directory, frame, webScrapingWindow, characters):
     imageList = []
     #build list of artist and track title variations to prepare for scraping
     artistVariations, titleVariations = buildVariations(artist,title)
-
+    print(titleVariations)
 
 
     #web scraping
@@ -622,10 +622,11 @@ def buildVariations(artist, title):
         artist = artist[0:var] + "-" + artist[var + 1:]
     artistVariations.append(artist.lower())
 
-    triggerStrings = ["(", "'s", ".", "&", "-mix"]
-    newTitle = title
+    triggerStrings = ["(", "'s", "pt.", ".", ",", "&", "-mix"]
+    title = title.lower()
+    newTitle = title.lower()
     for string in triggerStrings:
-        if string in title:
+        if string.lower() in newTitle:
             # unique character that implies the existence of )
             if string == "(":
                 if ")" in title:
@@ -638,6 +639,10 @@ def buildVariations(artist, title):
                 newTitle = str(newTitle[0:newTitle.index(string)]) + str(newTitle[newTitle.index(string) + len(string):])
                 titleVariations.append(newTitle.lower())
                 titleVariations.append(str(title[0:title.index(string)]).lower() + str(title[title.index(string) + len(string):]).lower())
+            elif string == "pt.":
+                titleVariations.append(title.replace(string, "part").lower())
+                titleVariations.append(title.replace(string, "pt").lower())
+                newTitle = str(newTitle[0:newTitle.index(string)]) + str("part") + str(newTitle[newTitle.index(string) + len(string):])
             else:
                 newTitle = str(newTitle[0:newTitle.index(string)]) + str(newTitle[newTitle.index(string) + len(string):])
                 titleVariations.append(newTitle.lower())

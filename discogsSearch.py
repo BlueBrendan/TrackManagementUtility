@@ -24,9 +24,10 @@ def discogsSearch(artist, title, yearList, genreList, imageList, artistVariation
                 soup = sendRequest(url, headers, frame, window)
                 if soup!=False:
                     # first check if the title is in the tracklist, push data if it is
-                    link = soup.find('table', class_="playlist")
+                    link = soup.find('div', class_="BNeawe s3v9rd AP7Wnd")
                     # handle 404 links
                     if link != None:
+                        print(link)
                         for link in link.find_all('td', class_="track tracklist_track_title"):
                             name = link.find('span', class_="tracklist_track_title").get_text()
                             if link.find('a') != None:

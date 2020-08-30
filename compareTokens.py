@@ -38,9 +38,10 @@ def compareTokens(one, two):
             # edge case: mix and remix are synonymous or original/extended mix is absent in one or another
             if (var.lower() != "remix" and var.lower() != "mix") or ("remix" not in two.lower() and "mix" not in two.lower()) and ('extended' not in var.lower() and 'original' not in var.lower() and var.lower() != 'mix'):
                 # compare index of token lists character by character
-                if len(tokens) >= index and len(comparisonTokens) >= index:
+                if len(tokens) > index and len(comparisonTokens) > index:
                     common = 0
-                    for i in range(min(len(tokens[index]), len(comparisonTokens[index]))):
+                    length = min(len(tokens[index]), len(comparisonTokens[index]))
+                    for i in range(length):
                         if tokens[index][i] != comparisonTokens[index][i]:break
                         common+=1
                     difference += len(var) - common
