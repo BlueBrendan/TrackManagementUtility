@@ -19,7 +19,7 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
         return yearList, BPMList, keyList, genreList, imageList
     if soup != False:
         for link in soup.find_all('a'):
-            if "beatport.com" in link.get('href').split('&')[0]:
+            if "www.beatport.com" in link.get('href').split('&')[0] or "classic.beatport.com" in link.get('href').split('&')[0]:
                 lastForwardslashIndex = link.get('href').split('&')[0].lower().index('/', link.get('href').split('&')[0].lower().rfind('/'))
                 content = link.get('href').split('&')[0].lower()[link.get('href').split('&')[0].lower().index('beatport.com') + len("beatport.com"):lastForwardslashIndex]
                 content = content[content.index('/', 1)+1:].replace('-', ' ')
@@ -27,8 +27,12 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
                 if '/' not in content:
                     for variation in titleVariations:
                         variation = variation.replace('-', ' ')
-                        mismatch = compareTokens(variation, content)
-                        if not mismatch:break
+                        if variation in content:
+                            mismatch = False
+                            break
+                        else:
+                            mismatch = compareTokens(variation, content)
+                            if not mismatch:break
                 if mismatch == False:
                     link = link.get('href').split('&')[0].split('=')[1]
                     if "remix" in link and "remix" in title.lower() or "remix" not in title.lower() and "remix" not in link:
@@ -61,8 +65,8 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
                                             yearList, BPMList, keyList, genreList, imageList = beatportSingle(soup, yearList, BPMList, keyList, genreList, imageList, frame, window)
                             #case 2: classic
                             elif link[7:14] == "classic":
-                                link = soup.find('div', class_="missing-content-message")
-                                if link is None:
+                                message = soup.find('div', class_="missing-content-message")
+                                if message is None:
                                     #case 2.1: chart
                                     if link[28:34] == "classic page charts":
                                         for link in soup.find_all('tr', {"class": ["track-grid-content altRow-0 playRow autoscroll", "track-grid-content altRow-1 playRow autoscroll"]}):
@@ -203,7 +207,7 @@ def sendRequest(url, headers, frame, window):
         response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, "html.parser")
         # generate random waiting time to avoid being blocked
-        threading.Thread(time.sleep(random.uniform(1.5, 4.5))).start()
+        time.sleep(random.uniform(1, 3.5))
         if "Our systems have detected unusual traffic from your computer network" in soup:
             return True
         return soup
@@ -211,7 +215,7 @@ def sendRequest(url, headers, frame, window):
         Label(frame.scrollable_frame, text="Connection refused").pack(anchor='w')
         window.update()
         # generate random waiting time to avoid being blocked
-        threading.Thread(time.sleep(random.uniform(1.5, 4.5))).start()
+        time.sleep(random.uniform(1, 3.5))
         return False
 
 def refresh(frame, window):

@@ -5,7 +5,6 @@ from tkinter import *
 import webbrowser
 import time
 import random
-import threading
 
 def discogsSearch(artist, title, yearList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, window):
     # THIRD QUERY - DISCOGS
@@ -21,13 +20,12 @@ def discogsSearch(artist, title, yearList, genreList, imageList, artistVariation
                 label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
                 label.pack(anchor='w')
                 window.update()
-                soup = sendRequest(url, headers, frame, window)
+                soup = sendRequest(link, headers, frame, window)
                 if soup!=False:
                     # first check if the title is in the tracklist, push data if it is
-                    link = soup.find('div', class_="BNeawe s3v9rd AP7Wnd")
+                    link = soup.find('table', class_="playlist")
                     # handle 404 links
                     if link != None:
-                        print(link)
                         for link in link.find_all('td', class_="track tracklist_track_title"):
                             name = link.find('span', class_="tracklist_track_title").get_text()
                             if link.find('a') != None:
@@ -72,11 +70,11 @@ def sendRequest(url, headers, frame, window):
         response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, "html.parser")
         #generate random waiting time to avoid being blocked
-        threading.Thread(time.sleep(random.uniform(1.5, 4.5))).start()
+        time.sleep(random.uniform(1, 3.5))
         return soup
     except requests.exceptions.ConnectionError:
         Label(frame.scrollable_frame, text="Connection refused").pack(anchor='w')
         window.update()
         # generate random waiting time to avoid being blocked
-        threading.Thread(time.sleep(random.uniform(1.5, 4.5))).start()
+        time.sleep(random.uniform(1, 3.5))
         return False
