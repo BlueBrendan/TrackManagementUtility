@@ -240,11 +240,14 @@ def onClose(popup):
 
 class AudioTrack:
     def __init__(self, credentials):
-        interestParameters = ['artist', 'title', 'date', 'bpm', 'initialkey', 'genre', 'replaygain_track_gain']
-        for x in interestParameters:
-            self.x = ''
+        interestParameters = ['artist', 'title', 'date', 'BPM', 'initialkey', 'genre', 'replaygain_track_gain']
         self.artist = credentials[0]
         self.title = credentials[1]
+        self.date = ''
+        self.BPM = ''
+        self.initialkey = ''
+        self.genre = ''
+        self.replaygain_track_gain = ''
 
     def searchTags(track, audio, frame, webScrapingWindow, characters):
         interestParameters = ['artist', 'title', 'date', 'bpm', 'initialkey', 'genre', 'replaygain_track_gain']
@@ -384,10 +387,6 @@ class AudioTrack:
         audio["title"] = title
         audio.pprint()
         audio.save()
-
-        #create track object
-        print(self.artist)
-        print(self.title)
         finalResults, webScrapingWindow, characters = AudioTrack.searchTags(self, audio, frame, webScrapingWindow, characters)
         return finalResults, webScrapingWindow, characters
 
@@ -704,8 +703,8 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, imageList, au
                 Label(window, text="NEW TAGS: \nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre)).grid(row=1, column=2, pady=(10,35))
                 Button(window, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).grid(row=2, column=0)
                 Button(window, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).grid(row=2, column=1)
-                Button(window, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).grid(row=2, column=2)
-                Button(window, text="Skip", command=lambda: skipOption(window, webScrapingWindow)).grid(row=2, column=3)
+                Button(window, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow)).grid(row=2, column=2)
+                Button(window, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow)).grid(row=2, column=3)
                 window.wait_window()
         else:
             audio['date'] = str(track.year)
@@ -788,21 +787,25 @@ def mergeScrapeOption(audio, year, BPM, key, genre, window, webScrapingWindow):
     window.destroy()
     webScrapingWindow.lift()
 
-def mergeSourceOption(track, audio, year, BPM, key, genre, window, webScrapingWindow):
-    if audio['date'] == ['']: audio['date'] = str(year)
+def mergeSourceOption(track, audio, window, webScrapingWindow):
+    if audio['date'] == ['']: audio['date'] = str(track.year)
     else: track.year = str(audio['date'])[2:-2]
-    if audio['bpm'] == ['']: audio['bpm'] = str(BPM)
+    if audio['bpm'] == ['']: audio['bpm'] = str(track.BPM)
     else: track.BPM = str(audio['BPM'])[2:-2]
-    if audio['initialkey'] == ['']: audio['initialkey'] = key
+    if audio['initialkey'] == ['']: audio['initialkey'] = track.key
     else: track.key = str(audio['initialkey'])[2:-2]
-    if audio['genre'] == ['']: audio['genre'] = genre
+    if audio['genre'] == ['']: audio['genre'] = track.genre
     else: track.genre = str(audio['genre'])[2:-2]
     audio.pprint()
     audio.save()
     window.destroy()
     webScrapingWindow.lift()
 
-def skipOption(window, webScrapingWindow):
+def skipOption(track, audio, window, webScrapingWindow):
+    track.year = str(audio['date'])[2:-2]
+    track.BPM = str(audio['BPM'])[2:-2]
+    track.key = str(audio['initialkey'])[2:-2]
+    track.genre = str(audio['genre'])[2:-2]
     window.destroy()
     webScrapingWindow.lift()
 
@@ -867,7 +870,6 @@ def renameFile(directory, var, filename, frame, window):
 
 def checkFileValidity(directory, frame, window):
     try:
-        print(directory)
         audio = FLAC(str(directory))
         return audio
     except:

@@ -38,11 +38,18 @@ def discogsSearch(artist, title, yearList, genreList, imageList, artistVariation
                                 yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window)
                                 break
                             else:
-                                # test 1: compare tracklist title with track title word for word
+                                if '(' in title and ')' in title:
+                                    remix = title[title.rfind('(')+1:title.rfind(')')].lower()
+                                    if 'original' in remix or ('extended' in remix and 'remix' not in remix):
+                                        title = title[:title.rfind('(')].strip()
+                                        if title.lower() == name.lower():
+                                            yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window)
+                                            break
                                 mismatch = compareTokens(title, name)
                                 if mismatch == False:
                                     yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window)
                                     break
+
     return yearList, genreList, imageList, window
 
 def discogsRelease(soup, yearList, genreList, frame, window):

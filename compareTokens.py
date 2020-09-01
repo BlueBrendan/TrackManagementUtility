@@ -22,6 +22,7 @@ def compareTokens(one, two):
                     difference += len(var) - common
                 else:
                     difference += len(var)
+
     if difference/len(one) > 0.15:
         mismatch = True
         return mismatch
