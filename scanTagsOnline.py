@@ -66,13 +66,13 @@ class AudioTrack:
         interestParameters = ['artist', 'title', 'date', 'BPM', 'initialkey', 'genre', 'replaygain_track_gain']
         self.artist = credentials[0]
         self.title = credentials[1]
-        self.date = ''
+        self.year = ''
         self.BPM = ''
-        self.initialkey = ''
+        self.key = ''
         self.genre = ''
         self.replaygain_track_gain = ''
 
-    def searchTags(track, audio, frame, webScrapingWindow, characters):
+    def searchTags(track, audio, frame, webScrapingWindow, characters, options):
         interestParameters = ['artist', 'title', 'date', 'bpm', 'initialkey', 'genre', 'replaygain_track_gain']
         fileParameters = []
         for x in audio:
@@ -106,17 +106,17 @@ class AudioTrack:
         # web scraping
         headers = {'User-Agent': "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1b3pre) Gecko/20090109 Shiretoko/3.1b3pre"}
         # junodownload
-        yearList, BPMList, genreList, imageList = junodownloadSearch(track.artist, track.title, yearList, BPMList, genreList, imageList, artistVariations, titleVariations, headers, search, frame,webScrapingWindow)
+        if options['Scrape Junodownload (B)'].get() == True:yearList, BPMList, genreList, imageList = junodownloadSearch(track.artist, track.title, yearList, BPMList, genreList, imageList, artistVariations, titleVariations, headers, search, frame,webScrapingWindow)
         # # #beatport
-        yearList, BPMList, keyList, genreList, imageList = beatportSearch(track.artist, track.title, yearList, BPMList, keyList, genreList, imageList, artistVariations, titleVariations, headers,search, frame, webScrapingWindow)
+        if options['Scrape Beatport (B)'].get() == True:yearList, BPMList, keyList, genreList, imageList = beatportSearch(track.artist, track.title, yearList, BPMList, keyList, genreList, imageList, artistVariations, titleVariations, headers,search, frame, webScrapingWindow)
         # #discogs
-        yearList, genreList, imageList, window = discogsSearch(track.artist, track.title, yearList, genreList, imageList, artistVariations, titleVariations, headers, search, frame,webScrapingWindow)
+        if options['Scrape Discogs (B)'].get() == True:yearList, genreList, imageList, window = discogsSearch(track.artist, track.title, yearList, genreList, imageList, artistVariations, titleVariations, headers, search, frame,webScrapingWindow)
         # spotify
         # apple music
         finalResults, webScrapingWindow, characters = buildTrackReport(track, yearList, BPMList, keyList, genreList, imageList, audio, webScrapingWindow, characters)
         return finalResults, webScrapingWindow, characters
 
-    def scanFLAC(self, var, directory, frame, webScrapingWindow, characters):
+    def scanFLAC(self, var, directory, frame, webScrapingWindow, characters, options):
         # check if artist and title are in filename
         audio = FLAC(directory + '/' + self.artist + ' - ' + self.title + '.flac')
         if cancel == True:
@@ -125,11 +125,11 @@ class AudioTrack:
         audio["title"] = self.title
         audio.pprint()
         audio.save()
-        finalResults, webScrapingWindow, characters = AudioTrack.searchTags(self, audio, frame, webScrapingWindow, characters)
+        finalResults, webScrapingWindow, characters = AudioTrack.searchTags(self, audio, frame, webScrapingWindow, characters, options)
         return finalResults, webScrapingWindow, characters
 
 #driver code
-def selectFileOrDirectory(CONFIG_FILE, subdirectories, closeScrapingWindow):
+def selectFileOrDirectory(CONFIG_FILE, options):
     #TODO
     #Implement typo/misspell detection system
     window = Toplevel()
@@ -156,8 +156,8 @@ def selectFileOrDirectory(CONFIG_FILE, subdirectories, closeScrapingWindow):
     directoryImage = Label(window, image=photo)
     directoryImage.image = photo
     directoryImage.grid(row=1, column=2)
-    Button(window, text="Files", command=lambda: scanTagsOnline(subdirectories, "file", window, closeScrapingWindow, CONFIG_FILE)).grid(row=2, column=1, pady=(5, 3))
-    Button(window, text="Directories", command=lambda: scanTagsOnline(subdirectories, "directory", window, closeScrapingWindow, CONFIG_FILE)).grid(row=2,column=2, pady=(5, 3))
+    Button(window, text="Files", command=lambda: scanTagsOnline(options['Subdirectories (B)'], "file", window, options['Close Scraping Window (B)'], CONFIG_FILE, options)).grid(row=2, column=1, pady=(5, 3))
+    Button(window, text="Directories", command=lambda: scanTagsOnline(options['Subdirectories (B)'], "directory", window, options['Close Scraping Window (B)'], CONFIG_FILE, options)).grid(row=2,column=2, pady=(5, 3))
 
 def completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow):
     finalReportWindow.destroy()
@@ -165,7 +165,7 @@ def completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow):
     if closeScrapingWindow.get()!=False:
         webScrapingWindow.destroy()
 
-def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FILE):
+def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FILE, options):
     global cancel
     if type=="file":
         #scan for a file
@@ -198,7 +198,7 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
                         cancel = True
                     else:
                         track = AudioTrack(credentials)
-                        result, webScrapingWindow, characters = AudioTrack.scanFLAC(track, var, directory, frame, webScrapingWindow, characters)
+                        result, webScrapingWindow, characters = AudioTrack.scanFLAC(track, var, directory, frame, webScrapingWindow, characters, options)
                         results += result + '\n\n'
                 #handle MP3 files
                 # elif var.endswith('.mp3'):
@@ -295,7 +295,7 @@ def directorySearch(directory, subdirectories, results, frame, webScrapingWindow
 
 def resetArtistName(artistPostfix, popup, webScrapingWindow):
     global newArtistName
-    newArtistName = artistPostfix
+    newArtistName = artistPostfix.strip()
     popup.destroy()
     webScrapingWindow.lift()
 
@@ -742,15 +742,15 @@ def typoPopup(artist, title, artistPostfix, webScrapingWindow):
 def closeScrapingWindowSelection(CONFIG_FILE):
     config_file = open(CONFIG_FILE, 'r').read()
     #if true, turn option to false
-    term = "Close scraping window:"
-    if config_file[config_file.index(term) + len(term):config_file.index('\n', config_file.index(term) + len(term))]=="True":
+    term = "Close Scraping Window (B)"
+    if config_file[config_file.index(term) + len(term)+1:config_file.index('\n', config_file.index(term) + len(term))]=="True":
         with open(CONFIG_FILE, 'wt') as file:
-            file.write(config_file.replace(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term))+1]) + "True", str(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term))+1])) + "False"))
+            file.write(config_file.replace(str(config_file[config_file.index(term)+1:config_file.index(':', config_file.index(term))+1]) + "True", str(str(config_file[config_file.index(term)+1:config_file.index(':', config_file.index(term))+1])) + "False"))
         file.close()
     #if false, turn option to true
-    elif config_file[config_file.index(term) + len(term):config_file.index('\n', config_file.index(term) + len(term))]=="False":
+    elif config_file[config_file.index(term) + len(term)+1:config_file.index('\n', config_file.index(term) + len(term))]=="False":
         with open(CONFIG_FILE, 'wt') as file:
-            file.write(config_file.replace(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term)) + 1]) + "False", str(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term)) + 1])) + "True"))
+            file.write(config_file.replace(str(config_file[config_file.index(term)+1:config_file.index(':', config_file.index(term)) + 1]) + "False", str(str(config_file[config_file.index(term)+1:config_file.index(':', config_file.index(term)) + 1])) + "True"))
         file.close()
 
 def renameArtist(directory, oldName, artist, title, frame, window):

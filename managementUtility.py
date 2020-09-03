@@ -14,36 +14,53 @@ x = (ws/2) - (520/2)
 y = (hs/2) - (330/2)
 root.geometry('%dx%d+%d+%d' % (520, 250, x, y))
 
-# set preferences
-CONFIG_FILE = r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt"
-if not os.path.exists(CONFIG_FILE):
-    print("DOES NOT EXIST")
-    #create settings folder
-    if not os.path.isdir(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility"):
-        print("DIRECTORY NOT FOUND")
-        path = r"C:/Users/" + str(getpass.getuser()) + "/Documents"
-        os.mkdir(path + "/Track Management Utility")
-    #create setttings file
-    file = open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt", 'w')
-    file.write("Subdirectories:True\n")
-    file.write("Close scraping window:True\n")
-    file.write("First Default Directory:\n")
-    file.write("Second Default Directory:\n")
-    file.close()
 
-config_file=open(CONFIG_FILE, 'r').read()
-menufile = Menubutton(root, text="File")
-menuoption = Menubutton(root, text="Option")
-term = "Subdirectories:"
-subdirectories = BooleanVar(value=config_file[config_file.index(term)+len(term):config_file.find('\n', config_file.index(term)+len(term))])
-term = "Close scraping window:"
-closeScrapingWindow = BooleanVar(value=config_file[config_file.index(term)+len(term):config_file.index('\n', config_file.index(term)+len(term))])
-term = "First Default Directory:"
-firstDefaultDirectory = config_file[config_file.index(term)+len(term):config_file.index('\n', config_file.index(term) + len(term))]
-term = "Second Default Directory:"
-secondDefaultDirectory = config_file[config_file.index(term)+len(term):config_file.index('\n', config_file.index(term) + len(term))]
+def createConfigFile():
+    CONFIG_FILE = r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt"
+    if not os.path.exists(CONFIG_FILE):
+        # create settings folder
+        if not os.path.isdir(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility"):
+            print("DIRECTORY NOT FOUND")
+            path = r"C:/Users/" + str(getpass.getuser()) + "/Documents"
+            os.mkdir(path + "/Track Management Utility")
+        # create setttings file
+        file = open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt", 'w')
+        file.write("Subdirectories (B):True\n")
+        file.write("Close Scraping Window (B):True\n")
+        file.write("First Default Directory (S):\n")
+        file.write("Second Default Directory (S):\n")
+        file.write("Scrape Junodownload (B):True\n")
+        file.write("Scrape Beatport (B):True\n")
+        file.write("Scrape Discogs (B):True\n")
+        file.close()
+    return CONFIG_FILE
+
+def readValuesFromConfig(CONFIG_FILE):
+    config_file = open(CONFIG_FILE, 'r').read()
+    terms = ['Subdirectories (B)', 'Close Scraping Window (B)', 'First Default Directory (S)', 'Second Default Directory (S)', 'Scrape Junodownload (B)', 'Scrape Beatport (B)', 'Scrape Discogs (B)']
+    options = {}
+    for term in terms:
+        if (term[len(term) - 2:len(term) - 1]) == 'B':
+            try: options[term] = BooleanVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.find('\n', config_file.index(term) + len(term))])
+            except ValueError:
+                os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
+                createConfigFile()
+                readValuesFromConfig(CONFIG_FILE)
+        elif (term[len(term) - 2:len(term) - 1]) == 'S':
+            try: options[term] = config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]
+            except ValueError:
+                os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
+                createConfigFile()
+                readValuesFromConfig(CONFIG_FILE)
+    return options
+
+# set preferences
+CONFIG_FILE = createConfigFile()
+options = readValuesFromConfig(CONFIG_FILE)
 
 #file topmenu button
+menufile = Menubutton(root, text="File")
+menuoption = Menubutton(root, text="Option")
 menufile.menu = Menu(menufile, tearoff=0)
 menufile["menu"] = menufile.menu
 updates = IntVar()
@@ -51,45 +68,48 @@ exit = IntVar()
 menufile.menu.add_command(label="Check for Updates", command=checkForUpdates)
 menufile.menu.add_command(label="Exit", command=root.destroy)
 
+def openPreferences(CONFIG_FILE):
+    options = readValuesFromConfig(CONFIG_FILE)
+    updatePreferences(options, CONFIG_FILE)
+
 #option topmenu button
 menuoption.menu = Menu(menuoption, tearoff=0)
 menuoption['menu'] = menuoption.menu
-menuoption.menu.add_command(label="Preferences", command=updatePreferences)
+menuoption.menu.add_command(label="Preferences", command=lambda: openPreferences(CONFIG_FILE))
 menufile.grid(row=0, column=0, columnspan=1, sticky=W)
 menuoption.grid(row=0, column=0, columnspan=1, sticky=W, padx=(30,0))
 
-    # threading.Thread(target=test, args=('Z',)).start()
-
 #handle subdirectory selection
-def subdirectorySelection(CONFIG_FILE, config_file):
+def subdirectorySelection(CONFIG_FILE):
+    config_file = open(CONFIG_FILE, 'r').read()
     #if true, turn option to false
-    term = "Subdirectories:"
-    if config_file[config_file.index(term) + len(term):config_file.index('\n', config_file.index(term) + len(term))]=="True":
+    term = "Subdirectories (B)"
+    if config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]=="True":
         with open(CONFIG_FILE, 'wt') as file:
-            file.write(config_file.replace(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term))+1]) + "True", str(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term))+1])) + "False"))
+            file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term))+1]) + "True", str(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term))+1])) + "False"))
         file.close()
     #if false, turn option to true
-    elif config_file[config_file.index(term) + len(term):config_file.index('\n', config_file.index(term) + len(term))]=="False":
+    elif config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]=="False":
         with open(CONFIG_FILE, 'wt') as file:
-            file.write(config_file.replace(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term)) + 1]) + "False", str(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term)) + 1])) + "True"))
+            file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1]) + "False", str(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term)) + 1])) + "True"))
         file.close()
 
 def compareDirectories(CONFIG_FILE):
     config_file = open(CONFIG_FILE, 'r').read()
-    term = "First Default Directory:"
+    term = "First Default Directory (S):"
     firstDefaultDirectory = config_file[config_file.index(term) + len(term):config_file.index('\n', config_file.index(term) + len(term))]
-    term = "Second Default Directory:"
+    term = "Second Default Directory (S):"
     secondDefaultDirectory = config_file[config_file.index(term) + len(term):config_file.index('\n', config_file.index(term) + len(term))]
     compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory)
 
 titleLabel = Label(root, text="Track Management Utility").grid(row=1, column=1, pady=(5,13))
 # Scans for files in a directory and find their tags online
-Button(root, text="Search Web for Tags", command=lambda: selectFileOrDirectory(CONFIG_FILE, subdirectories, closeScrapingWindow)).grid(row=2, column=1, pady=(5,3))
+Button(root, text="Search Web for Tags", command=lambda: selectFileOrDirectory(CONFIG_FILE, options)).grid(row=2, column=1, pady=(5,3))
 Label(root, text="Scan for files in a directory and find their tags online").grid(row=3, column=1, pady=(3,15))
 # Scans for differences in files between two separate directories
 Button(root, text="Compare Directories", command=lambda: compareDirectories(CONFIG_FILE)).grid(row=4, column=1, pady=(5,3))
 Label(root, text="Scan for differences in files and folders between two separate directories").grid(row=5, column=1, pady=(3, 20))
-Checkbutton(root, text="Include Subdirectories: ", var=subdirectories, command=lambda: subdirectorySelection(CONFIG_FILE, config_file)).grid(row=6, column=0, columnspan=2, padx=(10,0), pady=(0, 0), sticky=W)
+Checkbutton(root, text="Include Subdirectories: ", var=options['Subdirectories (B)'], command=lambda: subdirectorySelection(CONFIG_FILE)).grid(row=6, column=0, columnspan=2, padx=(10,0), pady=(0, 0), sticky=W)
 root.mainloop()
 
 
