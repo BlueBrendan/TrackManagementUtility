@@ -20,19 +20,25 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
     if soup != False:
         for link in soup.find_all('a'):
             if "www.beatport.com" in link.get('href').split('&')[0] or "classic.beatport.com" in link.get('href').split('&')[0]:
+                print(link)
                 lastForwardslashIndex = link.get('href').split('&')[0].lower().index('/', link.get('href').split('&')[0].lower().rfind('/'))
                 content = link.get('href').split('&')[0].lower()[link.get('href').split('&')[0].lower().index('beatport.com') + len("beatport.com"):lastForwardslashIndex]
                 content = content[content.index('/', 1)+1:].replace('-', ' ')
+                contentVariations = [content]
+                if 'extended remix' in content.lower():
+                    contentVariations.append(content.replace('extended remix', 'remix'))
                 mismatch = True
                 if '/' not in content:
                     for variation in titleVariations:
                         variation = variation.replace('-', ' ')
-                        if variation in content:
-                            mismatch = False
-                            break
-                        else:
-                            mismatch = compareTokens(variation, content)
-                            if not mismatch:break
+                        for content in contentVariations:
+                            if variation in content:
+                                mismatch = False
+                                break
+                            else:
+                                mismatch = compareTokens(variation, content)
+                                if not mismatch:break
+                        if not mismatch:break
                 if mismatch == False:
                     link = link.get('href').split('&')[0].split('=')[1]
                     if "remix" in link and "remix" in title.lower() or "remix" not in title.lower() and "remix" not in link:
@@ -208,7 +214,7 @@ def sendRequest(url, headers, frame, window):
         soup = BeautifulSoup(response.text, "html.parser")
         # generate random waiting time to avoid being blocked
         time.sleep(random.uniform(1, 3.5))
-        if "Our systems have detected unusual traffic from your computer network" in soup:
+        if "Our systems have detected unusual traffic from your computer network" in str(soup) or "Too many requests" in str(soup):
             return True
         return soup
     except requests.exceptions.ConnectionError:

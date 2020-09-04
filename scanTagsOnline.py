@@ -90,11 +90,9 @@ class AudioTrack:
                 audio[x] = ""
                 audio.save()
         search = str(track.artist) + " - " + str(track.title)
-        # clean search query of ampersands
-        ampersand = re.finditer("&", search)
-        ampersandPositions = [match.start() for match in ampersand]
-        for var in ampersandPositions:
-            search = search[0:var] + " " + search[var + 1:]
+        # clean search query of ampersands (query ends upon reaching ampersand symbol)
+        if '&' in search:
+            search = search.replace('&', 'and')
         yearList = []
         BPMList = []
         keyList = []
@@ -102,7 +100,6 @@ class AudioTrack:
         imageList = []
         # build list of artist and track title variations to prepare for scraping
         artistVariations, titleVariations = buildVariations(track.artist, track.title)
-
         # web scraping
         headers = {'User-Agent': "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1b3pre) Gecko/20090109 Shiretoko/3.1b3pre"}
         # junodownload
@@ -614,7 +611,7 @@ def buildVariations(artist, title):
         artist = artist[0:var] + "-" + artist[var + 1:]
     artistVariations.append(artist.lower())
 
-    triggerStrings = ["(", "'s", "pt.", ".", ",", "&", "-mix"]
+    triggerStrings = ["(", "'s", "pt.", ".", ",", "&", "-mix", "-remix"]
     title = title.lower()
     newTitle = title.lower()
     for string in triggerStrings:
@@ -635,6 +632,11 @@ def buildVariations(artist, title):
                 titleVariations.append(title.replace(string, "part").lower())
                 titleVariations.append(title.replace(string, "pt").lower())
                 newTitle = str(newTitle[0:newTitle.index(string)]) + str("part") + str(newTitle[newTitle.index(string) + len(string):])
+            elif string == "-remix":
+                titleVariations.append(newTitle.replace(string, "-mix").lower())
+                titleVariations.append(title.replace(string, "-mix").lower())
+                titleVariations.append(newTitle.replace(string, "-extended-remix").lower())
+                titleVariations.append(title.replace(string, "-extended-remix").lower())
             else:
                 newTitle = str(newTitle[0:newTitle.index(string)]) + str(newTitle[newTitle.index(string) + len(string):])
                 titleVariations.append(newTitle.lower())

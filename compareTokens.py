@@ -26,7 +26,6 @@ def compareTokens(one, two):
     if difference/len(one) > 0.15:
         mismatch = True
         return mismatch
-
     tokens = one.split(' ')
     comparisonTokens = two.split(' ')
     for i in range(len(tokens)):

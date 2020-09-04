@@ -13,44 +13,80 @@ def discogsSearch(artist, title, yearList, genreList, imageList, artistVariation
     url = "https://www.google.co.in/search?q=" + search + " Discogs"
     soup = sendRequest(url, headers, frame, window)
     if soup != False:
-        for link in soup.find_all('a'):
-            if "discogs.com" in link.get('href').lower().split('&')[0] and (any(variation in link.get('href').split('&')[0].lower() for variation in artistVariations) or any(variation in link.get('href').split('&')[0].lower() for variation in titleVariations)):
-                link = link.get('href').split('&')[0].split('=')[1]
-                label = Label(frame.scrollable_frame, text="\n" + str(link), cursor="hand2")
-                label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
-                label.pack(anchor='w')
-                window.update()
-                soup = sendRequest(link, headers, frame, window)
-                if soup!=False:
-                    # first check if the title is in the tracklist, push data if it is
-                    link = soup.find('table', class_="playlist")
-                    # handle 404 links
-                    if link != None:
-                        for link in link.find_all('td', class_="track tracklist_track_title"):
-                            name = link.find('span', class_="tracklist_track_title").get_text()
-                            if link.find('a') != None:
-                                remix = link.find('a').get_text()
-                                if remix.lower() not in name.lower():
-                                    if '(' in name:
-                                        name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
-                            # check if title and name are exact matches
-                            if title.lower() == name.lower():
+        #result includes link and description
+        for result in soup.find_all('div', class_="ZINbbc xpd O9g5cc uUPGi"):
+            if "www.discogs.com" in str(result.find('a').get('href')).lower().split('&')[0]:
+                searchTitle = title
+                if ' (' in title and ')' in title:
+                    searchTitle = title[:title.index(' (')]
+                if searchTitle.lower() in str(result).lower():
+                    yearList, genreList, frame = searchQuery(title, result, headers, frame, window, yearList, genreList, titleVariations)
+                else:
+                    for variation in titleVariations:
+                        variation = variation.replace('-', ' ')
+                        if variation.lower() in str(result).lower():
+                            yearList, genreList, frame = searchQuery(title, result, headers, frame, window, yearList, genreList, titleVariations)
+    return yearList, genreList, imageList, window
+
+def searchQuery(title, result, headers, frame, window, yearList, genreList, titleVariations):
+    link = str(result.find('a').get('href')).split('&')[0].split('=')[1]
+    label = Label(frame.scrollable_frame, text="\n" + str(link), cursor="hand2")
+    label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
+    label.pack(anchor='w')
+    window.update()
+    soup = sendRequest(link, headers, frame, window)
+    if soup != False:
+        # first check if the title is in the tracklist, push data if it is
+        link = soup.find('table', class_="playlist")
+        # handle 404 links
+        if link != None:
+            #artist + title format
+            if link.find('td', class_="track tracklist_track_title mini_playlist_track_has_artist")!=None:
+                for temp in link.find_all('td', class_="track tracklist_track_title mini_playlist_track_has_artist"):
+                    name = temp.find('span', class_="tracklist_track_title").get_text()
+                    if temp.find('span', class_="tracklist_extra_artist_span") != None:
+                        remix = temp.find('span', class_="tracklist_extra_artist_span")
+                        remix = remix.find('a').get_text()
+                        if remix.lower() not in name.lower():
+                            if '(' in name:
+                                name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
+                    # check if title and name are exact matches
+                    mismatch = True
+                    if title.lower() == name.lower():
+                        yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window)
+                        break
+                    else:
+                        for title in titleVariations:
+                            title = title.replace('-', ' ')
+                            mismatch = compareTokens(title, name)
+                            if mismatch == False:
                                 yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window)
                                 break
-                            else:
-                                if '(' in title and ')' in title:
-                                    remix = title[title.rfind('(')+1:title.rfind(')')].lower()
-                                    if 'original' in remix or ('extended' in remix and 'remix' not in remix):
-                                        title = title[:title.rfind('(')].strip()
-                                        if title.lower() == name.lower():
-                                            yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window)
-                                            break
-                                mismatch = compareTokens(title, name)
-                                if mismatch == False:
-                                    yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window)
-                                    break
-
-    return yearList, genreList, imageList, window
+                    if not mismatch:break
+            #title format
+            if link.find('td', class_="track tracklist_track_title")!=None:
+                for temp in link.find_all('td', class_="track tracklist_track_title"):
+                    name = temp.find('span', class_="tracklist_track_title").get_text()
+                    if temp.find('span', class_="tracklist_extra_artist_span") != None:
+                        remix = temp.find('span', class_="tracklist_extra_artist_span")
+                        remix = remix.find('a').get_text()
+                        if remix.lower() not in name.lower():
+                            if '(' in name:
+                                name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
+                    # check if title and name are exact matches
+                    mismatch = True
+                    if title.lower() == name.lower():
+                        yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window)
+                        break
+                    else:
+                        for title in titleVariations:
+                            title = title.replace('-', ' ')
+                            mismatch = compareTokens(title, name)
+                            if mismatch == False:
+                                yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window)
+                                break
+                    if not mismatch:break
+    return yearList, genreList, frame
 
 def discogsRelease(soup, yearList, genreList, frame, window):
     for link in soup.find_all('div', class_="content"):
