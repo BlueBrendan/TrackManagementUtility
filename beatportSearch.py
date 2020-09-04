@@ -20,10 +20,10 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
     if soup != False:
         for link in soup.find_all('a'):
             if "www.beatport.com" in link.get('href').split('&')[0] or "classic.beatport.com" in link.get('href').split('&')[0]:
-                print(link)
                 lastForwardslashIndex = link.get('href').split('&')[0].lower().index('/', link.get('href').split('&')[0].lower().rfind('/'))
                 content = link.get('href').split('&')[0].lower()[link.get('href').split('&')[0].lower().index('beatport.com') + len("beatport.com"):lastForwardslashIndex]
                 content = content[content.index('/', 1)+1:].replace('-', ' ')
+                print(content)
                 contentVariations = [content]
                 if 'extended remix' in content.lower():
                     contentVariations.append(content.replace('extended remix', 'remix'))

@@ -44,13 +44,13 @@ def searchQuery(title, result, headers, frame, window, yearList, genreList, titl
             if link.find('td', class_="track tracklist_track_title mini_playlist_track_has_artist")!=None:
                 for temp in link.find_all('td', class_="track tracklist_track_title mini_playlist_track_has_artist"):
                     name = temp.find('span', class_="tracklist_track_title").get_text()
-                    if temp.find('span', class_="tracklist_extra_artist_span") != None:
-                        remix = temp.find('span', class_="tracklist_extra_artist_span")
-                        remix = remix.find('a').get_text()
-                        if remix.lower() not in name.lower():
-                            if '(' in name:
-                                name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
-                    # check if title and name are exact matches
+                    #extra tags attached
+                    for tag in temp.find_all('span', class_="tracklist_extra_artist_span"):
+                        if 'Remix' in tag.get_text():
+                            remix = tag.find('a').get_text()
+                            if remix.lower() not in name.lower():
+                                if '(' in name:
+                                    name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
                     mismatch = True
                     if title.lower() == name.lower():
                         yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window)
@@ -64,7 +64,7 @@ def searchQuery(title, result, headers, frame, window, yearList, genreList, titl
                                 break
                     if not mismatch:break
             #title format
-            if link.find('td', class_="track tracklist_track_title")!=None:
+            elif link.find('td', class_="track tracklist_track_title")!=None:
                 for temp in link.find_all('td', class_="track tracklist_track_title"):
                     name = temp.find('span', class_="tracklist_track_title").get_text()
                     if temp.find('span', class_="tracklist_extra_artist_span") != None:
@@ -89,6 +89,7 @@ def searchQuery(title, result, headers, frame, window, yearList, genreList, titl
     return yearList, genreList, frame
 
 def discogsRelease(soup, yearList, genreList, frame, window):
+    genre = ''
     for link in soup.find_all('div', class_="content"):
         for link in link.find_all('a'):
             header = link['href']
@@ -103,9 +104,15 @@ def discogsRelease(soup, yearList, genreList, frame, window):
                     yearList.append(int(link.get_text().strip()))
                     yearList.append(int(link.get_text().strip()))
             elif "style" in header:
-                Label(frame.scrollable_frame, text="Genre: " + str(link.get_text().strip())).pack(anchor='w')
-                window.update()
+                #first genre
+                if genre == '':
+                    genre = str(link.get_text()).strip()
+                #multiple genres
+                else:
+                    genre += ", " + str(link.get_text()).strip()
                 genreList.append(link.get_text().strip())
+    Label(frame.scrollable_frame, text="Genre: " + genre).pack(anchor='w')
+    window.update()
     return yearList, genreList, frame
 
 def sendRequest(url, headers, frame, window):
