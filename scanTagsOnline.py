@@ -8,7 +8,6 @@ from collections import Counter
 from tkinter import filedialog
 from tkinter.tix import *
 import getpass
-import scrapy
 from selenium import webdriver
 from PIL import Image, ImageTk
 
@@ -541,36 +540,6 @@ def skipOption(track, audio, window, webScrapingWindow):
     track.genre = str(audio['genre'])[2:-2]
     window.destroy()
     webScrapingWindow.lift()
-
-def reverseImageSearch(link):
-    print("in progress")
-    # url = "https://images.google.com/searchbyimage?image_url=" + link
-    # if "https://" in link:
-    #     link = link.replace("https://", '')
-    # elif "http://" in link:
-    #     link = link.replace("http://", '')
-    # print(link)
-    # print(url)
-    # headers = {'User-Agent': "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1b3pre) Gecko/20090109 Shiretoko/3.1b3pre"}
-    # try:
-    #     response = requests.get(url, data=None, headers=headers)
-    #     print(response.status_code)
-    #     print(response.history)
-    # except requests.exceptions.ConnectionError:
-    #     print("Connection refused")
-    #     return
-    # soup = BeautifulSoup(response.text, "html.parser")
-    # print(soup.prettify())
-    # browser = webdriver.Firefox(executable_path=r'C:\Users\Brendan\Downloads\geckodriver-v0.27.0-win64\geckodriver.exe')
-    # browser.get(url)
-    #
-    # soup = BeautifulSoup(browser.page_source, "html.parser")
-    # link = soup.find('div', class_="O1id0e")
-    # browser.quit()
-    # header = {'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36"}
-
-    # link = soup.find('div', class_="tab-container insttab")
-    # print(link)
 
 def typoPopup(artist, title, artistPostfix, webScrapingWindow):
     popup = Toplevel()

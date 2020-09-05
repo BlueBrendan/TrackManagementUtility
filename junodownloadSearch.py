@@ -6,6 +6,10 @@ from tkinter.tix import *
 import webbrowser
 import time
 import random
+from selenium import webdriver
+from selenium.webdriver import ActionChains
+from selenium.webdriver.common.keys import Keys
+import getpass
 
 
 def junodownloadSearch(artist, title, yearList, BPMList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, window, audio):
@@ -17,7 +21,6 @@ def junodownloadSearch(artist, title, yearList, BPMList, genreList, imageList, a
     if soup!=False:
         for result in soup.find_all('div', class_="ZINbbc xpd O9g5cc uUPGi"):
             if 'junodownload.com' and 'products' in result.find('a').get('href').split('&')[0].lower():
-                print(result)
                 # print(soup.prettify())
                 for variation in titleVariations:
                     variation = variation.replace('-', ' ')
@@ -70,14 +73,18 @@ def junodownloadSearch(artist, title, yearList, BPMList, genreList, imageList, a
                                             genreList.append(genre)
                                             link = soup.find('div', class_="jw-page")
                                             link = link.find('img')
-                                            Label(frame.scrollable_frame, text="Image Link: " + link['src']).pack(anchor='w')
+                                            label = Label(frame.scrollable_frame, text="Image Link: " + str(link['src']), cursor="hand2")
+                                            label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link['src']))
+                                            label.pack(anchor='w')
                                             imageList.append(link['src'])
                                             window.update()
+                                            # extract image
+                                            reverseImageSearch(link['src'])
+
     return yearList, BPMList, genreList, imageList
 
 def compareRuntime(link, audio):
     runtime = link.find('div', class_="col-1 d-none d-lg-block text-center").get_text()
-    print(runtime)
     minutes = int(runtime.split(':')[0])
     seconds = int(runtime.split(':')[1])
     runtime = minutes * 60 + seconds
@@ -99,3 +106,30 @@ def sendRequest(url, headers, frame, window):
         # generate random waiting time to avoid being blocked
         time.sleep(random.uniform(1, 3.5))
         return False
+
+def reverseImageSearch(link):
+    print(link)
+    url = "https://images.google.com/searchbyimage?image_url=" + link
+    if "https://" in link:
+        link = link.replace("https://", '')
+    elif "http://" in link:
+        link = link.replace("http://", '')
+    print(url)
+    browser = webdriver.Firefox(executable_path=r'C:/Users/' + str(getpass.getuser()) + '/Documents/Track Management Utility/geckodriver-v0.27.0-win64/geckodriver.exe')
+    browser.get(url)
+    actionChains = ActionChains(browser)
+    text = browser.find_element_by_class_name("O1id0e")
+    if 'Large' in text.get_attribute('innerHTML'):
+        option = browser.find_element_by_link_text("Large")
+        actionChains.move_to_element(option).context_click().move_by_offset(5,15).perform()
+
+    elif "All Sizes" in text.get_attribute('innerHTML'):
+        browser.find_element_by_link_text("All Sizes").click()
+    # time.sleep(1)
+    # images = browser.find_element_by_class_name("rg_i.Q4LuWd")
+    # for i in range(4):
+    #     actionChains.context_click(images[i]).perform()
+    #     actionChains.send_keys(Keys.ARROW_DOWN).perform()
+    #     actionChains.send_keys(Keys.ENTER).perform()
+
+    # browser.quit()

@@ -129,14 +129,14 @@ def on_exit(popup):
 
 def writeFirstDefaultDirectory(CONFIG_FILE, first_directory):
     config_file=open(CONFIG_FILE, 'r').read()
-    term = "First Default Directory:"
+    term = "First Default Directory (S):"
     with open(CONFIG_FILE, 'wt', encoding='utf-8') as file:
         file.write(config_file.replace(str(config_file[config_file.index(term):config_file.index('\n', config_file.index(term))]), term + first_directory))
     file.close()
 
 def writeSecondDefaultDirectory(CONFIG_FILE, second_directory):
     config_file=open(CONFIG_FILE, 'r').read()
-    term = "Second Default Directory:"
+    term = "Second Default Directory (S):"
     with open(CONFIG_FILE, 'wt', encoding='utf-8') as file:
         file.write(config_file.replace(str(config_file[config_file.index(term):config_file.index('\n', config_file.index(term))]), term + second_directory))
     file.close()
