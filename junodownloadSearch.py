@@ -7,7 +7,7 @@ import webbrowser
 import time
 import random
 from selenium import webdriver
-from selenium.webdriver import ActionChains
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 import getpass
 
@@ -108,25 +108,35 @@ def sendRequest(url, headers, frame, window):
         return False
 
 def reverseImageSearch(link):
-    print(link)
     url = "https://images.google.com/searchbyimage?image_url=" + link
     if "https://" in link:
         link = link.replace("https://", '')
     elif "http://" in link:
         link = link.replace("http://", '')
-    print(url)
-    browser = webdriver.Firefox(executable_path=r'C:/Users/' + str(getpass.getuser()) + '/Documents/Track Management Utility/geckodriver-v0.27.0-win64/geckodriver.exe')
+    browser = webdriver.Firefox(executable_path=r'C:/Users/' + str(getpass.getuser()) + '/Documents/Track Management Utility/geckodriver.exe')
     browser.get(url)
-    actionChains = ActionChains(browser)
+    browser.maximize_window()
     text = browser.find_element_by_class_name("O1id0e")
-    if 'Large' in text.get_attribute('innerHTML'):
-        option = browser.find_element_by_link_text("Large")
-        actionChains.move_to_element(option).context_click().move_by_offset(5,15).perform()
+    if 'Large' in text.get_attribute('innerHTML') or "All sizes" in text.get_attribute('innerHTML'):
+        if 'Large' in text.get_attribute('innerHTML'):
+            browser.find_element_by_link_text("Large").click()
+        elif "All sizes" in text.get_attribute('innerHTML'):
+            browser.find_element_by_link_text("All sizes").click()
+        for i in range(3):
+            images = browser.find_elements_by_class_name("rg_i.Q4LuWd")
+            time.sleep(1)
+            images[i].click()
+            #wait for image to load
+            time.sleep(1)
+            subImages = browser.find_elements_by_xpath("//img[@class='n3VNCb']")
+            for image in subImages:
+                if 'data:image' not in image.get_attribute('src'):
+                    browser.get(image.get_attribute('src'))
+                    time.sleep(1)
+                    browser.back()
+                    break
 
-    elif "All Sizes" in text.get_attribute('innerHTML'):
-        browser.find_element_by_link_text("All Sizes").click()
-    # time.sleep(1)
-    # images = browser.find_element_by_class_name("rg_i.Q4LuWd")
+    # browser.find_element_by_class_name("rg_i.Q4LuWd").click()
     # for i in range(4):
     #     actionChains.context_click(images[i]).perform()
     #     actionChains.send_keys(Keys.ARROW_DOWN).perform()
