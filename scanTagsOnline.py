@@ -18,7 +18,6 @@ from discogsSearch import discogsSearch
 #global variables
 newArtistName = ''
 newTitleName = ''
-cancel = False
 imageCounter = 0
 
 #class for scrollbar in web scraping window
@@ -97,7 +96,6 @@ class AudioTrack:
         BPMList = []
         keyList = []
         genreList = []
-        imageList = []
         # build list of artist and track title variations to prepare for scraping
         artistVariations, titleVariations = buildVariations(track.artist, track.title)
         # web scraping
@@ -107,21 +105,19 @@ class AudioTrack:
         #     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0',
         # }
         # junodownload
-        if options['Scrape Junodownload (B)'].get() == True:yearList, BPMList, genreList, imageCounter = junodownloadSearch(track.artist, track.title, yearList, BPMList, genreList, imageList, artistVariations, titleVariations, headers, search, frame,webScrapingWindow, audio, options, imageCounter)
+        if options['Scrape Junodownload (B)'].get() == True:yearList, BPMList, genreList, imageCounter = junodownloadSearch(track.artist, track.title, yearList, BPMList, genreList, artistVariations, titleVariations, headers, search, frame,webScrapingWindow, audio, options, imageCounter)
         # # #beatport
-        if options['Scrape Beatport (B)'].get() == True:yearList, BPMList, keyList, genreList, imageList = beatportSearch(track.artist, track.title, yearList, BPMList, keyList, genreList, imageList, artistVariations, titleVariations, headers,search, frame, webScrapingWindow)
+        if options['Scrape Beatport (B)'].get() == True:yearList, BPMList, keyList, genreList= beatportSearch(track.artist, track.title, yearList, BPMList, keyList, genreList, artistVariations, titleVariations, headers,search, frame, webScrapingWindow)
         # #discogs
-        if options['Scrape Discogs (B)'].get() == True:yearList, genreList, imageList, window = discogsSearch(track.artist, track.title, yearList, genreList, imageList, artistVariations, titleVariations, headers, search, frame,webScrapingWindow)
+        if options['Scrape Discogs (B)'].get() == True:yearList, genreList, window = discogsSearch(track.artist, track.title, yearList, genreList, artistVariations, titleVariations, headers, search, frame,webScrapingWindow)
         # spotify
         # apple music
-        finalResults, webScrapingWindow, characters = buildTrackReport(track, yearList, BPMList, keyList, genreList, imageList, audio, webScrapingWindow, characters, options, imageCounter)
+        finalResults, webScrapingWindow, characters = buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScrapingWindow, characters, options, imageCounter)
         return finalResults, webScrapingWindow, characters
 
     def scanFLAC(self, var, directory, frame, webScrapingWindow, characters, options, imageCounter):
         # check if artist and title are in filename
         audio = FLAC(directory + '/' + self.artist + ' - ' + self.title + '.flac')
-        if cancel == True:
-            return
         audio["artist"] = self.artist
         audio["title"] = self.title
         audio.pprint()
@@ -161,14 +157,19 @@ def selectFileOrDirectory(CONFIG_FILE, options):
     Button(window, text="Files", command=lambda: scanTagsOnline(options['Subdirectories (B)'], "file", window, options['Close Scraping Window (B)'], CONFIG_FILE, options, imageCounter)).grid(row=2, column=1, pady=(5, 3))
     Button(window, text="Directories", command=lambda: scanTagsOnline(options['Subdirectories (B)'], "directory", window, options['Close Scraping Window (B)'], CONFIG_FILE, options, imageCounter)).grid(row=2,column=2, pady=(5, 3))
 
-def completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow):
+def completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow, options):
     finalReportWindow.destroy()
     webScrapingWindow.lift()
     if closeScrapingWindow.get()!=False:
         webScrapingWindow.destroy()
+    if options["Reverse Image Search (B)"].get() == True:
+        #delete all images in temp
+        images = os.listdir(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/")
+        for image in images:
+            os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(image))
 
 def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FILE, options, imageCounter):
-    global cancel
+    credentials = False
     if type=="file":
         #scan for a file
         window.lift()
@@ -196,19 +197,11 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
                 if var.endswith('.flac'):
                     row+=1
                     credentials = retrieveInfo(var, directory, frame, webScrapingWindow)
-                    if credentials==False:
-                        cancel = True
-                    else:
+                    if credentials!=False:
                         track = AudioTrack(credentials)
                         result, webScrapingWindow, characters = AudioTrack.scanFLAC(track, var, directory, frame, webScrapingWindow, characters, options, imageCounter)
                         results += result + '\n\n'
-                #handle MP3 files
-                # elif var.endswith('.mp3'):
-                #     row+=1
-                #     result, webScrapingWindow, characters = scanMP3File(var, os.path.dirname(directory), frame, webScrapingWindow, characters)f
-                #     results += result + '\n\n'
-                # only print a report if the process was not cancelled
-            if cancel==False:
+            if credentials!=False:
                 finalReportWindow = Toplevel()
                 webScrapingWindow.lift()
                 finalReportWindow.lift()
@@ -220,14 +213,35 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
                 if characters <= 40:
                     x = (ws / 2) - (450 / 2)
                     finalReportWindow.geometry('%dx%d+%d+%d' % (450, 250+((row-1)*75), x, y))
+                    if options["Reverse Image Search (B)"].get() == True:
+                        y = (hs / 2) - (350 + ((row - 1) * 75) / 2)
+                        finalReportWindow.geometry('%dx%d+%d+%d' % (430, 450 + ((row - 1) * 75), x, y))
                 else:
                     x = (ws / 2) - ((450 + (characters * 1.5)) / 2)
                     finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters*1.5), 250 + ((row - 1) * 75), x, y))
-                Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, pady=(15,0))
-                Label(finalReportWindow, text=results).grid(row=1, column=0)
-                Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow)).grid(row=2, column=0, pady=(0, 5))
-                Checkbutton(finalReportWindow, text="Close scraping window", var=closeScrapingWindow, command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).grid(row=3, column=0)
-                finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closePopup(finalReportWindow, webScrapingWindow))
+                    if options["Reverse Image Search (B)"].get() == True:
+                        y = (hs / 2) - (350 + ((row - 1) * 75) / 2)
+                        finalReportWindow.geometry('%dx%d+%d+%d' % (430 + (characters * 1.5), 450 + ((row - 1) * 75), x, y))
+                if options["Reverse Image Search (B)"].get()==True:
+                    Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(15, 0))
+                    Label(finalReportWindow, text=results).pack(side="top")
+                    #load image
+                    fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(0) + ".jpg")
+                    fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+                    photo = ImageTk.PhotoImage(fileImageImport)
+                    fileImage = Label(finalReportWindow, image=photo)
+                    fileImage.image = photo
+                    fileImage.pack(side="top", padx=(10, 10))
+                    #load button and checkbox
+                    Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow, options)).pack(side="top", pady=(15, 10))
+                    Checkbutton(finalReportWindow, text="Close scraping window", var=closeScrapingWindow, command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).pack(side="top")
+                    finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closePopup(finalReportWindow, webScrapingWindow))
+                else:
+                    Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, pady=(15,0))
+                    Label(finalReportWindow, text=results).grid(row=1, column=0)
+                    Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow, options)).grid(row=2, column=0, pady=(0, 5))
+                    Checkbutton(finalReportWindow, text="Close scraping window", var=closeScrapingWindow, command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).grid(row=3, column=0)
+                    finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closePopup(finalReportWindow, webScrapingWindow))
     elif type=="directory":
         #scan for a directory
         window.lift()
@@ -247,49 +261,46 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
             y = (hs / 2) - (800 / 2)
             webScrapingWindow.geometry('%dx%d+%d+%d' % (700, 650, x, y))
             Label(frame.scrollable_frame, text="Beginning web scraping procedure...", wraplength=300, justify='left').pack(anchor='w')
-            finalReport, webScrapingWindow, characters = directorySearch(directory, subdirectories, results, frame, webScrapingWindow, characters)
-            if cancel == False:
-                finalReportWindow = Toplevel()
-                frame = SmallScrollableFrame(finalReportWindow)
-                frame.pack(anchor="center")
-                webScrapingWindow.lift()
-                finalReportWindow.lift()
-                finalReportWindow.title("Final Report")
-                ws = finalReportWindow.winfo_screenwidth()  # width of the screen
-                hs = finalReportWindow.winfo_screenheight()  # height of the screen
-                y = (hs / 2) - (320 / 2)
-                x = (ws / 2) - (450 / 2)
-                finalReportWindow.geometry('%dx%d+%d+%d' % (450, 250, x, y))
-                # if characters <= 60:
-                # else:
-                #     x = (ws / 2) - ((450 + (characters * 1.5)) / 2)
-                #     finalReportWindow.geometry('%dx%d+%d+%d' % ((450 + (characters*1.5)), 250, x, y))
-                #     frame.config(width=450 + (characters*1.5))
-                Label(frame.small_scrollable_frame, text="Final Report", font=("TkDefaultFont", 9, 'bold')).pack(anchor="center")
-                for i in range(len(finalReport)):
-                    Label(frame.small_scrollable_frame, text=finalReport[i]).pack(anchor="center")
-                    Label(frame.small_scrollable_frame, text="\n").pack(anchor="center")
-                #empty directory provided
-                if len(finalReport)==0:
-                    Label(finalReportWindow, text="No tracks were found in the provided directory").pack()
-                Button(frame.small_scrollable_frame, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow)).pack(anchor="center")
-                finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closePopup(finalReportWindow, webScrapingWindow))
+            finalReport, webScrapingWindow, characters = directorySearch(directory, subdirectories, results, frame, webScrapingWindow, characters, imageCounter)
+            finalReportWindow = Toplevel()
+            frame = SmallScrollableFrame(finalReportWindow)
+            frame.pack(anchor="center")
+            webScrapingWindow.lift()
+            finalReportWindow.lift()
+            finalReportWindow.title("Final Report")
+            ws = finalReportWindow.winfo_screenwidth()  # width of the screen
+            hs = finalReportWindow.winfo_screenheight()  # height of the screen
+            y = (hs / 2) - (320 / 2)
+            x = (ws / 2) - (450 / 2)
+            finalReportWindow.geometry('%dx%d+%d+%d' % (450, 250, x, y))
+            # if characters <= 60:
+            # else:
+            #     x = (ws / 2) - ((450 + (characters * 1.5)) / 2)
+            #     finalReportWindow.geometry('%dx%d+%d+%d' % ((450 + (characters*1.5)), 250, x, y))
+            #     frame.config(width=450 + (characters*1.5))
+            Label(frame.small_scrollable_frame, text="Final Report", font=("TkDefaultFont", 9, 'bold')).pack(anchor="center")
+            for i in range(len(finalReport)):
+                Label(frame.small_scrollable_frame, text=finalReport[i]).pack(anchor="center")
+                Label(frame.small_scrollable_frame, text="\n").pack(anchor="center")
+            #empty directory provided
+            if len(finalReport)==0:
+                Label(finalReportWindow, text="No tracks were found in the provided directory").pack()
+            Button(frame.small_scrollable_frame, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow, options)).pack(anchor="center")
+            finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closePopup(finalReportWindow, webScrapingWindow))
 
-def directorySearch(directory, subdirectories, results, frame, webScrapingWindow, characters):
-    global newArtistName, newTitleName, cancel
+def directorySearch(directory, subdirectories, results, frame, webScrapingWindow, characters, imageCounter):
+    global newArtistName, newTitleName
     files = os.listdir(directory)
     for var in files:
         if os.path.isdir(directory + '/' + var) and subdirectories.get() == True:
-            directorySearch(directory + '/' + var, subdirectories, results, frame, webScrapingWindow, characters)
+            directorySearch(directory + '/' + var, subdirectories, results, frame, webScrapingWindow, characters, imageCounter)
         else:
             #handle FLAC files
             if var.endswith(".flac"):
                 credentials = retrieveInfo(var, directory, frame, webScrapingWindow)
-                if credentials == False:
-                    cancel = True
-                else:
+                if credentials:
                     track = AudioTrack(credentials)
-                    result, webScrapingWindow, characters = AudioTrack.scanFLAC(track, var, directory, frame, webScrapingWindow, characters)
+                    result, webScrapingWindow, characters = AudioTrack.scanFLAC(track, var, directory, frame, webScrapingWindow, characters, imageCounter)
                     results.append(result)
         newArtistName = ''
         newTitleName = ''
@@ -307,12 +318,10 @@ def resetTitleName(titlePostfix, popup):
     popup.destroy()
 
 def onClose(popup):
-    global cancel
-    cancel = True
     popup.destroy()
 
 def retrieveInfo(var, directory, frame, webScrapingWindow):
-    global newArtistName, cancel
+    global newArtistName
     audio = checkFileValidity(var, directory, frame, webScrapingWindow)
     if type(audio) == str:
         return False
@@ -345,8 +354,6 @@ def retrieveInfo(var, directory, frame, webScrapingWindow):
             if '.' in titlePrefix[0:5]:
                 if any(char.isdigit() for char in titlePrefix[0:titlePrefix.index('.')]):
                     typoPopup(artist, title, titlePrefix, webScrapingWindow)
-    if cancel == True:
-        return False
     if newArtistName != '':
         audio = renameArtist(directory, var, newArtistName, title, frame, webScrapingWindow)
         artist = newArtistName
@@ -368,7 +375,7 @@ def retrieveInfo(var, directory, frame, webScrapingWindow):
     list = [artist, title, audio]
     return list
 
-def buildTrackReport(track, yearList, BPMList, keyList, genreList, imageList, audio, webScrapingWindow, characters, options, imageCounter):
+def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScrapingWindow, characters, options, imageCounter):
     yearValue = False
     BPMValue = False
     keyValue = False
@@ -403,10 +410,6 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, imageList, au
     if len(genreList)!=0:
         track.genre = str(mode(genreList))
         genreValue = True
-    if len(imageList)!=0:
-        track.images = ''
-        for i in range(len(imageList)):
-            track.images += imageList[i] + ", "
     #update audio tags
     if yearValue == True or BPMValue == True or keyValue == True or genreValue == True:
         if audio['date']!=[''] or audio['bpm']!=[''] or audio['initialkey']!=[''] or audio['genre']!=['']:
@@ -428,24 +431,32 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, imageList, au
                 window.columnconfigure(2, weight=1)
                 window.columnconfigure(3, weight=1)
                 if options["Reverse Image Search (B)"].get()==True:
-                    x = (ws / 2) - ((550 + (200*imageCounter)) / 2)
                     y = (hs / 2) - (550 / 2)
-                    window.geometry('%dx%d+%d+%d' % (550 + (200*imageCounter), 450, x, y))
-                    Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, columnspan=max(4, imageCounter), pady=(10, 0))
-                    Label(window, text="CURRENT TAGS: \nYear: " + str(audio['date'])[2:-2] + "\nBPM: " + str(audio['bpm'])[2:-2] + "\nKey: " + str(audio['initialkey'])[2:-2] + "\nGenre: " + str(audio['genre'])[2:-2]).grid(row=1, column=1, pady=(10, 35))
-                    Label(window, text="NEW TAGS: \nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre)).grid(row=1, column=2,pady=(10, 30))
+                    window.geometry('%dx%d+%d+%d' % (550, 440, x, y))
+                    if imageCounter > 1:
+                        x = (ws / 2) - ((550 + (150*imageCounter)) / 2)
+                        window.geometry('%dx%d+%d+%d' % (550 + (150*imageCounter), 440, x, y))
+                    Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(10,5))
+                    tags = Frame(window)
+                    tags.pack(side=TOP)
+                    Label(tags, text="CURRENT TAGS: \nYear: " + str(audio['date'])[2:-2] + "\nBPM: " + str(audio['bpm'])[2:-2] + "\nKey: " + str(audio['initialkey'])[2:-2] + "\nGenre: " + str(audio['genre'])[2:-2]).pack(side="left", padx=(10, 15), pady=(10,15))
+                    Label(tags, text="NEW TAGS: \nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre)).pack(side="right", padx=(15, 10), pady=(10,15))
+                    images = Frame(window)
+                    images.pack(side=TOP)
                     for i in range(imageCounter):
                         window.columnconfigure(i, weight=1)
                         fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
                         fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
                         photo = ImageTk.PhotoImage(fileImageImport)
-                        fileImage = Label(window, image=photo)
+                        fileImage = Label(images, image=photo)
                         fileImage.image = photo
-                        fileImage.grid(row=2, column=i, padx=(10, 10), pady=(0, 30))
-                    Button(window, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).grid(row=3, column=0, columnspan=max(1, imageCounter/4))
-                    Button(window, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).grid(row=3,column=1, columnspan=max(1, imageCounter/4))
-                    Button(window, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow)).grid(row=3, column=2, columnspan=max(1, imageCounter/4))
-                    Button(window, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow)).grid(row=3, column=3, columnspan=max(1, imageCounter/4))
+                        fileImage.pack(side="left", padx=(10,10))
+                    buttons = Frame(window)
+                    buttons.pack(side=TOP)
+                    Button(buttons, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    Button(buttons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    Button(buttons, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    Button(buttons, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25,10))
                     window.lift()
                     window.wait_window()
                 else:
@@ -562,8 +573,9 @@ def skipOption(track, audio, window, webScrapingWindow):
     track.BPM = str(audio['BPM'])[2:-2]
     track.key = str(audio['initialkey'])[2:-2]
     track.genre = str(audio['genre'])[2:-2]
-    window.destroy()
     webScrapingWindow.lift()
+    window.destroy()
+
 
 def typoPopup(artist, title, artistPostfix, webScrapingWindow):
     popup = Toplevel()

@@ -6,7 +6,7 @@ import webbrowser
 import time
 import random
 
-def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, window):
+def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, artistVariations, titleVariations, headers, search, frame, window):
 #SECOND QUERY - BEATPORT
     Label(frame.scrollable_frame, text="\nSearching Beatport for " + str(artist) + " - " + str(title), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
@@ -15,7 +15,7 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
     if soup == True:
         Label(frame.scrollable_frame, text="WARNING: Too many requests have been sent, temporarily aborting procedure").pack(anchor='w')
         refresh(frame.scrollable_frame, window)
-        return yearList, BPMList, keyList, genreList, imageList
+        return yearList, BPMList, keyList, genreList
     if soup != False:
         for link in soup.find_all('a'):
             if "www.beatport.com" in link.get('href').split('&')[0] or "classic.beatport.com" in link.get('href').split('&')[0]:
@@ -49,7 +49,7 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
                         if soup == True:
                             Label(frame.scrollable_frame, text="WARNING: Too many requests have been sent, temporarily aborting procedure").pack(anchor='w')
                             refresh(frame.scrollable_frame, window)
-                            return yearList, BPMList, keyList, genreList, imageList
+                            return yearList, BPMList, keyList, genreList
                         if soup != False and "Oops... the page you were looking for could not be found" not in str(soup):
                             #check if page is track (single), release (album), or classic beatport format
                             #case 1: release
@@ -64,9 +64,9 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
                                         if soup == True:
                                             Label(frame.scrollable_frame, text="WARNING: Too many requests have been sent, temporarily aborting procedure").pack(anchor='w')
                                             refresh(frame.scrollable_frame, window)
-                                            return yearList, BPMList, keyList, genreList, imageList
+                                            return yearList, BPMList, keyList, genreList
                                         if soup !=False:
-                                            yearList, BPMList, keyList, genreList, imageList = beatportSingle(soup, yearList, BPMList, keyList, genreList, imageList, frame, window)
+                                            yearList, BPMList, keyList, genreList = beatportSingle(soup, yearList, BPMList, keyList, genreList, frame, window)
                             #case 2: classic
                             elif link[7:14] == "classic":
                                 message = soup.find('div', class_="missing-content-message")
@@ -82,9 +82,9 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
                                                 if soup == True:
                                                     Label(frame.scrollable_frame, text="WARNING: Too many requests have been sent, temporarily aborting procedure").pack(anchor='w')
                                                     refresh(frame.scrollable_frame, window)
-                                                    return yearList, BPMList, keyList, genreList, imageList
+                                                    return yearList, BPMList, keyList, genreList
                                                 if soup != False:
-                                                    yearList, BPMList, keyList, genreList, imageList = beatportClassicSingle(soup, yearList, BPMList, keyList, genreList, imageList, frame, window)
+                                                    yearList, BPMList, keyList, genreList = beatportClassicSingle(soup, yearList, BPMList, keyList, genreList, frame, window)
                                     #case 2.2: classic page release
                                     elif link[28:35] == "release":
                                         for link in soup.find_all('table', class_="track-grid track-grid-release"):
@@ -95,9 +95,9 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
                                                 if soup == True:
                                                     Label(frame.scrollable_frame, text="WARNING: Too many requests have been sent, temporarily aborting procedure").pack(anchor='w')
                                                     refresh(frame.scrollable_frame, window)
-                                                    return yearList, BPMList, keyList, genreList, imageList
+                                                    return yearList, BPMList, keyList, genreList
                                                 if soup != False:
-                                                    yearList, BPMList, keyList, genreList, imageList = beatportClassicSingle(soup, yearList,BPMList, keyList, genreList, imageList, frame, window)
+                                                    yearList, BPMList, keyList, genreList = beatportClassicSingle(soup, yearList,BPMList, keyList, genreList, frame, window)
                                     #case 2.3: classic page track
                                     # verify that the page is correct
                                     elif link[28:34] != "artist":
@@ -109,7 +109,7 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
                                                 remix = title[title.index('(') + 1:title.index(')')]
                                                 mismatch = compareTokens(remix, trackRemix)
                                                 if mismatch == False:
-                                                    yearList, BPMList, keyList, genreList, imageList = beatportClassicSingle(soup, yearList,BPMList, keyList, genreList, imageList, frame, window)
+                                                    yearList, BPMList, keyList, genreList, = beatportClassicSingle(soup, yearList,BPMList, keyList, genreList, frame, window)
                             #case 3: track
                             else:
                                 link = soup.find('div', class_="interior-track-content")
@@ -124,12 +124,12 @@ def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, imageLi
                                             remix = title[title.rfind('(') + 1:title.rfind(')')]
                                             mismatch = compareTokens(remix, trackMix)
                                             if mismatch == False:
-                                                yearList, BPMList, keyList, genreList, imageList = beatportSingle(soup, yearList, BPMList, keyList,genreList, imageList, frame, window)
+                                                yearList, BPMList, keyList, genreList, = beatportSingle(soup, yearList, BPMList, keyList,genreList, frame, window)
                                     else:
-                                        yearList, BPMList, keyList, genreList, imageList = beatportSingle(soup, yearList, BPMList, keyList, genreList, imageList, frame, window)
-    return yearList, BPMList, keyList, genreList, imageList
+                                        yearList, BPMList, keyList, genreList = beatportSingle(soup, yearList, BPMList, keyList, genreList, frame, window)
+    return yearList, BPMList, keyList, genreList
 
-def beatportSingle(soup, yearList, BPMList, keyList, genreList, imageList, frame, window):
+def beatportSingle(soup, yearList, BPMList, keyList, genreList, frame, window):
     for link in soup.find_all('ul', class_="interior-track-content-list"):
         release = link.find('li', class_="interior-track-content-item interior-track-released")
         release = release.find('span', class_="value").get_text()
@@ -165,12 +165,10 @@ def beatportSingle(soup, yearList, BPMList, keyList, genreList, imageList, frame
     link = soup.find('img', class_="interior-track-release-artwork")
     if link!=None:
         link = link['src']
-        Label(frame.scrollable_frame, text="Image Link: " + str(link)).pack(anchor='w')
         refresh(frame.scrollable_frame, window)
-        imageList.append(link)
-    return yearList, BPMList, keyList, genreList, imageList
+    return yearList, BPMList, keyList, genreList
 
-def beatportClassicSingle(soup, yearList, BPMList, keyList, genreList, imageList, frame, window):
+def beatportClassicSingle(soup, yearList, BPMList, keyList, genreList, frame, window):
     for link in soup.find_all('div', class_="waveform-meta-container"):
         for link in link.find_all('li'):
             if link.find('span', class_="meta-label txt-grey fontCondensed").get_text() == "Release Date":
@@ -204,7 +202,7 @@ def beatportClassicSingle(soup, yearList, BPMList, keyList, genreList, imageList
                 Label(frame.scrollable_frame, text="Genre: " + str(genre)).pack(anchor='w')
                 refresh(frame.scrollable_frame, window)
                 genreList.append(genre)
-    return yearList, BPMList, keyList, genreList, imageList
+    return yearList, BPMList, keyList, genreList
 
 def sendRequest(url, headers, frame, window):
     try:

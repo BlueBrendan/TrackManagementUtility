@@ -12,7 +12,7 @@ from PIL import Image, ImageTk
 from reverseImageSearch import reverseImageSearch
 
 
-def junodownloadSearch(artist, title, yearList, BPMList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, window, audio, options, imageCounter):
+def junodownloadSearch(artist, title, yearList, BPMList, genreList, artistVariations, titleVariations, headers, search, frame, window, audio, options, imageCounter):
 #FIRST QUERY - JUNO DOWNLOAD
     Label(frame.scrollable_frame, text="\nSearching Juno Download for " + str(artist) + " - " + str(title), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
@@ -102,11 +102,3 @@ def sendRequest(url, headers, frame, window):
         # generate random waiting time to avoid being blocked
         time.sleep(random.uniform(1, 3.5))
         return False
-
-    # browser.find_element_by_class_name("rg_i.Q4LuWd").click()
-    # for i in range(4):
-    #     actionChains.context_click(images[i]).perform()
-    #     actionChains.send_keys(Keys.ARROW_DOWN).perform()
-    #     actionChains.send_keys(Keys.ENTER).perform()
-
-    # browser.quit()
