@@ -7,12 +7,12 @@ import webbrowser
 import time
 import random
 from selenium import webdriver
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
 import getpass
+from PIL import Image, ImageTk
+from reverseImageSearch import reverseImageSearch
 
 
-def junodownloadSearch(artist, title, yearList, BPMList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, window, audio):
+def junodownloadSearch(artist, title, yearList, BPMList, genreList, imageList, artistVariations, titleVariations, headers, search, frame, window, audio, options, imageCounter):
 #FIRST QUERY - JUNO DOWNLOAD
     Label(frame.scrollable_frame, text="\nSearching Juno Download for " + str(artist) + " - " + str(title), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
@@ -71,17 +71,13 @@ def junodownloadSearch(artist, title, yearList, BPMList, genreList, imageList, a
                                             genre = link.find("a").get_text()
                                             Label(frame.scrollable_frame, text="Genre: " + str(genre)).pack(anchor='w')
                                             genreList.append(genre)
-                                            link = soup.find('div', class_="jw-page")
-                                            link = link.find('img')
-                                            label = Label(frame.scrollable_frame, text="Image Link: " + str(link['src']), cursor="hand2")
-                                            label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link['src']))
-                                            label.pack(anchor='w')
-                                            imageList.append(link['src'])
-                                            window.update()
-                                            # extract image
-                                            reverseImageSearch(link['src'])
-
-    return yearList, BPMList, genreList, imageList
+                                            # extract image if image scraping is enabled in options
+                                            if options["Reverse Image Search (B)"].get()==True:
+                                                link = soup.find('div', class_="jw-page")
+                                                link = link.find('img')
+                                                window.update()
+                                                imageCounter = reverseImageSearch(link['src'], frame, window, imageCounter)
+    return yearList, BPMList, genreList, imageCounter
 
 def compareRuntime(link, audio):
     runtime = link.find('div', class_="col-1 d-none d-lg-block text-center").get_text()
@@ -106,35 +102,6 @@ def sendRequest(url, headers, frame, window):
         # generate random waiting time to avoid being blocked
         time.sleep(random.uniform(1, 3.5))
         return False
-
-def reverseImageSearch(link):
-    url = "https://images.google.com/searchbyimage?image_url=" + link
-    if "https://" in link:
-        link = link.replace("https://", '')
-    elif "http://" in link:
-        link = link.replace("http://", '')
-    browser = webdriver.Firefox(executable_path=r'C:/Users/' + str(getpass.getuser()) + '/Documents/Track Management Utility/geckodriver.exe')
-    browser.get(url)
-    browser.maximize_window()
-    text = browser.find_element_by_class_name("O1id0e")
-    if 'Large' in text.get_attribute('innerHTML') or "All sizes" in text.get_attribute('innerHTML'):
-        if 'Large' in text.get_attribute('innerHTML'):
-            browser.find_element_by_link_text("Large").click()
-        elif "All sizes" in text.get_attribute('innerHTML'):
-            browser.find_element_by_link_text("All sizes").click()
-        for i in range(3):
-            images = browser.find_elements_by_class_name("rg_i.Q4LuWd")
-            time.sleep(1)
-            images[i].click()
-            #wait for image to load
-            time.sleep(1)
-            subImages = browser.find_elements_by_xpath("//img[@class='n3VNCb']")
-            for image in subImages:
-                if 'data:image' not in image.get_attribute('src'):
-                    browser.get(image.get_attribute('src'))
-                    time.sleep(1)
-                    browser.back()
-                    break
 
     # browser.find_element_by_class_name("rg_i.Q4LuWd").click()
     # for i in range(4):

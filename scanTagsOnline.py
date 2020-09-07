@@ -19,6 +19,7 @@ from discogsSearch import discogsSearch
 newArtistName = ''
 newTitleName = ''
 cancel = False
+imageCounter = 0
 
 #class for scrollbar in web scraping window
 class ScrollableFrame(Frame):
@@ -71,7 +72,7 @@ class AudioTrack:
         self.genre = ''
         self.replaygain_track_gain = ''
 
-    def searchTags(track, audio, frame, webScrapingWindow, characters, options):
+    def searchTags(track, audio, frame, webScrapingWindow, characters, options, imageCounter):
         interestParameters = ['artist', 'title', 'date', 'bpm', 'initialkey', 'genre', 'replaygain_track_gain']
         fileParameters = []
         for x in audio:
@@ -106,17 +107,17 @@ class AudioTrack:
         #     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0',
         # }
         # junodownload
-        if options['Scrape Junodownload (B)'].get() == True:yearList, BPMList, genreList, imageList = junodownloadSearch(track.artist, track.title, yearList, BPMList, genreList, imageList, artistVariations, titleVariations, headers, search, frame,webScrapingWindow, audio)
+        if options['Scrape Junodownload (B)'].get() == True:yearList, BPMList, genreList, imageCounter = junodownloadSearch(track.artist, track.title, yearList, BPMList, genreList, imageList, artistVariations, titleVariations, headers, search, frame,webScrapingWindow, audio, options, imageCounter)
         # # #beatport
         if options['Scrape Beatport (B)'].get() == True:yearList, BPMList, keyList, genreList, imageList = beatportSearch(track.artist, track.title, yearList, BPMList, keyList, genreList, imageList, artistVariations, titleVariations, headers,search, frame, webScrapingWindow)
         # #discogs
         if options['Scrape Discogs (B)'].get() == True:yearList, genreList, imageList, window = discogsSearch(track.artist, track.title, yearList, genreList, imageList, artistVariations, titleVariations, headers, search, frame,webScrapingWindow)
         # spotify
         # apple music
-        finalResults, webScrapingWindow, characters = buildTrackReport(track, yearList, BPMList, keyList, genreList, imageList, audio, webScrapingWindow, characters)
+        finalResults, webScrapingWindow, characters = buildTrackReport(track, yearList, BPMList, keyList, genreList, imageList, audio, webScrapingWindow, characters, options, imageCounter)
         return finalResults, webScrapingWindow, characters
 
-    def scanFLAC(self, var, directory, frame, webScrapingWindow, characters, options):
+    def scanFLAC(self, var, directory, frame, webScrapingWindow, characters, options, imageCounter):
         # check if artist and title are in filename
         audio = FLAC(directory + '/' + self.artist + ' - ' + self.title + '.flac')
         if cancel == True:
@@ -125,13 +126,14 @@ class AudioTrack:
         audio["title"] = self.title
         audio.pprint()
         audio.save()
-        finalResults, webScrapingWindow, characters = AudioTrack.searchTags(self, audio, frame, webScrapingWindow, characters, options)
+        finalResults, webScrapingWindow, characters = AudioTrack.searchTags(self, audio, frame, webScrapingWindow, characters, options, imageCounter)
         return finalResults, webScrapingWindow, characters
 
 #driver code
 def selectFileOrDirectory(CONFIG_FILE, options):
     #TODO
     #Implement typo/misspell detection system
+    global imageCounter
     window = Toplevel()
     window.title("Scan Tags Selection")
     ws = window.winfo_screenwidth()  # width of the screen
@@ -156,8 +158,8 @@ def selectFileOrDirectory(CONFIG_FILE, options):
     directoryImage = Label(window, image=photo)
     directoryImage.image = photo
     directoryImage.grid(row=1, column=2)
-    Button(window, text="Files", command=lambda: scanTagsOnline(options['Subdirectories (B)'], "file", window, options['Close Scraping Window (B)'], CONFIG_FILE, options)).grid(row=2, column=1, pady=(5, 3))
-    Button(window, text="Directories", command=lambda: scanTagsOnline(options['Subdirectories (B)'], "directory", window, options['Close Scraping Window (B)'], CONFIG_FILE, options)).grid(row=2,column=2, pady=(5, 3))
+    Button(window, text="Files", command=lambda: scanTagsOnline(options['Subdirectories (B)'], "file", window, options['Close Scraping Window (B)'], CONFIG_FILE, options, imageCounter)).grid(row=2, column=1, pady=(5, 3))
+    Button(window, text="Directories", command=lambda: scanTagsOnline(options['Subdirectories (B)'], "directory", window, options['Close Scraping Window (B)'], CONFIG_FILE, options, imageCounter)).grid(row=2,column=2, pady=(5, 3))
 
 def completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow):
     finalReportWindow.destroy()
@@ -165,7 +167,7 @@ def completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow):
     if closeScrapingWindow.get()!=False:
         webScrapingWindow.destroy()
 
-def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FILE, options):
+def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FILE, options, imageCounter):
     global cancel
     if type=="file":
         #scan for a file
@@ -198,7 +200,7 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
                         cancel = True
                     else:
                         track = AudioTrack(credentials)
-                        result, webScrapingWindow, characters = AudioTrack.scanFLAC(track, var, directory, frame, webScrapingWindow, characters, options)
+                        result, webScrapingWindow, characters = AudioTrack.scanFLAC(track, var, directory, frame, webScrapingWindow, characters, options, imageCounter)
                         results += result + '\n\n'
                 #handle MP3 files
                 # elif var.endswith('.mp3'):
@@ -366,7 +368,7 @@ def retrieveInfo(var, directory, frame, webScrapingWindow):
     list = [artist, title, audio]
     return list
 
-def buildTrackReport(track, yearList, BPMList, keyList, genreList, imageList, audio, webScrapingWindow, characters):
+def buildTrackReport(track, yearList, BPMList, keyList, genreList, imageList, audio, webScrapingWindow, characters, options, imageCounter):
     yearValue = False
     BPMValue = False
     keyValue = False
@@ -410,7 +412,7 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, imageList, au
         if audio['date']!=[''] or audio['bpm']!=[''] or audio['initialkey']!=[''] or audio['genre']!=['']:
             if str(audio['date'])[2:-2]!=str(track.year) or str(audio['bpm'])[2:-2]!=str(track.BPM) or str(audio['initialkey'])[2:-2]!=track.key or str(audio['genre'])[2:-2]!=track.genre:
                 window = Toplevel()
-                window.lift()
+                window.attributes("-topmost", True)
                 window.title("Conflicting Tags")
                 ws = window.winfo_screenwidth()  # width of the screen
                 hs = window.winfo_screenheight()  # height of the screen
@@ -425,14 +427,36 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, imageList, au
                 window.columnconfigure(1, weight=1)
                 window.columnconfigure(2, weight=1)
                 window.columnconfigure(3, weight=1)
-                Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, columnspan=4, pady=(10,0))
-                Label(window, text="CURRENT TAGS: \nYear: " + str(audio['date'])[2:-2] + "\nBPM: " + str(audio['bpm'])[2:-2] + "\nKey: " + str(audio['initialkey'])[2:-2] + "\nGenre: " + str(audio['genre'])[2:-2]).grid(row=1, column=1, pady=(10,35))
-                Label(window, text="NEW TAGS: \nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre)).grid(row=1, column=2, pady=(10,35))
-                Button(window, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).grid(row=2, column=0)
-                Button(window, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).grid(row=2, column=1)
-                Button(window, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow)).grid(row=2, column=2)
-                Button(window, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow)).grid(row=2, column=3)
-                window.wait_window()
+                if options["Reverse Image Search (B)"].get()==True:
+                    x = (ws / 2) - ((550 + (200*imageCounter)) / 2)
+                    y = (hs / 2) - (550 / 2)
+                    window.geometry('%dx%d+%d+%d' % (550 + (200*imageCounter), 450, x, y))
+                    Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, columnspan=max(4, imageCounter), pady=(10, 0))
+                    Label(window, text="CURRENT TAGS: \nYear: " + str(audio['date'])[2:-2] + "\nBPM: " + str(audio['bpm'])[2:-2] + "\nKey: " + str(audio['initialkey'])[2:-2] + "\nGenre: " + str(audio['genre'])[2:-2]).grid(row=1, column=1, pady=(10, 35))
+                    Label(window, text="NEW TAGS: \nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre)).grid(row=1, column=2,pady=(10, 30))
+                    for i in range(imageCounter):
+                        window.columnconfigure(i, weight=1)
+                        fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
+                        fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+                        photo = ImageTk.PhotoImage(fileImageImport)
+                        fileImage = Label(window, image=photo)
+                        fileImage.image = photo
+                        fileImage.grid(row=2, column=i, padx=(10, 10), pady=(0, 30))
+                    Button(window, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).grid(row=3, column=0, columnspan=max(1, imageCounter/4))
+                    Button(window, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).grid(row=3,column=1, columnspan=max(1, imageCounter/4))
+                    Button(window, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow)).grid(row=3, column=2, columnspan=max(1, imageCounter/4))
+                    Button(window, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow)).grid(row=3, column=3, columnspan=max(1, imageCounter/4))
+                    window.lift()
+                    window.wait_window()
+                else:
+                    Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, columnspan=4, pady=(10,0))
+                    Label(window, text="CURRENT TAGS: \nYear: " + str(audio['date'])[2:-2] + "\nBPM: " + str(audio['bpm'])[2:-2] + "\nKey: " + str(audio['initialkey'])[2:-2] + "\nGenre: " + str(audio['genre'])[2:-2]).grid(row=1, column=1, pady=(10,35))
+                    Label(window, text="NEW TAGS: \nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre)).grid(row=1, column=2, pady=(10,35))
+                    Button(window, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).grid(row=2, column=0)
+                    Button(window, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).grid(row=2, column=1)
+                    Button(window, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow)).grid(row=2, column=2)
+                    Button(window, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow)).grid(row=2, column=3)
+                    window.wait_window()
         else:
             audio['date'] = str(track.year)
             audio['bpm'] = str(track.BPM)

@@ -7257,9 +7257,14 @@ console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Err
 1599374699268	Marionette	INFO	Listening on port 64179
 1599374699275	Marionette	WARN	TLS certificate errors will be ignored for this session
 JavaScript error: resource://activity-stream/lib/PersonalityProvider/PersonalityProvider.jsm, line 92: TypeError: http://%(server)s/dummy/blocklist// is not a valid URL.
-ndan\\AppData\\Local\\Temp\\rust_mozprofile4Q1xv3"
-JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
-console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599375748784	Marionette	INFO	Stopped listening on port 64179
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+dule)"))
 1599374721403	Marionette	INFO	Listening on port 64257
 1599374721440	Marionette	WARN	TLS certificate errors will be ignored for this session
 1599374779162	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofilep1716G"
@@ -7375,18 +7380,907 @@ console.error: "Failed to fetch undefinedmain-workspace/personality-provider-mod
 console.error: "Failed to fetch undefinedmain-workspace/personality-provider-models/f477331d-33dc-4dfe-be46-88d5223fb439.json: "
 console.error: "Failed to fetch undefinedmain-workspace/personality-provider-models/f477331d-33dc-4dfe-be46-88d5223fb439.json: "
 console.error: "Failed to fetch undefinedmain-workspace/personality-provider-models/f477331d-33dc-4dfe-be46-88d5223fb439.json: "
-console.error: "Failed to fetch undefinedmain-workspace/personality-provider-models/8267a2cc-0984-4410-87db-c02530703a98.json: "
-console.error: "Failed to fetch undefinedmain-workspace/personality-provider-models/8267a2cc-0984-4410-87db-c02530703a98.json: "
+con1599375747636	Marionette	INFO	Stopped listening on port 64623
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+: "
 console.error: "Failed to fetch undefinedmain-workspace/personality-provider-models/8267a2cc-0984-4410-87db-c02530703a98.json: "
 console.error: "Failed to fetch undefinedmain-workspace/personality-provider-models/3fcbb458-7362-47bb-a426-6b542eb2f014.json: "
 console.error: "Failed to fetch undefinedmain-workspace/personality-provider-models/3fcbb458-7362-47bb-a426-6b542eb2f014.json: "
 console.error: "Failed to fetch undefinedmain-workspace/personality-provider-models/3fcbb458-7362-47bb-a426-6b542eb2f014.json: "
-console.error: "Failed to fetch undefinedmain-workspace/personality-provider-models/5d011771-de98-48f3-8565-7fc1ef6439c3.json: "
-console.error: "Failed to fetch undefinedmain-workspace/personality-provider-models/5d011771-de98-48f3-8565-7fc1ef6439c3.json: "
-console.error: "Failed to fetch undefinedmain-workspace/personality-provider-models/5d011771-de98-48f3-8565-7fc1ef6439c3.json: "
+console.error: "Fail1599375748003	Marionette	INFO	Stopped listening on port 64715
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+r: "Failed to fetch undefinedmain-workspace/personality-provider-models/5d011771-de98-48f3-8565-7fc1ef6439c3.json: "
 console.error: "Failed to fetch undefinedmain-workspace/personality-provider-models/145b9461-d6cc-4341-8d96-ec3bacace059.json: "
 console.error: "Failed to fetch undefinedmain-workspace/personality-provider-models/145b9461-d6cc-4341-8d96-ec3bacace059.json: "
 console.error: "Failed to fetch undefinedmain-workspace/personality-provider-models/145b9461-d6cc-4341-8d96-ec3bacace059.json: "
 console.error: "Failed to fetch undefinedmain-workspace/personality-provider-models/0685a1b5-34eb-4c13-8c90-bc82735e527f.json: "
 console.error: "Failed to fetch undefinedmain-workspace/personality-provider-models/0685a1b5-34eb-4c13-8c90-bc82735e527f.json: "
 console.error: "Failed to fetch undefinedmain-workspace/personality-provider-models/0685a1b5-34eb-4c13-8c90-bc82735e527f.json: "
+1599375748413	Marionette	INFO	Stopped listening on port 64880
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599375841002	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileFGGAwI"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599375843019	Marionette	INFO	Listening on port 65414
+1599375843135	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599375858927	Marionette	INFO	Stopped listening on port 65414
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599375865506	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofilejw549E"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599375867501	Marionette	INFO	Listening on port 65495
+1599375867525	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599375883070	Marionette	INFO	Stopped listening on port 65495
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599376119829	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileVHG6Mb"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599376121792	Marionette	INFO	Listening on port 49200
+1599376121838	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599376135868	Marionette	INFO	Stopped listening on port 49200
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599376141940	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofilem1x8vk"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599376143939	Marionette	INFO	Listening on port 49277
+1599376143948	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599376158339	Marionette	INFO	Stopped listening on port 49277
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599463759906	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileJFZEe6"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599463762030	Marionette	INFO	Listening on port 51817
+1599463762520	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599463867023	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofile77byHz"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599463869101	Marionette	INFO	Listening on port 51904
+1599463869134	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599463875324	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
+TimedPromise/<@chrome://marionette/content/sync.js:245:13
+TimedPromise@chrome://marionette/content/sync.js:230:10
+Sleep@chrome://marionette/content/sync.js:283:10
+dispatchPause@chrome://marionette/content/action.js:1482:10
+toEvents/<@chrome://marionette/content/action.js:1156:16
+action.dispatchTickActions@chrome://marionette/content/action.js:1060:35
+action.dispatch/chainEvents<@chrome://marionette/content/action.js:1028:20
+action.dispatch@chrome://marionette/content/action.js:1034:5
+performActions@chrome://marionette/content/listener.js:856:16
+dispatch/</req<@chrome://marionette/content/listener.js:529:14
+dispatch/<@chrome://marionette/content/listener.js:522:15
+1599463875325	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
+TimedPromise/<@chrome://marionette/content/sync.js:245:13
+TimedPromise@chrome://marionette/content/sync.js:230:10
+Sleep@chrome://marionette/content/sync.js:283:10
+dispatchPause@chrome://marionette/content/action.js:1482:10
+toEvents/<@chrome://marionette/content/action.js:1156:16
+action.dispatchTickActions@chrome://marionette/content/action.js:1060:35
+action.dispatch/chainEvents<@chrome://marionette/content/action.js:1028:20
+1599463880234	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
+TimedPromise/<@chrome://marionette/content/sync.js:245:13
+TimedPromise@chrome://marionette/content/sync.js:230:10
+Sleep@chrome://marionette/content/sync.js:283:10
+dispatchPause@chrome://marionette/content/action.js:1482:10
+toEvents/<@chrome://marionette/content/action.js:1156:16
+action.dispatchTickActions@chrome://marionette/content/action.js:1060:35
+action.dispatch/chainEvents<@chrome://marionette/content/action.js:1028:20
+action.dispatch@chrome://marionette/content/action.js:1034:5
+performActions@chrome://marionette/content/listener.js:856:16
+dispatch/</req<@chrome://marionette/content/listener.js:529:14
+dispatch/<@chrome://marionette/content/listener.js:522:15
+1599463880235	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
+TimedPromise/<@chrome://marionette/content/sync.js:245:13
+TimedPromise@chrome://marionette/content/sync.js:230:10
+Sleep@chrome://marionette/content/sync.js:283:10
+dispatchPause@chrome://marionette/content/action.js:1482:10
+toEvents/<@chrome://marionette/content/action.js:1156:16
+action.dispatchTickActions@chrome://marionette/content/action.js:1060:35
+action.dispatch/chainEvents<@chrome://marionette/content/action.js:1028:20
+1599463955361	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileNg5hpv"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599463957393	Marionette	INFO	Listening on port 51993
+1599463957471	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599463964158	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
+TimedPromise/<@chrome://marionette/content/sync.js:245:13
+TimedPromise@chrome://marionette/content/sync.js:230:10
+Sleep@chrome://marionette/content/sync.js:283:10
+dispatchPause@chrome://marionette/content/action.js:1482:10
+toEvents/<@chrome://marionette/content/action.js:1156:16
+action.dispatchTickActions@chrome://marionette/content/action.js:1060:35
+action.dispatch/chainEvents<@chrome://marionette/content/action.js:1028:20
+action.dispatch@chrome://marionette/content/action.js:1034:5
+performActions@chrome://marionette/content/listener.js:856:16
+dispatch/</req<@chrome://marionette/content/listener.js:529:14
+dispatch/<@chrome://marionette/content/listener.js:522:15
+1599463964159	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
+TimedPromise/<@chrome://marionette/content/sync.js:245:13
+TimedPromise@chrome://marionette/content/sync.js:230:10
+Sleep@chrome://marionette/content/sync.js:283:10
+dispatchPause@chrome://marionette/content/action.js:1482:10
+toEvents/<@chrome://marionette/content/action.js:1156:16
+action.dispatchTickActions@chrome://marionette/content/action.js:1060:35
+action.dispatch/chainEvents<@chrome://marionette/content/action.js:1028:20
+1599463964190	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
+TimedPromise/<@chrome://marionette/content/sync.js:245:13
+TimedPromise@chrome://marionette/content/sync.js:230:10
+Sleep@chrome://marionette/content/sync.js:283:10
+dispatchPause@chrome://marionette/content/action.js:1482:10
+toEvents/<@chrome://marionette/content/action.js:1156:16
+action.dispatchTickActions@chrome://marionette/content/action.js:1060:35
+action.dispatch/chainEvents<@chrome://marionette/content/action.js:1028:20
+action.dispatch@chrome://marionette/content/action.js:1034:5
+performActions@chrome://marionette/content/listener.js:856:16
+dispatch/</req<@chrome://marionette/content/listener.js:529:14
+dispatch/<@chrome://marionette/content/listener.js:522:15
+1599463964191	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
+TimedPromise/<@chrome://marionette/content/sync.js:245:13
+TimedPromise@chrome://marionette/content/sync.js:230:10
+Sleep@chrome://marionette/content/sync.js:283:10
+dispatchPause@chrome://marionette/content/action.js:1482:10
+toEvents/<@chrome://marionette/content/action.js:1156:16
+action.dispatchTickActions@chrome://marionette/content/action.js:1060:35
+action.dispatch/chainEvents<@chrome://marionette/content/action.js:1028:20
+1599463964193	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
+TimedPromise/<@chrome://marionette/content/sync.js:245:13
+TimedPromise@chrome://marionette/content/sync.js:230:10
+Sleep@chrome://marionette/content/sync.js:283:10
+dispatchPause@chrome://marionette/content/action.js:1482:10
+toEvents/<@chrome://marionette/content/action.js:1156:16
+action.dispatchTickActions@chrome://marionette/content/action.js:1060:35
+action.dispatch/chainEvents<@chrome://marionette/content/action.js:1028:20
+1599463964194	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
+TimedPromise/<@chrome://marionette/content/sync.js:245:13
+TimedPromise@chrome://marionette/content/sync.js:230:10
+Sleep@chrome://marionette/content/sync.js:283:10
+dispatchPause@chrome://marionette/content/action.js:1482:10
+toEvents/<@chrome://marionette/content/action.js:1156:16
+action.dispatchTickActions@chrome://marionette/content/action.js:1060:35
+action.dispatch/chainEvents<@chrome://marionette/content/action.js:1028:20
+1599463969072	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
+TimedPromise/<@chrome://marionette/content/sync.js:245:13
+TimedPromise@chrome://marionette/content/sync.js:230:10
+Sleep@chrome://marionette/content/sync.js:283:10
+dispatchPause@chrome://marionette/content/action.js:1482:10
+toEvents/<@chrome://marionette/content/action.js:1156:16
+action.dispatchTickActions@chrome://marionette/content/action.js:1060:35
+action.dispatch/chainEvents<@chrome://marionette/content/action.js:1028:20
+action.dispatch@chrome://marionette/content/action.js:1034:5
+performActions@chrome://marionette/content/listener.js:856:16
+dispatch/</req<@chrome://marionette/content/listener.js:529:14
+dispatch/<@chrome://marionette/content/listener.js:522:15
+1599463969073	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
+TimedPromise/<@chrome://marionette/content/sync.js:245:13
+TimedPromise@chrome://marionette/content/sync.js:230:10
+Sleep@chrome://marionette/content/sync.js:283:10
+dispatchPause@chrome://marionette/content/action.js:1482:10
+toEvents/<@chrome://marionette/content/action.js:1156:16
+action.dispatchTickActions@chrome://marionette/content/action.js:1060:35
+action.dispatch/chainEvents<@chrome://marionette/content/action.js:1028:20
+1599463969080	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
+TimedPromise/<@chrome://marionette/content/sync.js:245:13
+TimedPromise@chrome://marionette/content/sync.js:230:10
+Sleep@chrome://marionette/content/sync.js:283:10
+dispatchPause@chrome://marionette/content/action.js:1482:10
+toEvents/<@chrome://marionette/content/action.js:1156:16
+action.dispatchTickActions@chrome://marionette/content/action.js:1060:35
+action.dispatch/chainEvents<@chrome://marionette/content/action.js:1028:20
+action.dispatch@chrome://marionette/content/action.js:1034:5
+performActions@chrome://marionette/content/listener.js:856:16
+dispatch/</req<@chrome://marionette/content/listener.js:529:14
+dispatch/<@chrome://marionette/content/listener.js:522:15
+1599463969081	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
+TimedPromise/<@chrome://marionette/content/sync.js:245:13
+TimedPromise@chrome://marionette/content/sync.js:230:10
+Sleep@chrome://marionette/content/sync.js:283:10
+dispatchPause@chrome://marionette/content/action.js:1482:10
+toEvents/<@chrome://marionette/content/action.js:1156:16
+action.dispatchTickActions@chrome://marionette/content/action.js:1060:35
+action.dispatch/chainEvents<@chrome://marionette/content/action.js:1028:20
+1599463969083	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
+TimedPromise/<@chrome://marionette/content/sync.js:245:13
+TimedPromise@chrome://marionette/content/sync.js:230:10
+Sleep@chrome://marionette/content/sync.js:283:10
+dispatchPause@chrome://marionette/content/action.js:1482:10
+toEvents/<@chrome://marionette/content/action.js:1156:16
+action.dispatchTickActions@chrome://marionette/content/action.js:1060:35
+action.dispatch/chainEvents<@chrome://marionette/content/action.js:1028:20
+1599463969083	Marionette	WARN	TimedPromise timed out after 0 ms: stacktrace:
+TimedPromise/<@chrome://marionette/content/sync.js:245:13
+TimedPromise@chrome://marionette/content/sync.js:230:10
+Sleep@chrome://marionette/content/sync.js:283:10
+dispatchPause@chrome://marionette/content/action.js:1482:10
+toEvents/<@chrome://marionette/content/action.js:1156:16
+action.dispatchTickActions@chrome://marionette/content/action.js:1060:35
+action.dispatch/chainEvents<@chrome://marionette/content/action.js:1028:20
+1599463971972	Marionette	INFO	Stopped listening on port 51993
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599464138125	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileOt7G9w"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599464140219	Marionette	INFO	Listening on port 52166
+1599464140248	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599464211606	Marionette	INFO	Stopped listening on port 52166
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599464225985	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileLjFt00"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599464228102	Marionette	INFO	Listening on port 52297
+1599464228595	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599464497245	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofile1HxwkD"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599464499277	Marionette	INFO	Listening on port 52393
+1599464499352	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599464835043	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofile80W4Uu"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599464837136	Marionette	INFO	Listening on port 52494
+1599464837154	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599464848523	Marionette	INFO	Stopped listening on port 52494
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0fQgEkQQI4hip-rADICAGMEGGAAAAIJAAAwAC2AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg5k1I0TXP8icRqfA7kl16i__gE5lw/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599466656076	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileZqHii4"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599466658254	Marionette	INFO	Listening on port 52729
+1599466658687	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599466665416	Marionette	INFO	Stopped listening on port 52729
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599466672371	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileZo3YnF"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599466674515	Marionette	INFO	Listening on port 52801
+1599466674982	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599466683954	Marionette	INFO	Stopped listening on port 52801
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599466692244	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofilevGoGzS"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599466694332	Marionette	INFO	Listening on port 52881
+1599466694375	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599466701935	Marionette	INFO	Stopped listening on port 52881
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599466789161	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofilec1D67I"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599466791390	Marionette	INFO	Listening on port 52963
+1599466791769	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599466796262	Marionette	INFO	Stopped listening on port 52963
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599466802719	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileKkF6Wb"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599466805193	Marionette	INFO	Listening on port 53039
+1599466805327	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599466812687	Marionette	INFO	Stopped listening on port 53039
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599466820835	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileAZR8ir"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599466822988	Marionette	INFO	Listening on port 53117
+1599466823443	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599466832353	Marionette	INFO	Stopped listening on port 53117
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599466941237	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofile7Ei8s6"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599466943371	Marionette	INFO	Listening on port 53211
+1599466943849	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599467251165	Marionette	INFO	Stopped listening on port 53211
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+re/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599466961102	Marionette	INFO	Listening on port 53287
+1599466961598	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599467251512	Marionette	INFO	Stopped listening on port 53287
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599467673554	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofilekgy8AA"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599467675769	Marionette	INFO	Listening on port 53386
+1599467676168	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599467727029	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileqK1o1M"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599467729073	Marionette	INFO	Listening on port 53464
+1599467729139	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599467737884	Marionette	INFO	Stopped listening on port 53464
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQE20v0TQgEkQQI4hip-jAAICAGMEGWAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg6fPnjxT_SHWKWPvRyWBLLrIPQlFQ/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQE20v0TQgEkQQI4hip-jAAICAGMEGWAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg6fPnjxT_SHWKWPvRyWBLLrIPQlFQ/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599467745580	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofiley9aR7A"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599467747618	Marionette	INFO	Listening on port 53548
+1599467747691	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599467755059	Marionette	INFO	Stopped listening on port 53548
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC2AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg5x7MDnLPYCAruF8IHJukvmw5xjSw/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC2AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg5x7MDnLPYCAruF8IHJukvmw5xjSw/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599467763228	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileS7HdIF"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599467765242	Marionette	INFO	Listening on port 53626
+1599467765336	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599467774522	Marionette	INFO	Stopped listening on port 53626
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599468157034	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileakZ47P"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599468159064	Marionette	INFO	Listening on port 53726
+1599468159143	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599468169073	Marionette	INFO	Stopped listening on port 53726
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+[Child 48140, Chrome_ChildThread] WARNING: pipe error: 232: file /builds/worker/checkouts/gecko/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 545
+
+###!!! [Child][RunMessage] Error: Channel error: cannot send/recv
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599468175356	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofile3Qveub"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599468177368	Marionette	INFO	Listening on port 53807
+1599468177465	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599468184816	Marionette	INFO	Stopped listening on port 53807
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599468192239	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileu5qjoZ"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599468194264	Marionette	INFO	Listening on port 53883
+1599468194351	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599468204274	Marionette	INFO	Stopped listening on port 53883
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAgAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4r6Z3sWsYnawAhi3g9yjk2BJ68_g/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAgAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4r6Z3sWsYnawAhi3g9yjk2BJ68_g/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+[Child 35732, Chrome_ChildThread] WARNING: pipe error: 232: file /builds/worker/checkouts/gecko/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 545
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599468343948	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileSn6DKZ"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599468346015	Marionette	INFO	Listening on port 53974
+1599468346056	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599468354916	Marionette	INFO	Stopped listening on port 53974
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599468362762	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileYeqPh9"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599468364784	Marionette	INFO	Listening on port 54055
+1599468364868	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599468372018	Marionette	INFO	Stopped listening on port 54055
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599468378190	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileWqFlI5"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599468380204	Marionette	INFO	Listening on port 54133
+1599468380313	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599468388991	Marionette	INFO	Stopped listening on port 54133
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAIAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg7Q6PyvIKSqVjuixO2Yqoi4_-3v_Q/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAIAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg7Q6PyvIKSqVjuixO2Yqoi4_-3v_Q/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599468536953	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileA0RHmo"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599468538980	Marionette	INFO	Listening on port 54227
+1599468539066	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599468547764	Marionette	INFO	Stopped listening on port 54227
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599468555862	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofile0q8V3Y"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599468557835	Marionette	INFO	Listening on port 54303
+1599468557876	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599468564814	Marionette	INFO	Stopped listening on port 54303
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599468571952	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileAQ7eDq"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599468573962	Marionette	INFO	Listening on port 54376
+1599468574060	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599468582270	Marionette	INFO	Stopped listening on port 54376
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599468612135	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileo0vcKN"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599468614137	Marionette	INFO	Listening on port 54470
+1599468614148	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599468622560	Marionette	INFO	Stopped listening on port 54470
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599468628552	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofilejuJXt6"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599468630568	Marionette	INFO	Listening on port 54547
+1599468630664	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599468637549	Marionette	INFO	Stopped listening on port 54547
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599468643611	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofiledzV6nQ"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599468645604	Marionette	INFO	Listening on port 54623
+1599468645630	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599468653921	Marionette	INFO	Stopped listening on port 54623
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599469120916	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileOlT73x"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599469122958	Marionette	INFO	Listening on port 54714
+1599469123024	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599469131534	Marionette	INFO	Stopped listening on port 54714
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599469137858	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofilevVBYpl"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599469139876	Marionette	INFO	Listening on port 54791
+1599469139965	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599469147096	Marionette	INFO	Stopped listening on port 54791
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAgAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4r6Z3sWsYnawAhi3g9yjk2BJ68_g/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAgAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4r6Z3sWsYnawAhi3g9yjk2BJ68_g/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x5A000D,name=PHttpChannel::Msg_DeletingChannel) Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599469153760	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileZGa7rY"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599469155805	Marionette	INFO	Listening on port 54869
+1599469155875	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599469163800	Marionette	INFO	Stopped listening on port 54869
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599469414317	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileVh30aI"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599469416351	Marionette	INFO	Listening on port 54982
+1599469416425	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599469424958	Marionette	INFO	Stopped listening on port 54982
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599469431534	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofiletZ1w0O"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599469433576	Marionette	INFO	Listening on port 55061
+1599469433646	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599469440620	Marionette	INFO	Stopped listening on port 55061
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599469446434	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofilebFBj5C"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599469448487	Marionette	INFO	Listening on port 55131
+1599469448546	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599469456738	Marionette	INFO	Stopped listening on port 55131
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599469597160	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileTEgy39"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599469599255	Marionette	INFO	Listening on port 55217
+1599469599271	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599469607634	Marionette	INFO	Stopped listening on port 55217
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599469613529	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofilerAk7As"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599469615518	Marionette	INFO	Listening on port 55296
+1599469615537	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599469622455	Marionette	INFO	Stopped listening on port 55296
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC2AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg5x7MDnLPYCAruF8IHJukvmw5xjSw/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC2AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg5x7MDnLPYCAruF8IHJukvmw5xjSw/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x6A0029,name=PNecko::Msg_RemoveRequestContext) Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599469629081	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofilekGfFa4"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599469631208	Marionette	INFO	Listening on port 55368
+1599469631698	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599469640173	Marionette	INFO	Stopped listening on port 55368
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQE20v0TQgEkQQI4hip-jAAICAGMEGWAIAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg6R4E54QEmg7PiKreJdXcM-iGFNYQ/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599469905786	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofile8zhS0x"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599469907862	Marionette	INFO	Listening on port 55452
+1599469907900	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599469916394	Marionette	INFO	Stopped listening on port 55452
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAIAAIJAAAwAC2AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4cerSoEirWQnX69554RxpLel4uaw/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599470099683	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileML0NnA"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599470101705	Marionette	INFO	Listening on port 55573
+1599470101794	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599470109789	Marionette	INFO	Stopped listening on port 55573
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599470292824	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofile5HaEi3"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599470294871	Marionette	INFO	Listening on port 55662
+1599470294932	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599470303276	Marionette	INFO	Stopped listening on port 55662
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599470389246	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileGt7Wu0"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599470391302	Marionette	INFO	Listening on port 55740
+1599470391365	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599470399541	Marionette	INFO	Stopped listening on port 55740
+[Parent 21748, Gecko_IOThread] WARNING: file /builds/worker/checkouts/gecko/ipc/chromium/src/base/process_util_win.cc, line 166
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAgAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4r6Z3sWsYnawAhi3g9yjk2BJ68_g/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAgAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4r6Z3sWsYnawAhi3g9yjk2BJ68_g/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599470449409	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileC1hWEk"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599470451415	Marionette	INFO	Listening on port 55826
+1599470451420	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599470459601	Marionette	INFO	Stopped listening on port 55826
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599470557930	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofileDgIx1x"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599470560022	Marionette	INFO	Listening on port 55928
+1599470560039	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599470565524	Marionette	INFO	Stopped listening on port 55928
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599470572880	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofile4Zf0Dl"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599470574890	Marionette	INFO	Listening on port 55994
+1599470574994	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599470581991	Marionette	INFO	Stopped listening on port 55994
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+
+1599470590043	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\Brendan\\AppData\\Local\\Temp\\rust_mozprofilekFJFWJ"
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1599470592098	Marionette	INFO	Listening on port 56077
+1599470592158	Marionette	WARN	TLS certificate errors will be ignored for this session
+1599470600614	Marionette	INFO	Stopped listening on port 56077
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+JavaScript error: https://www.gstatic.com/_/mss/boq-search/_/js/k=boq-search.VisualFrontendUi.en_US.ckgXJjwZzg0.es5.O/am=lAQECEr0TQgEkQQI4hip-jAAICAGMEGGAAAAIJAAAwAC-AIAAAAAAC4PDgEAAAAAEMgIAAAAyBI/d=1/excm=_b,_tp,searchview/ed=1/dg=0/wt=2/ct=zgms/rs=AH7-fg4Ou93xbXH2Sw066pbovVTsSP6Fhg/m=_b,_tp, line 511: NS_ERROR_NOT_INITIALIZED: 
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel::SendAndWait] Error: Channel error: cannot send/recv
+

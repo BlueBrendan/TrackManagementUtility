@@ -32,6 +32,7 @@ def createConfigFile():
         file.write("Scrape Junodownload (B):True\n")
         file.write("Scrape Beatport (B):True\n")
         file.write("Scrape Discogs (B):True\n")
+        file.write("Reverse Image Search (B):True\n")
         file.close()
     return CONFIG_FILE
 
@@ -60,7 +61,7 @@ def compareDirectories(CONFIG_FILE):
 
 def readValuesFromConfig(CONFIG_FILE):
     config_file = open(CONFIG_FILE, 'r').read()
-    terms = ['Subdirectories (B)', 'Close Scraping Window (B)', 'First Default Directory (S)', 'Second Default Directory (S)', 'Scrape Junodownload (B)', 'Scrape Beatport (B)', 'Scrape Discogs (B)']
+    terms = ['Subdirectories (B)', 'Close Scraping Window (B)', 'First Default Directory (S)', 'Second Default Directory (S)', 'Scrape Junodownload (B)', 'Scrape Beatport (B)', 'Scrape Discogs (B)', "Reverse Image Search (B)"]
     options = {}
     for term in terms:
         if (term[len(term) - 2:len(term) - 1]) == 'B':

@@ -27,9 +27,13 @@ def updatePreferences(options, CONFIG_FILE):
     discogsCheck = Checkbutton(tab1, text="Discogs", command=lambda: checkbox(CONFIG_FILE, 'Scrape Discogs (B)'))
     if options['Scrape Discogs (B)'].get() == True:
         discogsCheck.select()
+    reverseImageSearchCheck = Checkbutton(tab1, text="Reverse Image Search with Selenium", command=lambda: checkbox(CONFIG_FILE, 'Reverse Image Search (B)'))
+    if options['Reverse Image Search (B)'].get() == True:
+        reverseImageSearchCheck.select()
     junoCheck.grid(row=1, column=0, padx=(10, 0), pady=(0, 0), sticky=W)
     beatportCheck.grid(row=2, column=0, padx=(10, 0), pady=(0, 0), sticky=W)
     discogsCheck.grid(row=3, column=0, padx=(10, 0), pady=(0, 0), sticky=W)
+    reverseImageSearchCheck.grid(row=4, column=0, padx=(10, 0), pady=(0, 0), sticky=W)
 
 def checkbox(CONFIG_FILE, term):
     config_file = open(CONFIG_FILE, 'r').read()
