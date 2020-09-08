@@ -12,10 +12,10 @@ def updatePreferences(options, CONFIG_FILE):
     tab_parent = ttk.Notebook(window)
     tab1 = ttk.Frame(tab_parent)
 
-
     #Web Scraping Tab
-    tab_parent.add(tab1, text="Web Scraping")
     tab_parent.pack(expand=1, fill='both')
+    tab_parent.add(tab1, text="Web Scraping")
+
 
     #website settings
     Label(tab1, text="Websites to Scrape").pack(pady=(10,5), anchor="w")
@@ -40,6 +40,7 @@ def updatePreferences(options, CONFIG_FILE):
     deleteStoredImagesCheck = Checkbutton(tab1, text="Delete Stored Images after Completion", command=lambda: checkbox(CONFIG_FILE, 'Delete Stored Images (B)'))
     if options['Delete Stored Images (B)'].get() == True:
         deleteStoredImagesCheck.select()
+    reverseImageSearchCheck.pack(padx=(10, 0), anchor="w")
     deleteStoredImagesCheck.pack(padx=(10, 0), anchor="w")
 
     #Tag Settings Tab
@@ -50,6 +51,11 @@ def updatePreferences(options, CONFIG_FILE):
     tab3 = ttk.Frame(tab_parent)
     tab_parent.add(tab3, text="Other")
     Label(tab3, text="Audio Formatting").pack(pady=(10, 5), anchor="w")
+    checkNumberTypoCheck = Checkbutton(tab3, text="Check Artist for Common Typos", command=lambda: checkbox(CONFIG_FILE, 'Check Artist for Typos (B)'))
+    checkNumberTypoCheck.deselect()
+    if options["Check Artist for Typos (B)"].get() == True:
+        checkNumberTypoCheck.select()
+    checkNumberTypoCheck.pack(padx=(10, 0), anchor="w")
     # var = IntVar()
     # # for format in formats:
     # var.set(1)

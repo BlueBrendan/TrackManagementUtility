@@ -25,15 +25,7 @@ def createConfigFile():
             os.mkdir(path + "/Track Management Utility")
         # create setttings file
         file = open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt", 'w')
-        file.write("Subdirectories (B):True\n")
-        file.write("Close Scraping Window (B):True\n")
-        file.write("First Default Directory (S):\n")
-        file.write("Second Default Directory (S):\n")
-        file.write("Scrape Junodownload (B):True\n")
-        file.write("Scrape Beatport (B):True\n")
-        file.write("Scrape Discogs (B):True\n")
-        file.write("Reverse Image Search (B):True\n")
-        file.write("Delete Stored Images (B):True\n")
+        file.write("Subdirectories (B):True\nClose Scraping Window (B):True\nFirst Default Directory (S):\nSecond Default Directory (S):\nScrape Junodownload (B):True\nScrape Beatport (B):True\nScrape Discogs (B):True\nReverse Image Search (B):True\nDelete Stored Images (B):True\nCheck Artist for Typos (B):True\n")
         file.close()
     return CONFIG_FILE
 
@@ -62,7 +54,7 @@ def compareDirectories(CONFIG_FILE):
 
 def readValuesFromConfig(CONFIG_FILE):
     config_file = open(CONFIG_FILE, 'r').read()
-    terms = ['Subdirectories (B)', 'Close Scraping Window (B)', 'First Default Directory (S)', 'Second Default Directory (S)', 'Scrape Junodownload (B)', 'Scrape Beatport (B)', 'Scrape Discogs (B)', "Reverse Image Search (B)", "Delete Stored Images (B)"]
+    terms = ['Subdirectories (B)', 'Close Scraping Window (B)', 'First Default Directory (S)', 'Second Default Directory (S)', 'Scrape Junodownload (B)', 'Scrape Beatport (B)', 'Scrape Discogs (B)', "Reverse Image Search (B)", "Delete Stored Images (B)", "Check Artist for Typos (B)"]
     options = {}
     for term in terms:
         if (term[len(term) - 2:len(term) - 1]) == 'B':

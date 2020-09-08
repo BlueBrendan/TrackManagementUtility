@@ -1,18 +1,13 @@
-import os
-import requests
-from bs4 import BeautifulSoup
 from mutagen.flac import FLAC
-from mutagen.id3 import ID3, TIT2, TKEY
 from tkinter import filedialog
 from tkinter.tix import *
 import getpass
-from selenium import webdriver
 from PIL import Image, ImageTk
+from web_scrapers.junodownloadSearch import junodownloadSearch
+from web_scrapers.beatportSearch import beatportSearch
+from web_scrapers.discogsSearch import discogsSearch
 
 #import methods from other files
-from junodownloadSearch import junodownloadSearch
-from beatportSearch import beatportSearch
-from discogsSearch import discogsSearch
 from buildTrackReport import buildTrackReport
 from buildVariations import buildVariations
 from handleTypo import handleTypo
@@ -111,9 +106,8 @@ class AudioTrack:
         finalResults, webScrapingWindow, characters = buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScrapingWindow, characters, options, imageCounter)
         return finalResults, webScrapingWindow, characters, imageCounter
 
-    def scanFLAC(self, directory, frame, webScrapingWindow, characters, options, imageCounter):
-        # check if artist and title are in filename
-        audio = FLAC(directory + '/' + self.artist + ' - ' + self.title + '.flac')
+    def scanFLAC(self, var, directory, frame, webScrapingWindow, characters, options, imageCounter):
+        audio = FLAC(directory + '/' + var)
         audio["artist"] = self.artist
         audio["title"] = self.title
         audio.pprint()
@@ -180,52 +174,51 @@ def scanTagsOnline(subdirectories, type, window, closeScrapingWindow, CONFIG_FIL
                 #handle FLAC files
                 if var.endswith('.flac'):
                     row+=1
-                    audio = retrieveInfo(var, directory, frame, webScrapingWindow)
+                    audio, var = retrieveInfo(var, directory, frame, webScrapingWindow, options)
                     if audio:
                         track = AudioTrack(audio)
-                        result, webScrapingWindow, characters, imageCounter = AudioTrack.scanFLAC(track, directory, frame, webScrapingWindow, characters, options, imageCounter)
+                        result, webScrapingWindow, characters, imageCounter = AudioTrack.scanFLAC(track, var, directory, frame, webScrapingWindow, characters, options, imageCounter)
                         results += result + '\n'
-            if audio:
-                finalReportWindow = Toplevel()
-                webScrapingWindow.lift()
-                finalReportWindow.lift()
-                finalReportWindow.title("Final Report")
-                finalReportWindow.columnconfigure(0, weight=1)
-                ws = finalReportWindow.winfo_screenwidth()  # width of the screen
-                hs = finalReportWindow.winfo_screenheight()  # height of the screen
-                y = (hs / 2) - (200+((row-1)*75)/ 2)
-                if characters <= 40:
-                    x = (ws / 2) - (430 / 2)
-                    finalReportWindow.geometry('%dx%d+%d+%d' % (450, 250+((row-1)*75), x, y))
-                    if options["Reverse Image Search (B)"].get() == True and imageCounter >= 1:
-                        y = (hs / 2) - ((550 + ((row - 1) * 75)) / 2)
-                        finalReportWindow.geometry('%dx%d+%d+%d' % (430, 450 + ((row - 1) * 75), x, y))
-                else:
-                    x = (ws / 2) - ((430 + (characters * 1.5)) / 2)
-                    finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters*1.5), 250 + ((row - 1) * 75), x, y))
-                    if options["Reverse Image Search (B)"].get() == True and imageCounter >= 1:
-                        y = (hs / 2) - ((550 + ((row - 1) * 75)) / 2)
-                        finalReportWindow.geometry('%dx%d+%d+%d' % (430 + (characters * 1.5), 450 + ((row - 1) * 75), x, y))
-                if options["Reverse Image Search (B)"].get()==True and imageCounter >= 1:
-                    Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(15, 0))
-                    Label(finalReportWindow, text=results).pack(side="top")
-                    #load image
-                    fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(0) + ".jpg")
-                    fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-                    photo = ImageTk.PhotoImage(fileImageImport)
-                    fileImage = Label(finalReportWindow, image=photo)
-                    fileImage.image = photo
-                    fileImage.pack(side="top", padx=(10, 10))
-                    #load button and checkbox
-                    Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow, options)).pack(side="top", pady=(15, 10))
-                    Checkbutton(finalReportWindow, text="Close scraping window", var=closeScrapingWindow, command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).pack(side="top")
-                    finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closePopup(finalReportWindow, webScrapingWindow))
-                else:
-                    Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, pady=(15,0))
-                    Label(finalReportWindow, text=results).grid(row=1, column=0)
-                    Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow, options)).grid(row=2, column=0, pady=(0, 5))
-                    Checkbutton(finalReportWindow, text="Close scraping window", var=closeScrapingWindow, command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).grid(row=3, column=0)
-                    finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closePopup(finalReportWindow, webScrapingWindow))
+            finalReportWindow = Toplevel()
+            webScrapingWindow.lift()
+            finalReportWindow.lift()
+            finalReportWindow.title("Final Report")
+            finalReportWindow.columnconfigure(0, weight=1)
+            ws = finalReportWindow.winfo_screenwidth()  # width of the screen
+            hs = finalReportWindow.winfo_screenheight()  # height of the screen
+            y = (hs / 2) - (200+((row-1)*75)/ 2)
+            if characters <= 40:
+                x = (ws / 2) - (430 / 2)
+                finalReportWindow.geometry('%dx%d+%d+%d' % (450, 250+((row-1)*75), x, y))
+                if options["Reverse Image Search (B)"].get() == True and imageCounter >= 1:
+                    y = (hs / 2) - ((550 + ((row - 1) * 75)) / 2)
+                    finalReportWindow.geometry('%dx%d+%d+%d' % (430, 450 + ((row - 1) * 75), x, y))
+            else:
+                x = (ws / 2) - ((430 + (characters * 1.5)) / 2)
+                finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters*1.5), 250 + ((row - 1) * 75), x, y))
+                if options["Reverse Image Search (B)"].get() == True and imageCounter >= 1:
+                    y = (hs / 2) - ((550 + ((row - 1) * 75)) / 2)
+                    finalReportWindow.geometry('%dx%d+%d+%d' % (430 + (characters * 1.5), 450 + ((row - 1) * 75), x, y))
+            if options["Reverse Image Search (B)"].get()==True and imageCounter >= 1:
+                Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(15, 0))
+                Label(finalReportWindow, text=results).pack(side="top")
+                #load image
+                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(0) + ".jpg")
+                fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+                photo = ImageTk.PhotoImage(fileImageImport)
+                fileImage = Label(finalReportWindow, image=photo)
+                fileImage.image = photo
+                fileImage.pack(side="top", padx=(10, 10))
+                #load button and checkbox
+                Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow, options)).pack(side="top", pady=(15, 10))
+                Checkbutton(finalReportWindow, text="Close scraping window", var=closeScrapingWindow, command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).pack(side="top")
+                finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closePopup(finalReportWindow, webScrapingWindow))
+            else:
+                Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, pady=(15,0))
+                Label(finalReportWindow, text=results).grid(row=1, column=0)
+                Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, closeScrapingWindow, options)).grid(row=2, column=0, pady=(0, 5))
+                Checkbutton(finalReportWindow, text="Close scraping window", var=closeScrapingWindow, command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).grid(row=3, column=0)
+                finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closePopup(finalReportWindow, webScrapingWindow))
     elif type=="directory":
         #scan for a directory
         window.lift()
@@ -291,45 +284,46 @@ def directorySearch(directory, subdirectories, results, frame, webScrapingWindow
         else:
             #handle FLAC files
             if var.endswith(".flac"):
-                audio = retrieveInfo(var, directory, frame, webScrapingWindow)
+                audio = retrieveInfo(var, directory, frame, webScrapingWindow, options)
                 if audio:
                     track = AudioTrack(audio)
-                    result, webScrapingWindow, characters, imageCounter = AudioTrack.scanFLAC(track, var, directory, frame, webScrapingWindow, characters, options, imageCounter)
+                    result, webScrapingWindow, characters, imageCounter = AudioTrack.scanFLAC(track, directory, frame, webScrapingWindow, characters, options, imageCounter)
                     results.append(result)
     return results, webScrapingWindow, characters
 
-def retrieveInfo(var, directory, frame, webScrapingWindow):
+def retrieveInfo(var, directory, frame, webScrapingWindow, options):
     audio = checkFileValidity(var, directory, frame, webScrapingWindow)
     if type(audio) == str:
         return False
     # check if artist and title are in filename
-    if ' - ' in var:
-        artist = var.split(' - ')[0]
-        title = var.split(' - ')[1][:-5]
-        # scan artist for numbering prefix
-        if '.' in artist:
-            artistPrefix = artist[:artist.index('.')+1]
-            artistPostfix = artist[artist.index('.')+1:].strip()
-            if '.' in artistPrefix[0:5]:
-                if any(char.isdigit() for char in artistPrefix[0:artistPrefix.index('.')]):
-                    audio = handleTypo(artist, title, artistPostfix, webScrapingWindow, audio, directory, frame, webScrapingWindow)
-    # check file tags for artist
-    else:
-        if audio['artist'] == '':
-            print("No artist information found in file")
-            return False
-        artist = str(audio['artist'])[2:-2]
-        title = var[:-5]
-        if ' ' in title or '.' in title:
-            if ' ' in artist:
-                titlePrefix = title.split(' ', 1)[0]
-                titlePostfix = title.split(' ', 1)[1]
-            else:
-                titlePrefix = title.split('.')[0]
-                titlePostfix = title.split('.')[1]
-            if '.' in titlePrefix[0:5]:
-                if any(char.isdigit() for char in titlePrefix[0:titlePrefix.index('.')]):
-                    audio = handleTypo(artist, title, titlePrefix, webScrapingWindow, audio, directory, frame, webScrapingWindow)
+    if options["Check Artist for Typos (B)"].get() == True:
+        if ' - ' in var:
+            artist = var.split(' - ')[0]
+            title = var.split(' - ')[1][:-5]
+            # scan artist for numbering prefix
+            if '.' in artist:
+                artistPrefix = artist[:artist.index('.')+1]
+                artistPostfix = artist[artist.index('.')+1:].strip()
+                if '.' in artistPrefix[0:5]:
+                    if any(char.isdigit() for char in artistPrefix[0:artistPrefix.index('.')]):
+                        audio, var = handleTypo(artist, title, var, artistPostfix, webScrapingWindow, audio, directory, frame, webScrapingWindow)
+        # check file tags for artist
+        else:
+            if audio['artist'] == '':
+                print("No artist information found in file")
+                return False
+            artist = str(audio['artist'])[2:-2]
+            title = var[:-5]
+            if ' ' in title or '.' in title:
+                if ' ' in artist:
+                    titlePrefix = title.split(' ', 1)[0]
+                    titlePostfix = title.split(' ', 1)[1]
+                else:
+                    titlePrefix = title.split('.')[0]
+                    titlePostfix = title.split('.')[1]
+                if '.' in titlePrefix[0:5]:
+                    if any(char.isdigit() for char in titlePrefix[0:titlePrefix.index('.')]):
+                        audio, var = handleTypo(artist, title, var, titlePrefix, webScrapingWindow, audio, directory, frame, webScrapingWindow)
     # if "featuring" in artist:
     #     artist = artist.replace("featuring", "feat.")
     #     audio = renameArtist(directory, var, artist, title, frame, webScrapingWindow)
@@ -338,7 +332,7 @@ def retrieveInfo(var, directory, frame, webScrapingWindow):
     #     renameFile(directory, var, filename, frame, webScrapingWindow)
     # audio["artist"] = artist
     # audio["title"] = title
-    return audio
+    return audio, var
 
 #handle subdirectory selection
 def closeScrapingWindowSelection(CONFIG_FILE):

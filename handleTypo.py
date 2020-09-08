@@ -2,10 +2,13 @@ from mutagen.flac import FLAC
 from tkinter import Toplevel, Label, Button
 import os
 
+#handleTypo handles the popup window that occurs when a number and period is fine in the artist name.
+# If the user identifies the name as a typo, the file will be renamed and artist tag will be reassigned
+
 #global variable
 changeName = False
 
-def handleTypo(artist, title, artistPostfix, webScrapingWindow, audio, directory, frame, window):
+def handleTypo(artist, title, var, artistPostfix, webScrapingWindow, audio, directory, frame, window):
     global changeName
     popup = Toplevel()
     popup.title("Potential Typo")
@@ -26,11 +29,16 @@ def handleTypo(artist, title, artistPostfix, webScrapingWindow, audio, directory
     popup.protocol("WM_DELETE_WINDOW", lambda: popup.destroy())
     popup.wait_window()
     if changeName:
-        audio["artist"] = artistPostfix
         audio = FLAC(str(directory) + '/' + str(artistPostfix) + " - " + str(audio["title"][0]) + ".flac")
+        var = str(artistPostfix) + " - " + str(audio["title"][0]) + ".flac"
+        audio["artist"] = artistPostfix
         audio.pprint()
         audio.save()
-    return audio
+    else:
+        audio["artist"] = artist
+        audio.pprint()
+        audio.save()
+    return audio, var
 
 def resetArtistName(audio, artist, artistPostfix, popup, webScrapingWindow, directory, frame, window):
     global changeName
