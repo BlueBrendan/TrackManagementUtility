@@ -33,6 +33,7 @@ def createConfigFile():
         file.write("Scrape Beatport (B):True\n")
         file.write("Scrape Discogs (B):True\n")
         file.write("Reverse Image Search (B):True\n")
+        file.write("Delete Stored Images (B):True\n")
         file.close()
     return CONFIG_FILE
 
@@ -61,7 +62,7 @@ def compareDirectories(CONFIG_FILE):
 
 def readValuesFromConfig(CONFIG_FILE):
     config_file = open(CONFIG_FILE, 'r').read()
-    terms = ['Subdirectories (B)', 'Close Scraping Window (B)', 'First Default Directory (S)', 'Second Default Directory (S)', 'Scrape Junodownload (B)', 'Scrape Beatport (B)', 'Scrape Discogs (B)', "Reverse Image Search (B)"]
+    terms = ['Subdirectories (B)', 'Close Scraping Window (B)', 'First Default Directory (S)', 'Second Default Directory (S)', 'Scrape Junodownload (B)', 'Scrape Beatport (B)', 'Scrape Discogs (B)', "Reverse Image Search (B)", "Delete Stored Images (B)"]
     options = {}
     for term in terms:
         if (term[len(term) - 2:len(term) - 1]) == 'B':
@@ -96,7 +97,6 @@ options = readValuesFromConfig(CONFIG_FILE)
 
 #file topmenu button
 menufile = Menubutton(root, text="File")
-menuoption = Menubutton(root, text="Option")
 menufile.menu = Menu(menufile, tearoff=0)
 menufile["menu"] = menufile.menu
 updates = IntVar()
@@ -105,6 +105,7 @@ menufile.menu.add_command(label="Check for Updates", command=checkForUpdates)
 menufile.menu.add_command(label="Exit", command=root.destroy)
 
 #option topmenu button
+menuoption = Menubutton(root, text="Option")
 menuoption.menu = Menu(menuoption, tearoff=0)
 menuoption['menu'] = menuoption.menu
 menuoption.menu.add_command(label="Preferences", command=lambda: openPreferences(CONFIG_FILE))

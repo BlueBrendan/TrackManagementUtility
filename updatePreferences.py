@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 
 def updatePreferences(options, CONFIG_FILE):
-    window = Tk()
+    window = Toplevel()
     window.title("Preferences Window")
     ws = window.winfo_screenwidth()  # width of the screen
     hs = window.winfo_screenheight()  # height of the screen
@@ -11,13 +11,14 @@ def updatePreferences(options, CONFIG_FILE):
     window.geometry('%dx%d+%d+%d' % (500, 300, x, y))
     tab_parent = ttk.Notebook(window)
     tab1 = ttk.Frame(tab_parent)
-    tab2 = ttk.Frame(tab_parent)
-    tab_parent.add(tab1, text="Web Scrape Settings")
-    Label(tab1, text="Websites to Scrape").grid(row=0, column=0)
-    # Checkbutton(tab1, text="Beatport", var=scrapeBeatport, command=lambda: beatportCheckbox(CONFIG_FILE, config_file)).grid(row=2, column=0, padx=(10, 0), pady=(0, 0), sticky=W)
-    # Checkbutton(tab1, text="Discogs", var=scrapeDiscogs, command=lambda: discogsCheckbox(CONFIG_FILE, config_file)).grid(row=3, column=0, padx=(10, 0), pady=(0, 0), sticky=W)
-    tab_parent.add(tab2, text="Lorem Ipsum")
+
+
+    #Web Scraping Tab
+    tab_parent.add(tab1, text="Web Scraping")
     tab_parent.pack(expand=1, fill='both')
+
+    #website settings
+    Label(tab1, text="Websites to Scrape").pack(pady=(10,5), anchor="w")
     junoCheck = Checkbutton(tab1, text="Juno Download", command=lambda: checkbox(CONFIG_FILE, 'Scrape Junodownload (B)'))
     if options['Scrape Junodownload (B)'].get()==True:
         junoCheck.select()
@@ -27,13 +28,36 @@ def updatePreferences(options, CONFIG_FILE):
     discogsCheck = Checkbutton(tab1, text="Discogs", command=lambda: checkbox(CONFIG_FILE, 'Scrape Discogs (B)'))
     if options['Scrape Discogs (B)'].get() == True:
         discogsCheck.select()
+    junoCheck.pack(padx=(10, 0), anchor="w")
+    beatportCheck.pack(padx=(10, 0), anchor="w")
+    discogsCheck.pack(padx=(10, 0), anchor="w")
+
+    #image scraping settings
+    Label(tab1, text="Image Scraping").pack(pady=(15,5), anchor="w")
     reverseImageSearchCheck = Checkbutton(tab1, text="Reverse Image Search with Selenium", command=lambda: checkbox(CONFIG_FILE, 'Reverse Image Search (B)'))
     if options['Reverse Image Search (B)'].get() == True:
         reverseImageSearchCheck.select()
-    junoCheck.grid(row=1, column=0, padx=(10, 0), pady=(0, 0), sticky=W)
-    beatportCheck.grid(row=2, column=0, padx=(10, 0), pady=(0, 0), sticky=W)
-    discogsCheck.grid(row=3, column=0, padx=(10, 0), pady=(0, 0), sticky=W)
-    reverseImageSearchCheck.grid(row=4, column=0, padx=(10, 0), pady=(0, 0), sticky=W)
+    deleteStoredImagesCheck = Checkbutton(tab1, text="Delete Stored Images after Completion", command=lambda: checkbox(CONFIG_FILE, 'Delete Stored Images (B)'))
+    if options['Delete Stored Images (B)'].get() == True:
+        deleteStoredImagesCheck.select()
+    deleteStoredImagesCheck.pack(padx=(10, 0), anchor="w")
+
+    #Tag Settings Tab
+    tab2 = ttk.Frame(tab_parent)
+    tab_parent.add(tab2, text="Tagging")
+
+    #Others Tab
+    tab3 = ttk.Frame(tab_parent)
+    tab_parent.add(tab3, text="Other")
+    Label(tab3, text="Audio Formatting").pack(pady=(10, 5), anchor="w")
+    # var = IntVar()
+    # # for format in formats:
+    # var.set(1)
+    # ttk.Radiobutton(tab3, text="Artist - Title", variable=var, value=1).pack(pady=(5, 5), anchor="w")
+    # ttk.Radiobutton(tab3, text="Title", variable=var, value=2).pack(pady=(5, 5), anchor="w")
+
+def test(value):
+    print(value)
 
 def checkbox(CONFIG_FILE, term):
     config_file = open(CONFIG_FILE, 'r').read()

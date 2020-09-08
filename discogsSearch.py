@@ -6,7 +6,7 @@ import webbrowser
 import time
 import random
 
-def discogsSearch(artist, title, yearList, genreList, artistVariations, titleVariations, headers, search, frame, window):
+def discogsSearch(artist, title, yearList, genreList, artistVariations, titleVariations, headers, search, frame, window, imageCounter):
     # THIRD QUERY - DISCOGS
     Label(frame.scrollable_frame, text="\nSearching Discogs for " + str(artist) + " - " + str(title), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
@@ -26,7 +26,7 @@ def discogsSearch(artist, title, yearList, genreList, artistVariations, titleVar
                         variation = variation.replace('-', ' ')
                         if variation.lower() in str(result).lower():
                             yearList, genreList, frame = searchQuery(title, result, headers, frame, window, yearList, genreList, titleVariations)
-    return yearList, genreList, window
+    return yearList, genreList, imageCounter
 
 def searchQuery(title, result, headers, frame, window, yearList, genreList, titleVariations):
     link = str(result.find('a').get('href')).split('&')[0].split('=')[1]
