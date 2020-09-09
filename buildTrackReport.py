@@ -124,7 +124,7 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                         photo = ImageTk.PhotoImage(fileImageImport)
                         fileImage = Label(images, image=photo)
                         fileImage.image = photo
-                        fileImage.pack(side="left", padx=(10,10))
+                        Button(tags, image=photo).pack(side="left", padx=(10,10))
                     buttons = Frame(window)
                     buttons.pack(side=TOP)
                     Button(buttons, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25,10))
@@ -134,7 +134,6 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                     window.lift()
                     window.wait_window()
                 else:
-                    print("THERE")
                     Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, columnspan=4, pady=(10,0))
                     Label(window, text="CURRENT TAGS: \nYear: " + str(audio['date'])[2:-2] + "\nBPM: " + str(audio['bpm'])[2:-2] + "\nKey: " + str(audio['initialkey'])[2:-2] + "\nGenre: " + str(audio['genre'])[2:-2]).grid(row=1, column=1, pady=(10,35))
                     Label(window, text="NEW TAGS: \nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre)).grid(row=1, column=2, pady=(10,35))

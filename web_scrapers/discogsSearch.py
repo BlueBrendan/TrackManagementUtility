@@ -5,8 +5,9 @@ from tkinter import *
 import webbrowser
 import time
 import random
+from reverseImageSearch import reverseImageSearch
 
-def discogsSearch(artist, title, yearList, genreList, artistVariations, titleVariations, headers, search, frame, window, imageCounter):
+def discogsSearch(artist, title, yearList, genreList, artistVariations, titleVariations, headers, search, frame, window, options, imageCounter):
     # THIRD QUERY - DISCOGS
     Label(frame.scrollable_frame, text="\nSearching Discogs for " + str(artist) + " - " + str(title), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
@@ -20,15 +21,15 @@ def discogsSearch(artist, title, yearList, genreList, artistVariations, titleVar
                 if ' (' in title and ')' in title:
                     searchTitle = title[:title.index(' (')]
                 if searchTitle.lower() in str(result).lower():
-                    yearList, genreList, frame = searchQuery(title, result, headers, frame, window, yearList, genreList, titleVariations)
+                    yearList, genreList, frame = searchQuery(title, result, headers, frame, window, yearList, genreList, titleVariations, options)
                 else:
                     for variation in titleVariations:
                         variation = variation.replace('-', ' ')
                         if variation.lower() in str(result).lower():
-                            yearList, genreList, frame = searchQuery(title, result, headers, frame, window, yearList, genreList, titleVariations)
+                            yearList, genreList, frame = searchQuery(title, result, headers, frame, window, yearList, genreList, titleVariations, options)
     return yearList, genreList, imageCounter
 
-def searchQuery(title, result, headers, frame, window, yearList, genreList, titleVariations):
+def searchQuery(title, result, headers, frame, window, yearList, genreList, titleVariations, options):
     link = str(result.find('a').get('href')).split('&')[0].split('=')[1]
     label = Label(frame.scrollable_frame, text="\n" + str(link), cursor="hand2")
     label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
@@ -53,14 +54,14 @@ def searchQuery(title, result, headers, frame, window, yearList, genreList, titl
                                     name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
                     mismatch = True
                     if title.lower() == name.lower():
-                        yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window)
+                        yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window, options)
                         break
                     else:
                         for title in titleVariations:
                             title = title.replace('-', ' ')
                             mismatch = compareTokens(title, name)
                             if mismatch == False:
-                                yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window)
+                                yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window, options)
                                 break
                     if not mismatch:break
             #title format
@@ -76,19 +77,19 @@ def searchQuery(title, result, headers, frame, window, yearList, genreList, titl
                     # check if title and name are exact matches
                     mismatch = True
                     if title.lower() == name.lower():
-                        yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window)
+                        yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window, options)
                         break
                     else:
                         for title in titleVariations:
                             title = title.replace('-', ' ')
                             mismatch = compareTokens(title, name)
                             if mismatch == False:
-                                yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window)
+                                yearList, genreList, frame = discogsRelease(soup, yearList, genreList, frame, window, options)
                                 break
                     if not mismatch:break
     return yearList, genreList, frame
 
-def discogsRelease(soup, yearList, genreList, frame, window):
+def discogsRelease(soup, yearList, genreList, frame, window, options):
     genre = ''
     for link in soup.find_all('div', class_="content"):
         for link in link.find_all('a'):
@@ -111,6 +112,14 @@ def discogsRelease(soup, yearList, genreList, frame, window):
                 else:
                     genre += ", " + str(link.get_text()).strip()
                 genreList.append(link.get_text().strip())
+    if options["Reverse Image Search (B)"].get()==True:
+        image = soup.find('div', class_="image_gallery image_gallery_large")['data-images']
+        if "full" in image and ".jpg" in image:
+            print(image[image.index('full": ')+8:image.index(".jpg", image.index("full"))+4])
+
+            # link = link.find('img')
+            # window.update()
+            # imageCounter = reverseImageSearch(link['src'], frame, window, imageCounter)
     Label(frame.scrollable_frame, text="Genre: " + genre).pack(anchor='w')
     window.update()
     return yearList, genreList, frame

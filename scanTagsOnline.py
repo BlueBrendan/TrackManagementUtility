@@ -100,7 +100,7 @@ class AudioTrack:
         # # #beatport
         if options['Scrape Beatport (B)'].get() == True:yearList, BPMList, keyList, genreList= beatportSearch(track.artist, track.title, yearList, BPMList, keyList, genreList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow)
         # #discogs
-        if options['Scrape Discogs (B)'].get() == True:yearList, genreList, imageCounter = discogsSearch(track.artist, track.title, yearList, genreList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow, imageCounter)
+        if options['Scrape Discogs (B)'].get() == True:yearList, genreList, imageCounter = discogsSearch(track.artist, track.title, yearList, genreList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow, options, imageCounter)
         # spotify
         # apple music
         finalResults, webScrapingWindow, characters = buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScrapingWindow, characters, options, imageCounter)
