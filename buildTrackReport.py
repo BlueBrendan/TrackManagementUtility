@@ -124,7 +124,7 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                         photo = ImageTk.PhotoImage(fileImageImport)
                         fileImage = Label(images, image=photo)
                         fileImage.image = photo
-                        Button(tags, image=photo).pack(side="left", padx=(10,10))
+                        Button(tags, image=photo, command=lambda i=i:print(i)).pack(side="left", padx=(10,10))
                     buttons = Frame(window)
                     buttons.pack(side=TOP)
                     Button(buttons, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25,10))
@@ -142,6 +142,35 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                     Button(window, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow)).grid(row=2, column=2)
                     Button(window, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow)).grid(row=2, column=3)
                     window.wait_window()
+            elif imageCounter >= 1:
+                window = Toplevel()
+                window.attributes("-topmost", True)
+                window.title("Multiple Images Found")
+                ws = window.winfo_screenwidth()  # width of the screen
+                hs = window.winfo_screenheight()  # height of the screen
+                y = (hs / 2) - (550 / 2)
+                x = (ws / 2) - ((550 + (150 * imageCounter)) / 2)
+                window.geometry('%dx%d+%d+%d' % (550 + (150 * imageCounter), 440, x, y))
+                Label(window, text="Select a cover image", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(10, 5))
+                images = Frame(window)
+                images.pack(side=TOP)
+                tags = Frame(window)
+                tags.pack(side=TOP)
+                for i in range(imageCounter):
+                    window.columnconfigure(i, weight=1)
+                    fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
+                    fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+                    photo = ImageTk.PhotoImage(fileImageImport)
+                    fileImage = Label(images, image=photo)
+                    fileImage.image = photo
+                    Button(tags, image=photo, command=lambda i=i:print(i)).pack(side="left", padx=(10, 10))
+                buttons = Frame(window)
+                buttons.pack(side=TOP)
+                Button(buttons, text="Select", command=lambda: window.destroy()).pack(side="left", padx=(15, 15),pady=(25, 10))
+                Button(buttons, text="None", command=lambda: window.destroy()).pack(side="left", padx=(15, 15), pady=(25, 10))
+                window.lift()
+                window.wait_window()
+
         else:
             audio['date'] = str(track.year)
             audio['bpm'] = str(track.BPM)

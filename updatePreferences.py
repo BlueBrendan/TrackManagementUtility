@@ -1,43 +1,37 @@
-from tkinter import *
+import tkinter as tk
 from tkinter import ttk
 
-def updatePreferences(options, CONFIG_FILE):
-    window = Toplevel()
+def updatePreferences(options, CONFIG_FILE, root):
+    window = tk.Toplevel(master=root)
     window.title("Preferences Window")
     ws = window.winfo_screenwidth()  # width of the screen
     hs = window.winfo_screenheight()  # height of the screen
     x = (ws / 2) - (500 / 2)
     y = (hs / 2) - (400 / 2)
     window.geometry('%dx%d+%d+%d' % (500, 300, x, y))
+    print(options['Scrape Junodownload (B)'].get())
+
+
+
     tab_parent = ttk.Notebook(window)
     tab1 = ttk.Frame(tab_parent)
-
     #Web Scraping Tab
     tab_parent.pack(expand=1, fill='both')
     tab_parent.add(tab1, text="Web Scraping")
 
-
     #website settings
-    Label(tab1, text="Websites to Scrape").pack(pady=(10,5), anchor="w")
-    junoCheck = Checkbutton(tab1, text="Juno Download", command=lambda: checkbox(CONFIG_FILE, 'Scrape Junodownload (B)'))
-    if options['Scrape Junodownload (B)'].get()==True:
-        junoCheck.select()
-    beatportCheck = Checkbutton(tab1, text="Beatport", command=lambda: checkbox(CONFIG_FILE, 'Scrape Beatport (B)'))
-    if options['Scrape Beatport (B)'].get() == True:
-        beatportCheck.select()
-    discogsCheck = Checkbutton(tab1, text="Discogs", command=lambda: checkbox(CONFIG_FILE, 'Scrape Discogs (B)'))
-    if options['Scrape Discogs (B)'].get() == True:
-        discogsCheck.select()
-    junoCheck.pack(padx=(10, 0), anchor="w")
-    beatportCheck.pack(padx=(10, 0), anchor="w")
-    discogsCheck.pack(padx=(10, 0), anchor="w")
+    tk.Label(tab1, text="Websites to Scrape").pack(pady=(10,5), anchor="w")
+    tk.Checkbutton(tab1, text="Juno Download", variable=options['Scrape Junodownload (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Scrape Junodownload (B)')).pack(padx=(10, 0), anchor="w")
+    tk.Checkbutton(tab1, text="Beatport", variable=options['Scrape Beatport (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Scrape Beatport (B)')).pack(padx=(10, 0), anchor="w")
+    tk.Checkbutton(tab1, text="Discogs", variable=options['Scrape Discogs (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Scrape Discogs (B)')).pack(padx=(10, 0), anchor="w")
+
 
     #image scraping settings
-    Label(tab1, text="Image Scraping").pack(pady=(15,5), anchor="w")
-    reverseImageSearchCheck = Checkbutton(tab1, text="Reverse Image Search with Selenium", command=lambda: checkbox(CONFIG_FILE, 'Reverse Image Search (B)'))
+    tk.Label(tab1, text="Image Scraping").pack(pady=(15,5), anchor="w")
+    reverseImageSearchCheck = tk.Checkbutton(tab1, text="Reverse Image Search with Selenium", command=lambda: checkbox(CONFIG_FILE, 'Reverse Image Search (B)'))
     if options['Reverse Image Search (B)'].get() == True:
         reverseImageSearchCheck.select()
-    deleteStoredImagesCheck = Checkbutton(tab1, text="Delete Stored Images after Completion", command=lambda: checkbox(CONFIG_FILE, 'Delete Stored Images (B)'))
+    deleteStoredImagesCheck = tk.Checkbutton(tab1, text="Delete Stored Images after Completion", command=lambda: checkbox(CONFIG_FILE, 'Delete Stored Images (B)'))
     if options['Delete Stored Images (B)'].get() == True:
         deleteStoredImagesCheck.select()
     reverseImageSearchCheck.pack(padx=(10, 0), anchor="w")
@@ -50,20 +44,13 @@ def updatePreferences(options, CONFIG_FILE):
     #Others Tab
     tab3 = ttk.Frame(tab_parent)
     tab_parent.add(tab3, text="Other")
-    Label(tab3, text="Audio Formatting").pack(pady=(10, 5), anchor="w")
-    checkNumberTypoCheck = Checkbutton(tab3, text="Check Artist for Common Typos", command=lambda: checkbox(CONFIG_FILE, 'Check Artist for Typos (B)'))
+    tk.Label(tab3, text="Audio Formatting").pack(pady=(10, 5), anchor="w")
+    checkNumberTypoCheck = tk.Checkbutton(tab3, text="Check Artist for Common Typos", command=lambda: checkbox(CONFIG_FILE, 'Check Artist for Typos (B)'))
     checkNumberTypoCheck.deselect()
     if options["Check Artist for Typos (B)"].get() == True:
         checkNumberTypoCheck.select()
     checkNumberTypoCheck.pack(padx=(10, 0), anchor="w")
-    # var = IntVar()
-    # # for format in formats:
-    # var.set(1)
-    # ttk.Radiobutton(tab3, text="Artist - Title", variable=var, value=1).pack(pady=(5, 5), anchor="w")
-    # ttk.Radiobutton(tab3, text="Title", variable=var, value=2).pack(pady=(5, 5), anchor="w")
-
-def test(value):
-    print(value)
+    root.mainloop()
 
 def checkbox(CONFIG_FILE, term):
     config_file = open(CONFIG_FILE, 'r').read()
