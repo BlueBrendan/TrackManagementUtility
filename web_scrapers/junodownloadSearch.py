@@ -12,9 +12,9 @@ from PIL import Image, ImageTk
 from reverseImageSearch import reverseImageSearch
 
 
-def junodownloadSearch(artist, title, yearList, BPMList, genreList, artistVariations, titleVariations, headers, search, frame, window, audio, options, imageCounter):
+def junodownloadSearch(artist, title, var, yearList, BPMList, genreList, artistVariations, titleVariations, headers, search, frame, window, audio, options, imageCounter):
 #FIRST QUERY - JUNO DOWNLOAD
-    Label(frame.scrollable_frame, text="\nSearching Juno Download for " + str(artist) + " - " + str(title), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
+    Label(frame.scrollable_frame, text="\nSearching Juno Download for " + str(var), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
     url = "https://www.google.co.in/search?q=" + search + " Junodownload"
     soup = sendRequest(url, headers, frame, window)

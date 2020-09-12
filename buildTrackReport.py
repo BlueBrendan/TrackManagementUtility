@@ -124,7 +124,7 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                         photo = ImageTk.PhotoImage(fileImageImport)
                         fileImage = Label(images, image=photo)
                         fileImage.image = photo
-                        Button(tags, image=photo, command=lambda i=i:print(i)).pack(side="left", padx=(10,10))
+                        Button(images, image=photo, command=lambda i=i:print(i)).pack(side="left", padx=(10,10))
                     buttons = Frame(window)
                     buttons.pack(side=TOP)
                     Button(buttons, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25,10))

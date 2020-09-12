@@ -25,7 +25,7 @@ def createConfigFile():
             os.mkdir(path + "/Track Management Utility")
         # create setttings file
         file = open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt", 'w')
-        file.write("Subdirectories (B):True\nClose Scraping Window (B):True\nFirst Default Directory (S):\nSecond Default Directory (S):\nScrape Junodownload (B):True\nScrape Beatport (B):True\nScrape Discogs (B):True\nReverse Image Search (B):True\nDelete Stored Images (B):True\nCheck Artist for Typos (B):True\n")
+        file.write("-GENERAL-\nSubdirectories (B):True\nClose Scraping Window (B):True\nFirst Default Directory (S):\nSecond Default Directory (S):\n\n-SCRAPING SETTINGS-\nScrape Junodownload (B):True\nScrape Beatport (B):True\nScrape Discogs (B):True\n\n-IMAGE SCRAPING-\nReverse Image Search (B):True\nDelete Stored Images (B):True\n\n-TAGGING-\nCheck Artist for Typos (B):True\nAudio naming format (S):Artist - Title\n")
         file.close()
     return CONFIG_FILE
 
@@ -54,7 +54,7 @@ def compareDirectories(CONFIG_FILE):
 
 def readValuesFromConfig(CONFIG_FILE):
     config_file = open(CONFIG_FILE, 'r').read()
-    terms = ['Subdirectories (B)', 'Close Scraping Window (B)', 'First Default Directory (S)', 'Second Default Directory (S)', 'Scrape Junodownload (B)', 'Scrape Beatport (B)', 'Scrape Discogs (B)', "Reverse Image Search (B)", "Delete Stored Images (B)", "Check Artist for Typos (B)"]
+    terms = ['Subdirectories (B)', 'Close Scraping Window (B)', 'First Default Directory (S)', 'Second Default Directory (S)', 'Scrape Junodownload (B)', 'Scrape Beatport (B)', 'Scrape Discogs (B)', "Reverse Image Search (B)", "Delete Stored Images (B)", "Check Artist for Typos (B)", "Audio naming format (S)"]
     options = {}
     for term in terms:
         if (term[len(term) - 2:len(term) - 1]) == 'B':
@@ -64,7 +64,7 @@ def readValuesFromConfig(CONFIG_FILE):
                 createConfigFile()
                 readValuesFromConfig(CONFIG_FILE)
         elif (term[len(term) - 2:len(term) - 1]) == 'S':
-            try: options[term] = config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]
+            try: options[term] = tk.StringVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
             except ValueError:
                 os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
                 createConfigFile()
@@ -112,10 +112,6 @@ tk.Label(root, text="Scan for files in a directory and find their tags online").
 tk.Button(root, text="Compare Directories", command=lambda: selectCompare(CONFIG_FILE)).grid(row=4, column=1, pady=(5,3))
 tk.Label(root, text="Scan for differences in files and folders between two separate directories").grid(row=5, column=1, pady=(3, 20))
 tk.Checkbutton(root, text="Include Subdirectories: ", var=options['Subdirectories (B)']).grid(row=6, column=0, columnspan=2, padx=(10,0), pady=(0, 0), sticky='w')
-print(options['Scrape Junodownload (B)'].get())
-tk.Checkbutton(root, text="Juno Download", variable=options['Scrape Junodownload (B)'], onvalue=True, offvalue=False).grid(row=7, column=0, columnspan=2, padx=(10,0), pady=(0, 0), sticky='w')
-tk.Checkbutton(root, text="Beatport", variable=options['Scrape Beatport (B)'], onvalue=True, offvalue=False).grid(row=8, column=0, columnspan=2, padx=(10,0), pady=(0, 0), sticky='w')
-
 root.mainloop()
 
 

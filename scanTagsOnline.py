@@ -62,7 +62,7 @@ class AudioTrack:
         self.genre = ''
         self.replaygain_track_gain = ''
 
-    def searchTags(track, audio, frame, webScrapingWindow, characters, options, imageCounter):
+    def searchTags(track, audio, var, frame, webScrapingWindow, characters, options, imageCounter):
         interestParameters = ['artist', 'title', 'date', 'bpm', 'initialkey', 'genre', 'replaygain_track_gain']
         fileParameters = []
         for x in audio:
@@ -96,11 +96,11 @@ class AudioTrack:
         #     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0',
         # }
         # junodownload
-        if options['Scrape Junodownload (B)'].get() == True:yearList, BPMList, genreList, imageCounter = junodownloadSearch(track.artist, track.title, yearList, BPMList, genreList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow, audio, options, imageCounter)
+        if options['Scrape Junodownload (B)'].get() == True:yearList, BPMList, genreList, imageCounter = junodownloadSearch(track.artist, track.title, var, yearList, BPMList, genreList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow, audio, options, imageCounter)
         # # #beatport
-        if options['Scrape Beatport (B)'].get() == True:yearList, BPMList, keyList, genreList= beatportSearch(track.artist, track.title, yearList, BPMList, keyList, genreList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow)
+        if options['Scrape Beatport (B)'].get() == True:yearList, BPMList, keyList, genreList= beatportSearch(track.artist, track.title, var, yearList, BPMList, keyList, genreList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow)
         # #discogs
-        if options['Scrape Discogs (B)'].get() == True:yearList, genreList, imageCounter = discogsSearch(track.artist, track.title, yearList, genreList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow, options, imageCounter)
+        if options['Scrape Discogs (B)'].get() == True:yearList, genreList, imageCounter = discogsSearch(track.artist, track.title, var, yearList, genreList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow, options, imageCounter)
         # spotify
         # apple music
         finalResults, webScrapingWindow, characters = buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScrapingWindow, characters, options, imageCounter)
@@ -112,7 +112,7 @@ class AudioTrack:
         audio["title"] = self.title
         audio.pprint()
         audio.save()
-        finalResults, webScrapingWindow, characters, imageCounter = AudioTrack.searchTags(self, audio, frame, webScrapingWindow, characters, options, imageCounter)
+        finalResults, webScrapingWindow, characters, imageCounter = AudioTrack.searchTags(self, audio, var, frame, webScrapingWindow, characters, options, imageCounter)
         return finalResults, webScrapingWindow, characters, imageCounter
 
 #driver code
@@ -324,14 +324,21 @@ def retrieveInfo(var, directory, frame, webScrapingWindow, options):
                 if '.' in titlePrefix[0:5]:
                     if any(char.isdigit() for char in titlePrefix[0:titlePrefix.index('.')]):
                         audio, var = handleTypo(artist, title, var, titlePrefix, webScrapingWindow, audio, directory, frame, webScrapingWindow)
-    # if "featuring" in artist:
-    #     artist = artist.replace("featuring", "feat.")
-    #     audio = renameArtist(directory, var, artist, title, frame, webScrapingWindow)
-    # if '’' in filename:
-    #     filename = filename.replace("’", "'")
-    #     renameFile(directory, var, filename, frame, webScrapingWindow)
-    # audio["artist"] = artist
-    # audio["title"] = title
+    if options["Audio naming format (S)"].get() == "Audio - Title":
+        #rename track so that the artist is appended at the front of the title
+        if ' - ' not in var:
+            artist = str(audio['artist'])[2:-2]
+            os.rename(directory + '/' + var, str(directory) + '/' + str(artist) + ' - ' + var)
+            var = str(artist) + ' - ' + var
+            audio = FLAC(directory + '/' + var)
+    elif options["Audio naming format (S)"].get() == "Title":
+        # rename track so that the artist is not at the front of the title
+        if ' - ' in var:
+            os.rename(directory + '/' + var, str(directory) + '/' + var[var.index(' - ') + 3:])
+            audio = FLAC(directory + '/' + var[var.index(' - ') + 3:])
+            audio["artist"] = var[:var.index(' - ')]
+            audio.save()
+            var = var[var.index(' - ') + 3:]
     return audio, var
 
 #handle subdirectory selection

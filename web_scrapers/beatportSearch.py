@@ -6,9 +6,9 @@ import webbrowser
 import time
 import random
 
-def beatportSearch(artist, title, yearList, BPMList, keyList, genreList, artistVariations, titleVariations, headers, search, frame, window):
+def beatportSearch(artist, title, var, yearList, BPMList, keyList, genreList, artistVariations, titleVariations, headers, search, frame, window):
 #SECOND QUERY - BEATPORT
-    Label(frame.scrollable_frame, text="\nSearching Beatport for " + str(artist) + " - " + str(title), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
+    Label(frame.scrollable_frame, text="\nSearching Beatport for " + str(var), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
     url = "https://www.google.co.in/search?q=" + search + " Beatport"
     soup = sendRequest(url, headers, frame, window)

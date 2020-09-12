@@ -7,9 +7,9 @@ import time
 import random
 from reverseImageSearch import reverseImageSearch
 
-def discogsSearch(artist, title, yearList, genreList, artistVariations, titleVariations, headers, search, frame, window, options, imageCounter):
+def discogsSearch(artist, title, var, yearList, genreList, artistVariations, titleVariations, headers, search, frame, window, options, imageCounter):
     # THIRD QUERY - DISCOGS
-    Label(frame.scrollable_frame, text="\nSearching Discogs for " + str(artist) + " - " + str(title), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
+    Label(frame.scrollable_frame, text="\nSearching Discogs for " + str(var), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
     url = "https://www.google.co.in/search?q=" + search + " Discogs"
     soup = sendRequest(url, headers, frame, window)
@@ -112,13 +112,14 @@ def discogsRelease(soup, yearList, genreList, frame, window, options, imageCount
                 else:
                     genre += ", " + str(link.get_text()).strip()
                 genreList.append(link.get_text().strip())
+    Label(frame.scrollable_frame, text="Genre: " + genre).pack(anchor='w')
+    window.update()
     if options["Reverse Image Search (B)"].get()==True:
         image = soup.find('div', class_="image_gallery image_gallery_large")['data-images']
         if "full" in image and ".jpg" in image:
             link = image[image.index('full": ')+8:image.index(".jpg", image.index("full"))+4]
+            window.update()
             imageCounter = reverseImageSearch(link, frame, window, imageCounter)
-    Label(frame.scrollable_frame, text="Genre: " + genre).pack(anchor='w')
-    window.update()
     return yearList, genreList, frame, imageCounter
 
 def sendRequest(url, headers, frame, window):
