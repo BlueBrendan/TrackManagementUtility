@@ -1,16 +1,13 @@
-from compareTokens import compareTokens
+from track_scraping.compareTokens import compareTokens
 import requests
 from bs4 import BeautifulSoup
-from tkinter import *
 from tkinter.tix import *
 import webbrowser
 import time
 import random
-from selenium import webdriver
-import getpass
-from PIL import Image, ImageTk
-from reverseImageSearch import reverseImageSearch
 
+#import methods
+from track_scraping.reverseImageSearch import reverseImageSearch
 
 def junodownloadSearch(artist, title, var, yearList, BPMList, genreList, artistVariations, titleVariations, headers, search, frame, window, audio, options, imageCounter):
 #FIRST QUERY - JUNO DOWNLOAD
@@ -21,7 +18,6 @@ def junodownloadSearch(artist, title, var, yearList, BPMList, genreList, artistV
     if soup!=False:
         for result in soup.find_all('div', class_="ZINbbc xpd O9g5cc uUPGi"):
             if 'junodownload.com' and 'products' in result.find('a').get('href').split('&')[0].lower():
-                # print(soup.prettify())
                 for variation in titleVariations:
                     variation = variation.replace('-', ' ')
                     # print("variation: " + str(variation))
@@ -56,7 +52,7 @@ def junodownloadSearch(artist, title, var, yearList, BPMList, genreList, artistV
                                 #check runtime to ensure track is correct
                                     if compareRuntime(link, audio) == False:
                                         for value in link.find_all('div', class_="col-1 d-none d-lg-block text-center"):
-                                            if ":" not in value.get_text():
+                                            if ":" not in value.get_text() and value.get_text()!='\xa0':
                                                 BPM = value.get_text()
                                                 Label(frame.scrollable_frame, text="BPM: " + str(BPM)).pack(anchor='w')
                                                 window.update()

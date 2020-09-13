@@ -1,4 +1,4 @@
-from compareTokens import compareTokens
+from track_scraping.compareTokens import compareTokens
 import requests
 from bs4 import BeautifulSoup
 from tkinter import *

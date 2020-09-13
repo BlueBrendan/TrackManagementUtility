@@ -1,11 +1,13 @@
-from compareTokens import compareTokens
+from track_scraping.compareTokens import compareTokens
 import requests
 from bs4 import BeautifulSoup
 from tkinter import *
 import webbrowser
 import time
 import random
-from reverseImageSearch import reverseImageSearch
+
+#import methods
+from track_scraping.reverseImageSearch import reverseImageSearch
 
 def discogsSearch(artist, title, var, yearList, genreList, artistVariations, titleVariations, headers, search, frame, window, options, imageCounter):
     # THIRD QUERY - DISCOGS

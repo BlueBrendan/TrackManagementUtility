@@ -1,10 +1,12 @@
 import tkinter as tk
-from compareDrives import compareDrives
-from scanTagsOnline import selectFileOrDirectory
-from checkForUpdates import checkForUpdates
-from updatePreferences import updatePreferences
 import getpass
 import os
+
+#import methods
+from compareDrives import compareDrives
+from track_preparation.scanTagsOnline import selectFileOrDirectory
+from other.checkForUpdates import checkForUpdates
+from other.updatePreferences import updatePreferences
 
 root = tk.Tk()
 root.title("Track Management Utility V1.0")
@@ -13,7 +15,6 @@ hs = root.winfo_screenheight() # height of the screen
 x = (ws/2) - (520/2)
 y = (hs/2) - (330/2)
 root.geometry('%dx%d+%d+%d' % (520, 250, x, y))
-
 
 def createConfigFile():
     CONFIG_FILE = r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt"
@@ -77,7 +78,7 @@ def openPreferences(CONFIG_FILE, root):
 
 def selectSearchTags(CONFIG_FILE):
     options = readValuesFromConfig(CONFIG_FILE)
-    selectFileOrDirectory(CONFIG_FILE, options)
+    selectFileOrDirectory(options, CONFIG_FILE)
 
 def selectCompare(CONFIG_FILE):
     options = readValuesFromConfig(CONFIG_FILE)

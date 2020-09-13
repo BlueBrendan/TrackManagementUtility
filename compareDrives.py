@@ -4,8 +4,6 @@ from tkinter import *
 from functools import partial
 from tkinter import messagebox
 from tkinter import filedialog
-from mutagen.flac import FLAC
-from PIL import Image, ImageTk
 
 complete = False
 def compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory):

@@ -4,6 +4,9 @@ from tkinter.tix import *
 from PIL import Image, ImageTk
 import getpass
 
+#global variables
+#imageSelection stores the index of thumbnail images collected by reverse image scraping
+imageSelection = 0
 
 def overwriteOption(audio, year, BPM, key, genre, window, webScrapingWindow):
     audio['date'] = str(year)
@@ -50,6 +53,10 @@ def skipOption(track, audio, window, webScrapingWindow):
     track.genre = str(audio['genre'])[2:-2]
     webScrapingWindow.lift()
     window.destroy()
+
+def assignImage(i):
+    global imageSelection
+    imageSelection = i
 
 def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScrapingWindow, characters, options, imageCounter):
     yearValue = False
@@ -124,7 +131,7 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                         photo = ImageTk.PhotoImage(fileImageImport)
                         fileImage = Label(images, image=photo)
                         fileImage.image = photo
-                        Button(images, image=photo, command=lambda i=i:print(i)).pack(side="left", padx=(10,10))
+                        Button(images, image=photo, command=lambda i=i:assignImage(i)).pack(side="left", padx=(10,10))
                     buttons = Frame(window)
                     buttons.pack(side=TOP)
                     Button(buttons, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25,10))
@@ -163,22 +170,20 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                     photo = ImageTk.PhotoImage(fileImageImport)
                     fileImage = Label(images, image=photo)
                     fileImage.image = photo
-                    Button(tags, image=photo, command=lambda i=i:print(i)).pack(side="left", padx=(10, 10))
+                    Button(tags, image=photo, command=lambda i=i:assignImage(i)).pack(side="left", padx=(10, 10))
                 buttons = Frame(window)
                 buttons.pack(side=TOP)
                 Button(buttons, text="Select", command=lambda: window.destroy()).pack(side="left", padx=(15, 15),pady=(25, 10))
                 Button(buttons, text="None", command=lambda: window.destroy()).pack(side="left", padx=(15, 15), pady=(25, 10))
                 window.lift()
                 window.wait_window()
-
         else:
             audio['date'] = str(track.year)
             audio['bpm'] = str(track.BPM)
             audio['initialkey'] = track.key
             audio['genre'] = track.genre
-            audio.pprint()
             audio.save()
     # return "\nTrack: " + str(artist) + " - " + str(title) + "\nYear: " + str(year) + "\nBPM: " + str(BPM) + "\nKey: " + str(key) + "\nGenre: " + str(genre) + "\nImage Links: " + str(images)
     if len(str(track.artist) + " - " + str(track.title)) > characters:
         characters = len(str(track.artist) + " - " + str(track.title))
-    return "\nTrack: " + str(track.artist) + " - " + str(track.title) + "\nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), webScrapingWindow, characters
+    return "\nTrack: " + str(track.artist) + " - " + str(track.title) + "\nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), webScrapingWindow, characters, imageSelection
