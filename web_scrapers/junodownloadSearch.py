@@ -20,10 +20,7 @@ def junodownloadSearch(artist, title, var, yearList, BPMList, genreList, artistV
             if 'junodownload.com' and 'products' in result.find('a').get('href').split('&')[0].lower():
                 for variation in titleVariations:
                     variation = variation.replace('-', ' ')
-                    # print("variation: " + str(variation))
-                    # print("div: " + str(div))
                     if variation.lower() in str(result).lower():
-            #     print(div)
             # if (any(variation in link.find('div', class_="BNeawe s3v9rd AP7Wnd").get_text().lower() for variation in artistVariations) or any(variation in link.find('div', class_="BNeawe s3v9rd AP7Wnd").get_text().lower() for variation in titleVariations) or any(variation in link.find('div', class_="BNeawe vvjwJb AP7Wnd").get_text().lower() for variation in artistVariations) or any(variation in link.find('div', class_="BNeawe vvjwJb AP7Wnd").get_text().lower() for variation in titleVariations)):
                         link = result.find('a').get('href').split('&')[0][7:]
                         label = Label(frame.scrollable_frame, text="\n" + str(link), cursor="hand2")

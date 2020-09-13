@@ -13,7 +13,6 @@ def overwriteOption(audio, year, BPM, key, genre, window, webScrapingWindow):
     audio['bpm'] = str(BPM)
     audio['initialkey'] = key
     audio['genre'] = genre
-    audio.pprint()
     audio.save()
     window.destroy()
     webScrapingWindow.lift()
@@ -27,7 +26,6 @@ def mergeScrapeOption(audio, year, BPM, key, genre, window, webScrapingWindow):
         audio['initialkey'] = key
     if genre != '':
         audio['genre'] = genre
-    audio.pprint()
     audio.save()
     window.destroy()
     webScrapingWindow.lift()
@@ -41,7 +39,6 @@ def mergeSourceOption(track, audio, window, webScrapingWindow):
     else: track.key = str(audio['initialkey'])[2:-2]
     if audio['genre'] == ['']: audio['genre'] = track.genre
     else: track.genre = str(audio['genre'])[2:-2]
-    audio.pprint()
     audio.save()
     window.destroy()
     webScrapingWindow.lift()
@@ -58,7 +55,7 @@ def assignImage(i):
     global imageSelection
     imageSelection = i
 
-def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScrapingWindow, characters, options, imageCounter):
+def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScrapingWindow, characters, options, initialCounter, imageCounter):
     yearValue = False
     BPMValue = False
     keyValue = False
@@ -113,10 +110,10 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                 window.columnconfigure(1, weight=1)
                 window.columnconfigure(2, weight=1)
                 window.columnconfigure(3, weight=1)
-                if options["Reverse Image Search (B)"].get()==True and imageCounter >= 1:
+                if options["Reverse Image Search (B)"].get()==True and (imageCounter-initialCounter) >= 1:
                     y = (hs / 2) - (550 / 2)
-                    x = (ws / 2) - ((550 + (150*imageCounter)) / 2)
-                    window.geometry('%dx%d+%d+%d' % (550 + (150*imageCounter), 440, x, y))
+                    x = (ws / 2) - ((500 + (130*(imageCounter-initialCounter))) / 2)
+                    window.geometry('%dx%d+%d+%d' % (500 + (170 * (imageCounter-initialCounter)), 440, x, y))
                     Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(10,5))
                     tags = Frame(window)
                     tags.pack(side=TOP)
@@ -124,7 +121,7 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                     Label(tags, text="NEW TAGS: \nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre)).pack(side="right", padx=(35, 5), pady=(10,15))
                     images = Frame(window)
                     images.pack(side=TOP)
-                    for i in range(imageCounter):
+                    for i in range(initialCounter, imageCounter):
                         window.columnconfigure(i, weight=1)
                         fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
                         fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
@@ -156,14 +153,14 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                 ws = window.winfo_screenwidth()  # width of the screen
                 hs = window.winfo_screenheight()  # height of the screen
                 y = (hs / 2) - (550 / 2)
-                x = (ws / 2) - ((550 + (150 * imageCounter)) / 2)
-                window.geometry('%dx%d+%d+%d' % (550 + (150 * imageCounter), 440, x, y))
+                x = (ws / 2) - ((500 + (130 * (imageCounter-initialCounter))) / 2)
+                window.geometry('%dx%d+%d+%d' % (500 + (170 * (imageCounter-initialCounter)), 440, x, y))
                 Label(window, text="Select a cover image", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(10, 5))
                 images = Frame(window)
                 images.pack(side=TOP)
                 tags = Frame(window)
                 tags.pack(side=TOP)
-                for i in range(imageCounter):
+                for i in range(initialCounter, imageCounter):
                     window.columnconfigure(i, weight=1)
                     fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
                     fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)

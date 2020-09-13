@@ -27,7 +27,7 @@ def directoryOption(window, options, imageCounter):
         ws = webScrapingWindow.winfo_screenwidth()  # width of the screen
         hs = webScrapingWindow.winfo_screenheight()  # height of the screen
         x = (ws / 2) - (700 / 2)
-        y = (hs / 2) - (770 / 2)
+        y = (hs / 2) - (750 / 2)
         webScrapingWindow.geometry('%dx%d+%d+%d' % (700, 650, x, y))
         Label(frame.scrollable_frame, text="Beginning web scraping procedure...", wraplength=300, justify='left').pack(anchor='w')
         finalReport, webScrapingWindow, characters, imageSelection = directorySearch(directory, results, frame, webScrapingWindow, characters, options, imageCounter)

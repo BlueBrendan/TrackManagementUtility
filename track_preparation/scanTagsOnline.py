@@ -40,6 +40,11 @@ def selectFileOrDirectory(options, CONFIG_FILE):
     Button(window, text="Directories", command=lambda: scanTagsOnline("directory", window, options, imageCounter, CONFIG_FILE)).grid(row=2,column=2, pady=(5, 3))
 
 def scanTagsOnline(type, window, options, imageCounter, CONFIG_FILE):
+    #delete all images stored in temp before proceeding
+    if options["Reverse Image Search (B)"].get() == True:
+        images = os.listdir(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/")
+        for image in images:
+            os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(image))
     if type=="file":
         fileOption(window, options, imageCounter, CONFIG_FILE)
     elif type=="directory":
