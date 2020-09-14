@@ -50,6 +50,7 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
     #update audio tags
     if yearValue == True or BPMValue == True or keyValue == True or genreValue == True:
         if audio['date']!=[''] or audio['bpm']!=[''] or audio['initialkey']!=[''] or audio['genre']!=['']:
+            buttons = []
             if str(audio['date'])[2:-2]!=str(track.year) or str(audio['bpm'])[2:-2]!=str(track.BPM) or str(audio['initialkey'])[2:-2]!=track.key or str(audio['genre'])[2:-2]!=track.genre:
                 window = Toplevel()
                 window.attributes("-topmost", True)
@@ -90,14 +91,19 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                         photo = ImageTk.PhotoImage(thumbnailImageImport)
                         thumbnailImage = Label(thumbnail, image=photo)
                         thumbnailImage.image = photo
-                        Button(thumbnail, image=photo, command=lambda: assignImage("THUMB")).pack(side=TOP)
+                        thumbnailButton = Button(thumbnail, image=photo, bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: assignImage("THUMB", thumbnailButton, buttons, window))
+                        thumbnailButton.pack(side=TOP)
+                        buttons.append(thumbnailButton)
                         Label(thumbnail, text=str(width) + "x" + str(height)).pack(side=TOP, pady=(5, 10))
                     else:
-                        Button(thumbnail, text="No Artwork Found", command=lambda: assignImage("THUMB"), height=11, width=25).pack(side=TOP, pady=(5, 10))
+                        thumbnailButton = Button(window, text="No Artwork Found", bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: assignImage("THUMB", thumbnailButton, buttons, thumbnail), height=12, width=28)
+                        thumbnailButton.pack(side=TOP, pady=(5, 10))
+                        buttons.append(thumbnailButton)
 
                     # print images as buttons
                     images = Frame(window)
                     images.pack(side=TOP)
+                    imageButtons = {}
                     imageResolutions = []
                     Label(images, text="Artwork from search", font=("TkDefaultFont", 9, 'bold')).pack(side=TOP, pady=(10, 5))
                     for i in range(initialCounter, imageCounter):
@@ -107,7 +113,9 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                         photo = ImageTk.PhotoImage(fileImageImport)
                         fileImage = Label(images, image=photo)
                         fileImage.image = photo
-                        Button(images, image=photo, command=lambda i=i:assignImage(i)).pack(side="left", padx=(10,10))
+                        imageButtons[i] = Button(images, image=photo, highlightthickness=3, command=lambda i=i:assignImage(i, imageButtons[i], buttons, images))
+                        imageButtons[i].pack(side="left", padx=(10,10))
+                        buttons.append(imageButtons[i])
                         im = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
                         width, height = im.size
                         imageResolutions.append(str(height) + "x" + str(width))
@@ -118,12 +126,12 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                         Label(resolutions, text=i).pack(side="left", padx=(90, 90), pady=(5,10))
 
                     #load option buttons
-                    buttons = Frame(window)
-                    buttons.pack(side=TOP)
-                    Button(buttons, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection, fileCounter)).pack(side="left", padx=(15, 15), pady=(25,10))
-                    Button(buttons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection, fileCounter)).pack(side="left", padx=(15, 15), pady=(25,10))
-                    Button(buttons, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow, imageSelection, fileCounter)).pack(side="left", padx=(15, 15), pady=(25,10))
-                    Button(buttons, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow, imageSelection, fileCounter)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    optionButtons = Frame(window)
+                    optionButtons.pack(side=TOP)
+                    Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection, fileCounter)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection, fileCounter)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow, imageSelection, fileCounter)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    Button(optionButtons, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow, imageSelection, fileCounter)).pack(side="left", padx=(15, 15), pady=(25,10))
                     window.lift()
                     window.wait_window()
                 #tags only
@@ -156,17 +164,22 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                     photo = ImageTk.PhotoImage(thumbnailImageImport)
                     thumbnailImage = Label(window, image=photo)
                     thumbnailImage.image = photo
-                    Button(window, image=photo, command=lambda: assignImage("THUMB")).pack(side=TOP)
+                    thumbnailButton = Button(window, image=photo, bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: assignImage("THUMB", thumbnailButton, buttons, window))
+                    thumbnailButton.pack(side=TOP)
+                    buttons.append(thumbnailButton)
                     Label(window, text=str(width) + "x" + str(height)).pack(side=TOP, pady=(5, 10))
                 else:
-                    Button(window, text="No Artwork Found", command=lambda: assignImage("THUMB"), height=11, width=25).pack(side=TOP, pady=(5, 10))
+                    thumbnailButton = Button(window, text="No Artwork Found", bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: assignImage("THUMB", thumbnailButton, buttons, window), height=12, width=28)
+                    thumbnailButton.pack(side=TOP, pady=(5, 10))
+                    buttons.append(thumbnailButton)
 
                 Label(window, text="Select a cover image", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(15, 10))
                 images = Frame(window)
                 images.pack(side=TOP)
                 tags = Frame(window)
                 tags.pack(side=TOP)
-                buttons = Frame(window)
+                optionButtons = Frame(window)
+                imageButtons = {}
                 imageResolutions = []
                 #print images as buttons
                 for i in range(initialCounter, imageCounter):
@@ -176,7 +189,9 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                     photo = ImageTk.PhotoImage(fileImageImport)
                     fileImage = Label(images, image=photo)
                     fileImage.image = photo
-                    Button(tags, image=photo, command=lambda i=i:assignImage(i)).pack(side="left", padx=(10, 10))
+                    imageButtons[i] = Button(images, image=photo, highlightthickness=3, command=lambda i=i: assignImage(i, imageButtons[i], buttons, window))
+                    imageButtons[i].pack(side="left", padx=(10, 10))
+                    buttons.append(imageButtons[i])
                     im = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
                     width, height = im.size
                     imageResolutions.append(str(height) + "x" + str(width))
@@ -185,8 +200,8 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                 #print resolutions underneath respective images
                 for i in imageResolutions:
                     Label(resolutions, text=i).pack(side="left", padx=(90,90), pady=(5,5))
-                buttons.pack(side=TOP)
-                Button(buttons, text="Select", command=lambda: selectImage(imageSelection, audio, window, webScrapingWindow, fileCounter)).pack(side=TOP, pady=(25, 10))
+                optionButtons.pack(side=TOP)
+                Button(optionButtons, text="Select", command=lambda: selectImage(imageSelection, audio, window, webScrapingWindow, fileCounter)).pack(side=TOP, pady=(25, 10))
                 window.lift()
                 window.wait_window()
         else:
@@ -258,9 +273,16 @@ def skipOption(track, audio, window, webScrapingWindow, imageSelection, fileCoun
         webScrapingWindow.lift()
 
 #selecting image to variable
-def assignImage(i):
+def assignImage(i, button, buttons, window):
     global imageSelection
     imageSelection = i
+    #unhighlight all buttons
+    for item in buttons:
+        item.config(bg="white", highlightcolor="white")
+    #highlight selected button
+    button.config(bg="yellow", highlightcolor="yellow")
+    window.update()
+
 
 #saving image to file
 def selectImage(imageSelection, audio, window, webScrapingWindow, fileCounter):
