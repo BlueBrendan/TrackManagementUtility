@@ -17,8 +17,8 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
     directories = filedialog.askopenfilenames(parent=window, title="Select File")
     if directories != '':
         window.destroy()
-        imageSelection = 0
-        results = ''
+        imageSelections = []
+        finalResults = []
         webScrapingWindow = Toplevel()
         frame = ScrollableFrame(webScrapingWindow)
         frame.grid(row=0, column=0)
@@ -27,7 +27,7 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
         ws = webScrapingWindow.winfo_screenwidth()  # width of the screen
         hs = webScrapingWindow.winfo_screenheight()  # height of the screen
         x = (ws / 2) - (700 / 2)
-        y = (hs / 2) - (750 / 2)
+        y = (hs / 2) - (715 / 2)
         webScrapingWindow.geometry('%dx%d+%d+%d' % (700, 650, x, y))
         Label(frame.scrollable_frame, text="Beginning web scraping procedure...", wraplength=300, justify='left').pack(anchor='w')
         row = 0
@@ -41,8 +41,9 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
                 audio, var = retrieveInfo(var, directory, frame, webScrapingWindow, options)
                 if audio:
                     track = AudioTrack(audio)
-                    finalResults, webScrapingWindow, characters, imageCounter, imageSelection = searchTags(track, audio, var, frame, webScrapingWindow, characters, options, imageCounter)
-                    results += finalResults + '\n'
+                    results, webScrapingWindow, characters, imageCounter, imageSelection = searchTags(track, audio, var, frame, webScrapingWindow, characters, options, imageCounter)
+                    finalResults.append(results)
+                    imageSelections.append(imageSelection)
         finalReportWindow = Toplevel()
         webScrapingWindow.lift()
         finalReportWindow.lift()
@@ -63,23 +64,26 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
             if options["Reverse Image Search (B)"].get() == True and imageCounter >= 1:
                 y = (hs / 2) - ((550 + ((row - 1) * 75)) / 2)
                 finalReportWindow.geometry('%dx%d+%d+%d' % (430 + (characters * 1.5), 450 + ((row - 1) * 75), x, y))
-        if options["Reverse Image Search (B)"].get()==True and imageCounter >= 1:
+        if options["Reverse Image Search (B)"].get()==True and imageCounter >= 1 and len(finalResults) == len(imageSelections):
             Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(15, 0))
-            Label(finalReportWindow, text=results).pack(side="top")
-            #load image
-            fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageSelection) + ".jpg")
-            fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-            photo = ImageTk.PhotoImage(fileImageImport)
-            fileImage = Label(finalReportWindow, image=photo)
-            fileImage.image = photo
-            fileImage.pack(side="top", padx=(10, 10))
+            for i in range(len(finalResults)):
+                Label(finalReportWindow, text=finalResults[i] + '\n').pack(side="top")
+                #load image
+                if imageSelections[i]!='NA':
+                    fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageSelections[i]) + ".jpg")
+                    fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+                    photo = ImageTk.PhotoImage(fileImageImport)
+                    fileImage = Label(finalReportWindow, image=photo)
+                    fileImage.image = photo
+                    fileImage.pack(side="top", padx=(10, 10))
             #load button and checkbox
             Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, options)).pack(side="top", pady=(15, 10))
             Checkbutton(finalReportWindow, text="Close scraping window", var=options["Close Scraping Window (B)"], command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).pack(side="top")
             finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closePopup(finalReportWindow, webScrapingWindow))
         else:
             Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, pady=(15,0))
-            Label(finalReportWindow, text=results).grid(row=1, column=0)
+            for i in finalResults:
+                Label(finalReportWindow, text=i + '\n').grid(row=1, column=0)
             Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, options)).grid(row=2, column=0, pady=(0, 5))
             Checkbutton(finalReportWindow, text="Close scraping window", var=options["Close Scraping Window (B)"], command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).grid(row=3, column=0)
             finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closePopup(finalReportWindow, webScrapingWindow))
