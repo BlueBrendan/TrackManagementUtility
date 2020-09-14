@@ -5,7 +5,7 @@ from web_scrapers.junodownloadSearch import junodownloadSearch
 from web_scrapers.beatportSearch import beatportSearch
 from web_scrapers.discogsSearch import discogsSearch
 
-def searchTags(track, audio, var, frame, webScrapingWindow, characters, options, imageCounter):
+def searchTags(track, audio, var, frame, webScrapingWindow, characters, options, imageCounter, fileCounter):
     initialCounter = imageCounter
     interestParameters = ['artist', 'title', 'date', 'bpm', 'initialkey', 'genre', 'replaygain_track_gain']
     fileParameters = []
@@ -47,5 +47,5 @@ def searchTags(track, audio, var, frame, webScrapingWindow, characters, options,
     if options['Scrape Discogs (B)'].get() == True:yearList, genreList, imageCounter = discogsSearch(track.artist, track.title, var, yearList, genreList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow, options, imageCounter)
     # spotify
     # apple music
-    finalResults, webScrapingWindow, characters, imageSelection = buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScrapingWindow, characters, options, initialCounter, imageCounter)
+    finalResults, webScrapingWindow, characters, imageSelection = buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScrapingWindow, characters, options, initialCounter, imageCounter, fileCounter)
     return finalResults, webScrapingWindow, characters, imageCounter, imageSelection

@@ -32,6 +32,7 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
         Label(frame.scrollable_frame, text="Beginning web scraping procedure...", wraplength=300, justify='left').pack(anchor='w')
         row = 0
         characters = 0
+        fileCounter = 0
         for directory in directories:
             var = os.path.basename(directory)
             directory = os.path.dirname(directory)
@@ -39,11 +40,16 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
             if var.endswith('.flac'):
                 row+=1
                 audio, var = retrieveInfo(var, directory, frame, webScrapingWindow, options)
+                images = audio.pictures
+                if len(images) > 0:
+                    with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/thumb " + str(fileCounter) + ".jpg", "wb") as f:
+                        f.write(images[0].data)
                 if audio:
                     track = AudioTrack(audio)
-                    results, webScrapingWindow, characters, imageCounter, imageSelection = searchTags(track, audio, var, frame, webScrapingWindow, characters, options, imageCounter)
+                    results, webScrapingWindow, characters, imageCounter, imageSelection = searchTags(track, audio, var, frame, webScrapingWindow, characters, options, imageCounter, fileCounter)
                     finalResults.append(results)
                     imageSelections.append(imageSelection)
+                    fileCounter+=1
         finalReportWindow = Toplevel()
         webScrapingWindow.lift()
         finalReportWindow.lift()
@@ -51,31 +57,44 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
         finalReportWindow.columnconfigure(0, weight=1)
         ws = finalReportWindow.winfo_screenwidth()  # width of the screen
         hs = finalReportWindow.winfo_screenheight()  # height of the screen
-        y = (hs / 2) - (200+((row-1)*75)/ 2)
+        y = (hs / 2) - ((275+((row-1)*75)) / 2)
         if characters <= 40:
             x = (ws / 2) - (430 / 2)
             finalReportWindow.geometry('%dx%d+%d+%d' % (450, 250+((row-1)*75), x, y))
             if options["Reverse Image Search (B)"].get() == True and imageCounter >= 1:
-                y = (hs / 2) - ((550 + ((row - 1) * 75)) / 2)
-                finalReportWindow.geometry('%dx%d+%d+%d' % (430, 450 + ((row - 1) * 75), x, y))
+                y = (hs / 2) - ((528 + ((row - 1) * 75)) / 2)
+                finalReportWindow.geometry('%dx%d+%d+%d' % (430, 480 + ((row - 1) * 75), x, y))
         else:
             x = (ws / 2) - ((430 + (characters * 1.5)) / 2)
             finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters*1.5), 250 + ((row - 1) * 75), x, y))
             if options["Reverse Image Search (B)"].get() == True and imageCounter >= 1:
-                y = (hs / 2) - ((550 + ((row - 1) * 75)) / 2)
-                finalReportWindow.geometry('%dx%d+%d+%d' % (430 + (characters * 1.5), 450 + ((row - 1) * 75), x, y))
+                y = (hs / 2) - ((528 + ((row - 1) * 75)) / 2)
+                finalReportWindow.geometry('%dx%d+%d+%d' % (430 + (characters * 1.5), 480 + ((row - 1) * 75), x, y))
         if options["Reverse Image Search (B)"].get()==True and imageCounter >= 1 and len(finalResults) == len(imageSelections):
             Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(15, 0))
             for i in range(len(finalResults)):
                 Label(finalReportWindow, text=finalResults[i] + '\n').pack(side="top")
                 #load image
-                if imageSelections[i]!='NA':
+                if imageSelections[i]!='THUMB':
                     fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageSelections[i]) + ".jpg")
+                    width, height = fileImageImport.size
                     fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
                     photo = ImageTk.PhotoImage(fileImageImport)
                     fileImage = Label(finalReportWindow, image=photo)
                     fileImage.image = photo
                     fileImage.pack(side="top", padx=(10, 10))
+                    #resolution
+                    Label(finalReportWindow, text=str(width) + "x" + str(height)).pack(side=TOP, pady=(5, 10))
+                else:
+                    fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/thumb " + str(i) + ".jpg")
+                    width, height = fileImageImport.size
+                    fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+                    photo = ImageTk.PhotoImage(fileImageImport)
+                    fileImage = Label(finalReportWindow, image=photo)
+                    fileImage.image = photo
+                    fileImage.pack(side="top", padx=(10, 10))
+                    #resolution
+                    Label(finalReportWindow, text=str(width) + "x" + str(height)).pack(side=TOP, pady=(5, 10))
             #load button and checkbox
             Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, options)).pack(side="top", pady=(15, 10))
             Checkbutton(finalReportWindow, text="Close scraping window", var=options["Close Scraping Window (B)"], command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).pack(side="top")

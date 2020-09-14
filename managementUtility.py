@@ -13,7 +13,7 @@ root.title("Track Management Utility V1.0")
 ws = root.winfo_screenwidth() # width of the screen
 hs = root.winfo_screenheight() # height of the screen
 x = (ws/2) - (520/2)
-y = (hs/2) - (330/2)
+y = (hs/2) - (275/2)
 root.geometry('%dx%d+%d+%d' % (520, 250, x, y))
 
 def createConfigFile():

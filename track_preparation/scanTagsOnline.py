@@ -17,8 +17,8 @@ def selectFileOrDirectory(options, CONFIG_FILE):
     ws = window.winfo_screenwidth()  # width of the screen
     hs = window.winfo_screenheight()  # height of the screen
     x = (ws / 2) - (520 / 2)
-    y = (hs / 2) - (400 / 2)
-    window.geometry('%dx%d+%d+%d' % (520, 300, x, y))
+    y = (hs / 2) - (308 / 2)
+    window.geometry('%dx%d+%d+%d' % (520, 280, x, y))
     window.columnconfigure(1, weight=1)
     window.columnconfigure(2, weight=1)
     Label(window, text="What type of item do you want to search for?").grid(row=0, column=1, columnspan=2, pady=(10, 35))

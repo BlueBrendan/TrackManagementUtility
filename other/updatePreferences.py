@@ -8,7 +8,7 @@ def updatePreferences(options, CONFIG_FILE, root):
     ws = window.winfo_screenwidth()  # width of the screen
     hs = window.winfo_screenheight()  # height of the screen
     x = (ws / 2) - (500 / 2)
-    y = (hs / 2) - (400 / 2)
+    y = (hs / 2) - (330 / 2)
     window.geometry('%dx%d+%d+%d' % (500, 300, x, y))
     tab_parent = ttk.Notebook(window)
     tab1 = ttk.Frame(tab_parent)

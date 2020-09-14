@@ -1,7 +1,4 @@
 from mutagen.flac import Picture
-from mutagen.id3 import Encoding, PictureType
-import mutagen.id3
-from mutagen import id3
 from mutagen import id3
 from statistics import mode
 from collections import Counter
@@ -11,59 +8,11 @@ import getpass
 
 #global variables
 #imageSelection stores the index of thumbnail images collected by reverse image scraping
-imageSelection = 'NA'
+imageSelection = 'THUMB'
 
-def overwriteOption(audio, year, BPM, key, genre, window, webScrapingWindow):
-    audio['date'] = str(year)
-    audio['bpm'] = str(BPM)
-    audio['initialkey'] = key
-    audio['genre'] = genre
-    audio.save()
-    window.destroy()
-    webScrapingWindow.lift()
-
-def mergeScrapeOption(audio, year, BPM, key, genre, window, webScrapingWindow):
-    if str(year) != '':
-        audio['date'] = str(year)
-    if str(BPM) != '':
-        audio['bpm'] = str(BPM)
-    if key != '':
-        audio['initialkey'] = key
-    if genre != '':
-        audio['genre'] = genre
-    audio.save()
-    window.destroy()
-    webScrapingWindow.lift()
-
-def mergeSourceOption(track, audio, window, webScrapingWindow):
-    if audio['date'] == ['']: audio['date'] = str(track.year)
-    else: track.year = str(audio['date'])[2:-2]
-    if audio['bpm'] == ['']: audio['bpm'] = str(track.BPM)
-    else: track.BPM = str(audio['BPM'])[2:-2]
-    if audio['initialkey'] == ['']: audio['initialkey'] = track.key
-    else: track.key = str(audio['initialkey'])[2:-2]
-    if audio['genre'] == ['']: audio['genre'] = track.genre
-    else: track.genre = str(audio['genre'])[2:-2]
-    audio.save()
-    window.destroy()
-    webScrapingWindow.lift()
-
-def skipOption(track, audio, window, webScrapingWindow):
-    track.year = str(audio['date'])[2:-2]
-    track.BPM = str(audio['BPM'])[2:-2]
-    track.key = str(audio['initialkey'])[2:-2]
-    track.genre = str(audio['genre'])[2:-2]
-    webScrapingWindow.lift()
-    window.destroy()
-
-def assignImage(i, selectButton):
+def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScrapingWindow, characters, options, initialCounter, imageCounter, fileCounter):
     global imageSelection
-    imageSelection = i
-    selectButton['state'] = NORMAL
-
-def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScrapingWindow, characters, options, initialCounter, imageCounter):
-    global imageSelection
-    imageSelection = 'NA'
+    imageSelection = 'THUMB'
     yearValue = False
     BPMValue = False
     keyValue = False
@@ -118,21 +67,39 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                 window.columnconfigure(1, weight=1)
                 window.columnconfigure(2, weight=1)
                 window.columnconfigure(3, weight=1)
+                #tags and images
                 if options["Reverse Image Search (B)"].get()==True and (imageCounter-initialCounter) >= 1:
-                    y = (hs / 2) - (484 / 2)
+                    y = (hs / 2) - (880 / 2)
                     x = (ws / 2) - ((500 + (170*(imageCounter-initialCounter))) / 2)
-                    window.geometry('%dx%d+%d+%d' % (500 + (170 * (imageCounter-initialCounter)), 440, x, y))
-                    Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(10,5))
+                    window.geometry('%dx%d+%d+%d' % (500 + (170 * (imageCounter-initialCounter)), 800, x, y))
+                    Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(20,5))
                     tags = Frame(window)
                     tags.pack(side=TOP)
-                    Label(tags, text="CURRENT TAGS: \nYear: " + str(audio['date'])[2:-2] + "\nBPM: " + str(audio['bpm'])[2:-2] + "\nKey: " + str(audio['initialkey'])[2:-2] + "\nGenre: " + str(audio['genre'])[2:-2]).pack(side="left", padx=(5, 35), pady=(10,15))
-                    Label(tags, text="NEW TAGS: \nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre)).pack(side="right", padx=(35, 5), pady=(10,15))
+                    #tags
+                    Label(tags, text="CURRENT TAGS:\nYear: " + str(audio['date'])[2:-2] + "\nBPM: " + str(audio['bpm'])[2:-2] + "\nKey: " + str(audio['initialkey'])[2:-2] + "\nGenre: " + str(audio['genre'])[2:-2], justify=LEFT).pack(side="left", padx=(0, 40), pady=(10, 10))
+                    Label(tags, text="NEW TAGS:\nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), justify=LEFT).pack(side="right", padx=(40, 0), pady=(10, 10))
+
+                    #load current thumbnail
+                    thumbnail = Frame(window)
+                    thumbnail.pack(side=TOP)
+                    Label(thumbnail, text="Current artwork", font=("TkDefaultFont", 9, 'bold')).pack(side=TOP, pady=(20, 10))
+                    if len(audio.pictures) > 0:
+                        thumbnailImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/thumb " + str(fileCounter) + ".jpg")
+                        width, height = thumbnailImageImport.size
+                        thumbnailImageImport = thumbnailImageImport.resize((200, 200), Image.ANTIALIAS)
+                        photo = ImageTk.PhotoImage(thumbnailImageImport)
+                        thumbnailImage = Label(thumbnail, image=photo)
+                        thumbnailImage.image = photo
+                        Button(thumbnail, image=photo, command=lambda: assignImage("THUMB")).pack(side=TOP)
+                        Label(thumbnail, text=str(width) + "x" + str(height)).pack(side=TOP, pady=(5, 10))
+                    else:
+                        Button(thumbnail, text="No Artwork Found", command=lambda: assignImage("THUMB"), height=11, width=25).pack(side=TOP, pady=(5, 10))
+
+                    # print images as buttons
                     images = Frame(window)
                     images.pack(side=TOP)
                     imageResolutions = []
-                    # print images as buttons
-                    buttons = Frame(window)
-                    overwriteButton = Button(buttons, text="Overwrite", state=DISABLED, command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow))
+                    Label(images, text="Artwork from search", font=("TkDefaultFont", 9, 'bold')).pack(side=TOP, pady=(10, 5))
                     for i in range(initialCounter, imageCounter):
                         window.columnconfigure(i, weight=1)
                         fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
@@ -140,7 +107,7 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                         photo = ImageTk.PhotoImage(fileImageImport)
                         fileImage = Label(images, image=photo)
                         fileImage.image = photo
-                        Button(images, image=photo, command=lambda i=i:assignImage(i, overwriteButton)).pack(side="left", padx=(10,10))
+                        Button(images, image=photo, command=lambda i=i:assignImage(i)).pack(side="left", padx=(10,10))
                         im = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
                         width, height = im.size
                         imageResolutions.append(str(height) + "x" + str(width))
@@ -148,39 +115,58 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                     resolutions.pack(side=TOP)
                     # print resolutions underneath respective images
                     for i in imageResolutions:
-                        Label(resolutions, text=i).pack(side="left", padx=(90, 90))
+                        Label(resolutions, text=i).pack(side="left", padx=(90, 90), pady=(5,10))
+
+                    #load option buttons
+                    buttons = Frame(window)
                     buttons.pack(side=TOP)
-                    overwriteButton.pack(side="left", padx=(15, 15), pady=(25,10))
-                    Button(buttons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25,10))
-                    Button(buttons, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25,10))
-                    Button(buttons, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    Button(buttons, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection, fileCounter)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    Button(buttons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection, fileCounter)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    Button(buttons, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow, imageSelection, fileCounter)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    Button(buttons, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow, imageSelection, fileCounter)).pack(side="left", padx=(15, 15), pady=(25,10))
                     window.lift()
                     window.wait_window()
+                #tags only
                 else:
                     Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, columnspan=4, pady=(10,0))
                     Label(window, text="CURRENT TAGS: \nYear: " + str(audio['date'])[2:-2] + "\nBPM: " + str(audio['bpm'])[2:-2] + "\nKey: " + str(audio['initialkey'])[2:-2] + "\nGenre: " + str(audio['genre'])[2:-2]).grid(row=1, column=1, pady=(10,35))
                     Label(window, text="NEW TAGS: \nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre)).grid(row=1, column=2, pady=(10,35))
-                    Button(window, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).grid(row=2, column=0)
-                    Button(window, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow)).grid(row=2, column=1)
-                    Button(window, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow)).grid(row=2, column=2)
-                    Button(window, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow)).grid(row=2, column=3)
+                    Button(window, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection, fileCounter)).grid(row=2, column=0)
+                    Button(window, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection, fileCounter)).grid(row=2, column=1)
+                    Button(window, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow, imageSelection, fileCounter)).grid(row=2, column=2)
+                    Button(window, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow, imageSelection, fileCounter)).grid(row=2, column=3)
                     window.wait_window()
+            #images only
             elif imageCounter >= 1:
                 window = Toplevel()
                 window.attributes("-topmost", True)
                 window.title("Multiple Images Found")
                 ws = window.winfo_screenwidth()  # width of the screen
                 hs = window.winfo_screenheight()  # height of the screen
-                y = (hs / 2) - (385 / 2)
-                x = (ws / 2) - ((400 + (170 * (imageCounter-initialCounter))) / 2)
-                window.geometry('%dx%d+%d+%d' % (400 + (170 * (imageCounter-initialCounter)), 350, x, y))
+                y = (hs / 2) - (715 / 2)
+                x = (ws / 2) - ((300 + (170 * (imageCounter-initialCounter))) / 2)
+                window.geometry('%dx%d+%d+%d' % (300 + (170 * (imageCounter-initialCounter)), 650, x, y))
+
+                #print current thumbnail
+                Label(window, text="Current artwork", font=("TkDefaultFont", 9, 'bold')).pack(pady=(20, 10))
+                if len(audio.pictures) > 0:
+                    thumbnailImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/thumb " + str(fileCounter) + ".jpg")
+                    width, height = thumbnailImageImport.size
+                    thumbnailImageImport = thumbnailImageImport.resize((200, 200), Image.ANTIALIAS)
+                    photo = ImageTk.PhotoImage(thumbnailImageImport)
+                    thumbnailImage = Label(window, image=photo)
+                    thumbnailImage.image = photo
+                    Button(window, image=photo, command=lambda: assignImage("THUMB")).pack(side=TOP)
+                    Label(window, text=str(width) + "x" + str(height)).pack(side=TOP, pady=(5, 10))
+                else:
+                    Button(window, text="No Artwork Found", command=lambda: assignImage("THUMB"), height=11, width=25).pack(side=TOP, pady=(5, 10))
+
                 Label(window, text="Select a cover image", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(15, 10))
                 images = Frame(window)
                 images.pack(side=TOP)
                 tags = Frame(window)
                 tags.pack(side=TOP)
                 buttons = Frame(window)
-                selectButton = Button(buttons, text="Select", state=DISABLED, command=lambda: selectImage(imageSelection, audio, window))
                 imageResolutions = []
                 #print images as buttons
                 for i in range(initialCounter, imageCounter):
@@ -190,7 +176,7 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                     photo = ImageTk.PhotoImage(fileImageImport)
                     fileImage = Label(images, image=photo)
                     fileImage.image = photo
-                    Button(tags, image=photo, command=lambda i=i:assignImage(i, selectButton)).pack(side="left", padx=(10, 10))
+                    Button(tags, image=photo, command=lambda i=i:assignImage(i)).pack(side="left", padx=(10, 10))
                     im = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
                     width, height = im.size
                     imageResolutions.append(str(height) + "x" + str(width))
@@ -198,10 +184,9 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                 resolutions.pack(side=TOP)
                 #print resolutions underneath respective images
                 for i in imageResolutions:
-                    Label(resolutions, text=i).pack(side="left", padx=(90,90))
+                    Label(resolutions, text=i).pack(side="left", padx=(90,90), pady=(5,5))
                 buttons.pack(side=TOP)
-                selectButton.pack(side="left", padx=(15, 15),pady=(25, 10))
-                Button(buttons, text="None", command=lambda: selectNone(window)).pack(side="left", padx=(15, 15), pady=(25, 10))
+                Button(buttons, text="Select", command=lambda: selectImage(imageSelection, audio, window, webScrapingWindow, fileCounter)).pack(side=TOP, pady=(25, 10))
                 window.lift()
                 window.wait_window()
         else:
@@ -215,17 +200,82 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
         characters = len(str(track.artist) + " - " + str(track.title))
     return "\nTrack: " + str(track.artist) + " - " + str(track.title) + "\nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), webScrapingWindow, characters, imageSelection
 
-def selectImage(imageSelection, audio, window):
+#four button options
+def overwriteOption(audio, year, BPM, key, genre, window, webScrapingWindow, imageSelection, fileCounter):
+    audio['date'] = str(year)
+    audio['bpm'] = str(BPM)
+    audio['initialkey'] = key
+    audio['genre'] = genre
+    audio.save()
+    if imageSelection!="THUMB":
+        selectImage(imageSelection, audio, window, webScrapingWindow, fileCounter)
+    else:
+        window.destroy()
+        webScrapingWindow.lift()
+
+def mergeScrapeOption(audio, year, BPM, key, genre, window, webScrapingWindow, imageSelection, fileCounter):
+    if str(year) != '':
+        audio['date'] = str(year)
+    if str(BPM) != '':
+        audio['bpm'] = str(BPM)
+    if key != '':
+        audio['initialkey'] = key
+    if genre != '':
+        audio['genre'] = genre
+    audio.save()
+    if imageSelection!="THUMB":
+        selectImage(imageSelection, audio, window, webScrapingWindow, fileCounter)
+    else:
+        window.destroy()
+        webScrapingWindow.lift()
+
+def mergeSourceOption(track, audio, window, webScrapingWindow, imageSelection, fileCounter):
+    if audio['date'] == ['']: audio['date'] = str(track.year)
+    else: track.year = str(audio['date'])[2:-2]
+    if audio['bpm'] == ['']: audio['bpm'] = str(track.BPM)
+    else: track.BPM = str(audio['BPM'])[2:-2]
+    if audio['initialkey'] == ['']: audio['initialkey'] = track.key
+    else: track.key = str(audio['initialkey'])[2:-2]
+    if audio['genre'] == ['']: audio['genre'] = track.genre
+    else: track.genre = str(audio['genre'])[2:-2]
+    audio.save()
+    if imageSelection!="THUMB":
+        selectImage(imageSelection, audio, window, webScrapingWindow, fileCounter)
+    else:
+        window.destroy()
+        webScrapingWindow.lift()
+
+def skipOption(track, audio, window, webScrapingWindow, imageSelection, fileCounter):
+    track.year = str(audio['date'])[2:-2]
+    track.BPM = str(audio['BPM'])[2:-2]
+    track.key = str(audio['initialkey'])[2:-2]
+    track.genre = str(audio['genre'])[2:-2]
+    webScrapingWindow.lift()
+    if imageSelection!="THUMB":
+        selectImage(imageSelection, audio, window, webScrapingWindow, fileCounter)
+    else:
+        window.destroy()
+        webScrapingWindow.lift()
+
+#selecting image to variable
+def assignImage(i):
+    global imageSelection
+    imageSelection = i
+
+#saving image to file
+def selectImage(imageSelection, audio, window, webScrapingWindow, fileCounter):
+    #first clear all images from audio file
+    audio.clear_pictures()
     image = Picture()
-    with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageSelection) + ".jpg", 'rb') as f:  # better than open(albumart, 'rb').read() ?
-        image.data = f.read()
+    if imageSelection != "THUMB":
+        with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageSelection) + ".jpg", 'rb') as f:
+            image.data = f.read()
+    else:
+        with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/thumb " + str(fileCounter) + ".jpg", 'rb') as f:
+            image.data = f.read()
     image.type = id3.PictureType.COVER_FRONT
     image.mime = u"image/jpeg"
     audio.add_picture(image)
     audio.save()
     window.destroy()
-
-def selectNone(window):
-    global imageSelection
-    imageSelection = 'NA'
-    window.destroy()
+    webScrapingWindow.lift()
