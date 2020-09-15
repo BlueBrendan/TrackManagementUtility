@@ -1,5 +1,6 @@
 from mutagen.flac import Picture
 from mutagen import id3
+from io import BytesIO
 from statistics import mode
 from collections import Counter
 from tkinter.tix import *
@@ -10,7 +11,7 @@ import getpass
 #imageSelection stores the index of thumbnail images collected by reverse image scraping
 imageSelection = 'THUMB'
 
-def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScrapingWindow, characters, options, initialCounter, imageCounter, fileCounter):
+def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScrapingWindow, characters, options, initialCounter, imageCounter):
     global imageSelection
     imageSelection = 'THUMB'
     yearValue = False
@@ -85,9 +86,11 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                     thumbnail.pack(side=TOP)
                     Label(thumbnail, text="Current artwork", font=("TkDefaultFont", 9, 'bold')).pack(side=TOP, pady=(20, 10))
                     if len(audio.pictures) > 0:
-                        thumbnailImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/thumb " + str(fileCounter) + ".jpg")
-                        width, height = thumbnailImageImport.size
-                        thumbnailImageImport = thumbnailImageImport.resize((200, 200), Image.ANTIALIAS)
+                        stream = BytesIO(audio.pictures[0].data)
+                        image = Image.open(stream).convert("RGBA")
+                        stream.close()
+                        width, height = image.size
+                        thumbnailImageImport = image.resize((200, 200), Image.ANTIALIAS)
                         photo = ImageTk.PhotoImage(thumbnailImageImport)
                         thumbnailImage = Label(thumbnail, image=photo)
                         thumbnailImage.image = photo
@@ -128,10 +131,10 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                     #load option buttons
                     optionButtons = Frame(window)
                     optionButtons.pack(side=TOP)
-                    Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection, fileCounter)).pack(side="left", padx=(15, 15), pady=(25,10))
-                    Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection, fileCounter)).pack(side="left", padx=(15, 15), pady=(25,10))
-                    Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow, imageSelection, fileCounter)).pack(side="left", padx=(15, 15), pady=(25,10))
-                    Button(optionButtons, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow, imageSelection, fileCounter)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow, imageSelection)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    Button(optionButtons, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow, imageSelection)).pack(side="left", padx=(15, 15), pady=(25,10))
                     window.lift()
                     window.wait_window()
                 #tags only
@@ -139,10 +142,10 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                     Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, columnspan=4, pady=(10,0))
                     Label(window, text="CURRENT TAGS: \nYear: " + str(audio['date'])[2:-2] + "\nBPM: " + str(audio['bpm'])[2:-2] + "\nKey: " + str(audio['initialkey'])[2:-2] + "\nGenre: " + str(audio['genre'])[2:-2]).grid(row=1, column=1, pady=(10,35))
                     Label(window, text="NEW TAGS: \nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre)).grid(row=1, column=2, pady=(10,35))
-                    Button(window, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection, fileCounter)).grid(row=2, column=0)
-                    Button(window, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection, fileCounter)).grid(row=2, column=1)
-                    Button(window, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow, imageSelection, fileCounter)).grid(row=2, column=2)
-                    Button(window, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow, imageSelection, fileCounter)).grid(row=2, column=3)
+                    Button(window, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection)).grid(row=2, column=0)
+                    Button(window, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection)).grid(row=2, column=1)
+                    Button(window, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow, imageSelection)).grid(row=2, column=2)
+                    Button(window, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow, imageSelection)).grid(row=2, column=3)
                     window.wait_window()
             #images only
             elif imageCounter >= 1:
@@ -158,9 +161,11 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                 #print current thumbnail
                 Label(window, text="Current artwork", font=("TkDefaultFont", 9, 'bold')).pack(pady=(20, 10))
                 if len(audio.pictures) > 0:
-                    thumbnailImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/thumb " + str(fileCounter) + ".jpg")
-                    width, height = thumbnailImageImport.size
-                    thumbnailImageImport = thumbnailImageImport.resize((200, 200), Image.ANTIALIAS)
+                    stream = BytesIO(audio.pictures[0].data)
+                    image = Image.open(stream).convert("RGBA")
+                    stream.close()
+                    width, height = image.size
+                    thumbnailImageImport = image.resize((200, 200), Image.ANTIALIAS)
                     photo = ImageTk.PhotoImage(thumbnailImageImport)
                     thumbnailImage = Label(window, image=photo)
                     thumbnailImage.image = photo
@@ -201,7 +206,7 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                 for i in imageResolutions:
                     Label(resolutions, text=i).pack(side="left", padx=(90,90), pady=(5,5))
                 optionButtons.pack(side=TOP)
-                Button(optionButtons, text="Select", command=lambda: selectImage(imageSelection, audio, window, webScrapingWindow, fileCounter)).pack(side=TOP, pady=(25, 10))
+                Button(optionButtons, text="Select", command=lambda: selectImage(imageSelection, audio, window, webScrapingWindow)).pack(side=TOP, pady=(25, 10))
                 window.lift()
                 window.wait_window()
         else:
@@ -216,19 +221,19 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
     return "\nTrack: " + str(track.artist) + " - " + str(track.title) + "\nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), webScrapingWindow, characters, imageSelection
 
 #four button options
-def overwriteOption(audio, year, BPM, key, genre, window, webScrapingWindow, imageSelection, fileCounter):
+def overwriteOption(audio, year, BPM, key, genre, window, webScrapingWindow, imageSelection):
     audio['date'] = str(year)
     audio['bpm'] = str(BPM)
     audio['initialkey'] = key
     audio['genre'] = genre
     audio.save()
     if imageSelection!="THUMB":
-        selectImage(imageSelection, audio, window, webScrapingWindow, fileCounter)
+        selectImage(imageSelection, audio, window, webScrapingWindow)
     else:
         window.destroy()
         webScrapingWindow.lift()
 
-def mergeScrapeOption(audio, year, BPM, key, genre, window, webScrapingWindow, imageSelection, fileCounter):
+def mergeScrapeOption(audio, year, BPM, key, genre, window, webScrapingWindow, imageSelection):
     if str(year) != '':
         audio['date'] = str(year)
     if str(BPM) != '':
@@ -239,12 +244,12 @@ def mergeScrapeOption(audio, year, BPM, key, genre, window, webScrapingWindow, i
         audio['genre'] = genre
     audio.save()
     if imageSelection!="THUMB":
-        selectImage(imageSelection, audio, window, webScrapingWindow, fileCounter)
+        selectImage(imageSelection, audio, window, webScrapingWindow)
     else:
         window.destroy()
         webScrapingWindow.lift()
 
-def mergeSourceOption(track, audio, window, webScrapingWindow, imageSelection, fileCounter):
+def mergeSourceOption(track, audio, window, webScrapingWindow, imageSelection):
     if audio['date'] == ['']: audio['date'] = str(track.year)
     else: track.year = str(audio['date'])[2:-2]
     if audio['bpm'] == ['']: audio['bpm'] = str(track.BPM)
@@ -255,19 +260,19 @@ def mergeSourceOption(track, audio, window, webScrapingWindow, imageSelection, f
     else: track.genre = str(audio['genre'])[2:-2]
     audio.save()
     if imageSelection!="THUMB":
-        selectImage(imageSelection, audio, window, webScrapingWindow, fileCounter)
+        selectImage(imageSelection, audio, window, webScrapingWindow)
     else:
         window.destroy()
         webScrapingWindow.lift()
 
-def skipOption(track, audio, window, webScrapingWindow, imageSelection, fileCounter):
+def skipOption(track, audio, window, webScrapingWindow, imageSelection):
     track.year = str(audio['date'])[2:-2]
     track.BPM = str(audio['BPM'])[2:-2]
     track.key = str(audio['initialkey'])[2:-2]
     track.genre = str(audio['genre'])[2:-2]
     webScrapingWindow.lift()
     if imageSelection!="THUMB":
-        selectImage(imageSelection, audio, window, webScrapingWindow, fileCounter)
+        selectImage(imageSelection, audio, window, webScrapingWindow)
     else:
         window.destroy()
         webScrapingWindow.lift()
@@ -285,15 +290,12 @@ def assignImage(i, button, buttons, window):
 
 
 #saving image to file
-def selectImage(imageSelection, audio, window, webScrapingWindow, fileCounter):
+def selectImage(imageSelection, audio, window, webScrapingWindow):
     #first clear all images from audio file
     audio.clear_pictures()
     image = Picture()
     if imageSelection != "THUMB":
         with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageSelection) + ".jpg", 'rb') as f:
-            image.data = f.read()
-    else:
-        with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/thumb " + str(fileCounter) + ".jpg", 'rb') as f:
             image.data = f.read()
     image.type = id3.PictureType.COVER_FRONT
     image.mime = u"image/jpeg"

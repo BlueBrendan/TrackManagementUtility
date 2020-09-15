@@ -1,11 +1,8 @@
 import os
 from mutagen.flac import FLAC
-from mutagen.flac import Picture
-from mutagen import id3
 import PIL.Image
 import PIL.ImageTk
 from io import BytesIO
-from scipy import misc
 import shutil
 from tkinter import *
 from functools import partial

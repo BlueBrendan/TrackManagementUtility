@@ -3,9 +3,7 @@ from tkinter.tix import *
 import os
 import getpass
 from PIL import Image, ImageTk
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-import cv2
+from io import BytesIO
 
 #import classes
 from classes.AudioClass import AudioTrack
@@ -34,24 +32,28 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
         webScrapingWindow.geometry('%dx%d+%d+%d' % (700, 650, x, y))
         Label(frame.scrollable_frame, text="Beginning web scraping procedure...", wraplength=300, justify='left').pack(anchor='w')
         characters = 0
-        fileCounter = 0
+        thumbnails = []
         for directory in directories:
             var = os.path.basename(directory)
             directory = os.path.dirname(directory)
             #handle FLAC files
             if var.endswith('.flac'):
                 audio, var = retrieveInfo(var, directory, frame, webScrapingWindow, options)
-                images = audio.pictures
-                #save thumbnail image to drive if artwork exists
-                if len(images) > 0:
-                    with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/thumb " + str(fileCounter) + ".jpg", "wb") as f:
-                        f.write(images[0].data)
                 if audio:
+                    images = audio.pictures
+                    # append thumbnail image to list if artwork exists
+                    if len(images) > 0:
+                        stream = BytesIO(images[0].data)
+                        image = Image.open(stream).convert("RGBA")
+                        thumbnails.append(image)
+                        stream.close()
+
+                    else:
+                        thumbnails.append("NA")
                     track = AudioTrack(audio)
-                    results, webScrapingWindow, characters, imageCounter, imageSelection = searchTags(track, audio, var, frame, webScrapingWindow, characters, options, imageCounter, fileCounter)
+                    results, webScrapingWindow, characters, imageCounter, imageSelection = searchTags(track, audio, var, frame, webScrapingWindow, characters, options, imageCounter)
                     finalResults.append(results)
                     imageSelections.append(imageSelection)
-                    fileCounter+=1
 
         finalReportWindow = Toplevel()
         webScrapingWindow.lift()
@@ -94,7 +96,7 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
                     #resolution
                     Label(finalReport, text=str(width) + "x" + str(height)).pack(side="top", pady=(5, 10))
                 else:
-                    fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/thumb " + str(i) + ".jpg")
+                    fileImageImport =thumbnails[i]
                     width, height = fileImageImport.size
                     fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
                     photo = ImageTk.PhotoImage(fileImageImport)
@@ -105,8 +107,7 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
                     Label(finalReport, text=str(width) + "x" + str(height)).pack(side="top", pady=(5, 10))
             #load thumbnail image (if image scraping was not performed)
             else:
-                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/thumb " + str(i) + ".jpg")
-                width, height = fileImageImport.size
+                width, height = fileImageImport =thumbnails[i]
                 fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
                 photo = ImageTk.PhotoImage(fileImageImport)
                 fileImage = Label(finalReport, image=photo)
