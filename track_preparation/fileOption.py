@@ -3,11 +3,13 @@ from tkinter.tix import *
 import os
 import getpass
 from PIL import Image, ImageTk
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import cv2
 
 #import classes
 from classes.AudioClass import AudioTrack
 from classes.scrollbarClass import ScrollableFrame
-from classes.scrollbarClass import SmallScrollableFrame
 
 #import methods
 from track_preparation.retrieveInfo import retrieveInfo

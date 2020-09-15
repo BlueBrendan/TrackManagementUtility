@@ -1,5 +1,5 @@
-from track_scraping.compareTokens import compareTokens
 import requests
+
 from bs4 import BeautifulSoup
 from tkinter.tix import *
 import webbrowser
@@ -7,6 +7,7 @@ import time
 import random
 
 #import methods
+from track_scraping.compareTokens import compareTokens
 from track_scraping.reverseImageSearch import reverseImageSearch
 
 def junodownloadSearch(artist, title, var, yearList, BPMList, genreList, artistVariations, titleVariations, headers, search, frame, window, audio, options, imageCounter):

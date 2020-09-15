@@ -6,7 +6,6 @@ import getpass
 #import classes
 from classes.AudioClass import AudioTrack
 from classes.scrollbarClass import ScrollableFrame
-from classes.scrollbarClass import SmallScrollableFrame
 
 #import methods
 from track_preparation.retrieveInfo import retrieveInfo
@@ -32,7 +31,7 @@ def directoryOption(window, options, imageCounter):
         Label(frame.scrollable_frame, text="Beginning web scraping procedure...", wraplength=300, justify='left').pack(anchor='w')
         finalReport, webScrapingWindow, characters, imageSelection = directorySearch(directory, results, frame, webScrapingWindow, characters, options, imageCounter)
         finalReportWindow = Toplevel()
-        frame = SmallScrollableFrame(finalReportWindow)
+        frame = ScrollableFrame(finalReportWindow)
         frame.pack(anchor="center")
         webScrapingWindow.lift()
         finalReportWindow.lift()
