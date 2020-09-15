@@ -58,7 +58,7 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                 ws = window.winfo_screenwidth()  # width of the screen
                 hs = window.winfo_screenheight()  # height of the screen
                 x = (ws / 2) - (550 / 2)
-                y = (hs / 2) - (320 / 2)
+                y = (hs / 2) - (242 / 2)
                 if len(str(track.artist) + " - " + str(track.title)) <= 30:
                     window.geometry('%dx%d+%d+%d' % (550, 220, x, y))
                 else:
@@ -71,8 +71,8 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                 #tags and images
                 if options["Reverse Image Search (B)"].get()==True and (imageCounter-initialCounter) >= 1:
                     y = (hs / 2) - (880 / 2)
-                    x = (ws / 2) - ((500 + (170*(imageCounter-initialCounter))) / 2)
-                    window.geometry('%dx%d+%d+%d' % (500 + (170 * (imageCounter-initialCounter)), 800, x, y))
+                    x = (ws / 2) - ((400 + (200*(imageCounter-initialCounter))) / 2)
+                    window.geometry('%dx%d+%d+%d' % (400 + (200 * (imageCounter-initialCounter)), 800, x, y))
                     Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(20,5))
                     tags = Frame(window)
                     tags.pack(side=TOP)
@@ -152,8 +152,8 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                 ws = window.winfo_screenwidth()  # width of the screen
                 hs = window.winfo_screenheight()  # height of the screen
                 y = (hs / 2) - (715 / 2)
-                x = (ws / 2) - ((300 + (170 * (imageCounter-initialCounter))) / 2)
-                window.geometry('%dx%d+%d+%d' % (300 + (170 * (imageCounter-initialCounter)), 650, x, y))
+                x = (ws / 2) - ((250 + (200 * (imageCounter-initialCounter))) / 2)
+                window.geometry('%dx%d+%d+%d' % (250 + (200 * (imageCounter-initialCounter)), 650, x, y))
 
                 #print current thumbnail
                 Label(window, text="Current artwork", font=("TkDefaultFont", 9, 'bold')).pack(pady=(20, 10))

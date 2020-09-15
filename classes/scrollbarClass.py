@@ -29,8 +29,8 @@ class SmallScrollableFrame(Frame):
             "<Configure>",
             lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
         )
-        canvas.create_window((0, 0), window=self.small_scrollable_frame, anchor="center")
+        canvas.create_window((0, 0), window=self.small_scrollable_frame, anchor=CENTER)
         canvas.configure(yscrollcommand=scrollbar.set)
-        canvas.pack(side="left", fill="both", expand=True)
-        canvas.config(width=420, height=230)
-        scrollbar.pack(side="right", fill="y")
+        canvas.pack(side=LEFT, fill=BOTH, expand=True)
+        canvas.config(width=250, height=650)
+        scrollbar.pack(side=RIGHT, fill="y")

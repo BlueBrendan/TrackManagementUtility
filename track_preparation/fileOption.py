@@ -7,6 +7,7 @@ from PIL import Image, ImageTk
 #import classes
 from classes.AudioClass import AudioTrack
 from classes.scrollbarClass import ScrollableFrame
+from classes.scrollbarClass import SmallScrollableFrame
 
 #import methods
 from track_preparation.retrieveInfo import retrieveInfo
@@ -30,7 +31,6 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
         y = (hs / 2) - (715 / 2)
         webScrapingWindow.geometry('%dx%d+%d+%d' % (700, 650, x, y))
         Label(frame.scrollable_frame, text="Beginning web scraping procedure...", wraplength=300, justify='left').pack(anchor='w')
-        row = 0
         characters = 0
         fileCounter = 0
         for directory in directories:
@@ -38,9 +38,9 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
             directory = os.path.dirname(directory)
             #handle FLAC files
             if var.endswith('.flac'):
-                row+=1
                 audio, var = retrieveInfo(var, directory, frame, webScrapingWindow, options)
                 images = audio.pictures
+                #save thumbnail image to drive if artwork exists
                 if len(images) > 0:
                     with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/thumb " + str(fileCounter) + ".jpg", "wb") as f:
                         f.write(images[0].data)
@@ -50,62 +50,77 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
                     finalResults.append(results)
                     imageSelections.append(imageSelection)
                     fileCounter+=1
+
         finalReportWindow = Toplevel()
         webScrapingWindow.lift()
         finalReportWindow.lift()
         finalReportWindow.title("Final Report")
-        finalReportWindow.columnconfigure(0, weight=1)
+        canvas = Canvas(finalReportWindow)
+        finalReport = Frame(canvas)
+        scrollbar = Scrollbar(finalReportWindow, orient="vertical", command=canvas.yview)
+
         ws = finalReportWindow.winfo_screenwidth()  # width of the screen
         hs = finalReportWindow.winfo_screenheight()  # height of the screen
-        y = (hs / 2) - ((275+((row-1)*75)) / 2)
+        y = (hs / 2) - (528 / 2)
         if characters <= 40:
-            x = (ws / 2) - (430 / 2)
-            finalReportWindow.geometry('%dx%d+%d+%d' % (450, 250+((row-1)*75), x, y))
-            if options["Reverse Image Search (B)"].get() == True and imageCounter >= 1:
-                y = (hs / 2) - ((528 + ((row - 1) * 75)) / 2)
-                finalReportWindow.geometry('%dx%d+%d+%d' % (430, 480 + ((row - 1) * 75), x, y))
+            x = (ws / 2) - (450 / 2)
+            finalReportWindow.geometry('%dx%d+%d+%d' % (450, 480, x, y))
+            if len(directories) > 1:
+                y = (hs / 2) - (770 / 2)
+                finalReportWindow.geometry('%dx%d+%d+%d' % (450, 700, x, y))
+            canvas.create_window(0, 0, window=finalReport)
         else:
-            x = (ws / 2) - ((430 + (characters * 1.5)) / 2)
-            finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters*1.5), 250 + ((row - 1) * 75), x, y))
-            if options["Reverse Image Search (B)"].get() == True and imageCounter >= 1:
-                y = (hs / 2) - ((528 + ((row - 1) * 75)) / 2)
-                finalReportWindow.geometry('%dx%d+%d+%d' % (430 + (characters * 1.5), 480 + ((row - 1) * 75), x, y))
-        if options["Reverse Image Search (B)"].get()==True and imageCounter >= 1 and len(finalResults) == len(imageSelections):
-            Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(15, 0))
-            for i in range(len(finalResults)):
-                Label(finalReportWindow, text=finalResults[i] + '\n').pack(side="top")
+            x = (ws / 2) - ((450 + (characters * 1.5)) / 2)
+            finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters * 1.5), 480, x, y))
+            if len(directories) > 1:
+                y = (hs / 2) - (770 / 2)
+                finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters * 1.5), 700, x, y))
+            canvas.create_window(0, 0, window=finalReport, anchor='e')
+        Label(finalReport, text="Final Report", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(15, 0))
+        for i in range(len(finalResults)):
+            Label(finalReport, text=finalResults[i] + '\n').pack(side="top")
+            if options["Reverse Image Search (B)"].get() == True and imageCounter >= 1 and len(finalResults) == len(imageSelections):
                 #load image
                 if imageSelections[i]!='THUMB':
                     fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageSelections[i]) + ".jpg")
                     width, height = fileImageImport.size
                     fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
                     photo = ImageTk.PhotoImage(fileImageImport)
-                    fileImage = Label(finalReportWindow, image=photo)
+                    fileImage = Label(finalReport, image=photo)
                     fileImage.image = photo
                     fileImage.pack(side="top", padx=(10, 10))
                     #resolution
-                    Label(finalReportWindow, text=str(width) + "x" + str(height)).pack(side=TOP, pady=(5, 10))
+                    Label(finalReport, text=str(width) + "x" + str(height)).pack(side="top", pady=(5, 10))
                 else:
                     fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/thumb " + str(i) + ".jpg")
                     width, height = fileImageImport.size
                     fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
                     photo = ImageTk.PhotoImage(fileImageImport)
-                    fileImage = Label(finalReportWindow, image=photo)
+                    fileImage = Label(finalReport, image=photo)
                     fileImage.image = photo
                     fileImage.pack(side="top", padx=(10, 10))
                     #resolution
-                    Label(finalReportWindow, text=str(width) + "x" + str(height)).pack(side=TOP, pady=(5, 10))
-            #load button and checkbox
-            Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, options)).pack(side="top", pady=(15, 10))
-            Checkbutton(finalReportWindow, text="Close scraping window", var=options["Close Scraping Window (B)"], command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).pack(side="top")
-            finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closePopup(finalReportWindow, webScrapingWindow))
-        else:
-            Label(finalReportWindow, text="Final Report", font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, pady=(15,0))
-            for i in finalResults:
-                Label(finalReportWindow, text=i + '\n').grid(row=1, column=0)
-            Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, options)).grid(row=2, column=0, pady=(0, 5))
-            Checkbutton(finalReportWindow, text="Close scraping window", var=options["Close Scraping Window (B)"], command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).grid(row=3, column=0)
-            finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closePopup(finalReportWindow, webScrapingWindow))
+                    Label(finalReport, text=str(width) + "x" + str(height)).pack(side="top", pady=(5, 10))
+            #load thumbnail image (if image scraping was not performed)
+            else:
+                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/thumb " + str(i) + ".jpg")
+                width, height = fileImageImport.size
+                fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+                photo = ImageTk.PhotoImage(fileImageImport)
+                fileImage = Label(finalReport, image=photo)
+                fileImage.image = photo
+                fileImage.pack(side="top", padx=(10, 10))
+                # resolution
+                Label(finalReport, text=str(width) + "x" + str(height)).pack(side="top", pady=(5, 10))
+        # load button and checkbox
+        Button(finalReport, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, options)).pack(side=TOP, pady=(15, 15))
+        Checkbutton(finalReport, text="Close scraping window", var=options["Close Scraping Window (B)"], command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).pack(side=TOP, pady=(0,10))
+        finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closePopup(finalReportWindow, webScrapingWindow))
+        canvas.update_idletasks()
+        canvas.configure(scrollregion=canvas.bbox('all'), yscrollcommand=scrollbar.set)
+        canvas.pack(fill='both', expand=True, side='left')
+        scrollbar.pack(side="right", fill=Y)
+
 
 #handle subdirectory selection
 def closeScrapingWindowSelection(CONFIG_FILE):
