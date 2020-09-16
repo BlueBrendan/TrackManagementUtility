@@ -108,7 +108,8 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
                 if thumbnails[i] == 'NA':
                     Label(finalReport, text="No Artwork Found").pack(side="top", pady=(5,10))
                 else:
-                    width, height = thumbnails[i]
+                    fileImageImport = thumbnails[i]
+                    width, height = fileImageImport.size
                     fileImageImport = thumbnails[i].resize((200, 200), Image.ANTIALIAS)
                     photo = ImageTk.PhotoImage(fileImageImport)
                     fileImage = Label(finalReport, image=photo)

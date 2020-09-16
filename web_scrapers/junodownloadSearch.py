@@ -9,6 +9,7 @@ import random
 #import methods
 from track_scraping.compareTokens import compareTokens
 from track_scraping.reverseImageSearch import reverseImageSearch
+from web_scrapers.compareRuntime import compareRuntime
 
 def junodownloadSearch(artist, title, var, yearList, BPMList, genreList, artistVariations, titleVariations, headers, search, frame, window, audio, options, imageCounter):
 #FIRST QUERY - JUNO DOWNLOAD
@@ -48,7 +49,8 @@ def junodownloadSearch(artist, title, var, yearList, BPMList, genreList, artistV
                                     if not mismatch:break
                                 if mismatch == False:
                                 #check runtime to ensure track is correct
-                                    if compareRuntime(link, audio) == False:
+                                    runtime = link.find('div', class_="col-1 d-none d-lg-block text-center").get_text()
+                                    if compareRuntime(runtime, audio) == False:
                                         for value in link.find_all('div', class_="col-1 d-none d-lg-block text-center"):
                                             if ":" not in value.get_text() and value.get_text()!='\xa0':
                                                 BPM = value.get_text()
@@ -68,23 +70,13 @@ def junodownloadSearch(artist, title, var, yearList, BPMList, genreList, artistV
                                             # extract image if image scraping is enabled in options
                                             if options["Reverse Image Search (B)"].get()==True:
                                                 link = soup.find('div', class_="jw-page")
-                                                link = link.find('img')
+                                                link = link.find('img').get('data-src-full')
                                                 # write junodownload image to drive
                                                 with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
                                                     file.write(requests.get(link).content)
                                                 imageCounter += 1
-                                                imageCounter = reverseImageSearch(link['src'], frame, window, imageCounter)
+                                                imageCounter = reverseImageSearch(link, frame, window, imageCounter)
     return yearList, BPMList, genreList, imageCounter
-
-def compareRuntime(link, audio):
-    runtime = link.find('div', class_="col-1 d-none d-lg-block text-center").get_text()
-    minutes = int(runtime.split(':')[0])
-    seconds = int(runtime.split(':')[1])
-    runtime = minutes * 60 + seconds
-    difference = abs(runtime - audio.info.length)
-    #max difference of 5 seconds
-    if difference > 5:return True
-    else:return False
 
 def sendRequest(url, headers, frame, window):
     try:

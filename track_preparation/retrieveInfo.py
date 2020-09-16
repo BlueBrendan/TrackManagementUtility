@@ -38,7 +38,7 @@ def retrieveInfo(var, directory, frame, webScrapingWindow, options):
                 if '.' in titlePrefix[0:5]:
                     if any(char.isdigit() for char in titlePrefix[0:titlePrefix.index('.')]):
                         audio, var = handleTypo(artist, title, var, titlePrefix, webScrapingWindow, audio, directory, frame, webScrapingWindow)
-    if options["Audio naming format (S)"].get() == "Audio - Title":
+    if options["Audio naming format (S)"].get() == "Artist - Title":
         #rename track so that the artist is appended at the front of the title
         if ' - ' not in var:
             artist = str(audio['artist'])[2:-2]

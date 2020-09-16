@@ -37,7 +37,7 @@ def updatePreferences(options, CONFIG_FILE, root):
     tk.Label(tab3, text="Audio Formatting").pack(padx=(5, 0), pady=(10, 5), anchor="w")
     tk.Checkbutton(tab3, text="Check Artist for Common Typos", variable=options["Check Artist for Typos (B)"], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Check Artist for Typos (B)')).pack(padx=(10, 0), anchor="w")
     tk.Label(tab3, text="Audio Naming Format").pack(padx=(5, 0), pady=(10,5), anchor="w")
-    tk.Radiobutton(tab3, text="Audio - Title", variable=options["Audio naming format (S)"], value="Audio - Title", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Audio - Title")).pack(padx=(10, 0), anchor="w")
+    tk.Radiobutton(tab3, text="Artist - Title", variable=options["Audio naming format (S)"], value="Artist - Title", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Artist - Title")).pack(padx=(10, 0), anchor="w")
     tk.Radiobutton(tab3, text="Title", variable=options["Audio naming format (S)"], value="Title", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Title")).pack(padx=(10, 0), anchor="w")
     root.mainloop()
 
