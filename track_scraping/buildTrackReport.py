@@ -127,7 +127,6 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                     # print resolutions underneath respective images
                     for i in imageResolutions:
                         Label(resolutions, text=i).pack(side="left", padx=(90, 90), pady=(5,10))
-
                     #load option buttons
                     optionButtons = Frame(window)
                     optionButtons.pack(side=TOP)

@@ -47,14 +47,12 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
                         image = Image.open(stream).convert("RGBA")
                         thumbnails.append(image)
                         stream.close()
-
                     else:
                         thumbnails.append("NA")
                     track = AudioTrack(audio)
                     results, webScrapingWindow, characters, imageCounter, imageSelection = searchTags(track, audio, var, frame, webScrapingWindow, characters, options, imageCounter)
                     finalResults.append(results)
                     imageSelections.append(imageSelection)
-
         finalReportWindow = Toplevel()
         webScrapingWindow.lift()
         finalReportWindow.lift()
@@ -107,14 +105,17 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
                     Label(finalReport, text=str(width) + "x" + str(height)).pack(side="top", pady=(5, 10))
             #load thumbnail image (if image scraping was not performed)
             else:
-                width, height = fileImageImport =thumbnails[i]
-                fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-                photo = ImageTk.PhotoImage(fileImageImport)
-                fileImage = Label(finalReport, image=photo)
-                fileImage.image = photo
-                fileImage.pack(side="top", padx=(10, 10))
-                # resolution
-                Label(finalReport, text=str(width) + "x" + str(height)).pack(side="top", pady=(5, 10))
+                if thumbnails[i] == 'NA':
+                    Label(finalReport, text="No Artwork Found").pack(side="top", pady=(5,10))
+                else:
+                    width, height = thumbnails[i]
+                    fileImageImport = thumbnails[i].resize((200, 200), Image.ANTIALIAS)
+                    photo = ImageTk.PhotoImage(fileImageImport)
+                    fileImage = Label(finalReport, image=photo)
+                    fileImage.image = photo
+                    fileImage.pack(side="top", padx=(10, 10))
+                    # resolution
+                    Label(finalReport, text=str(width) + "x" + str(height)).pack(side="top", pady=(5, 10))
         # load button and checkbox
         Button(finalReport, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, options)).pack(side=TOP, pady=(15, 15))
         Checkbutton(finalReport, text="Close scraping window", var=options["Close Scraping Window (B)"], command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).pack(side=TOP, pady=(0,10))

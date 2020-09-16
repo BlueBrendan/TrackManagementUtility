@@ -17,9 +17,35 @@ def reverseImageSearch(link, frame, window, imageCounter):
     if len(text) > 0:
         text = text[0]
         if 'Large' in text.get_attribute('innerHTML') or "All sizes" in text.get_attribute('innerHTML'):
+            #check for popups
+            time.sleep(1)
             if 'Large' in text.get_attribute('innerHTML'):
+                popups = browser.find_elements_by_xpath("//iframe")
+                if len(popups) > 0:
+                    for popup in popups:
+                        link = popup.get_attribute('src')
+                        if 'consent.google.com/' in popup.get_attribute('src'):
+                            link = popup.get_attribute('src').replace("consent.google.com/", "consent.google.com")
+                        break
+                    #switch frames
+                    browser.switch_to.frame(browser.find_element_by_xpath("//iframe[@src='" + link + "']"))
+                    browser.find_element_by_xpath("//form[@class='A28uDc']").click()
+                    #return to original frame
+                    browser.switch_to.default_content()
                 browser.find_element_by_link_text("Large").click()
             elif "All sizes" in text.get_attribute('innerHTML'):
+                popups = browser.find_elements_by_xpath("//iframe")
+                if len(popups) > 0:
+                    for popup in popups:
+                        link = popup.get_attribute('src')
+                        if 'consent.google.com/' in popup.get_attribute('src'):
+                            link = popup.get_attribute('src').replace("consent.google.com/", "consent.google.com")
+                        break
+                    # switch frames
+                    browser.switch_to.frame(browser.find_element_by_xpath("//iframe[@src='" + link + "']"))
+                    browser.find_element_by_xpath("//form[@class='A28uDc']").click()
+                    # return to original frame
+                    browser.switch_to.default_content()
                 browser.find_element_by_link_text("All sizes").click()
             for i in range(1):
                 images = browser.find_elements_by_class_name("rg_i.Q4LuWd")

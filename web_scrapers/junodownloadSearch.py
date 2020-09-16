@@ -1,8 +1,8 @@
 import requests
-
 from bs4 import BeautifulSoup
 from tkinter.tix import *
 import webbrowser
+import getpass
 import time
 import random
 
@@ -69,7 +69,10 @@ def junodownloadSearch(artist, title, var, yearList, BPMList, genreList, artistV
                                             if options["Reverse Image Search (B)"].get()==True:
                                                 link = soup.find('div', class_="jw-page")
                                                 link = link.find('img')
-                                                window.update()
+                                                # write junodownload image to drive
+                                                with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
+                                                    file.write(requests.get(link).content)
+                                                imageCounter += 1
                                                 imageCounter = reverseImageSearch(link['src'], frame, window, imageCounter)
     return yearList, BPMList, genreList, imageCounter
 

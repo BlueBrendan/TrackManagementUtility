@@ -37,12 +37,12 @@ def searchTags(track, audio, var, frame, webScrapingWindow, characters, options,
 
     # web scraping
     headers = {'User-Agent': "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1b3pre) Gecko/20090109 Shiretoko/3.1b3pre"}
-    headers = {'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10",}
+    # headers = {'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10",}
 
     # junodownload
     if options['Scrape Junodownload (B)'].get() == True:yearList, BPMList, genreList, imageCounter = junodownloadSearch(track.artist, track.title, var, yearList, BPMList, genreList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow, audio, options, imageCounter)
     # beatport
-    if options['Scrape Beatport (B)'].get() == True:yearList, BPMList, keyList, genreList= beatportSearch(track.artist, track.title, var, yearList, BPMList, keyList, genreList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow)
+    if options['Scrape Beatport (B)'].get() == True:yearList, BPMList, keyList, genreList, imageCounter = beatportSearch(track.artist, track.title, var, yearList, BPMList, keyList, genreList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow, audio, options, imageCounter)
     # discogs
     if options['Scrape Discogs (B)'].get() == True:yearList, genreList, imageCounter = discogsSearch(track.artist, track.title, var, yearList, genreList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow, options, imageCounter)
     # spotify

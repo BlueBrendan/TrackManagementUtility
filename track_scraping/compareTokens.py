@@ -1,12 +1,16 @@
 def compareTokens(one, two):
     mismatch = False
+    #string manipulations
+    one = one.replace("(", "")
+    one = one.replace(")", "")
+    one = one.lower().replace(" extended", "")
+    two = two.replace("(", "")
+    two = two.replace(")", "")
+    two = two.lower().replace(" extended", "")
+
+    #test one
     tokens = two.split(' ')
     comparisonTokens = one.split(' ')
-    for i in range(len(tokens)):
-        if "(" in tokens[i]:
-            tokens[i] = str(tokens[i][0:tokens[i].index("(")]) + str(tokens[i][tokens[i].index("(") + 1:])
-        elif ")" in tokens[i]:
-            tokens[i] = str(tokens[i][0:tokens[i].index(")")]) + str(tokens[i][tokens[i].index(")") + 1:])
     difference = 0
     for index, var in enumerate(tokens):
         if var.lower() not in one.lower():
@@ -26,12 +30,9 @@ def compareTokens(one, two):
     if difference/len(one) > 0.15:
         mismatch = True
         return mismatch
+    #test two
     tokens = one.split(' ')
     comparisonTokens = two.split(' ')
-    for i in range(len(tokens)):
-        if "(" in tokens[i]:tokens[i] = str(tokens[i][0:tokens[i].index("(")]) + str(tokens[i][tokens[i].index("(") + 1:])
-        elif ")" in tokens[i]:tokens[i] = str(tokens[i][0:tokens[i].index(")")]) + str(tokens[i][tokens[i].index(")") + 1:])
-
     difference = 0
     for index, var in enumerate(tokens):
         if var.lower() not in two.lower():

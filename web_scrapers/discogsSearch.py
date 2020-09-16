@@ -2,6 +2,7 @@ from track_scraping.compareTokens import compareTokens
 import requests
 from bs4 import BeautifulSoup
 from tkinter import *
+import getpass
 import webbrowser
 import time
 import random
@@ -120,7 +121,13 @@ def discogsRelease(soup, yearList, genreList, frame, window, options, imageCount
         image = soup.find('div', class_="image_gallery image_gallery_large")['data-images']
         if "full" in image and ".jpg" in image:
             link = image[image.index('full": ')+8:image.index(".jpg", image.index("full"))+4]
-            window.update()
+            #check
+            if link[len(link)-5:len(link)-4]!='g':
+                link = link + '.jpg'
+            #write discogs image to drive
+            with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
+                file.write(requests.get(link).content)
+            imageCounter+=1
             imageCounter = reverseImageSearch(link, frame, window, imageCounter)
     return yearList, genreList, frame, imageCounter
 
