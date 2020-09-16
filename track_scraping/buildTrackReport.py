@@ -291,14 +291,14 @@ def assignImage(i, button, buttons, window):
 #saving image to file
 def selectImage(imageSelection, audio, window, webScrapingWindow):
     #first clear all images from audio file
-    audio.clear_pictures()
-    image = Picture()
     if imageSelection != "THUMB":
+        image = Picture()
+        audio.clear_pictures()
         with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageSelection) + ".jpg", 'rb') as f:
             image.data = f.read()
-    image.type = id3.PictureType.COVER_FRONT
-    image.mime = u"image/jpeg"
-    audio.add_picture(image)
-    audio.save()
+        image.type = id3.PictureType.COVER_FRONT
+        image.mime = u"image/jpeg"
+        audio.add_picture(image)
+        audio.save()
     window.destroy()
     webScrapingWindow.lift()
