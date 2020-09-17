@@ -1,4 +1,6 @@
 from tkinter import filedialog
+from mutagen.flac import FLAC
+import tkinter as tk
 from tkinter.tix import *
 import os
 import getpass
@@ -10,7 +12,7 @@ from classes.AudioClass import AudioTrack
 from classes.scrollbarClass import ScrollableFrame
 
 #import methods
-from track_preparation.retrieveInfo import retrieveInfo
+from track_preparation.updateTrack import updateTrack
 from track_scraping.scrapeWeb import scrapeWeb
 
 def fileOption(window, options, imageCounter, CONFIG_FILE):
@@ -30,16 +32,18 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
         x = (ws / 2) - (700 / 2)
         y = (hs / 2) - (715 / 2)
         webScrapingWindow.geometry('%dx%d+%d+%d' % (700, 650, x, y))
-        Label(frame.scrollable_frame, text="Beginning web scraping procedure...", wraplength=300, justify='left').pack(anchor='w')
+        Label(frame.scrollable_frame, text="Beginning procedure...", wraplength=300, justify='left').pack(anchor='w')
         characters = 0
         thumbnails = []
         for directory in directories:
-            var = os.path.basename(directory)
+            filename = os.path.basename(directory)
             directory = os.path.dirname(directory)
             #handle FLAC files
-            if var.endswith('.flac'):
-                audio, var = retrieveInfo(var, directory, frame, webScrapingWindow, options)
-                if audio:
+            #first check - ensure file is valid
+            if filename.endswith('.flac') and type(checkFileValidity(filename, directory, frame, window))!=str:
+                #handle naming preferences, tag settings, and replay gain
+                audio, filename = updateTrack(filename, directory, frame, webScrapingWindow, options)
+                if type(audio) != bool:
                     images = audio.pictures
                     # append thumbnail image to list if artwork exists
                     if len(images) > 0:
@@ -50,7 +54,8 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
                     else:
                         thumbnails.append("NA")
                     track = AudioTrack(audio)
-                    results, webScrapingWindow, characters, imageCounter, imageSelection = scrapeWeb(track, audio, var, frame, webScrapingWindow, characters, options, imageCounter)
+                    #search web for tags
+                    results, webScrapingWindow, characters, imageCounter, imageSelection = scrapeWeb(track, audio, filename, frame, webScrapingWindow, characters, options, imageCounter)
                     finalResults.append(results)
                     imageSelections.append(imageSelection)
         finalReportWindow = Toplevel()
@@ -152,6 +157,15 @@ def completeSearch(finalReportWindow, webScrapingWindow, options):
         images = os.listdir(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/")
         for image in images:
             os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(image))
+
+def checkFileValidity(var, directory, frame, window):
+    try:
+        audio = FLAC(str(directory) + "/" + str(var))
+        return audio
+    except:
+        tk.Label(frame.scrollable_frame, text="Invalid or Corrupt File").pack(anchor='w')
+        window.update()
+        return "Invalid or corrupt file\n"
 
 def closePopup(popup, webScrapingWindow):
     popup.destroy()

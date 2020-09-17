@@ -8,7 +8,7 @@ import os
 #global variable
 changeName = False
 
-def handleTypo(artist, title, var, artistPostfix, webScrapingWindow, audio, directory, frame, window):
+def handleTypo(artist, artistPostfix, title, webScrapingWindow):
     global changeName
     popup = Toplevel()
     popup.title("Potential Typo")
@@ -23,31 +23,18 @@ def handleTypo(artist, title, var, artistPostfix, webScrapingWindow, audio, dire
         popup.geometry('%dx%d+%d+%d' % (450 + (len(str(artist) + " - " + str(title)) * 1.5), 180, x, y))
     popup.columnconfigure(1, weight=1)
     popup.columnconfigure(2, weight=1)
-    Label(popup, text="A potential typo was found in the file name. Rename\n\n" + str(artist) + " - " + str(title) + "\nto\n" + str(artistPostfix) + ' - ' + str(title) + "?").grid(row=0, column=1, columnspan=2, pady=(10, 0))
-    Button(popup, text='Yes', command=lambda: resetArtistName(audio, artist, artistPostfix, popup, webScrapingWindow, directory, frame, window)).grid(row=1, column=1, pady=(20, 10))
+    Label(popup, text="A potential typo was found in the artist name. Rename\n\n" + str(artist) + "\nto\n" + str(artistPostfix) + "?").grid(row=0, column=1, columnspan=2, pady=(10, 0))
+    Button(popup, text='Yes', command=lambda: resetArtistName(popup, webScrapingWindow)).grid(row=1, column=1, pady=(20, 10))
     Button(popup, text='No', command=lambda: closePopup(popup, webScrapingWindow)).grid(row=1, column=2)
     popup.protocol("WM_DELETE_WINDOW", lambda: popup.destroy())
     popup.wait_window()
     if changeName:
-        audio = FLAC(str(directory) + '/' + str(artistPostfix) + " - " + str(audio["title"][0]) + ".flac")
-        var = str(artistPostfix) + " - " + str(audio["title"][0]) + ".flac"
-        audio["artist"] = artistPostfix
-        audio.pprint()
-        audio.save()
-    else:
-        audio["artist"] = artist
-        audio.pprint()
-        audio.save()
-    return audio, var
+        artist = artistPostfix
+    return artist
 
-def resetArtistName(audio, artist, artistPostfix, popup, webScrapingWindow, directory, frame, window):
+def resetArtistName(popup, webScrapingWindow):
     global changeName
-    try:
-        os.rename(directory + '/' + str(artist) + " - " + str(audio["title"][0]) + ".flac", str(directory) + '/' + str(artistPostfix) + " - " + str(audio["title"][0]) + ".flac")
-        changeName = True
-    except PermissionError:
-        Label(frame.scrollable_frame, text="The file is open in another application, close it and try again").pack(anchor='w')
-        window.update()
+    changeName = True
     popup.destroy()
     webScrapingWindow.lift()
 
