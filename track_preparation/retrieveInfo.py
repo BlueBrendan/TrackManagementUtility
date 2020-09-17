@@ -1,9 +1,11 @@
 from mutagen.flac import FLAC
 import tkinter as tk
 import os
+from io import BytesIO
 
 #import methods
 from track_preparation.handleTypo import handleTypo
+from track_preparation.handleReplayGain import handleReplayGain
 
 def retrieveInfo(var, directory, frame, webScrapingWindow, options):
     audio = checkFileValidity(var, directory, frame, webScrapingWindow)
@@ -38,6 +40,27 @@ def retrieveInfo(var, directory, frame, webScrapingWindow, options):
                 if '.' in titlePrefix[0:5]:
                     if any(char.isdigit() for char in titlePrefix[0:titlePrefix.index('.')]):
                         audio, var = handleTypo(artist, title, var, titlePrefix, webScrapingWindow, audio, directory, frame, webScrapingWindow)
+
+    interestParameters = ['artist', 'title', 'date', 'bpm', 'initialkey', 'genre', 'replaygain_track_gain']
+    fileParameters = []
+    for x in audio:
+        fileParameters.append(x)
+    for x in fileParameters:
+        # delete extraneous tags
+        if x not in interestParameters:
+            print("Deleting " + str(x))
+            audio[x] = ""
+            audio.pop(x)
+            audio.save()
+    for x in interestParameters:
+        # add tags of interest if missing
+        if x not in fileParameters:
+            audio[x] = ""
+            audio.save()
+
+    #check replayGain
+    audio = handleReplayGain(directory, var, audio, options)
+
     if options["Audio naming format (S)"].get() == "Artist - Title":
         #rename track so that the artist is appended at the front of the title
         if ' - ' not in var:

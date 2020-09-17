@@ -30,6 +30,8 @@ def updatePreferences(options, CONFIG_FILE, root):
     #Tag Settings Tab
     tab2 = ttk.Frame(tab_parent)
     tab_parent.add(tab2, text="Tagging")
+    tk.Label(tab2, text="ReplayGain").pack(padx=(5, 0), pady=(10, 5), anchor="w")
+    tk.Checkbutton(tab2, text="Calculate ReplayGain", variable=options['Calculate ReplayGain (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Calculate ReplayGain (B)')).pack(padx=(10, 0), anchor="w")
 
     #Others Tab
     tab3 = ttk.Frame(tab_parent)

@@ -5,24 +5,8 @@ from web_scrapers.junodownloadSearch import junodownloadSearch
 from web_scrapers.beatportSearch import beatportSearch
 from web_scrapers.discogsSearch import discogsSearch
 
-def searchTags(track, audio, var, frame, webScrapingWindow, characters, options, imageCounter):
+def scrapeWeb(track, audio, var, frame, webScrapingWindow, characters, options, imageCounter):
     initialCounter = imageCounter
-    interestParameters = ['artist', 'title', 'date', 'bpm', 'initialkey', 'genre', 'replaygain_track_gain']
-    fileParameters = []
-    for x in audio:
-        fileParameters.append(x)
-    for x in fileParameters:
-        # delete extraneous tags
-        if x not in interestParameters:
-            print("Deleting " + str(x))
-            audio[x] = ""
-            audio.pop(x)
-            audio.save()
-    for x in interestParameters:
-        # add tags of interest if missing
-        if x not in fileParameters:
-            audio[x] = ""
-            audio.save()
     search = str(track.artist) + " - " + str(track.title)
     # clean search query of ampersands (query ends upon reaching ampersand symbol)
     if '&' in search:

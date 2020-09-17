@@ -11,7 +11,7 @@ from classes.scrollbarClass import ScrollableFrame
 
 #import methods
 from track_preparation.retrieveInfo import retrieveInfo
-from track_scraping.searchTags import searchTags
+from track_scraping.scrapeWeb import scrapeWeb
 
 def fileOption(window, options, imageCounter, CONFIG_FILE):
     window.lift()
@@ -50,7 +50,7 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
                     else:
                         thumbnails.append("NA")
                     track = AudioTrack(audio)
-                    results, webScrapingWindow, characters, imageCounter, imageSelection = searchTags(track, audio, var, frame, webScrapingWindow, characters, options, imageCounter)
+                    results, webScrapingWindow, characters, imageCounter, imageSelection = scrapeWeb(track, audio, var, frame, webScrapingWindow, characters, options, imageCounter)
                     finalResults.append(results)
                     imageSelections.append(imageSelection)
         finalReportWindow = Toplevel()

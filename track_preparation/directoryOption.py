@@ -9,7 +9,7 @@ from classes.scrollbarClass import ScrollableFrame
 
 #import methods
 from track_preparation.retrieveInfo import retrieveInfo
-from track_scraping.searchTags import searchTags
+from track_scraping.scrapeWeb import scrapeWeb
 
 def directoryOption(window, options, imageCounter):
     window.lift()
@@ -68,7 +68,7 @@ def directorySearch(directory, results, frame, webScrapingWindow, characters, op
                 audio = retrieveInfo(var, directory, frame, webScrapingWindow, options)
                 if audio:
                     track = AudioTrack(audio)
-                    finalResults, webScrapingWindow, characters, imageCounter, imageSelection = searchTags(track, audio, var, frame, webScrapingWindow, characters, options, imageCounter)
+                    finalResults, webScrapingWindow, characters, imageCounter, imageSelection = scrapeWeb(track, audio, var, frame, webScrapingWindow, characters, options, imageCounter)
                     results.append(finalResults)
     return results, webScrapingWindow, characters, imageSelection
 
