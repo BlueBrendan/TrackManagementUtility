@@ -85,7 +85,7 @@ def junodownloadSearch(artist, title, var, yearList, BPMList, genreList, URLList
                                                 fileImage.pack(anchor="w")
                                                 window.update()
                                                 imageCounter += 1
-                                                imageCounter, URLList = reverseImageSearch(link, frame, window, imageCounter, URLList)
+                                                imageCounter, URLList = reverseImageSearch(link, frame, window, imageCounter, URLList, options)
     return yearList, BPMList, genreList, imageCounter, URLList
 
 def sendRequest(url, headers, frame, window):

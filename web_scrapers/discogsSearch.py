@@ -132,7 +132,7 @@ def discogsRelease(soup, yearList, genreList, URLList, frame, window, options, i
             fileImage.pack(anchor="w")
             window.update()
             imageCounter+=1
-            imageCounter, URLList = reverseImageSearch(link, frame, window, imageCounter, URLList)
+            imageCounter, URLList = reverseImageSearch(link, frame, window, imageCounter, URLList, options)
     return yearList, genreList, frame, imageCounter, URLList
 
 def sendRequest(url, headers, frame, window):

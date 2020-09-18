@@ -143,7 +143,7 @@ def extractInfo(soup, yearList, BPMList, keyList, genreList, URLList, frame, win
             fileImage.pack(anchor="w")
             window.update()
             imageCounter+=1
-            imageCounter, URLList = reverseImageSearch(link, frame, window, imageCounter, URLList)
+            imageCounter, URLList = reverseImageSearch(link, frame, window, imageCounter, URLList, options)
     return yearList, BPMList, keyList, genreList, URLList, imageCounter
 
 def sendRequest(url, headers, frame, window):
