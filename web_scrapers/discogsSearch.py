@@ -2,6 +2,7 @@ from track_scraping.compareTokens import compareTokens
 import requests
 from bs4 import BeautifulSoup
 from tkinter import *
+from PIL import Image, ImageTk
 import getpass
 import webbrowser
 import time
@@ -10,7 +11,7 @@ import random
 #import methods
 from track_scraping.reverseImageSearch import reverseImageSearch
 
-def discogsSearch(artist, title, var, yearList, genreList, artistVariations, titleVariations, headers, search, frame, window, options, imageCounter):
+def discogsSearch(artist, title, var, yearList, genreList, URLList, artistVariations, titleVariations, headers, search, frame, window, options, imageCounter):
     # THIRD QUERY - DISCOGS
     Label(frame.scrollable_frame, text="\nSearching Discogs for " + str(var), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
@@ -24,15 +25,15 @@ def discogsSearch(artist, title, var, yearList, genreList, artistVariations, tit
                 if ' (' in title and ')' in title:
                     searchTitle = title[:title.index(' (')]
                 if searchTitle.lower() in str(result).lower():
-                    yearList, genreList, frame, imageCounter = searchQuery(title, result, headers, frame, window, yearList, genreList, titleVariations, options, imageCounter)
+                    yearList, genreList, frame, imageCounter, URLList = searchQuery(title, result, headers, frame, window, yearList, genreList, URLList, titleVariations, options, imageCounter)
                 else:
                     for variation in titleVariations:
                         variation = variation.replace('-', ' ')
                         if variation.lower() in str(result).lower():
-                            yearList, genreList, frame, imageCounter = searchQuery(title, result, headers, frame, window, yearList, genreList, titleVariations, options, imageCounter)
-    return yearList, genreList, imageCounter
+                            yearList, genreList, frame, imageCounter, URLList = searchQuery(title, result, headers, frame, window, yearList, genreList, URLList, titleVariations, options, imageCounter)
+    return yearList, genreList, imageCounter, URLList
 
-def searchQuery(title, result, headers, frame, window, yearList, genreList, titleVariations, options, imageCounter):
+def searchQuery(title, result, headers, frame, window, yearList, genreList, URLList, titleVariations, options, imageCounter):
     link = str(result.find('a').get('href')).split('&')[0].split('=')[1]
     label = Label(frame.scrollable_frame, text="\n" + str(link), cursor="hand2")
     label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
@@ -52,21 +53,18 @@ def searchQuery(title, result, headers, frame, window, yearList, genreList, titl
                     for tag in temp.find_all('span', class_="tracklist_extra_artist_span"):
                         if 'Remix' in tag.get_text():
                             remix = tag.find('a').get_text()
-                            if remix.lower() not in name.lower():
-                                if '(' in name:
-                                    name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
-                    mismatch = True
+                            if remix.lower() not in name.lower() and '(' in name:
+                                name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
                     if title.lower() == name.lower():
-                        yearList, genreList, frame, imageCounter = discogsRelease(soup, yearList, genreList, frame, window, options, imageCounter)
+                        yearList, genreList, frame, imageCounter, URLList = discogsRelease(soup, yearList, genreList, URLList, frame, window, options, imageCounter)
                         break
                     else:
                         for title in titleVariations:
                             title = title.replace('-', ' ')
                             mismatch = compareTokens(title, name)
                             if mismatch == False:
-                                yearList, genreList, frame, imageCounter = discogsRelease(soup, yearList, genreList, frame, window, options, imageCounter)
+                                yearList, genreList, frame, imageCounter, URLList = discogsRelease(soup, yearList, genreList, URLList, frame, window, options, imageCounter)
                                 break
-                    if not mismatch:break
             #title format
             elif link.find('td', class_="track tracklist_track_title")!=None:
                 for temp in link.find_all('td', class_="track tracklist_track_title"):
@@ -74,25 +72,22 @@ def searchQuery(title, result, headers, frame, window, yearList, genreList, titl
                     if temp.find('span', class_="tracklist_extra_artist_span") != None:
                         remix = temp.find('span', class_="tracklist_extra_artist_span")
                         remix = remix.find('a').get_text()
-                        if remix.lower() not in name.lower():
-                            if '(' in name:
-                                name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
+                        if remix.lower() not in name.lower() and '(' in name:
+                            name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
                     # check if title and name are exact matches
-                    mismatch = True
                     if title.lower() == name.lower():
-                        yearList, genreList, frame, imageCounter = discogsRelease(soup, yearList, genreList, frame, window, options, imageCounter)
+                        yearList, genreList, frame, imageCounter, URLList = discogsRelease(soup, yearList, genreList, URLList, frame, window, options, imageCounter)
                         break
                     else:
                         for title in titleVariations:
                             title = title.replace('-', ' ')
                             mismatch = compareTokens(title, name)
                             if mismatch == False:
-                                yearList, genreList, frame, imageCounter = discogsRelease(soup, yearList, genreList, frame, window, options, imageCounter)
+                                yearList, genreList, frame, imageCounter, URLList = discogsRelease(soup, yearList, genreList, URLList, frame, window, options, imageCounter)
                                 break
-                    if not mismatch:break
-    return yearList, genreList, frame, imageCounter
+    return yearList, genreList, frame, imageCounter, URLList
 
-def discogsRelease(soup, yearList, genreList, frame, window, options, imageCounter):
+def discogsRelease(soup, yearList, genreList, URLList, frame, window, options, imageCounter):
     genre = ''
     for link in soup.find_all('div', class_="content"):
         for link in link.find_all('a'):
@@ -127,9 +122,18 @@ def discogsRelease(soup, yearList, genreList, frame, window, options, imageCount
             #write discogs image to drive
             with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
                 file.write(requests.get(link).content)
+            URLList.append(link)
+            # load file icon
+            fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
+            fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+            photo = ImageTk.PhotoImage(fileImageImport)
+            fileImage = Label(frame.scrollable_frame, image=photo)
+            fileImage.image = photo
+            fileImage.pack(anchor="w")
+            window.update()
             imageCounter+=1
-            imageCounter = reverseImageSearch(link, frame, window, imageCounter)
-    return yearList, genreList, frame, imageCounter
+            imageCounter, URLList = reverseImageSearch(link, frame, window, imageCounter, URLList)
+    return yearList, genreList, frame, imageCounter, URLList
 
 def sendRequest(url, headers, frame, window):
     try:

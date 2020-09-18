@@ -53,27 +53,29 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
         if audio['date']!=[''] or audio['bpm']!=[''] or audio['initialkey']!=[''] or audio['genre']!=['']:
             buttons = []
             if str(audio['date'])[2:-2]!=str(track.year) or str(audio['bpm'])[2:-2]!=str(track.BPM) or str(audio['initialkey'])[2:-2]!=track.key or str(audio['genre'])[2:-2]!=track.genre:
-                window = Toplevel()
-                window.attributes("-topmost", True)
-                window.title("Conflicting Tags")
-                ws = window.winfo_screenwidth()  # width of the screen
-                hs = window.winfo_screenheight()  # height of the screen
+                conflictPopup = Toplevel()
+                conflictPopup.attributes("-topmost", True)
+                conflictPopup.title("Conflicting Tags")
+
+                canvas = Canvas(conflictPopup)
+                window = Frame(canvas)
+                scrollbar = Scrollbar(conflictPopup, orient="vertical", command=canvas.yview)
+                canvas.create_window(0, 0, window=window)
+
+                ws = conflictPopup.winfo_screenwidth()  # width of the screen
+                hs = conflictPopup.winfo_screenheight()  # height of the screen
                 x = (ws / 2) - (550 / 2)
                 y = (hs / 2) - (242 / 2)
                 if len(str(track.artist) + " - " + str(track.title)) <= 30:
-                    window.geometry('%dx%d+%d+%d' % (550, 220, x, y))
+                    conflictPopup.geometry('%dx%d+%d+%d' % (550, 220, x, y))
                 else:
                     x = (ws / 2) - ((550 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)) / 2)
-                    window.geometry('%dx%d+%d+%d' % (550 + (len(str(track.artist) + " - " + str(track.title)) * 1.5), 220, x, y))
-                window.columnconfigure(0, weight=1)
-                window.columnconfigure(1, weight=1)
-                window.columnconfigure(2, weight=1)
-                window.columnconfigure(3, weight=1)
+                    conflictPopup.geometry('%dx%d+%d+%d' % (550 + (len(str(track.artist) + " - " + str(track.title)) * 1.5), 220, x, y))
                 #tags and images
                 if options["Reverse Image Search (B)"].get()==True and (imageCounter-initialCounter) >= 1:
                     y = (hs / 2) - (880 / 2)
-                    x = (ws / 2) - ((400 + (200*(imageCounter-initialCounter))) / 2)
-                    window.geometry('%dx%d+%d+%d' % (400 + (200 * (imageCounter-initialCounter)), 800, x, y))
+                    x = (ws / 2) - ((400 + (200*(min(imageCounter-initialCounter,4)))) / 2)
+                    conflictPopup.geometry('%dx%d+%d+%d' % (400 + (200 * (min(imageCounter-initialCounter,4))), 800, x, y))
                     Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(20,5))
                     tags = Frame(window)
                     tags.pack(side=TOP)
@@ -102,7 +104,6 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                         thumbnailButton = Button(window, text="No Artwork Found", bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: assignImage("THUMB", thumbnailButton, buttons, thumbnail), height=12, width=28)
                         thumbnailButton.pack(side=TOP, pady=(5, 10))
                         buttons.append(thumbnailButton)
-
                     # print images as buttons
                     images = Frame(window)
                     images.pack(side=TOP)
@@ -110,32 +111,41 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                     imageResolutions = []
                     Label(images, text="Artwork from search", font=("TkDefaultFont", 9, 'bold')).pack(side=TOP, pady=(10, 5))
                     for i in range(initialCounter, imageCounter):
-                        window.columnconfigure(i, weight=1)
-                        fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
-                        fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-                        photo = ImageTk.PhotoImage(fileImageImport)
-                        fileImage = Label(images, image=photo)
-                        fileImage.image = photo
-                        imageButtons[i] = Button(images, image=photo, highlightthickness=3, command=lambda i=i:assignImage(i, imageButtons[i], buttons, images))
-                        imageButtons[i].pack(side="left", padx=(10,10))
-                        buttons.append(imageButtons[i])
-                        im = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
-                        width, height = im.size
-                        imageResolutions.append(str(height) + "x" + str(width))
-                    resolutions = Frame(window)
-                    resolutions.pack(side=TOP)
-                    # print resolutions underneath respective images
-                    for i in imageResolutions:
-                        Label(resolutions, text=i).pack(side="left", padx=(90, 90), pady=(5,10))
+                        imageRow = Frame(images)
+                        imageRow.pack(side=TOP)
+                        start = initialCounter
+                        end = min(initialCounter+4, imageCounter)
+                        for j in range(start, end):
+                            fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(j) + ".jpg")
+                            fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+                            photo = ImageTk.PhotoImage(fileImageImport)
+                            fileImage = Label(imageRow, image=photo)
+                            fileImage.image = photo
+                            imageButtons[j] = Button(imageRow, image=photo, highlightthickness=3, command=lambda j=j:assignImage(j, imageButtons[j], buttons, images))
+                            imageButtons[j].pack(side="left", padx=(10,10))
+                            buttons.append(imageButtons[j])
+                            im = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(j) + ".jpg")
+                            width, height = im.size
+                            imageResolutions.append(str(height) + "x" + str(width))
+                            initialCounter+=1
+                        resolutionRow = Frame(images)
+                        resolutionRow.pack(side=TOP)
+                        # print resolutions underneath respective images
+                        for j in range(start, end):
+                            Label(resolutionRow, text=imageResolutions[j]).pack(side="left", padx=(90, 90), pady=(5,10))
                     #load option buttons
                     optionButtons = Frame(window)
                     optionButtons.pack(side=TOP)
-                    Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection)).pack(side="left", padx=(15, 15), pady=(25,10))
-                    Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection)).pack(side="left", padx=(15, 15), pady=(25,10))
-                    Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow, imageSelection)).pack(side="left", padx=(15, 15), pady=(25,10))
-                    Button(optionButtons, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow, imageSelection)).pack(side="left", padx=(15, 15), pady=(25,10))
-                    window.lift()
-                    window.wait_window()
+                    Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, conflictPopup, webScrapingWindow, imageSelection)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, conflictPopup, webScrapingWindow, imageSelection)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, conflictPopup, webScrapingWindow, imageSelection)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    Button(optionButtons, text="Skip", command=lambda: skipOption(track, audio, conflictPopup, webScrapingWindow, imageSelection)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    canvas.update_idletasks()
+                    canvas.configure(scrollregion=canvas.bbox('all'), yscrollcommand=scrollbar.set)
+                    canvas.pack(fill='both', expand=True, side='left')
+                    scrollbar.pack(side="right", fill=Y)
+                    conflictPopup.lift()
+                    conflictPopup.wait_window()
                 #tags only
                 else:
                     Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, columnspan=4, pady=(10,0))

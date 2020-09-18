@@ -76,7 +76,7 @@ def updateTrack(filename, directory, frame, webScrapingWindow, options):
                 audio.save()
 
     # handle replayGain
-    if options["Calculate ReplayGain (B)"].get() == True: audio = handleReplayGain(directory, filename, audio)
+    if options["Calculate ReplayGain (B)"].get() == True: audio = handleReplayGain(directory, filename, audio, webScrapingWindow)
 
     return audio, filename
 

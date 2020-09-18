@@ -4,7 +4,7 @@ import tkinter as tk
 #global variables
 overwrite = False
 
-def handleReplayGain(directory, var, audio):
+def handleReplayGain(directory, var, audio, webScrapingWindow):
     global overwrite
     file = AudioSegment.from_file(directory + '/' + var, "flac")
     rgvalue = -18 - float(file.dBFS)
@@ -19,8 +19,8 @@ def handleReplayGain(directory, var, audio):
         tk.Label(window, text="Existing ReplayGain value detected. Replace " + str(audio["replaygain_track_gain"][0]) + " with " + str(round(rgvalue, 2)) + " dB?", wraplength=370).pack(side="top", pady=(20,15))
         buttons = tk.Frame(window)
         buttons.pack(side="top")
-        tk.Button(buttons, text="Yes", command=lambda: setTrue(window)).pack(side="left", padx=(15, 20), pady=(10, 0))
-        tk.Button(buttons, text="No", command=window.destroy).pack(side="left", padx=(20, 15), pady=(10, 0))
+        tk.Button(buttons, text="Yes", command=lambda: setTrue(window, webScrapingWindow)).pack(side="left", padx=(15, 20), pady=(10, 0))
+        tk.Button(buttons, text="No", command=closePopup(window, webScrapingWindow)).pack(side="left", padx=(20, 15), pady=(10, 0))
         window.wait_window()
         if overwrite:
             audio["replaygain_track_gain"] = str(round(rgvalue,2)) + ' dB'
@@ -30,10 +30,11 @@ def handleReplayGain(directory, var, audio):
         audio.save()
     return audio
 
-def setTrue(window):
+def setTrue(window, webScrapingWindow):
     global overwrite
     overwrite = True
     window.destroy()
+    webScrapingWindow.lift()
 
 def closePopup(popup, webScrapingWindow):
     popup.destroy()

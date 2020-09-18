@@ -11,11 +11,16 @@ def scrapeWeb(track, audio, var, frame, webScrapingWindow, characters, options, 
     # clean search query of ampersands (query ends upon reaching ampersand symbol)
     if '&' in search:
         search = search.replace('&', 'and')
+    #stores year/release dates
     yearList = []
+    #stores BPM values
     BPMList = []
+    #stores key values
     keyList = []
+    #stores genre values
     genreList = []
-
+    #stores artwork image URLs to avoid duplicates
+    URLList = []
     # build list of artist and track title variations to prepare for scraping
     artistVariations, titleVariations = buildVariations(track.artist, track.title)
 
@@ -24,11 +29,11 @@ def scrapeWeb(track, audio, var, frame, webScrapingWindow, characters, options, 
     # headers = {'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10",}
 
     # junodownload
-    if options['Scrape Junodownload (B)'].get() == True:yearList, BPMList, genreList, imageCounter = junodownloadSearch(track.artist, track.title, var, yearList, BPMList, genreList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow, audio, options, imageCounter)
+    if options['Scrape Junodownload (B)'].get() == True:yearList, BPMList, genreList, imageCounter, URLList = junodownloadSearch(track.artist, track.title, var, yearList, BPMList, genreList, URLList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow, audio, options, imageCounter)
     # beatport
-    if options['Scrape Beatport (B)'].get() == True:yearList, BPMList, keyList, genreList, imageCounter = beatportSearch(track.artist, track.title, var, yearList, BPMList, keyList, genreList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow, audio, options, imageCounter)
+    if options['Scrape Beatport (B)'].get() == True:yearList, BPMList, keyList, genreList, imageCounter, URLList = beatportSearch(track.artist, track.title, var, yearList, BPMList, keyList, genreList, URLList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow, audio, options, imageCounter)
     # discogs
-    if options['Scrape Discogs (B)'].get() == True:yearList, genreList, imageCounter = discogsSearch(track.artist, track.title, var, yearList, genreList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow, options, imageCounter)
+    if options['Scrape Discogs (B)'].get() == True:yearList, genreList, imageCounter, URLList = discogsSearch(track.artist, track.title, var, yearList, genreList, URLList, artistVariations, titleVariations, headers, search, frame, webScrapingWindow, options, imageCounter)
     # spotify
     # apple music
     finalResults, webScrapingWindow, characters, imageSelection = buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScrapingWindow, characters, options, initialCounter, imageCounter)

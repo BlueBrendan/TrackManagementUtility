@@ -5,7 +5,7 @@ from selenium import webdriver
 import getpass
 from PIL import Image, ImageTk
 
-def reverseImageSearch(link, frame, window, imageCounter):
+def reverseImageSearch(link, frame, window, imageCounter, URLList):
     url = "https://images.google.com/searchbyimage?image_url=" + link
     if "https://" in link:
         link = link.replace("https://", '')
@@ -65,17 +65,12 @@ def reverseImageSearch(link, frame, window, imageCounter):
                         counter+=1
                     if 'data:image' not in image.get_attribute('src'):
                         browser.get(image.get_attribute('src'))
-                        with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
-                            file.write(requests.get(browser.current_url).content)
-                        # load file icon
-                        fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
-                        imageCounter+=1
-                        fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-                        photo = ImageTk.PhotoImage(fileImageImport)
-                        fileImage = Label(frame.scrollable_frame, image=photo)
-                        fileImage.image = photo
-                        fileImage.pack(anchor="w")
+                        #avoid duplicates
+                        if browser.current_url not in URLList:
+                            URLList.append(browser.current_url)
+                            with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
+                                file.write(requests.get(browser.current_url).content)
                         break
     browser.quit()
     window.lift()
-    return imageCounter
+    return imageCounter, URLList

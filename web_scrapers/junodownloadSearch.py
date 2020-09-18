@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from tkinter.tix import *
+from PIL import Image, ImageTk
 import webbrowser
 import getpass
 import time
@@ -11,7 +12,7 @@ from track_scraping.compareTokens import compareTokens
 from track_scraping.reverseImageSearch import reverseImageSearch
 from web_scrapers.compareRuntime import compareRuntime
 
-def junodownloadSearch(artist, title, var, yearList, BPMList, genreList, artistVariations, titleVariations, headers, search, frame, window, audio, options, imageCounter):
+def junodownloadSearch(artist, title, var, yearList, BPMList, genreList, URLList, artistVariations, titleVariations, headers, search, frame, window, audio, options, imageCounter):
 #FIRST QUERY - JUNO DOWNLOAD
     Label(frame.scrollable_frame, text="\nSearching Juno Download for " + str(var), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
@@ -74,9 +75,18 @@ def junodownloadSearch(artist, title, var, yearList, BPMList, genreList, artistV
                                                 # write junodownload image to drive
                                                 with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
                                                     file.write(requests.get(link).content)
+                                                URLList.append(link)
+                                                # load file icon
+                                                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
+                                                fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+                                                photo = ImageTk.PhotoImage(fileImageImport)
+                                                fileImage = Label(frame.scrollable_frame, image=photo)
+                                                fileImage.image = photo
+                                                fileImage.pack(anchor="w")
+                                                window.update()
                                                 imageCounter += 1
-                                                imageCounter = reverseImageSearch(link, frame, window, imageCounter)
-    return yearList, BPMList, genreList, imageCounter
+                                                imageCounter, URLList = reverseImageSearch(link, frame, window, imageCounter, URLList)
+    return yearList, BPMList, genreList, imageCounter, URLList
 
 def sendRequest(url, headers, frame, window):
     try:

@@ -60,11 +60,12 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
                     imageSelections.append(imageSelection)
         finalReportWindow = Toplevel()
         webScrapingWindow.lift()
-        finalReportWindow.lift()
+
         finalReportWindow.title("Final Report")
         canvas = Canvas(finalReportWindow)
         finalReport = Frame(canvas)
         scrollbar = Scrollbar(finalReportWindow, orient="vertical", command=canvas.yview)
+        canvas.create_window(0, 0, window=finalReport)
 
         ws = finalReportWindow.winfo_screenwidth()  # width of the screen
         hs = finalReportWindow.winfo_screenheight()  # height of the screen
@@ -75,14 +76,12 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
             if len(directories) > 1:
                 y = (hs / 2) - (770 / 2)
                 finalReportWindow.geometry('%dx%d+%d+%d' % (450, 700, x, y))
-            canvas.create_window(0, 0, window=finalReport)
         else:
             x = (ws / 2) - ((450 + (characters * 1.5)) / 2)
             finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters * 1.5), 480, x, y))
             if len(directories) > 1:
                 y = (hs / 2) - (770 / 2)
                 finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters * 1.5), 700, x, y))
-            canvas.create_window(0, 0, window=finalReport, anchor='e')
         Label(finalReport, text="Final Report", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(15, 0))
         for i in range(len(finalResults)):
             Label(finalReport, text=finalResults[i] + '\n').pack(side="top")
@@ -126,6 +125,7 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
         Button(finalReport, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, options)).pack(side=TOP, pady=(15, 15))
         Checkbutton(finalReport, text="Close scraping window", var=options["Close Scraping Window (B)"], command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).pack(side=TOP, pady=(0,10))
         finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closePopup(finalReportWindow, webScrapingWindow))
+        finalReportWindow.lift()
         canvas.update_idletasks()
         canvas.configure(scrollregion=canvas.bbox('all'), yscrollcommand=scrollbar.set)
         canvas.pack(fill='both', expand=True, side='left')

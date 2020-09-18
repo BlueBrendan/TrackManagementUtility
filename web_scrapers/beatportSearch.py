@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import getpass
 from tkinter import *
+from PIL import Image, ImageTk
 import webbrowser
 import time
 import random
@@ -11,7 +12,7 @@ import random
 from track_scraping.reverseImageSearch import reverseImageSearch
 from web_scrapers.compareRuntime import compareRuntime
 
-def beatportSearch(artist, title, var, yearList, BPMList, keyList, genreList, artistVariations, titleVariations, headers, search, frame, window, audio, options, imageCounter):
+def beatportSearch(artist, title, var, yearList, BPMList, keyList, genreList, URLList, artistVariations, titleVariations, headers, search, frame, window, audio, options, imageCounter):
     #SECOND QUERY - BEATPORT
     Label(frame.scrollable_frame, text="\nSearching Beatport for " + str(var), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
@@ -52,13 +53,13 @@ def beatportSearch(artist, title, var, yearList, BPMList, keyList, genreList, ar
                     if soup != False and "Oops... the page you were looking for could not be found" not in str(soup):
                         #check if page is a track (single) or a release (album)
                         #case 1: release
-                        if link[25:32] == "release": yearList, BPMList, keyList, genreList, imageCounter = beatportRelease(soup, titleVariations, yearList, BPMList, keyList, genreList, audio, title, headers, frame, window, options, imageCounter)
+                        if link[25:32] == "release": yearList, BPMList, keyList, genreList, imageCounter, URLList = beatportRelease(soup, titleVariations, yearList, BPMList, keyList, genreList, URLList, audio, title, headers, frame, window, options, imageCounter)
                         #case 2: track
-                        elif link[25:30] == "track": yearList, BPMList, keyList, genreList, imageCounter = beatportTrack(soup, yearList, BPMList, keyList, genreList, audio, title, frame, window, options, imageCounter)
-    return yearList, BPMList, keyList, genreList, imageCounter
+                        elif link[25:30] == "track": yearList, BPMList, keyList, genreList, imageCounter, URLList = beatportTrack(soup, yearList, BPMList, keyList, genreList, URLList, audio, title, frame, window, options, imageCounter)
+    return yearList, BPMList, keyList, genreList, imageCounter, URLList
 
 #search beatport releases, filter individual tracks
-def beatportRelease(soup, titleVariations, yearList, BPMList, keyList, genreList, audio, title, headers, frame, window, options, imageCounter):
+def beatportRelease(soup, titleVariations, yearList, BPMList, keyList, genreList, URLList, audio, title, headers, frame, window, options, imageCounter):
     for link in soup.find_all('li', class_="bucket-item ec-item track"):
         # find all tracks in the release that contain the title
         link = link.find('p', class_="buk-track-title")
@@ -69,11 +70,11 @@ def beatportRelease(soup, titleVariations, yearList, BPMList, keyList, genreList
                 Label(frame.scrollable_frame, text="Connection Failed").pack(anchor='w')
                 refresh(frame.scrollable_frame, window)
                 return yearList, BPMList, keyList, genreList, imageCounter
-            yearList, BPMList, keyList, genreList, imageCounter = beatportTrack(soup, yearList, BPMList, keyList, genreList, audio, title, frame, window, options, imageCounter)
-    return yearList, BPMList, keyList, genreList, imageCounter
+            yearList, BPMList, keyList, genreList, imageCounter, URLList = beatportTrack(soup, yearList, BPMList, keyList, genreList, URLList, audio, title, frame, window, options, imageCounter)
+    return yearList, BPMList, keyList, genreList, imageCounter, URLList
 
 #search beatport tracks, extract info in the event of a match
-def beatportTrack(soup, yearList, BPMList, keyList, genreList, audio, title, frame, window, options, imageCounter):
+def beatportTrack(soup, yearList, BPMList, keyList, genreList, URLList, audio, title, frame, window, options, imageCounter):
     link = soup.find('div', class_="interior-track-content")
     if link is not None:
         # check runtime
@@ -86,13 +87,13 @@ def beatportTrack(soup, yearList, BPMList, keyList, genreList, audio, title, fra
             if trackMix != '' and 'original' not in trackMix.lower() and '(' in title and ')' in title:
                 remix = title[title.rfind('(') + 1:title.rfind(')')]
                 if compareTokens(remix, trackMix) == False:
-                    yearList, BPMList, keyList, genreList, imageCounter = extractInfo(soup, yearList, BPMList, keyList, genreList, frame, window, options, imageCounter)
+                    yearList, BPMList, keyList, genreList, URLList, imageCounter = extractInfo(soup, yearList, BPMList, keyList, genreList, URLList, frame, window, options, imageCounter)
             else:
-                yearList, BPMList, keyList, genreList, imageCounter = extractInfo(soup, yearList, BPMList, keyList, genreList, frame, window, options, imageCounter)
-    return yearList, BPMList, keyList, genreList, imageCounter
+                yearList, BPMList, keyList, genreList, URLList, imageCounter = extractInfo(soup, yearList, BPMList, keyList, genreList, URLList, frame, window, options, imageCounter)
+    return yearList, BPMList, keyList, genreList, imageCounter, URLList
 
 #extract year, BPM, key, and genre
-def extractInfo(soup, yearList, BPMList, keyList, genreList, frame, window, options, imageCounter):
+def extractInfo(soup, yearList, BPMList, keyList, genreList, URLList, frame, window, options, imageCounter):
     for link in soup.find_all('ul', class_="interior-track-content-list"):
         release = link.find('li', class_="interior-track-content-item interior-track-released")
         release = release.find('span', class_="value").get_text()
@@ -132,9 +133,18 @@ def extractInfo(soup, yearList, BPMList, keyList, genreList, frame, window, opti
             # write beatport image to drive
             with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
                 file.write(requests.get(link).content)
+            URLList.append(link)
+            # load file icon
+            fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
+            fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+            photo = ImageTk.PhotoImage(fileImageImport)
+            fileImage = Label(frame.scrollable_frame, image=photo)
+            fileImage.image = photo
+            fileImage.pack(anchor="w")
+            window.update()
             imageCounter+=1
-            imageCounter = reverseImageSearch(link, frame, window, imageCounter)
-    return yearList, BPMList, keyList, genreList, imageCounter
+            imageCounter, URLList = reverseImageSearch(link, frame, window, imageCounter, URLList)
+    return yearList, BPMList, keyList, genreList, URLList, imageCounter
 
 def sendRequest(url, headers, frame, window):
     try:
