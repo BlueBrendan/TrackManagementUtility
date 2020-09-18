@@ -25,7 +25,7 @@ def createConfigFile(flag):
             os.mkdir(path + "/Track Management Utility")
         # create setttings file
         file = open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt", 'w')
-        file.write("-GENERAL-\nSubdirectories (B):True\nClose Scraping Window (B):True\nFirst Default Directory (S):\nSecond Default Directory (S):\n\n-SCRAPING SETTINGS-\nScrape Junodownload (B):True\nScrape Beatport (B):True\nScrape Discogs (B):True\n\n-IMAGE SCRAPING-\nReverse Image Search (B):True\nDelete Stored Images (B):True\nImage Load Wait Time (I):10\n\n-TAGGING-\nCheck Artist for Typos (B):True\nAudio naming format (S):Artist - Title\nCalculate ReplayGain (B):True\nDefault amplitude value (I):-18\nOverwrite existing ReplayGain value (B):False\n")
+        file.write("-GENERAL-\nSubdirectories (B):True\nClose Scraping Window (B):True\nFirst Default Directory (S):\nSecond Default Directory (S):\n\n-SCRAPING SETTINGS-\nScrape Junodownload (B):True\nScrape Beatport (B):True\nScrape Discogs (B):True\n\n-IMAGE SCRAPING-\nReverse Image Search (B):True\nDelete Stored Images (B):True\nImage Load Wait Time (I):10\n\n-TAGGING-\nCheck Artist for Typos (B):True\nAudio naming format (S):Artist - Title\nCalculate ReplayGain (B):True\nOverwrite existing ReplayGain value (B):False\n")
         file.close()
     return CONFIG_FILE
 
@@ -54,27 +54,27 @@ def compareDirectories(CONFIG_FILE):
 
 def readValuesFromConfig(CONFIG_FILE):
     config_file = open(CONFIG_FILE, 'r').read()
-    terms = ['Subdirectories (B)', 'Close Scraping Window (B)', 'First Default Directory (S)', 'Second Default Directory (S)', 'Scrape Junodownload (B)', 'Scrape Beatport (B)', 'Scrape Discogs (B)', "Reverse Image Search (B)", "Delete Stored Images (B)", "Image Load Wait Time (I)", "Check Artist for Typos (B)", "Audio naming format (S)", "Calculate ReplayGain (B)", "Default amplitude value (I)", "Overwrite existing ReplayGain value (B)"]
+    terms = ['Subdirectories (B)', 'Close Scraping Window (B)', 'First Default Directory (S)', 'Second Default Directory (S)', 'Scrape Junodownload (B)', 'Scrape Beatport (B)', 'Scrape Discogs (B)', "Reverse Image Search (B)", "Delete Stored Images (B)", "Image Load Wait Time (I)", "Check Artist for Typos (B)", "Audio naming format (S)", "Calculate ReplayGain (B)", "Overwrite existing ReplayGain value (B)"]
     options = {}
     for term in terms:
         if (term[len(term) - 2:len(term) - 1]) == 'B':
             try: options[term] = tk.BooleanVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.find('\n', config_file.index(term) + len(term))])
             except ValueError:
                 os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
-                createConfigFile("F")
+                CONFIG_FILE = createConfigFile("F")
                 readValuesFromConfig(CONFIG_FILE)
         elif (term[len(term) - 2:len(term) - 1]) == 'S':
             try: options[term] = tk.StringVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
             except ValueError:
                 os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
-                createConfigFile("F")
+                CONFIG_FILE = createConfigFile("F")
                 readValuesFromConfig(CONFIG_FILE)
         elif (term[len(term) - 2:len(term) - 1]) == 'I':
             try:
                 options[term] = tk.IntVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
             except ValueError:
                 os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
-                createConfigFile("F")
+                CONFIG_FILE = createConfigFile("F")
                 readValuesFromConfig(CONFIG_FILE)
     return options
 
@@ -93,6 +93,7 @@ def selectCompare(CONFIG_FILE):
 # set preferences
 CONFIG_FILE = createConfigFile("N")
 options = readValuesFromConfig(CONFIG_FILE)
+# print(options)
 
 #file topmenu button
 menufile = tk.Menubutton(root, text="File")

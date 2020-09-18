@@ -85,32 +85,20 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
         Label(finalReport, text="Final Report", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(15, 0))
         for i in range(len(finalResults)):
             Label(finalReport, text=finalResults[i] + '\n').pack(side="top")
-            if options["Reverse Image Search (B)"].get() == True and imageCounter >= 1 and len(finalResults) == len(imageSelections):
-                #load image
-                if imageSelections[i]!='THUMB':
-                    fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageSelections[i]) + ".jpg")
-                    width, height = fileImageImport.size
-                    fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-                    photo = ImageTk.PhotoImage(fileImageImport)
-                    fileImage = Label(finalReport, image=photo)
-                    fileImage.image = photo
-                    fileImage.pack(side="top", padx=(10, 10))
-                    #resolution
-                    Label(finalReport, text=str(width) + "x" + str(height)).pack(side="top", pady=(5, 10))
-                else:
-                    fileImageImport =thumbnails[i]
-                    width, height = fileImageImport.size
-                    fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-                    photo = ImageTk.PhotoImage(fileImageImport)
-                    fileImage = Label(finalReport, image=photo)
-                    fileImage.image = photo
-                    fileImage.pack(side="top", padx=(10, 10))
-                    #resolution
-                    Label(finalReport, text=str(width) + "x" + str(height)).pack(side="top", pady=(5, 10))
-            #load thumbnail image (if image scraping was not performed)
+            # load non-thumbnailimage
+            if options["Reverse Image Search (B)"].get() == True and imageCounter >= 1 and imageSelections[i] != 'THUMB':
+                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageSelections[i]) + ".jpg")
+                width, height = fileImageImport.size
+                fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+                photo = ImageTk.PhotoImage(fileImageImport)
+                fileImage = Label(finalReport, image=photo)
+                fileImage.image = photo
+                fileImage.pack(side="top", padx=(10, 10))
+                #resolution
+                Label(finalReport, text=str(width) + "x" + str(height)).pack(side="top", pady=(5, 10))
+            #load thumbnail image
             else:
-                if thumbnails[i] == 'NA':
-                    Label(finalReport, text="No Artwork Found").pack(side="top", pady=(5,10))
+                if thumbnails[i] == 'NA': Label(finalReport, text="No Artwork Found").pack(side="top", pady=(5,10))
                 else:
                     fileImageImport = thumbnails[i]
                     width, height = fileImageImport.size
@@ -130,7 +118,6 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
         canvas.configure(scrollregion=canvas.bbox('all'), yscrollcommand=scrollbar.set)
         canvas.pack(fill='both', expand=True, side='left')
         scrollbar.pack(side="right", fill=Y)
-
 
 #handle subdirectory selection
 def closeScrapingWindowSelection(CONFIG_FILE):

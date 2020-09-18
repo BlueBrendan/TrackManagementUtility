@@ -32,7 +32,7 @@ def updatePreferences(options, CONFIG_FILE, root):
     imageSuboptions.append(deleteImages)
     #wait time
     waitTimeText = tk.Label(tab1, text="Image Load Wait Time (s)")
-    time = IntVar(value=options["Image Load Wait Time (I)"].get())
+    time = StringVar(value=options["Image Load Wait Time (I)"].get())
     time.trace("w", lambda name, index, mode, time=time: entrybox(CONFIG_FILE, "Image Load Wait Time (I)", time))
 
     waitTime = tk.Entry(tab1, width=5, textvariable=time, validate="key")
@@ -101,7 +101,11 @@ def namingRadiobutton(CONFIG_FILE, term, value):
         file.close()
 
 def entrybox(CONFIG_FILE, term, value):
+    if value.get() == '':
+        value.set(0)
     config_file = open(CONFIG_FILE, 'r').read()
+    print(str(config_file[config_file.index(term):config_file.index('\n', config_file.index(term) + len(term))]))
+    print(str(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term)) + 1])) + str(value.get()))
     # convert to term
     with open(CONFIG_FILE, 'wt') as file:
         file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1])) + str(value.get())))

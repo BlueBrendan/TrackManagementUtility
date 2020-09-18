@@ -20,7 +20,7 @@ def handleReplayGain(directory, var, audio, webScrapingWindow):
         buttons = tk.Frame(window)
         buttons.pack(side="top")
         tk.Button(buttons, text="Yes", command=lambda: setTrue(window, webScrapingWindow)).pack(side="left", padx=(15, 20), pady=(10, 0))
-        tk.Button(buttons, text="No", command=closePopup(window, webScrapingWindow)).pack(side="left", padx=(20, 15), pady=(10, 0))
+        tk.Button(buttons, text="No", command=lambda: closePopup(window, webScrapingWindow)).pack(side="left", padx=(20, 15), pady=(10, 0))
         window.wait_window()
         if overwrite:
             audio["replaygain_track_gain"] = str(round(rgvalue,2)) + ' dB'
@@ -36,6 +36,6 @@ def setTrue(window, webScrapingWindow):
     window.destroy()
     webScrapingWindow.lift()
 
-def closePopup(popup, webScrapingWindow):
-    popup.destroy()
+def closePopup(window, webScrapingWindow):
+    window.destroy()
     webScrapingWindow.lift()
