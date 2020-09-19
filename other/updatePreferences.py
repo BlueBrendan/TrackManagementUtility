@@ -8,9 +8,9 @@ def updatePreferences(options, CONFIG_FILE, root):
     window.title("Preferences Window")
     ws = window.winfo_screenwidth()  # width of the screen
     hs = window.winfo_screenheight()  # height of the screen
-    x = (ws / 2) - (500 / 2)
+    x = (ws / 2) - (600 / 2)
     y = (hs / 2) - (330 / 2)
-    window.geometry('%dx%d+%d+%d' % (500, 300, x, y))
+    window.geometry('%dx%d+%d+%d' % (600, 300, x, y))
     tab_parent = ttk.Notebook(window)
     tab1 = ttk.Frame(tab_parent)
 
@@ -18,13 +18,13 @@ def updatePreferences(options, CONFIG_FILE, root):
     tab_parent.pack(expand=1, fill='both')
     tab_parent.add(tab1, text="Scraping")
     #website settings
-    tk.Label(tab1, text="Web Scraping").pack(padx=(5, 0), pady=(10,5), anchor="w")
+    tk.Label(tab1, text="Web Scraping", font=("TkDefaultFont", 9, 'bold')).pack(padx=(5, 0), pady=(10,5), anchor="w")
     tk.Checkbutton(tab1, text="Juno Download", variable=options['Scrape Junodownload (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Scrape Junodownload (B)', [])).pack(padx=(10, 0), anchor="w")
     tk.Checkbutton(tab1, text="Beatport", variable=options['Scrape Beatport (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Scrape Beatport (B)', [])).pack(padx=(10, 0), anchor="w")
     tk.Checkbutton(tab1, text="Discogs", variable=options['Scrape Discogs (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Scrape Discogs (B)', [])).pack(padx=(10, 0), anchor="w")
 
     #image scraping settings
-    tk.Label(tab1, text="Image Scraping").pack(padx=(5, 0),pady=(15,5), anchor="w")
+    tk.Label(tab1, text="Image Scraping", font=("TkDefaultFont", 9, 'bold')).pack(padx=(5, 0),pady=(15,5), anchor="w")
     imageSuboptions = []
     deleteImages = tk.Checkbutton(tab1, text="Delete Stored Images after Completion", variable=options['Delete Stored Images (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Delete Stored Images (B)', []))
     if options["Reverse Image Search (B)"].get()==False:
@@ -50,15 +50,70 @@ def updatePreferences(options, CONFIG_FILE, root):
 
     #Tag Settings Tab
     tab2 = ttk.Frame(tab_parent)
-    #replayGain settings
     tab_parent.add(tab2, text="Tagging")
-    tk.Label(tab2, text="ReplayGain").pack(padx=(5, 0), pady=(10, 5), anchor="w")
+
+    tagFrame = Frame(tab2)
+    tagFrame.pack(side="left", anchor="nw", padx=(5,0))
+    tk.Label(tagFrame, text="Tags", font=("TkDefaultFont", 9, 'bold')).pack(padx=(5, 0), pady=(10, 5), anchor="w")
+
+    #top row of tagFrame
+    tagFrameTopRow = Frame(tagFrame)
+    tagFrameTopRow.pack()
+    #container for unselected tags
+    leftListbox = Frame(tagFrameTopRow)
+    leftListbox.pack(side="left")
+    #container for listbox button controls
+    listboxButtons = Frame(tagFrameTopRow)
+    listboxButtons.pack(side="left")
+    #container for selected listbox tags
+    rightListbox = Frame(tagFrameTopRow)
+    rightListbox.pack(side="left")
+    #Default Tag settings
+    tk.Label(leftListbox, text="Unselected Tags").pack()
+    unselectedListbox = tk.Listbox(leftListbox)
+    tk.Label(rightListbox, text="Selected Tags").pack()
+    selectedListbox = tk.Listbox(rightListbox)
+    tagDict = {
+        'Artist': 'artist',
+        'Album': 'album',
+        'BPM': 'bpm',
+        'Comment': 'comment',
+        'Compilation': 'compilation',
+        'Copyright': 'copyright',
+        'Discnumber': 'discnumber',
+        'Genre': 'genre',
+        'Key': 'initialkey',
+        'Release Date': 'date',
+        'Title': 'title',
+        'ReplayGain': 'replaygain_track_gain',
+    }
+    #insert all tags in unselectedListbox
+    for tag in tagDict:
+        if tag not in options['Selected Tags (L)']:
+            unselectedListbox.insert(END, tag)
+    #insert all selected tags into selectedListbox and remove from unselectedListbox
+    for tag in options['Selected Tags (L)']:
+        selectedListbox.insert(END, tag)
+    unselectedListbox.pack(padx=(5,5), pady=(5,5))
+    tk.Button(listboxButtons, text="Select", width=7).pack(side="top")
+    tk.Button(listboxButtons, text="Deselect", width=7).pack(side="top")
+    selectedListbox.pack(padx=(5,0), pady=(5,5))
+
+    # bottom row of tagFrame
+    tagFrameBottomRow = Frame(tagFrame)
+    tagFrameBottomRow.pack(side="left")
+    tk.Checkbutton(tagFrameBottomRow, text="Delete Unselected Tags from File", variable=options["Delete Unselected Tags (B)"], command=lambda: checkbox(CONFIG_FILE, 'Delete Unselected Tags (B)', [])).pack(padx=(5, 0), side="left")
+
+    # replayGain settings
+    replayGainFrame = Frame(tab2)
+    replayGainFrame.pack(side="right", anchor="nw", padx=(0,5))
+    tk.Label(replayGainFrame, text="ReplayGain", font=("TkDefaultFont", 9, 'bold')).pack(padx=(5, 0), pady=(10, 5), anchor="w")
     replayGainSuboptions = []
-    calculateReplayGain = tk.Checkbutton(tab2, text="Override Existing ReplayGain value", variable=options['Overwrite existing ReplayGain value (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Overwrite existing ReplayGain value (B)', []))
+    calculateReplayGain = tk.Checkbutton(replayGainFrame, text="Override Existing ReplayGain value", variable=options['Overwrite existing ReplayGain value (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Overwrite existing ReplayGain value (B)', []))
     if options['Calculate ReplayGain (B)'].get()==False:
         calculateReplayGain.config(state=DISABLED)
     replayGainSuboptions.append(calculateReplayGain)
-    tk.Checkbutton(tab2, text="Calculate ReplayGain", variable=options['Calculate ReplayGain (B)'], onvalue=True, offvalue=False,command=lambda: checkbox(CONFIG_FILE, 'Calculate ReplayGain (B)', replayGainSuboptions)).pack(padx=(10, 0), anchor="w")
+    tk.Checkbutton(replayGainFrame, text="Calculate ReplayGain", variable=options['Calculate ReplayGain (B)'], onvalue=True, offvalue=False,command=lambda: checkbox(CONFIG_FILE, 'Calculate ReplayGain (B)', replayGainSuboptions)).pack(padx=(10, 0), anchor="w")
     calculateReplayGain.pack(padx=(10, 0), anchor="w")
 
     #Others Tab

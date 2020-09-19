@@ -12,14 +12,13 @@ def updateTrack(filename, directory, frame, webScrapingWindow, options):
     interestParameters = ['artist', 'title', 'date', 'bpm', 'initialkey', 'genre', 'replaygain_track_gain']
     fileParameters = []
     for x in audio:
-        fileParameters.append(x)
-    for x in fileParameters:
         # delete extraneous tags
-        if x not in interestParameters:
-            print("Deleting " + str(x))
+        if x not in interestParameters and options["Delete Unselected Tags (B)"].get()==True:
             audio[x] = ""
             audio.pop(x)
             audio.save()
+        else:
+            fileParameters.append(x)
     for x in interestParameters:
         # add tags of interest if missing
         if x not in fileParameters:
