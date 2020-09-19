@@ -1,9 +1,15 @@
 import tkinter as tk
-from tkinter import messagebox
 from tkinter import ttk
 from tkinter.tix import *
 
+#global variables
+global tagList
+global CONFIG
+
 def updatePreferences(options, CONFIG_FILE, root):
+    global tagList
+    global CONFIG
+    CONFIG = CONFIG_FILE
     window = tk.Toplevel(master=root)
     window.title("Preferences Window")
     ws = window.winfo_screenwidth()  # width of the screen
@@ -51,10 +57,10 @@ def updatePreferences(options, CONFIG_FILE, root):
     #Tag Settings Tab
     tab2 = ttk.Frame(tab_parent)
     tab_parent.add(tab2, text="Tagging")
-
     tagFrame = Frame(tab2)
     tagFrame.pack(side="left", anchor="nw", padx=(5,0))
     tk.Label(tagFrame, text="Tags", font=("TkDefaultFont", 9, 'bold')).pack(padx=(5, 0), pady=(10, 5), anchor="w")
+    tagList = options["Selected Tags (L)"]
 
     #top row of tagFrame
     tagFrameTopRow = Frame(tagFrame)
@@ -71,33 +77,27 @@ def updatePreferences(options, CONFIG_FILE, root):
     #Default Tag settings
     tk.Label(leftListbox, text="Unselected Tags").pack()
     unselectedListbox = tk.Listbox(leftListbox)
+
     tk.Label(rightListbox, text="Selected Tags").pack()
     selectedListbox = tk.Listbox(rightListbox)
-    tagDict = {
-        'Artist': 'artist',
-        'Album': 'album',
-        'BPM': 'bpm',
-        'Comment': 'comment',
-        'Compilation': 'compilation',
-        'Copyright': 'copyright',
-        'Discnumber': 'discnumber',
-        'Genre': 'genre',
-        'Key': 'initialkey',
-        'Release Date': 'date',
-        'Title': 'title',
-        'ReplayGain': 'replaygain_track_gain',
-    }
+    comprehensiveList = ['Artist', 'Album', 'Album Artist', 'BPM', 'Comment', 'Compilation', 'Copyright', 'Discnumber', 'Genre', 'Key','Release Date', 'Title', 'ReplayGain']
     #insert all tags in unselectedListbox
-    for tag in tagDict:
+    for tag in comprehensiveList:
         if tag not in options['Selected Tags (L)']:
             unselectedListbox.insert(END, tag)
     #insert all selected tags into selectedListbox and remove from unselectedListbox
     for tag in options['Selected Tags (L)']:
         selectedListbox.insert(END, tag)
     unselectedListbox.pack(padx=(5,5), pady=(5,5))
-    tk.Button(listboxButtons, text="Select", width=7).pack(side="top")
-    tk.Button(listboxButtons, text="Deselect", width=7).pack(side="top")
+
+    select = tk.Button(listboxButtons, text="Select", width=7, state=DISABLED)
+    select.pack(side="top")
+    deselect = tk.Button(listboxButtons, text="Deselect", width=7, state=DISABLED)
+    deselect.pack(side="top")
     selectedListbox.pack(padx=(5,0), pady=(5,5))
+    unselectedListbox.bind('<<ListboxSelect>>', lambda event, firstListbox=unselectedListbox, secondListbox=selectedListbox, list=tagList, select=select, deselect=deselect: selectTag(firstListbox, secondListbox, list, select, deselect))
+    selectedListbox.bind('<<ListboxSelect>>', lambda event, firstListbox=selectedListbox, secondListbox=unselectedListbox, list=tagList, select=select, deselect=deselect: selectTag(firstListbox, secondListbox, list, select, deselect))
+
 
     # bottom row of tagFrame
     tagFrameBottomRow = Frame(tagFrame)
@@ -159,13 +159,64 @@ def entrybox(CONFIG_FILE, term, value):
     if value.get() == '':
         value.set(0)
     config_file = open(CONFIG_FILE, 'r').read()
-    print(str(config_file[config_file.index(term):config_file.index('\n', config_file.index(term) + len(term))]))
-    print(str(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term)) + 1])) + str(value.get()))
     # convert to term
     with open(CONFIG_FILE, 'wt') as file:
         file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1])) + str(value.get())))
     file.close()
 
+#handle listbox click interaction
+def selectTag(firstListbox, secondListbox, list, select, deselect):
+    if len(firstListbox.curselection()) > 0:
+        index = int(firstListbox.curselection()[0])
+        tag = firstListbox.get(index)
+        if tag in list:
+            select.configure(state=DISABLED)
+            deselect.configure(state=NORMAL, command=lambda: disableTag(firstListbox, secondListbox, tag, index, list, deselect))
+        else:
+            select.configure(state=NORMAL, command=lambda: enableTag(firstListbox, secondListbox, tag, index, list, select))
+            deselect.configure(state=DISABLED)
+
+def enableTag(firstListbox, secondListbox, tag, index, list, button):
+    #first listbox is the unselected listbox, second listbox is the selected listbox
+    global tagList, CONFIG
+    config_file = open(CONFIG, 'r').read()
+    firstListbox.delete(index, index)
+    secondListbox.insert(END, tag)
+    list.append(tag)
+    list.sort()
+    tagList = list
+    button.configure(state=DISABLED)
+
+    term = "Selected Tags (L)"
+    originalListValues = str(config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
+    newListValues = ''
+    for tag in list:
+        newListValues += tag + ', '
+    newListValues = newListValues[:-2]
+    with open(CONFIG, 'wt') as file:
+        file.write(config_file.replace(str(originalListValues), str(newListValues)))
+    file.close()
+
+def disableTag(firstListbox, secondListbox, tag, index, list, button):
+    # first listbox is the selected listbox, second listbox is the unselected listbox
+    global tagList, CONFIG
+    config_file = open(CONFIG, 'r').read()
+    firstListbox.delete(index, index)
+    secondListbox.insert(END, tag)
+    list.remove(tag)
+    list.sort()
+    tagList = list
+    button.configure(state=DISABLED)
+
+    term = "Selected Tags (L)"
+    originalListValues = str(config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
+    newListValues = ''
+    for tag in list:
+        newListValues += tag + ', '
+    newListValues = newListValues[:-2]
+    with open(CONFIG, 'wt') as file:
+        file.write(config_file.replace(str(originalListValues), str(newListValues)))
+    file.close()
 #check if input is an integer, reject if not
 def checkInt(value):
     try:

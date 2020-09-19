@@ -54,13 +54,13 @@ def reverseImageSearch(link, frame, window, imageCounter, URLList, options):
                 counter = 0
                 subImages = browser.find_elements_by_xpath("//img[@class='n3VNCb']")
                 #wait for image to load with 1 second increments
-                while subImages==None and counter < options["Image Load Wait Time (I)"].get():
+                while subImages==None and counter < int(options["Image Load Wait Time (I)"].get()):
                     time.sleep(1)
                     subImages = browser.find_elements_by_xpath("//img[@class='n3VNCb']")
                     counter+=1
                 for image in subImages:
                     counter=0
-                    while 'data:image' in image.get_attribute('src') and counter < options["Image Load Wait Time (I)"].get():
+                    while 'data:image' in image.get_attribute('src') and counter < int(options["Image Load Wait Time (I)"].get()):
                         time.sleep(1)
                         counter+=1
                     if 'data:image' not in image.get_attribute('src'):
@@ -70,6 +70,7 @@ def reverseImageSearch(link, frame, window, imageCounter, URLList, options):
                             URLList.append(browser.current_url)
                             with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
                                 file.write(requests.get(browser.current_url).content)
+                            imageCounter+=1
                         break
     browser.quit()
     window.lift()

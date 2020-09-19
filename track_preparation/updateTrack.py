@@ -1,4 +1,5 @@
 from mutagen.flac import FLAC
+from tkinter import messagebox
 import tkinter as tk
 import os
 
@@ -8,22 +9,58 @@ from track_preparation.handleReplayGain import handleReplayGain
 
 def updateTrack(filename, directory, frame, webScrapingWindow, options):
     audio = FLAC(str(directory) + "/" + str(filename))
-    # handle file tags
-    interestParameters = ['artist', 'title', 'date', 'bpm', 'initialkey', 'genre', 'replaygain_track_gain']
+
+    # transcribe formal tagnames into informal counterpart
+    formalTagDict = {
+        'artist': 'Artist',
+        'album': 'Album',
+        'albumartist': 'Album Artist',
+        'bpm': 'BPM',
+        'comment': 'Comment',
+        'compilation': 'Compilation',
+        'copyright': 'Copyright',
+        'discnumber': 'Discnumber',
+        'genre': 'Genre',
+        'initialkey': 'Key',
+        'date': 'Release Date',
+        'title': 'Title',
+        'replaygain_track_gain': 'ReplayGain',
+    }
+    # transcribe informal tagnames into formal counterpart
+    informalTagDict = {
+        'Artist': 'artist',
+        'Album': 'album',
+        'Album Artist': 'albumartist',
+        'BPM': 'bpm',
+        'Comment': 'comment',
+        'Compilation': 'compilation',
+        'Copyright': 'copyright',
+        'Discnumber': 'discnumber',
+        'Genre': 'genre',
+        'Key': 'initialkey',
+        'Release Date': 'date',
+        'Title': 'title',
+        'ReplayGain': 'replaygain_track_gain',
+    }
     fileParameters = []
-    for x in audio:
-        # delete extraneous tags
-        if x not in interestParameters and options["Delete Unselected Tags (B)"].get()==True:
-            audio[x] = ""
-            audio.pop(x)
+    for tag in audio:
+        # delete extraneous tags if the tag is not in the list of selected tags and the delete unselected tags option is activated
+        if (tag not in formalTagDict or formalTagDict[tag] not in options["Selected Tags (L)"]) and options["Delete Unselected Tags (B)"].get()==True:
+            audio[tag] = ""
+            audio.pop(tag)
             audio.save()
-        else:
-            fileParameters.append(x)
-    for x in interestParameters:
+        else: fileParameters.append(tag)
+    for tag in options["Selected Tags (L)"]:
+        tag = informalTagDict[tag]
         # add tags of interest if missing
-        if x not in fileParameters:
-            audio[x] = ""
-            audio.save()
+        if tag not in fileParameters:
+            try:
+                audio[tag] = ""
+                audio.save()
+            except:
+                messagebox.showinfo("Permission Error", "Unable to save tags, file may be open somewhere")
+                webScrapingWindow.lift()
+                return False, filename
 
     # handle naming format and typo check
     if options["Audio naming format (S)"].get() == "Artist - Title":
