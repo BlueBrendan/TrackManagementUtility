@@ -95,8 +95,8 @@ def updatePreferences(options, CONFIG_FILE, root):
     deselect = tk.Button(listboxButtons, text="Deselect", width=7, state=DISABLED)
     deselect.pack(side="top")
     selectedListbox.pack(padx=(5,0), pady=(5,5))
-    unselectedListbox.bind('<<ListboxSelect>>', lambda event, firstListbox=unselectedListbox, secondListbox=selectedListbox, list=tagList, select=select, deselect=deselect: selectTag(firstListbox, secondListbox, list, select, deselect))
-    selectedListbox.bind('<<ListboxSelect>>', lambda event, firstListbox=selectedListbox, secondListbox=unselectedListbox, list=tagList, select=select, deselect=deselect: selectTag(firstListbox, secondListbox, list, select, deselect))
+    unselectedListbox.bind('<<ListboxSelect>>', lambda event, firstListbox=unselectedListbox, secondListbox=selectedListbox, list=tagList, select=select, deselect=deselect: tag(firstListbox, secondListbox, list, select, deselect))
+    selectedListbox.bind('<<ListboxSelect>>', lambda event, firstListbox=selectedListbox, secondListbox=unselectedListbox, list=tagList, select=select, deselect=deselect: tag(firstListbox, secondListbox, list, select, deselect))
 
 
     # bottom row of tagFrame
@@ -119,11 +119,33 @@ def updatePreferences(options, CONFIG_FILE, root):
     #Others Tab
     tab3 = ttk.Frame(tab_parent)
     tab_parent.add(tab3, text="Other")
-    tk.Label(tab3, text="Audio Formatting").pack(padx=(5, 0), pady=(10, 5), anchor="w")
-    tk.Checkbutton(tab3, text="Check Artist for Common Typos", variable=options["Check Artist for Typos (B)"], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Check Artist for Typos (B)', [])).pack(padx=(10, 0), anchor="w")
-    tk.Label(tab3, text="Audio Naming Format").pack(padx=(5, 0), pady=(10,5), anchor="w")
-    tk.Radiobutton(tab3, text="Artist - Title", variable=options["Audio naming format (S)"], value="Artist - Title", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Artist - Title")).pack(padx=(10, 0), anchor="w")
-    tk.Radiobutton(tab3, text="Title", variable=options["Audio naming format (S)"], value="Title", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Title")).pack(padx=(10, 0), anchor="w")
+    leftPane = Frame(tab3)
+    leftPane.pack(padx=(5,0), side="left", anchor="nw")
+    topLeftComponent = Frame(leftPane)
+    topLeftComponent.pack()
+    tk.Label(topLeftComponent, text="File Format").pack(padx=(5, 0), pady=(10,5), anchor="w")
+    tk.Radiobutton(topLeftComponent, text="Artist - Title", variable=options["Audio naming format (S)"], value="Artist - Title", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Artist - Title")).pack(padx=(10, 0), anchor="w")
+    tk.Radiobutton(topLeftComponent, text="Title", variable=options["Audio naming format (S)"], value="Title", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Title")).pack(padx=(10, 0), anchor="w")
+
+    rightPane = Frame(tab3)
+    rightPane.pack(padx=(0,50), side="right", anchor="nw")
+    tk.Label(rightPane, text="Audio Formatting").pack(padx=(5, 0), pady=(10, 5), anchor="w")
+    typoSuboptions = []
+    numberingPrefix = tk.Checkbutton(rightPane, text="Check for Numbering Prefix", variable=options["Check for Numbering Prefix (B)"], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, "Check for Numbering Prefix (B)", []))
+    typoSuboptions.append(numberingPrefix)
+    hyphenCheck = tk.Checkbutton(rightPane, text="Check for Extraneous Hyphens", variable=options["Check for Extraneous Hyphens (B)"], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, "Check for Extraneous Hyphens (B)", []))
+    typoSuboptions.append(hyphenCheck)
+    capitalizationCheck = tk.Checkbutton(rightPane, text="Check for Capitalization", variable=options["Check for Capitalization (B)"], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, "Check for Capitalization (B)", []))
+    typoSuboptions.append(capitalizationCheck)
+
+    if options["Scan Filename and Tags (B)"].get()==False:
+        numberingPrefix.config(state=DISABLED)
+        hyphenCheck.config(state=DISABLED)
+        capitalizationCheck.config(state=DISABLED)
+    tk.Checkbutton(rightPane, text="Scan Filename and Tags", variable=options["Scan Filename and Tags (B)"], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Scan Filename and Tags (B)', typoSuboptions)).pack(padx=(10, 0), anchor="w")
+    numberingPrefix.pack(padx=(15, 0), anchor="w")
+    hyphenCheck.pack(padx=(15, 0), anchor="w")
+    capitalizationCheck.pack(padx=(15, 0), anchor="w")
     root.mainloop()
 
 def checkbox(CONFIG_FILE, term, suboptions):

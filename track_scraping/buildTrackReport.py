@@ -280,7 +280,6 @@ def skipOption(track, audio, window, webScrapingWindow, imageSelection):
     track.key = str(audio['initialkey'])[2:-2]
     track.genre = str(audio['genre'])[2:-2]
     webScrapingWindow.lift()
-    print(imageSelection)
     if imageSelection!="THUMB":
         selectImage(imageSelection, audio, window, webScrapingWindow)
     else:

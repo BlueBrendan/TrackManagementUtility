@@ -4,11 +4,17 @@ import tkinter as tk
 import os
 
 #import methods
+from track_preparation.handleTypo import handleArtistTitleDiscrepancy
+from track_preparation.handleTypo import handleTitleDiscrepancy
 from track_preparation.handleTypo import handleTypo
 from track_preparation.handleReplayGain import handleReplayGain
 
 def updateTrack(filename, directory, frame, webScrapingWindow, options):
     audio = FLAC(str(directory) + "/" + str(filename))
+    # verify artist information is present before preceeding
+    if ' - ' not in filename and str(audio['artist'][0]) == '':
+        tk.Label(frame.scrollable_frame, text="No artist information found, aborting procedure", justify='left').pack(anchor='w')
+        return False, filename
 
     # transcribe formal tagnames into informal counterpart
     formalTagDict = {
@@ -62,120 +68,100 @@ def updateTrack(filename, directory, frame, webScrapingWindow, options):
                 webScrapingWindow.lift()
                 return False, filename
 
+    #check for discrepancies between tags and filename
+    #check both artist and title tags
+    if ' - ' in filename:
+        artist = str(filename.split(' - ')[0])
+        title = str(filename.split(' - ')[1][:-5])
+        if artist!=str(audio['artist'][0]) or title!=str(audio['title'][0]):
+            # save artist and title to tag if both are empty
+            if str(audio['artist'][0]) == '' and str(audio['title'][0]) == '':
+                audio['artist'] = artist
+                audio['title'] = title
+                audio.save()
+            else: audio, filename = handleArtistTitleDiscrepancy(artist, str(audio['artist'][0]), title, str(audio['title'][0]), audio, filename, directory, webScrapingWindow)
+    #only check title tag
+    else:
+        title = str(filename[:-5])
+        if title!=str(audio['title'][0]):
+            #save title to tag if tag is empty
+            if str(audio['title'][0])=='':
+                audio['title'] = title
+                audio.save()
+            else: audio, filename = handleTitleDiscrepancy(title, str(audio['title'][0]), audio, filename, directory, webScrapingWindow)
+
     # handle naming format and typo check
     if options["Audio naming format (S)"].get() == "Artist - Title":
         # rename track so that the artist is appended at the front of the title
-        if ' - ' in filename:
-            artist, title, extension = keepFormat(audio, filename, directory, options, webScrapingWindow, "Artist - Title")
-            filename = str(artist) + ' - ' + str(title) + extension
-            audio = FLAC(directory + '/' + str(artist) + ' - ' + str(title) + extension)
-            if str(audio["artist"][0]) != artist or str(audio["title"][0]) != title:
-                audio["artist"] = artist
-                audio['title'] = title
-                audio.save()
-        else:
-            if changeFormat(audio, filename, directory, options, frame, webScrapingWindow, "Artist - Title"):
-                artist, title, extension = changeFormat(audio, filename, directory, options, frame, webScrapingWindow, "Artist - Title")
-                filename = str(artist) + ' - ' + str(title) + extension
-                audio = FLAC(directory + '/' + str(artist) + ' - ' + str(title) + extension)
-                if str(audio["artist"][0]) != artist or str(audio["title"][0])!=title:
-                    audio["artist"] = artist
-                    audio["title"] = title
-                    audio.save()
-            else:return False, filename
+        if ' - ' not in filename:
+            artist = str(audio['artist'][0])
+            os.rename(directory + '/' + filename, directory + '/' + artist + ' - ' + filename)
+            filename = artist + ' - ' + filename
+            audio = FLAC(directory + '/' + filename)
+        if options["Scan Filename and Tags (B)"].get() == True: audio, filename = extractArtistAndTitle(audio, filename, directory, options, frame, webScrapingWindow, "Artist - Title")
+
     elif options["Audio naming format (S)"].get() == "Title":
         # rename track so that the artist is removed from the title
         if ' - ' in filename:
-            if changeFormat(audio, filename, directory, options, frame, webScrapingWindow, "Artist - Title"):
-                artist, title, extension = changeFormat(audio, filename, directory, options, frame, webScrapingWindow, "Title")
-                filename = str(title) + extension
-                audio = FLAC(directory + '/' + str(title) + extension)
-                if str(audio["artist"][0]) != artist or str(audio["title"][0]) != title:
-                    audio["artist"] = artist
-                    audio["title"] = title
-                    audio.save()
-            else:return False, filename
-        else:
-            artist, title, extension = keepFormat(audio, filename, directory, options, webScrapingWindow, "Title")
-            filename = str(title) + extension
-            audio = FLAC(directory + '/' + str(title) + extension)
-            if str(audio["artist"][0]) != artist or str(audio["title"][0]) != title:
-                audio["artist"] = artist
-                audio['title'] = title
-                audio.save()
+            os.rename(directory + '/' + filename, directory + '/' + filename[filename.index(' - ')+3:])
+            filename = filename[filename.index(' - ')+3:]
+            audio = FLAC(directory + '/' + filename)
+        if options["Scan Filename and Tags (B)"].get() == True: audio, filename = extractArtistAndTitle(audio, filename, directory, options, frame, webScrapingWindow, "Title")
 
     # handle replayGain
     if options["Calculate ReplayGain (B)"].get() == True: audio = handleReplayGain(directory, filename, audio, webScrapingWindow)
     return audio, filename
 
-def changeFormat(audio, filename, directory, options, frame, webScrapingWindow, format):
-    artist = str(audio['artist'][0])
-    if artist == '':
-        tk.Label(frame.scrollable_frame, text="No artist information found, aborting procedure", justify='left').pack(anchor='w')
-        return False
-    title = str(audio['title'][0])
-    fileArtist = str(filename.split(' - ')[0])
-    fileTitle = str(filename.split(' - ')[1][:-5])
+def extractArtistAndTitle(audio, filename, directory, options, frame, webScrapingWindow, format):
     extension = filename[filename.rfind('.'):]
-    #if title is not saved as tag
-    if title == '': title = filename[:-5]
-    if options["Check Artist for Typos (B)"].get() == True:
-        #run through list of possible typos
-        artist, title = checkTypos(artist, title, fileArtist, fileTitle, directory, filename, extension, format, webScrapingWindow)
-    return artist, title, extension
+    if ' - ' in filename:
+        artist = str(audio['artist'][0])
+        if artist == '': artist = str(filename.split(' - ')[0])
+        title = str(audio['title'][0])
+        # if title is not saved as tag
+        if title == '': title = str(filename.split(' - ')[1][:-5])
+    else:
+        artist = str(audio['artist'][0])
+        title = str(audio['title'][0])
+        # if title is not saved as tag
+        if title == '':
+            title = filename[:-5]
+    # run through list of possible typos
+    audio, filename = checkTypos(audio, artist, title, directory, filename, extension, format, options, webScrapingWindow)
+    return audio, filename
 
-def keepFormat(audio, filename, directory, options, webScrapingWindow, format):
-    artist = str(audio['artist'][0]).strip()
-    title = str(audio['title'][0]).strip()
-    fileArtist = str(filename.split(' - ')[0])
-    fileTitle = str(filename.split(' - ')[1][:-5])
-    if artist == '' or title == '':
-        artist = str(filename.split(' - ')[0])
-        title = str(filename.split(' - ')[1][:-5])
-    extension = filename[filename.rfind('.'):]
-    if options["Check Artist for Typos (B)"].get() == True:
-        # run through list of possible typos
-        artist, title = checkTypos(artist, title, fileArtist, fileTitle, directory, filename, extension, format, webScrapingWindow)
-    return artist, title, extension
-
-def checkTypos(artist, title, fileArtist, fileTitle, directory, filename, extension, format, webScrapingWindow):
-    # check if tag and filename match
-    if artist != fileArtist or title != fileTitle:
-        artist, title = handleTypo(fileArtist, artist, fileTitle, title, webScrapingWindow, directory, filename, extension, format, "Tag Filename Mismatch")
+def checkTypos(audio, artist, title, directory, filename, extension, format, options, webScrapingWindow):
     # scan artist for numbering prefix
-    if '.' in artist:
-        artistPrefix = artist[:artist.index('.') + 1]
-        newArtist = artist[artist.index('.') + 1:].strip()
-        newTitle = title
-        if '.' in artistPrefix[0:5]:
-            if any(char.isdigit() for char in artistPrefix[0:artistPrefix.index('.')]):
-                artist, title = handleTypo(artist, newArtist, title, newTitle, webScrapingWindow, directory, filename, extension, format, "Prefix")
+    if options["Check for Numbering Prefix (B)"].get() == True:
+        if '.' in artist:
+            artistPrefix = artist[:artist.index('.') + 1]
+            newArtist = artist[artist.index('.') + 1:].strip()
+            newTitle = title
+            if '.' in artistPrefix[0:5]:
+                if any(char.isdigit() for char in artistPrefix[0:artistPrefix.index('.')]): artist, title, audio, filename = handleTypo(audio, artist, newArtist, title, newTitle, webScrapingWindow, directory, filename, extension, format, "Prefix")
+
     # scan artist and title for hyphens
-    if '-' in artist or '-' in title:
-        newArtist = artist
-        newTitle = title
-        if '-' in artist:
-            newArtist = artist.replace('-', ' ')
-        if '-' in title:
-            newTitle = title.replace('-', ' ')
-        artist, title = handleTypo(artist, newArtist, title, newTitle, webScrapingWindow, directory, filename, extension, format, "Hyphen")
-    # scan artist and title for lowercase letters
-    artistList = artist.split(' ')
-    titleList = title.split(' ')
-    newArtist = ''
-    newTitle = ''
-    for word in artistList:
-        if word[:1].islower():
-            newArtist += word.capitalize() + " "
-        else:
-            newArtist += word + " "
-    newArtist = newArtist.strip()
-    for word in titleList:
-        if word[:1].islower():
-            newTitle += word.capitalize() + " "
-        else:
-            newTitle += word + " "
-    newTitle = newTitle.strip()
-    if artist != newArtist or title != newTitle:
-        artist, title = handleTypo(artist, newArtist, title, newTitle, webScrapingWindow, directory, filename, extension, format, "Capitalization")
-    return artist, title
+    if options["Check for Extraneous Hyphens (B)"].get() == True:
+        if '-' in artist or '-' in title:
+            newArtist = artist
+            newTitle = title
+            if '-' in artist: newArtist = artist.replace('-', ' ')
+            if '-' in title: newTitle = title.replace('-', ' ')
+            artist, title, audio, filename = handleTypo(audio, artist, newArtist, title, newTitle, webScrapingWindow, directory, filename, extension, format, "Hyphen")
+
+    # scan artist and title for capitalization
+    if options["Check for Capitalization (B)"].get()==True:
+        artistList = artist.split(' ')
+        titleList = title.split(' ')
+        newArtist = ''
+        newTitle = ''
+        for word in artistList:
+            if word[:1].islower(): newArtist += word.capitalize() + " "
+            else: newArtist += word + " "
+        newArtist = newArtist.strip()
+        for word in titleList:
+            if word[:1].islower(): newTitle += word.capitalize() + " "
+            else: newTitle += word + " "
+        newTitle = newTitle.strip()
+        if artist != newArtist or title != newTitle: artist, title, audio, filename = handleTypo(audio, artist, newArtist, title, newTitle, webScrapingWindow, directory, filename, extension, format, "Capitalization")
+    return audio, filename
