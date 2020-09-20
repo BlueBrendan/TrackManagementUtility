@@ -1,4 +1,5 @@
-from mutagen.flac import FLAC
+from mutagen.aiff import AIFF
+from mutagen.id3._frames import *
 from tkinter import messagebox
 import tkinter as tk
 import os
@@ -9,87 +10,111 @@ from track_preparation.handleTypo import handleTitleDiscrepancy
 from track_preparation.handleTypo import handleTypo
 from track_preparation.handleReplayGain import handleReplayGain
 
-def updateTrack(filename, directory, frame, webScrapingWindow, options):
-    audio = FLAC(str(directory) + "/" + str(filename))
+def initiateAIFF(filename, directory, frame, webScrapingWindow, options):
+    audio = AIFF(str(directory) + "/" + str(filename))
     # verify artist information is present before preceeding
-    if ' - ' not in filename and str(audio['artist'][0]) == '':
+    if ' - ' not in filename and str(audio['TCON']) == '':
         tk.Label(frame.scrollable_frame, text="No artist information found, aborting procedure", justify='left').pack(anchor='w')
         return False, filename
 
     # transcribe formal tagnames into informal counterpart
     formalTagDict = {
-        'artist': 'Artist',
-        'album': 'Album',
-        'albumartist': 'Album Artist',
-        'bpm': 'BPM',
-        'comment': 'Comment',
-        'compilation': 'Compilation',
-        'copyright': 'Copyright',
-        'discnumber': 'Discnumber',
-        'genre': 'Genre',
-        'initialkey': 'Key',
-        'date': 'Release Date',
-        'title': 'Title',
-        'replaygain_track_gain': 'ReplayGain',
+        'TPE1': 'Artist',
+        'TALB': 'Album',
+        'TPE2': 'Album Artist',
+        'TBPM': 'BPM',
+        'COMM::eng': 'Comment',
+        'TCMP': 'Compilation',
+        'TCOP': 'Copyright',
+        'TPOS': 'Discnumber',
+        'TCON': 'Genre',
+        'APIC:': 'Image',
+        'TKEY': 'Key',
+        'TDRC': 'Release Date',
+        'TIT2': 'Title',
+        'TXXX:replaygain_track_gain': 'ReplayGain',
     }
     # transcribe informal tagnames into formal counterpart
     informalTagDict = {
-        'Artist': 'artist',
-        'Album': 'album',
-        'Album Artist': 'albumartist',
-        'BPM': 'bpm',
-        'Comment': 'comment',
-        'Compilation': 'compilation',
-        'Copyright': 'copyright',
-        'Discnumber': 'discnumber',
-        'Genre': 'genre',
-        'Key': 'initialkey',
-        'Release Date': 'date',
-        'Title': 'title',
-        'ReplayGain': 'replaygain_track_gain',
+        'Artist': 'TPE1',
+        'Album': 'TALB',
+        'Album Artist': 'TPE2',
+        'BPM': 'TBPM',
+        'Comment': 'COMM::eng',  #lang="eng"
+        'Compilation': 'TCMP',
+        'Copyright': 'TCOP',
+        'Discnumber': 'TPOS',
+        'Genre': 'TCON',
+        'Image': 'APIC:',
+        'Key': 'TKEY',
+        'Release Date': 'TDRC',
+        'Title': 'TIT2',
+        'ReplayGain': 'TXXX:replaygain_track_gain',   #desc="replay_track_gain"
+    }
+
+    ID3Frames = {
+        'TPE1': TPE1,
+        'TALB': TALB,
+        'TPE2': TPE2,
+        'TBPM': TBPM,
+        'COMM': COMM,
+        'TCMP': TCMP,
+        'TCOP': TCOP,
+        'TPOS': TPOS,
+        'TCON': TCON,
+        'APIC:': APIC,
+        'TKEY': TKEY,
+        'TDRC': TDRC,
+        'TIT2': TIT2,
+        'TXXX': TXXX,
+
     }
     fileParameters = []
-    for tag in audio:
+    tagList = list(audio.keys())
+    for tag in tagList:
         # delete extraneous tags if the tag is not in the list of selected tags and the delete unselected tags option is activated
         if (tag not in formalTagDict or formalTagDict[tag] not in options["Selected Tags (L)"]) and options["Delete Unselected Tags (B)"].get()==True:
-            audio[tag] = ""
             audio.pop(tag)
             audio.save()
         else: fileParameters.append(tag)
     for tag in options["Selected Tags (L)"]:
-        tag = informalTagDict[tag]
-        # add tags of interest if missing
-        if tag not in fileParameters:
-            try:
-                audio[tag] = ""
-                audio.save()
-            except:
-                messagebox.showinfo("Permission Error", "Unable to save tags, file may be open somewhere")
-                webScrapingWindow.lift()
-                return False, filename
+        if tag in informalTagDict:
+            tag = informalTagDict[tag]
+            # add tags of interest if missing
+            if tag not in fileParameters:
+                print(tag)
+                try:
+                    if "COMM" in tag: audio[tag] = COMM(encoding=3, lang="eng", test="")
+                    elif "TXXX" in tag: audio[tag] = TXXX(encoding=3, desc="replaygain_track_gain", test="")
+                    else: audio[tag] = ID3Frames[tag](encoding=3, test="")
+                    audio.save()
+                except:
+                    messagebox.showinfo("Permission Error", "Unable to save tags, file may be open somewhere")
+                    webScrapingWindow.lift()
+                    return False, filename
 
-    #check for discrepancies between tags and filename
-    #check both artist and title tags
+#     #check for discrepancies between tags and filename
+#     #check both artist and title tags
     if ' - ' in filename:
         artist = str(filename.split(' - ')[0])
         title = str(filename.split(' - ')[1][:-5])
-        if artist!=str(audio['artist'][0]) or title!=str(audio['title'][0]):
+        if artist!=str(audio["TPE1"]) or title!=str(audio["TIT2"]):
             # save artist and title to tag if both are empty
-            if str(audio['artist'][0]) == '' and str(audio['title'][0]) == '':
-                audio['artist'] = artist
-                audio['title'] = title
+            if str(audio["TPE1"]) == '' and str(audio["TIT2"]) == '':
+                audio["TPE1"] = TPE1(encoding=3, text=artist)
+                audio["TIT2"] = TIT2(encoding=3, text=title)
                 audio.save()
             else: audio, filename = handleArtistTitleDiscrepancy(artist, str(audio['artist'][0]), title, str(audio['title'][0]), audio, filename, directory, webScrapingWindow)
     #only check title tag
     else:
         title = str(filename[:-5])
-        if title!=str(audio['title'][0]):
+        if title!=str(audio["TPE1"]):
             #save title to tag if tag is empty
-            if str(audio['title'][0])=='':
-                audio['title'] = title
+            if str(audio["TIT2"])=='':
+                audio["TIT2"] = TIT2(encoding=3, text=title)
                 audio.save()
             else: audio, filename = handleTitleDiscrepancy(title, str(audio['title'][0]), audio, filename, directory, webScrapingWindow)
-
+#--------------------- HERE --------------- fix handle TitleDiscrepancy so it isn't format specific
     # handle naming format and typo check
     if options["Audio naming format (S)"].get() == "Artist - Title":
         # rename track so that the artist is appended at the front of the title
@@ -97,7 +122,7 @@ def updateTrack(filename, directory, frame, webScrapingWindow, options):
             artist = str(audio['artist'][0])
             os.rename(directory + '/' + filename, directory + '/' + artist + ' - ' + filename)
             filename = artist + ' - ' + filename
-            audio = FLAC(directory + '/' + filename)
+            audio = AIFF(directory + '/' + filename)
         if options["Scan Filename and Tags (B)"].get() == True: audio, filename = extractArtistAndTitle(audio, filename, directory, options, frame, webScrapingWindow, "Artist - Title")
 
     elif options["Audio naming format (S)"].get() == "Title":
@@ -105,7 +130,7 @@ def updateTrack(filename, directory, frame, webScrapingWindow, options):
         if ' - ' in filename:
             os.rename(directory + '/' + filename, directory + '/' + filename[filename.index(' - ')+3:])
             filename = filename[filename.index(' - ')+3:]
-            audio = FLAC(directory + '/' + filename)
+            audio = AIFF(directory + '/' + filename)
         if options["Scan Filename and Tags (B)"].get() == True: audio, filename = extractArtistAndTitle(audio, filename, directory, options, frame, webScrapingWindow, "Title")
 
     # handle replayGain

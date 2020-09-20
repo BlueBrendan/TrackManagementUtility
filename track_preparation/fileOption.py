@@ -1,5 +1,6 @@
 from tkinter import filedialog
 from mutagen.flac import FLAC
+from mutagen.aiff import AIFF
 import tkinter as tk
 from tkinter.tix import *
 import os
@@ -12,7 +13,8 @@ from classes.AudioClass import AudioTrack
 from classes.scrollbarClass import ScrollableFrame
 
 #import methods
-from track_preparation.updateTrack import updateTrack
+from track_preparation.handleTrack.initiateFLAC import initiateFLAC
+from track_preparation.handleTrack.initiateAIFF import initiateAIFF
 from track_scraping.scrapeWeb import scrapeWeb
 
 def fileOption(window, options, imageCounter, CONFIG_FILE):
@@ -40,9 +42,9 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
             directory = os.path.dirname(directory)
             #handle FLAC files
             #first check - ensure file is valid
-            if filename.endswith('.flac') and type(checkFileValidity(filename, directory, frame, window))!=str:
+            if filename.endswith('.flac') and type(checkFileValidity(filename, directory, "FLAC", frame, window))!=str:
                 #handle naming preferences, tag settings, and replay gain
-                audio, filename = updateTrack(filename, directory, frame, webScrapingWindow, options)
+                audio, filename = initiateFLAC(filename, directory, frame, webScrapingWindow, options)
                 if type(audio) != bool:
                     images = audio.pictures
                     # append thumbnail image to list if artwork exists
@@ -58,6 +60,24 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
                     results, webScrapingWindow, characters, imageCounter, imageSelection = scrapeWeb(track, audio, filename, frame, webScrapingWindow, characters, options, imageCounter)
                     finalResults.append(results)
                     imageSelections.append(imageSelection)
+            elif filename.endswith('.aiff') and type(checkFileValidity(filename, directory, "AIFF", frame, window))!=str:
+                initiateAIFF(filename, directory, frame, webScrapingWindow, options)
+                # test = AIFF(str(directory) + "/" + str(filename))
+                # for key in test:
+                #     print(key)
+                #     if 'APIC' not in key:
+                #         print(test[key])
+                # test["COMM==eng"] = COMM(encoding=3, text="HERE")
+                # print(test.pprint())
+                # test["COMM"] = (COMM(encoding=3, text="S"))
+                # test.pop("TIT2")
+                # print(test.pprint())
+            elif filename.endswith('mp3'):
+                print('mp3')
+                # test = ID3(str(directory) + "/" + str(filename))
+                # print(test.pprint())
+                # test.add(TCON(encoding=3, text="TEST"))
+                # print(test.pprint())
         finalReportWindow = Toplevel()
         webScrapingWindow.lift()
 
@@ -145,14 +165,27 @@ def completeSearch(finalReportWindow, webScrapingWindow, options):
         for image in images:
             os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(image))
 
-def checkFileValidity(var, directory, frame, window):
-    try:
-        audio = FLAC(str(directory) + "/" + str(var))
-        return audio
-    except:
-        tk.Label(frame.scrollable_frame, text="Invalid or Corrupt File").pack(anchor='w')
-        window.update()
-        return "Invalid or corrupt file\n"
+def checkFileValidity(filename, directory, format, frame, window):
+    audio = ""
+    if format=="FLAC":
+        try:audio = FLAC(str(directory) + "/" + str(filename))
+        except:
+            tk.Label(frame.scrollable_frame, text="Invalid or Corrupt File").pack(anchor='w')
+            window.update()
+            return "Invalid or corrupt file\n"
+    elif format=="AIFF":
+        try: audio = AIFF(str(directory) + "/" + str(filename))
+        except:
+            tk.Label(frame.scrollable_frame, text="Invalid or Corrupt File").pack(anchor='w')
+            window.update()
+            return "Invalid or corrupt file\n"
+    elif format=="MP3":
+        try: audio = ID3(str(directory) + "/" + str(filename))
+        except:
+            tk.Label(frame.scrollable_frame, text="Invalid or Corrupt File").pack(anchor='w')
+            window.update()
+            return "Invalid or corrupt file\n"
+    return audio
 
 def closePopup(popup, webScrapingWindow):
     popup.destroy()

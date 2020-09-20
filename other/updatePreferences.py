@@ -95,8 +95,8 @@ def updatePreferences(options, CONFIG_FILE, root):
     deselect = tk.Button(listboxButtons, text="Deselect", width=7, state=DISABLED)
     deselect.pack(side="top")
     selectedListbox.pack(padx=(5,0), pady=(5,5))
-    unselectedListbox.bind('<<ListboxSelect>>', lambda event, firstListbox=unselectedListbox, secondListbox=selectedListbox, list=tagList, select=select, deselect=deselect: tag(firstListbox, secondListbox, list, select, deselect))
-    selectedListbox.bind('<<ListboxSelect>>', lambda event, firstListbox=selectedListbox, secondListbox=unselectedListbox, list=tagList, select=select, deselect=deselect: tag(firstListbox, secondListbox, list, select, deselect))
+    unselectedListbox.bind('<<ListboxSelect>>', lambda event, firstListbox=unselectedListbox, secondListbox=selectedListbox, list=tagList, select=select, deselect=deselect: selectTag(firstListbox, secondListbox, list, select, deselect))
+    selectedListbox.bind('<<ListboxSelect>>', lambda event, firstListbox=selectedListbox, secondListbox=unselectedListbox, list=tagList, select=select, deselect=deselect: selectTag(firstListbox, secondListbox, list, select, deselect))
 
 
     # bottom row of tagFrame

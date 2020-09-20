@@ -8,7 +8,7 @@ from classes.AudioClass import AudioTrack
 from classes.scrollbarClass import ScrollableFrame
 
 #import methods
-from track_preparation.updateTrack import updateTrack
+from track_preparation.handleTrack.initiateFLAC import initiateFLAC
 from track_scraping.scrapeWeb import scrapeWeb
 
 def directoryOption(window, options, imageCounter):
@@ -65,7 +65,7 @@ def directorySearch(directory, results, frame, webScrapingWindow, characters, op
         else:
             #handle FLAC files
             if var.endswith(".flac"):
-                audio = updateTrack(var, directory, frame, webScrapingWindow, options)
+                audio = initiateFLAC(var, directory, frame, webScrapingWindow, options)
                 if audio:
                     track = AudioTrack(audio)
                     finalResults, webScrapingWindow, characters, imageCounter, imageSelection = scrapeWeb(track, audio, var, frame, webScrapingWindow, characters, options, imageCounter)
