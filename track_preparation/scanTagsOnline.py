@@ -3,7 +3,7 @@ import getpass
 from PIL import Image, ImageTk
 
 #import methods
-from track_preparation.fileSelect import fileOption
+from track_preparation.fileSelect import fileSelect
 from track_preparation.directorySelect import directoryOption
 
 #global variables
@@ -46,7 +46,7 @@ def scanTagsOnline(type, window, options, imageCounter, CONFIG_FILE):
         for image in images:
             os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(image))
     if type=="file":
-        fileOption(window, options, imageCounter, CONFIG_FILE)
+        fileSelect(window, options, imageCounter, CONFIG_FILE)
     elif type=="directory":
         #scan for a directory
         directoryOption(window, options, imageCounter)

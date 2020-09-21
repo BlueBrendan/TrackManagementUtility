@@ -16,7 +16,9 @@ class FLAC_Track:
             'Title': 'title',
             'ReplayGain': 'replaygain_track_gain',
         }
-        for tag in options["Selected Tags (L)"]: setattr(self, tag.lower(), str(audio[informalTagDict[tag]][0]))
+        for tag in options["Selected Tags (L)"]:
+            if tag in informalTagDict: setattr(self, tag.lower(), str(audio[informalTagDict[tag]][0]))
+        self.imageSelection = "THUMB"
 
 class AIFF_Track:
     def __init__(self, audio, options):
@@ -36,4 +38,6 @@ class AIFF_Track:
             'Title': 'TIT2',
             'ReplayGain': 'TXXX:replaygain_track_gain',  # desc="replay_track_gain"
         }
-        for tag in options["Selected Tags (L)"]: setattr(self, tag.lower(), str(audio[informalTagDict[tag]]))
+        for tag in options["Selected Tags (L)"]:
+            if tag in informalTagDict: setattr(self, tag.lower(), str(audio[informalTagDict[tag]]))
+        self.imageSelection = "THUMB"

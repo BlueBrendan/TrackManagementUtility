@@ -8,7 +8,7 @@ from classes.AudioClass import FLAC_Track
 from classes.scrollbarClass import ScrollableFrame
 
 #import methods
-from track_preparation.handleTrack.initiateFLAC import initiateFLAC
+from track_preparation.initiateTrack.initiateFLAC import initiateFLAC
 from track_scraping.scrapeWeb import scrapeWeb
 
 def directoryOption(window, options, imageCounter):

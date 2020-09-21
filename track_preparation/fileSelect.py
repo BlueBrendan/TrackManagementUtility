@@ -13,11 +13,11 @@ from classes.AudioClass import FLAC_Track, AIFF_Track
 from classes.scrollbarClass import ScrollableFrame
 
 #import methods
-from track_preparation.handleTrack.initiateFLAC import initiateFLAC
-from track_preparation.handleTrack.initiateAIFF import initiateAIFF
+from track_preparation.initiateTrack.initiateFLAC import initiateFLAC
+from track_preparation.initiateTrack.initiateAIFF import initiateAIFF
 from track_scraping.scrapeWeb import scrapeWeb
 
-def fileOption(window, options, imageCounter, CONFIG_FILE):
+def fileSelect(window, options, imageCounter, CONFIG_FILE):
     window.lift()
     directories = filedialog.askopenfilenames(parent=window, title="Select File")
     if directories != '':

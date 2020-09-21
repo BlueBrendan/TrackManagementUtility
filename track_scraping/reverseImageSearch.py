@@ -16,37 +16,29 @@ def reverseImageSearch(link, frame, window, imageCounter, URLList, options):
     text = browser.find_elements_by_class_name("O1id0e")
     if len(text) > 0:
         text = text[0]
-        if 'Large' in text.get_attribute('innerHTML') or "All sizes" in text.get_attribute('innerHTML'):
+        sizes = []
+        #append all sizes to list (in case of non-english language)
+        imageLinks = text.find_elements_by_class_name('gl')
+        if len(imageLinks) > 0:
+            for image in imageLinks:
+                text = image.text.replace('-', '').strip()
+                sizes.append(text)
             #check for popups
             time.sleep(1)
-            if 'Large' in text.get_attribute('innerHTML'):
-                popups = browser.find_elements_by_xpath("//iframe")
-                if len(popups) > 0:
-                    for popup in popups:
-                        link = popup.get_attribute('src')
-                        if 'consent.google.com/' in popup.get_attribute('src'):
-                            link = popup.get_attribute('src').replace("consent.google.com/", "consent.google.com")
-                        break
-                    #switch frames
-                    browser.switch_to.frame(browser.find_element_by_xpath("//iframe[@src='" + link + "']"))
-                    browser.find_element_by_xpath("//form[@class='A28uDc']").click()
-                    #return to original frame
-                    browser.switch_to.default_content()
-                browser.find_element_by_link_text("Large").click()
-            elif "All sizes" in text.get_attribute('innerHTML'):
-                popups = browser.find_elements_by_xpath("//iframe")
-                if len(popups) > 0:
-                    for popup in popups:
-                        link = popup.get_attribute('src')
-                        if 'consent.google.com/' in popup.get_attribute('src'):
-                            link = popup.get_attribute('src').replace("consent.google.com/", "consent.google.com")
-                        break
-                    # switch frames
-                    browser.switch_to.frame(browser.find_element_by_xpath("//iframe[@src='" + link + "']"))
-                    browser.find_element_by_xpath("//form[@class='A28uDc']").click()
-                    # return to original frame
-                    browser.switch_to.default_content()
-                browser.find_element_by_link_text("All sizes").click()
+            popups = browser.find_elements_by_xpath("//iframe")
+            if len(popups) > 0:
+                for popup in popups:
+                    link = popup.get_attribute('src')
+                    if 'consent.google.com/' in popup.get_attribute('src'):
+                        link = popup.get_attribute('src').replace("consent.google.com/", "consent.google.com")
+                    break
+                #switch frames
+                browser.switch_to.frame(browser.find_element_by_xpath("//iframe[@src='" + link + "']"))
+                browser.find_element_by_xpath("//form[@class='A28uDc']").click()
+                #return to original frame
+                browser.switch_to.default_content()
+            #search by the largest size
+            browser.find_element_by_link_text(sizes[len(sizes)-1]).click()
             for i in range(1):
                 images = browser.find_elements_by_class_name("rg_i.Q4LuWd")
                 images[i].click()
