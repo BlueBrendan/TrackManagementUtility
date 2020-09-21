@@ -1,7 +1,9 @@
 from tkinter import filedialog
-from mutagen.flac import FLAC
+from mutagen.flac import FLAC, Picture
 from mutagen.aiff import AIFF
 from mutagen.mp3 import MP3
+from mutagen.oggvorbis import OggVorbis
+import base64
 import tkinter as tk
 from tkinter.tix import *
 import os
@@ -10,13 +12,14 @@ from PIL import Image, ImageTk
 from io import BytesIO
 
 #import classes
-from classes.AudioClass import FLAC_Track, AIFF_Track
+from classes.AudioClass import FLAC_Track, ID3_Track
 from classes.scrollbarClass import ScrollableFrame
 
 #import methods
 from track_preparation.initiateTrack.initiateFLAC import initiateFLAC
 from track_preparation.initiateTrack.initiateAIFF import initiateAIFF
 from track_preparation.initiateTrack.initiateMP3 import initiateMP3
+from track_preparation.initiateTrack.initiateOGG import initiateOGG
 from track_scraping.scrapeWeb import scrapeWeb
 
 def fileSelect(window, options, imageCounter, CONFIG_FILE):
@@ -42,8 +45,7 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
         for directory in directories:
             filename = os.path.basename(directory)
             directory = os.path.dirname(directory)
-            #handle FLAC files
-            #first check - ensure file is valid
+            #handle FLAC file
             if filename.endswith('.flac') and type(checkFileValidity(filename, directory, "FLAC", frame, window))!=str:
                 #handle naming preferences, tag settings, and replay gain
                 audio, filename = initiateFLAC(filename, directory, frame, webScrapingWindow, options)
@@ -61,6 +63,7 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
                     results, webScrapingWindow, characters, imageCounter, imageSelection = scrapeWeb(track, audio, filename, frame, webScrapingWindow, characters, options, imageCounter)
                     finalResults.append(results)
                     imageSelections.append(imageSelection)
+            #handle AIFF file
             elif filename.endswith('.aiff') and type(checkFileValidity(filename, directory, "AIFF", frame, window))!=str:
                 audio, filename = initiateAIFF(filename, directory, frame, webScrapingWindow, options)
                 if type(audio) != bool:
@@ -70,18 +73,43 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
                     thumbnails.append(image)
                     stream.close()
                 else: thumbnails.append("NA")
-                track = AIFF_Track(audio, options)
+                track = ID3_Track(audio, options)
                 # search web for tags
                 results, webScrapingWindow, characters, imageCounter, imageSelection = scrapeWeb(track, audio, filename, frame, webScrapingWindow, characters, options, imageCounter)
                 finalResults.append(results)
                 imageSelections.append(imageSelection)
+            #handle MP3 file
             elif filename.endswith('mp3') and type(checkFileValidity(filename, directory, "MP3", frame, window))!=str:
                 audio, filename = initiateMP3(filename, directory, frame, webScrapingWindow, options)
-                # print(audio.pprint())
-                # test = ID3(str(directory) + "/" + str(filename))
-                # print(test.pprint())
-                # test.add(TCON(encoding=3, text="TEST"))
-                # print(test.pprint())
+                if type(audio) != bool:
+                    image = audio["APIC:"]
+                    stream = BytesIO(image.data)
+                    image = Image.open(stream).convert("RGBA")
+                    thumbnails.append(image)
+                    stream.close()
+                else: thumbnails.append("NA")
+                track = ID3_Track(audio, options)
+                # search web for tags
+                results, webScrapingWindow, characters, imageCounter, imageSelection = scrapeWeb(track, audio, filename, frame, webScrapingWindow, characters, options, imageCounter)
+                finalResults.append(results)
+                imageSelections.append(imageSelection)
+            #handle OGG file
+            elif filename.endswith('.ogg') and type(checkFileValidity(filename, directory, "OGG", frame, window))!=str:
+                audio, filename = initiateOGG(filename, directory, frame, webScrapingWindow, options)
+                images = audio['metadata_block_picture']
+                # append thumbnail image to list if artwork exists
+                for b64_data in audio.get("metadata_block_picture", []):
+                    data = base64.b64decode(b64_data)
+                    # test = BytesIO(data)
+                    testing = Image.open(data).convert("RGBA")
+                    testing.show()
+
+                if len(images) > 0:
+                    image = base64.b64decode(images[0])
+
+
+                else:
+                    thumbnails.append("NA")
         finalReportWindow = Toplevel()
         webScrapingWindow.lift()
 
@@ -185,6 +213,12 @@ def checkFileValidity(filename, directory, format, frame, window):
             return "Invalid or corrupt file\n"
     elif format=="MP3":
         try: audio = MP3(str(directory) + "/" + str(filename))
+        except:
+            tk.Label(frame.scrollable_frame, text="Invalid or Corrupt File").pack(anchor='w')
+            window.update()
+            return "Invalid or corrupt file\n"
+    elif format=="OGG":
+        try: audio = OggVorbis(str(directory) + "/" + str(filename))
         except:
             tk.Label(frame.scrollable_frame, text="Invalid or Corrupt File").pack(anchor='w')
             window.update()

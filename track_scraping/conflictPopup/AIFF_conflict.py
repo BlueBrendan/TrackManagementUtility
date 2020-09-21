@@ -5,7 +5,7 @@ from PIL import Image, ImageTk
 from io import BytesIO
 import getpass
 
-def AIFF_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow):
+def ID3_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow):
     if audio["TDRC"] != '' or audio["TBPM"] != '' or audio["TKEY"] != '' or audio["TCON"] != '':
         buttons = []
         #tag conflict

@@ -2,8 +2,6 @@ from mutagen.flac import FLAC
 from tkinter import messagebox
 import tkinter as tk
 import os
-import soundfile as sf
-
 
 #import methods
 from track_preparation.handleDiscrepancy import handleArtistTitleDiscrepancy

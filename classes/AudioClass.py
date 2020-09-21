@@ -20,7 +20,8 @@ class FLAC_Track:
             if tag in informalTagDict: setattr(self, tag.lower(), str(audio[informalTagDict[tag]][0]))
         self.imageSelection = "THUMB"
 
-class AIFF_Track:
+#track for all file formats that use ID3 tags
+class ID3_Track:
     def __init__(self, audio, options):
         informalTagDict = {
             'Artist': 'TPE1',
