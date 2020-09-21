@@ -3,8 +3,8 @@ import getpass
 from PIL import Image, ImageTk
 
 #import methods
-from track_preparation.fileOption import fileOption
-from track_preparation.directoryOption import directoryOption
+from track_preparation.fileSelect import fileOption
+from track_preparation.directorySelect import directoryOption
 
 #global variables
 imageCounter = 0

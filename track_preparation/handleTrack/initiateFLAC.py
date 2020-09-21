@@ -1,11 +1,12 @@
 from mutagen.flac import FLAC
+from pydub import AudioSegment
 from tkinter import messagebox
 import tkinter as tk
 import os
 
 #import methods
-from track_preparation.handleTypo import handleArtistTitleDiscrepancy
-from track_preparation.handleTypo import handleTitleDiscrepancy
+from track_preparation.handleDiscrepancy import handleArtistTitleDiscrepancy
+from track_preparation.handleDiscrepancy import handleTitleDiscrepancy
 from track_preparation.handleTypo import handleTypo
 from track_preparation.handleReplayGain import handleReplayGain
 
@@ -57,16 +58,17 @@ def initiateFLAC(filename, directory, frame, webScrapingWindow, options):
             audio.save()
         else: fileParameters.append(tag)
     for tag in options["Selected Tags (L)"]:
-        tag = informalTagDict[tag]
-        # add tags of interest if missing
-        if tag not in fileParameters:
-            try:
-                audio[tag] = ""
-                audio.save()
-            except:
-                messagebox.showinfo("Permission Error", "Unable to save tags, file may be open somewhere")
-                webScrapingWindow.lift()
-                return False, filename
+        if tag in informalTagDict:
+            tag = informalTagDict[tag]
+            # add tags of interest if missing
+            if tag not in fileParameters:
+                try:
+                    audio[tag] = ""
+                    audio.save()
+                except:
+                    messagebox.showinfo("Permission Error", "Unable to save tags, file may be open somewhere")
+                    webScrapingWindow.lift()
+                    return False, filename
 
     #check for discrepancies between tags and filename
     #check both artist and title tags
@@ -75,11 +77,15 @@ def initiateFLAC(filename, directory, frame, webScrapingWindow, options):
         title = str(filename.split(' - ')[1][:-5])
         if artist!=str(audio['artist'][0]) or title!=str(audio['title'][0]):
             # save artist and title to tag if both are empty
-            if str(audio['artist'][0]) == '' and str(audio['title'][0]) == '':
+            if str(audio['artist'][0]) == '' and str(audio['title'][0]) == '' or handleArtistTitleDiscrepancy(artist, str(audio["artist"][0]), title, str(audio["title"][0]), webScrapingWindow) == "file":
                 audio['artist'] = artist
                 audio['title'] = title
                 audio.save()
-            else: audio, filename = handleArtistTitleDiscrepancy(artist, str(audio['artist'][0]), title, str(audio['title'][0]), audio, filename, directory, webScrapingWindow)
+            elif handleArtistTitleDiscrepancy(artist, str(audio["artist"][0]), title, str(audio["title"][0]), webScrapingWindow) == "tag":
+                extension = filename[filename.rfind('.'):]
+                os.rename(directory + '/' + filename, str(directory) + '/' + str(audio["artist"][0]) + " - " + str(audio["title"][0]) + extension)
+                filename = str(audio["artist"][0]) + " - " + str(audio["title"][0]) + extension
+                audio = FLAC(str(directory) + '/' + filename)
     #only check title tag
     else:
         title = str(filename[:-5])
@@ -88,7 +94,15 @@ def initiateFLAC(filename, directory, frame, webScrapingWindow, options):
             if str(audio['title'][0])=='':
                 audio['title'] = title
                 audio.save()
-            else: audio, filename = handleTitleDiscrepancy(title, str(audio['title'][0]), audio, filename, directory, webScrapingWindow)
+            else:
+                if handleTitleDiscrepancy(title, str(audio["artist"][0]), webScrapingWindow) == "file":
+                    audio["title"] = title
+                    audio.save()
+                elif handleTitleDiscrepancy(title,  str(audio["artist"][0]), webScrapingWindow)=="tag":
+                    extension = filename[filename.rfind('.'):]
+                    os.rename(directory + '/' + filename, str(directory) + '/' + str(audio["artist"][0]) + extension)
+                    filename = str(audio["artist"][0]) + extension
+                    audio = FLAC(str(directory) + '/' + filename)
 
     # handle naming format and typo check
     if options["Audio naming format (S)"].get() == "Artist - Title":
@@ -98,7 +112,7 @@ def initiateFLAC(filename, directory, frame, webScrapingWindow, options):
             os.rename(directory + '/' + filename, directory + '/' + artist + ' - ' + filename)
             filename = artist + ' - ' + filename
             audio = FLAC(directory + '/' + filename)
-        if options["Scan Filename and Tags (B)"].get() == True: audio, filename = extractArtistAndTitle(audio, filename, directory, options, frame, webScrapingWindow, "Artist - Title")
+        if options["Scan Filename and Tags (B)"].get() == True: audio, filename = extractArtistAndTitle(audio, filename, directory, options, webScrapingWindow, "Artist - Title")
 
     elif options["Audio naming format (S)"].get() == "Title":
         # rename track so that the artist is removed from the title
@@ -106,13 +120,20 @@ def initiateFLAC(filename, directory, frame, webScrapingWindow, options):
             os.rename(directory + '/' + filename, directory + '/' + filename[filename.index(' - ')+3:])
             filename = filename[filename.index(' - ')+3:]
             audio = FLAC(directory + '/' + filename)
-        if options["Scan Filename and Tags (B)"].get() == True: audio, filename = extractArtistAndTitle(audio, filename, directory, options, frame, webScrapingWindow, "Title")
+        if options["Scan Filename and Tags (B)"].get() == True: audio, filename = extractArtistAndTitle(audio, filename, directory, options, webScrapingWindow, "Title")
 
     # handle replayGain
-    if options["Calculate ReplayGain (B)"].get() == True: audio = handleReplayGain(directory, filename, audio, webScrapingWindow)
+    if options["Calculate ReplayGain (B)"].get() == True:
+        file = AudioSegment.from_file(directory + '/' + filename, "flac")
+        rgvalue = str(round(-18 - float(file.dBFS),2))
+        if audio["replaygain_track_gain"][0] != '' and audio["replaygain_track_gain"][0] != rgvalue + " dB":
+            result = handleReplayGain(audio["replaygain_track_gain"][0], rgvalue, webScrapingWindow)
+            if result != None:
+                audio["replaygain_track_gain"][0] = rgvalue + ' dB'
+                audio.save()
     return audio, filename
 
-def extractArtistAndTitle(audio, filename, directory, options, frame, webScrapingWindow, format):
+def extractArtistAndTitle(audio, filename, directory, options, webScrapingWindow, format):
     extension = filename[filename.rfind('.'):]
     if ' - ' in filename:
         artist = str(audio['artist'][0])
@@ -138,7 +159,10 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
             newArtist = artist[artist.index('.') + 1:].strip()
             newTitle = title
             if '.' in artistPrefix[0:5]:
-                if any(char.isdigit() for char in artistPrefix[0:artistPrefix.index('.')]): artist, title, audio, filename = handleTypo(audio, artist, newArtist, title, newTitle, webScrapingWindow, directory, filename, extension, format, "Prefix")
+                if any(char.isdigit() for char in artistPrefix[0:artistPrefix.index('.')]):
+                    if handleTypo(artist, newArtist, title, newTitle, webScrapingWindow, "Prefix")!=None:
+                        artist, title = handleTypo(artist, newArtist, title, newTitle, webScrapingWindow, "Hyphen")
+                        audio, filename = rename(directory, filename, artist, title, extension, format)
 
     # scan artist and title for hyphens
     if options["Check for Extraneous Hyphens (B)"].get() == True:
@@ -147,7 +171,9 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
             newTitle = title
             if '-' in artist: newArtist = artist.replace('-', ' ')
             if '-' in title: newTitle = title.replace('-', ' ')
-            artist, title, audio, filename = handleTypo(audio, artist, newArtist, title, newTitle, webScrapingWindow, directory, filename, extension, format, "Hyphen")
+            if handleTypo(artist, newArtist, title, newTitle, webScrapingWindow, "Hyphen") != None:
+                artist, title = handleTypo(artist, newArtist, title, newTitle, webScrapingWindow, "Hyphen")
+                audio, filename = rename(directory, filename, artist, title, extension, format)
 
     # scan artist and title for capitalization
     if options["Check for Capitalization (B)"].get()==True:
@@ -163,5 +189,29 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
             if word[:1].islower(): newTitle += word.capitalize() + " "
             else: newTitle += word + " "
         newTitle = newTitle.strip()
-        if artist != newArtist or title != newTitle: artist, title, audio, filename = handleTypo(audio, artist, newArtist, title, newTitle, webScrapingWindow, directory, filename, extension, format, "Capitalization")
+        if (artist != newArtist or title != newTitle) and handleTypo(artist, newArtist, title, newTitle, webScrapingWindow, "Capitalization") != None:
+            artist, title = handleTypo(artist, newArtist, title, newTitle, webScrapingWindow, "Capitalization")
+            audio, filename = rename(directory, filename, artist, title, extension, format)
     return audio, filename
+
+def rename(directory, filename, artist, title, extension, format):
+    if format == "Artist - Title":
+        try:
+            os.rename(directory + '/' + filename, str(directory) + '/' + str(artist) + ' - ' + str(title) + extension)
+            filename = str(artist) + ' - ' + str(title) + extension
+            audio = FLAC(str(directory) + '/' + str(artist) + ' - ' + str(title) + extension)
+            audio['artist'] = artist
+            audio['title'] = title
+            audio.save()
+            return audio, filename
+        except PermissionError:messagebox.showinfo("Permission Error", "File cannot be renamed, it may still be open")
+    elif format == "Title":
+        try:
+            os.rename(directory + '/' + filename, str(directory) + '/' + str(title) + extension)
+            filename = str(title) + extension
+            audio = FLAC(str(directory) + '/' + str(title) + extension)
+            audio['artist'] = artist
+            audio['title'] = title
+            audio.save()
+            return audio, filename
+        except PermissionError:messagebox.showinfo("Permission Error", "File cannot be renamed, it may still be open")

@@ -9,18 +9,9 @@ def scrapeWeb(track, audio, var, frame, webScrapingWindow, characters, options, 
     initialCounter = imageCounter
     search = str(track.artist) + " - " + str(track.title)
     # clean search query of ampersands (query ends upon reaching ampersand symbol)
-    if '&' in search:
-        search = search.replace('&', 'and')
-    #stores year/release dates
-    yearList = []
-    #stores BPM values
-    BPMList = []
-    #stores key values
-    keyList = []
-    #stores genre values
-    genreList = []
-    #stores artwork image URLs to avoid duplicates
-    URLList = []
+    if '&' in search: search = search.replace('&', 'and')
+    #lists for year/release date, BPM values, key, genre, and artowrk image URLs
+    yearList, BPMList, keyList, genreList, URLList = [], [], [], [], []
     # build list of artist and track title variations to prepare for scraping
     artistVariations, titleVariations = buildVariations(track.artist, track.title)
 

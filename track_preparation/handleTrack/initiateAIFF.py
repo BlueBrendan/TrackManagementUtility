@@ -1,12 +1,13 @@
 from mutagen.aiff import AIFF
+from pydub import AudioSegment
 from mutagen.id3._frames import *
 from tkinter import messagebox
 import tkinter as tk
 import os
 
 #import methods
-from track_preparation.handleTypo import handleArtistTitleDiscrepancy
-from track_preparation.handleTypo import handleTitleDiscrepancy
+from track_preparation.handleDiscrepancy import handleArtistTitleDiscrepancy
+from track_preparation.handleDiscrepancy import handleTitleDiscrepancy
 from track_preparation.handleTypo import handleTypo
 from track_preparation.handleReplayGain import handleReplayGain
 
@@ -82,7 +83,6 @@ def initiateAIFF(filename, directory, frame, webScrapingWindow, options):
             tag = informalTagDict[tag]
             # add tags of interest if missing
             if tag not in fileParameters:
-                print(tag)
                 try:
                     if "COMM" in tag: audio[tag] = COMM(encoding=3, lang="eng", test="")
                     elif "TXXX" in tag: audio[tag] = TXXX(encoding=3, desc="replaygain_track_gain", test="")
@@ -93,8 +93,8 @@ def initiateAIFF(filename, directory, frame, webScrapingWindow, options):
                     webScrapingWindow.lift()
                     return False, filename
 
-#     #check for discrepancies between tags and filename
-#     #check both artist and title tags
+    #check for discrepancies between tags and filename
+    #check both artist and title tags
     if ' - ' in filename:
         artist = str(filename.split(' - ')[0])
         title = str(filename.split(' - ')[1][:-5])
@@ -104,7 +104,17 @@ def initiateAIFF(filename, directory, frame, webScrapingWindow, options):
                 audio["TPE1"] = TPE1(encoding=3, text=artist)
                 audio["TIT2"] = TIT2(encoding=3, text=title)
                 audio.save()
-            else: audio, filename = handleArtistTitleDiscrepancy(artist, str(audio['artist'][0]), title, str(audio['title'][0]), audio, filename, directory, webScrapingWindow)
+            else:
+                value = handleArtistTitleDiscrepancy(artist, str(audio["TPE1"]), title, str(audio["TIT2"]), webScrapingWindow)
+                if value=="file":
+                    audio["TPE1"] = TPE1(encoding=3, text=artist)
+                    audio["TIT2"] = TIT2(encoding=3, text=title)
+                    audio.save()
+                elif value=="tag":
+                    extension = filename[filename.rfind('.'):]
+                    os.rename(directory + '/' + filename, str(directory) + '/' + str(audio["TPE1"]) + " - " + str(audio["TIT2"]) + extension)
+                    filename = str(audio["TPE1"]) + " - " + str(audio["TIT2"]) + extension
+                    audio = AIFF(str(directory) + '/' + filename)
     #only check title tag
     else:
         title = str(filename[:-5])
@@ -113,17 +123,25 @@ def initiateAIFF(filename, directory, frame, webScrapingWindow, options):
             if str(audio["TIT2"])=='':
                 audio["TIT2"] = TIT2(encoding=3, text=title)
                 audio.save()
-            else: audio, filename = handleTitleDiscrepancy(title, str(audio['title'][0]), audio, filename, directory, webScrapingWindow)
-#--------------------- HERE --------------- fix handle TitleDiscrepancy so it isn't format specific
+            else:
+                if handleTitleDiscrepancy(title, str(audio["TIT2"]),webScrapingWindow)=="file":
+                    audio["TIT2"] = TIT2(encoding=3, text=title)
+                    audio.save()
+                elif handleTitleDiscrepancy(title, str(audio["TIT2"]),webScrapingWindow)=="tag":
+                    extension = filename[filename.rfind('.'):]
+                    os.rename(directory + '/' + filename, str(directory) + '/' + str(audio["TIT2"]) + extension)
+                    filename = str(audio["TIT2"]) + extension
+                    audio = AIFF(str(directory) + '/' + filename)
+
     # handle naming format and typo check
     if options["Audio naming format (S)"].get() == "Artist - Title":
         # rename track so that the artist is appended at the front of the title
         if ' - ' not in filename:
-            artist = str(audio['artist'][0])
+            artist = str(audio["TPE1"])
             os.rename(directory + '/' + filename, directory + '/' + artist + ' - ' + filename)
             filename = artist + ' - ' + filename
             audio = AIFF(directory + '/' + filename)
-        if options["Scan Filename and Tags (B)"].get() == True: audio, filename = extractArtistAndTitle(audio, filename, directory, options, frame, webScrapingWindow, "Artist - Title")
+        if options["Scan Filename and Tags (B)"].get() == True: audio, filename = extractArtistAndTitle(audio, filename, directory, options, webScrapingWindow, "Artist - Title")
 
     elif options["Audio naming format (S)"].get() == "Title":
         # rename track so that the artist is removed from the title
@@ -131,23 +149,31 @@ def initiateAIFF(filename, directory, frame, webScrapingWindow, options):
             os.rename(directory + '/' + filename, directory + '/' + filename[filename.index(' - ')+3:])
             filename = filename[filename.index(' - ')+3:]
             audio = AIFF(directory + '/' + filename)
-        if options["Scan Filename and Tags (B)"].get() == True: audio, filename = extractArtistAndTitle(audio, filename, directory, options, frame, webScrapingWindow, "Title")
+        if options["Scan Filename and Tags (B)"].get() == True: audio, filename = extractArtistAndTitle(audio, filename, directory, options, webScrapingWindow, "Title")
 
     # handle replayGain
-    if options["Calculate ReplayGain (B)"].get() == True: audio = handleReplayGain(directory, filename, audio, webScrapingWindow)
+    if options["Calculate ReplayGain (B)"].get() == True:
+        file = AudioSegment.from_file(directory + '/' + filename, "aiff")
+        rgvalue = str(round(-18 - float(file.dBFS),2))
+        if audio["TXXX:replaygain_track_gain"] != '' and audio["TXXX:replaygain_track_gain"] != rgvalue + " dB":
+            result = handleReplayGain(audio["TXXX:replaygain_track_gain"], rgvalue, webScrapingWindow)
+            if result!=None:
+                audio.pop("TXXX:replaygain_track_gain")
+                audio["TXXX:replaygain_track_gain"] = TXXX(encoding=3, desc="replaygain_track_gain", text=rgvalue + ' dB')
+                audio.save()
     return audio, filename
 
-def extractArtistAndTitle(audio, filename, directory, options, frame, webScrapingWindow, format):
+def extractArtistAndTitle(audio, filename, directory, options, webScrapingWindow, format):
     extension = filename[filename.rfind('.'):]
     if ' - ' in filename:
-        artist = str(audio['artist'][0])
+        artist = str(audio["TPE1"])
         if artist == '': artist = str(filename.split(' - ')[0])
-        title = str(audio['title'][0])
+        title = str(audio["TIT2"])
         # if title is not saved as tag
         if title == '': title = str(filename.split(' - ')[1][:-5])
     else:
-        artist = str(audio['artist'][0])
-        title = str(audio['title'][0])
+        artist = str(audio["TPE1"])
+        title = str(audio["TIT2"])
         # if title is not saved as tag
         if title == '':
             title = filename[:-5]
@@ -163,7 +189,10 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
             newArtist = artist[artist.index('.') + 1:].strip()
             newTitle = title
             if '.' in artistPrefix[0:5]:
-                if any(char.isdigit() for char in artistPrefix[0:artistPrefix.index('.')]): artist, title, audio, filename = handleTypo(audio, artist, newArtist, title, newTitle, webScrapingWindow, directory, filename, extension, format, "Prefix")
+                if any(char.isdigit() for char in artistPrefix[0:artistPrefix.index('.')]):
+                    if handleTypo(artist, newArtist, title, newTitle, webScrapingWindow,"Prefix")!=None:
+                        artist, title = handleTypo(artist, newArtist, title, newTitle, webScrapingWindow, "Prefix")
+                        audio, filename = rename(directory, filename, artist, title, extension, format)
 
     # scan artist and title for hyphens
     if options["Check for Extraneous Hyphens (B)"].get() == True:
@@ -172,7 +201,9 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
             newTitle = title
             if '-' in artist: newArtist = artist.replace('-', ' ')
             if '-' in title: newTitle = title.replace('-', ' ')
-            artist, title, audio, filename = handleTypo(audio, artist, newArtist, title, newTitle, webScrapingWindow, directory, filename, extension, format, "Hyphen")
+            if handleTypo(artist, newArtist, title, newTitle, webScrapingWindow, "Hyphen")!=None:
+                artist, title = handleTypo(artist, newArtist, title, newTitle, webScrapingWindow, "Hyphen")
+                audio, filename = rename(directory, filename, artist, title, extension, format)
 
     # scan artist and title for capitalization
     if options["Check for Capitalization (B)"].get()==True:
@@ -188,5 +219,29 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
             if word[:1].islower(): newTitle += word.capitalize() + " "
             else: newTitle += word + " "
         newTitle = newTitle.strip()
-        if artist != newArtist or title != newTitle: artist, title, audio, filename = handleTypo(audio, artist, newArtist, title, newTitle, webScrapingWindow, directory, filename, extension, format, "Capitalization")
+        if (artist != newArtist or title != newTitle) and handleTypo(artist, newArtist, title, newTitle, webScrapingWindow, "Capitalization") != None:
+            artist, title = handleTypo(artist, newArtist, title, newTitle, webScrapingWindow, "Capitalization")
+            audio, filename = rename(directory, filename, artist, title, extension, format)
     return audio, filename
+
+def rename(directory, filename, artist, title, extension, format):
+    if format == "Artist - Title":
+        try:
+            os.rename(directory + '/' + filename, str(directory) + '/' + str(artist) + ' - ' + str(title) + extension)
+            filename = str(artist) + ' - ' + str(title) + extension
+            audio = AIFF(str(directory) + '/' + str(artist) + ' - ' + str(title) + extension)
+            audio["TPE1"] = TPE1(encoding=3, text=artist)
+            audio["TIT2"] = TIT2(encoding=3, text=title)
+            audio.save()
+            return audio, filename
+        except PermissionError:messagebox.showinfo("Permission Error", "File cannot be renamed, it may still be open")
+    elif format == "Title":
+        try:
+            os.rename(directory + '/' + filename, str(directory) + '/' + str(title) + extension)
+            filename = str(title) + extension
+            audio = AIFF(str(directory) + '/' + str(title) + extension)
+            audio["TPE1"] = TPE1(encoding=3, text=artist)
+            audio["TIT2"] = TIT2(encoding=3, text=title)
+            audio.save()
+            return audio, filename
+        except PermissionError:messagebox.showinfo("Permission Error", "File cannot be renamed, it may still be open")

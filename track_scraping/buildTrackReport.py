@@ -37,11 +37,11 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
     # check BPM for false values
     if len(BPMList) != 0:
         commonBPM = ([word for word, word_count in Counter(BPMList).most_common(3)])
-        track.BPM = commonBPM[0]
+        track.bpm = commonBPM[0]
         BPMValue = True
         if len(commonBPM) > 1:
             if int(commonBPM[0]) * 2 == int(commonBPM[1]) and int(commonBPM[0]) < 85:
-                track.BPM = commonBPM[1]
+                track.bpm = commonBPM[1]
     if len(keyList)!=0:
         track.key = str(mode(keyList))
         keyValue = True
@@ -52,7 +52,7 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
     if yearValue == True or BPMValue == True or keyValue == True or genreValue == True:
         if audio['date']!=[''] or audio['bpm']!=[''] or audio['initialkey']!=[''] or audio['genre']!=['']:
             buttons = []
-            if str(audio['date'])[2:-2]!=str(track.year) or str(audio['bpm'])[2:-2]!=str(track.BPM) or str(audio['initialkey'])[2:-2]!=track.key or str(audio['genre'])[2:-2]!=track.genre:
+            if str(audio['date'])[2:-2]!=str(track.year) or str(audio['bpm'])[2:-2]!=str(track.bpm) or str(audio['initialkey'])[2:-2]!=track.key or str(audio['genre'])[2:-2]!=track.genre:
                 conflictPopup = Toplevel()
                 conflictPopup.attributes("-topmost", True)
                 conflictPopup.title("Conflicting Tags")
@@ -81,7 +81,7 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                     tags.pack(side=TOP)
                     #tags
                     Label(tags, text="CURRENT TAGS:\nYear: " + str(audio['date'])[2:-2] + "\nBPM: " + str(audio['bpm'])[2:-2] + "\nKey: " + str(audio['initialkey'])[2:-2] + "\nGenre: " + str(audio['genre'])[2:-2], justify=LEFT).pack(side="left", padx=(0, 40), pady=(10, 10))
-                    Label(tags, text="NEW TAGS:\nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), justify=LEFT).pack(side="right", padx=(40, 0), pady=(10, 10))
+                    Label(tags, text="NEW TAGS:\nYear: " + str(track.year) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), justify=LEFT).pack(side="right", padx=(40, 0), pady=(10, 10))
 
                     #load current thumbnail
                     thumbnail = Frame(window)
@@ -136,8 +136,8 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                     #load option buttons
                     optionButtons = Frame(window)
                     optionButtons.pack(side=TOP)
-                    Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, conflictPopup, webScrapingWindow, imageSelection)).pack(side="left", padx=(15, 15), pady=(25,10))
-                    Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, conflictPopup, webScrapingWindow, imageSelection)).pack(side="left", padx=(15, 15), pady=(25,10))
+                    Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.bpm, track.key, track.genre, conflictPopup, webScrapingWindow, imageSelection)).pack(side="left", padx=(15, 15), pady=(25, 10))
+                    Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.bpm, track.key, track.genre, conflictPopup, webScrapingWindow, imageSelection)).pack(side="left", padx=(15, 15), pady=(25, 10))
                     Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, conflictPopup, webScrapingWindow, imageSelection)).pack(side="left", padx=(15, 15), pady=(25,10))
                     Button(optionButtons, text="Skip", command=lambda: skipOption(track, audio, conflictPopup, webScrapingWindow, imageSelection)).pack(side="left", padx=(15, 15), pady=(25,10))
                     canvas.update_idletasks()
@@ -150,9 +150,9 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                 else:
                     Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, columnspan=4, pady=(10,0))
                     Label(window, text="CURRENT TAGS: \nYear: " + str(audio['date'])[2:-2] + "\nBPM: " + str(audio['bpm'])[2:-2] + "\nKey: " + str(audio['initialkey'])[2:-2] + "\nGenre: " + str(audio['genre'])[2:-2]).grid(row=1, column=1, pady=(10,35))
-                    Label(window, text="NEW TAGS: \nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre)).grid(row=1, column=2, pady=(10,35))
-                    Button(window, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection)).grid(row=2, column=0)
-                    Button(window, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.BPM, track.key, track.genre, window, webScrapingWindow, imageSelection)).grid(row=2, column=1)
+                    Label(window, text="NEW TAGS: \nYear: " + str(track.year) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre)).grid(row=1, column=2, pady=(10, 35))
+                    Button(window, text="Overwrite", command=lambda: overwriteOption(audio, track.year, track.bpm, track.key, track.genre, window, webScrapingWindow, imageSelection)).grid(row=2, column=0)
+                    Button(window, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track.year, track.bpm, track.key, track.genre, window, webScrapingWindow, imageSelection)).grid(row=2, column=1)
                     Button(window, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow, imageSelection)).grid(row=2, column=2)
                     Button(window, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow, imageSelection)).grid(row=2, column=3)
                     window.wait_window()
@@ -220,14 +220,14 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, webScr
                 window.wait_window()
         else:
             audio['date'] = str(track.year)
-            audio['bpm'] = str(track.BPM)
+            audio['bpm'] = str(track.bpm)
             audio['initialkey'] = track.key
             audio['genre'] = track.genre
             audio.save()
     # return "\nTrack: " + str(artist) + " - " + str(title) + "\nYear: " + str(year) + "\nBPM: " + str(BPM) + "\nKey: " + str(key) + "\nGenre: " + str(genre) + "\nImage Links: " + str(images)
     if len(str(track.artist) + " - " + str(track.title)) > characters:
         characters = len(str(track.artist) + " - " + str(track.title))
-    return "\nTrack: " + str(track.artist) + " - " + str(track.title) + "\nYear: " + str(track.year) + "\nBPM: " + str(track.BPM) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), webScrapingWindow, characters, imageSelection
+    return "\nTrack: " + str(track.artist) + " - " + str(track.title) + "\nYear: " + str(track.year) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), webScrapingWindow, characters, imageSelection
 
 #four button options
 def overwriteOption(audio, year, BPM, key, genre, window, webScrapingWindow, imageSelection):
@@ -261,8 +261,8 @@ def mergeScrapeOption(audio, year, BPM, key, genre, window, webScrapingWindow, i
 def mergeSourceOption(track, audio, window, webScrapingWindow, imageSelection):
     if audio['date'] == ['']: audio['date'] = str(track.year)
     else: track.year = str(audio['date'])[2:-2]
-    if audio['bpm'] == ['']: audio['bpm'] = str(track.BPM)
-    else: track.BPM = str(audio['BPM'])[2:-2]
+    if audio['bpm'] == ['']: audio['bpm'] = str(track.bpm)
+    else: track.bpm = str(audio['BPM'])[2:-2]
     if audio['initialkey'] == ['']: audio['initialkey'] = track.key
     else: track.key = str(audio['initialkey'])[2:-2]
     if audio['genre'] == ['']: audio['genre'] = track.genre
@@ -276,7 +276,7 @@ def mergeSourceOption(track, audio, window, webScrapingWindow, imageSelection):
 
 def skipOption(track, audio, window, webScrapingWindow, imageSelection):
     track.year = str(audio['date'])[2:-2]
-    track.BPM = str(audio['BPM'])[2:-2]
+    track.bpm = str(audio['BPM'])[2:-2]
     track.key = str(audio['initialkey'])[2:-2]
     track.genre = str(audio['genre'])[2:-2]
     webScrapingWindow.lift()

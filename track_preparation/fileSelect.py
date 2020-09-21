@@ -9,7 +9,7 @@ from PIL import Image, ImageTk
 from io import BytesIO
 
 #import classes
-from classes.AudioClass import AudioTrack
+from classes.AudioClass import FLAC_Track, AIFF_Track
 from classes.scrollbarClass import ScrollableFrame
 
 #import methods
@@ -53,25 +53,26 @@ def fileOption(window, options, imageCounter, CONFIG_FILE):
                         image = Image.open(stream).convert("RGBA")
                         thumbnails.append(image)
                         stream.close()
-                    else:
-                        thumbnails.append("NA")
-                    track = AudioTrack(audio)
+                    else: thumbnails.append("NA")
+                    track = FLAC_Track(audio, options)
                     #search web for tags
                     results, webScrapingWindow, characters, imageCounter, imageSelection = scrapeWeb(track, audio, filename, frame, webScrapingWindow, characters, options, imageCounter)
                     finalResults.append(results)
                     imageSelections.append(imageSelection)
             elif filename.endswith('.aiff') and type(checkFileValidity(filename, directory, "AIFF", frame, window))!=str:
-                initiateAIFF(filename, directory, frame, webScrapingWindow, options)
-                # test = AIFF(str(directory) + "/" + str(filename))
-                # for key in test:
-                #     print(key)
-                #     if 'APIC' not in key:
-                #         print(test[key])
-                # test["COMM==eng"] = COMM(encoding=3, text="HERE")
-                # print(test.pprint())
-                # test["COMM"] = (COMM(encoding=3, text="S"))
-                # test.pop("TIT2")
-                # print(test.pprint())
+                audio, filename = initiateAIFF(filename, directory, frame, webScrapingWindow, options)
+                if type(audio) != bool:
+                    image = audio["APIC:"]
+                    stream = BytesIO(image.data)
+                    image = Image.open(stream).convert("RGBA")
+                    thumbnails.append(image)
+                    stream.close()
+                else: thumbnails.append("NA")
+                track = AIFF_Track(audio, options)
+                # search web for tags
+                results, webScrapingWindow, characters, imageCounter, imageSelection = scrapeWeb(track, audio, filename, frame, webScrapingWindow, characters, options, imageCounter)
+                finalResults.append(results)
+                imageSelections.append(imageSelection)
             elif filename.endswith('mp3'):
                 print('mp3')
                 # test = ID3(str(directory) + "/" + str(filename))
