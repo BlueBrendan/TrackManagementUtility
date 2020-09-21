@@ -15,13 +15,15 @@ def handleTypo(artist, newArtist, title, newTitle, webScrapingWindow, type):
     ws = popup.winfo_screenwidth()  # width of the screen
     hs = popup.winfo_screenheight()  # height of the screen
     x = (ws / 2) - (450 / 2)
-    y = (hs / 2) - (280 / 2)
-    if len(str(artist) + " - " + str(title)) <= 30:
-        popup.geometry('%dx%d+%d+%d' % (450, 180, x, y))
-    else:
+    y = (hs / 2) - (220 / 2)
+    popup.geometry('%dx%d+%d+%d' % (450, 200, x, y))
+    if len(str(artist) + " - " + str(title)) > 50:
         x = (ws / 2) - ((450 + (len(str(artist) + " - " + str(title)) * 1.5)) / 2)
-        popup.geometry('%dx%d+%d+%d' % (450 + (len(str(artist) + " - " + str(title)) * 1.5), 180, x, y))
-    Label(popup, text="A potential typo was found in the filename. Change\n\n" + str(artist) + " - " + str(title) + "\nto\n" + str(newArtist) + " - " + str(newTitle) + "?").pack(pady=(20, 5))
+        popup.geometry('%dx%d+%d+%d' % (450 + (len(str(artist) + " - " + str(title)) * 1.5), 200, x, y))
+    Label(popup, text="A potential typo was found in the filename. Change\n").pack(pady=(20, 0))
+    Label(popup, text=str(artist) + " - " + str(title), justify="left").pack()
+    Label(popup, text="to").pack()
+    Label(popup, text=str(newArtist) + " - " + str(newTitle), justify="left").pack(pady=(0,10))
     buttons = Frame(popup)
     buttons.pack(side="top")
     Button(buttons, text='Yes', command=lambda: setChange(popup, webScrapingWindow)).pack(pady=(15, 10), padx=(10, 30), side="left")

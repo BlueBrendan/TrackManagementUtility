@@ -4,8 +4,9 @@ from mutagen import id3
 from PIL import Image, ImageTk
 from io import BytesIO
 import getpass
+import base64
 
-def FLAC_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow):
+def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow):
     if audio['date'][0] != '' or audio['bpm'][0] != '' or audio['initialkey'][0] != '' or audio['genre'][0] != '':
         buttons = []
         #tag conflict
@@ -43,8 +44,11 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, webScrapi
                 thumbnail = Frame(window)
                 thumbnail.pack(side="top")
                 Label(thumbnail, text="Current artwork", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(20, 10))
-                if len(audio.pictures) > 0:
-                    stream = BytesIO(audio.pictures[0].data)
+                images = audio["metadata_block_picture"]
+                if len(images) > 0:
+                    data = base64.b64decode(images[0])
+                    image = Picture(data)
+                    stream = BytesIO(image.data)
                     image = Image.open(stream).convert("RGBA")
                     stream.close()
                     width, height = image.size
@@ -125,8 +129,11 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, webScrapi
 
             # print current thumbnail
             Label(window, text="Current artwork", font=("TkDefaultFont", 9, 'bold')).pack(pady=(20, 10))
-            if len(audio.pictures) > 0:
-                stream = BytesIO(audio.pictures[0].data)
+            images = audio["metadata_block_picture"]
+            if len(images) > 0:
+                data = base64.b64decode(images[0])
+                image = Picture(data)
+                stream = BytesIO(image.data)
                 image = Image.open(stream).convert("RGBA")
                 stream.close()
                 width, height = image.size
@@ -253,12 +260,15 @@ def saveImage(track, audio, window, webScrapingWindow):
     #first clear all images from audio file
     if track.imageSelection != "THUMB":
         image = Picture()
-        audio.clear_pictures()
+        audio['metadata_block_picture'] = ''
         with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(track.imageSelection) + ".jpg", 'rb') as f:
             image.data = f.read()
-        image.type = id3.PictureType.COVER_FRONT
+        image.type = 17
         image.mime = u"image/jpeg"
-        audio.add_picture(image)
+        image = image.write()
+        value = base64.b64encode(image)
+        value = value.decode("ascii")
+        audio['metadata_block_picture'] = [value]
         audio.save()
     window.destroy()
     webScrapingWindow.lift()

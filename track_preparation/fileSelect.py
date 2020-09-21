@@ -12,7 +12,7 @@ from PIL import Image, ImageTk
 from io import BytesIO
 
 #import classes
-from classes.AudioClass import FLAC_Track, ID3_Track
+from classes.AudioClass import *
 from classes.scrollbarClass import ScrollableFrame
 
 #import methods
@@ -96,23 +96,24 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
             #handle OGG file
             elif filename.endswith('.ogg') and type(checkFileValidity(filename, directory, "OGG", frame, window))!=str:
                 audio, filename = initiateOGG(filename, directory, frame, webScrapingWindow, options)
-                images = audio['metadata_block_picture']
-                # append thumbnail image to list if artwork exists
-                for b64_data in audio.get("metadata_block_picture", []):
-                    data = base64.b64decode(b64_data)
-                    # test = BytesIO(data)
-                    testing = Image.open(data).convert("RGBA")
-                    testing.show()
-
+                images = audio["metadata_block_picture"]
                 if len(images) > 0:
-                    image = base64.b64decode(images[0])
+                    data = base64.b64decode(images[0])
+                    image = Picture(data)
+                    stream = BytesIO(image.data)
+                    image = Image.open(stream).convert("RGBA")
+                    thumbnails.append(image)
+                    stream.close()
+                # append thumbnail image to list if artwork exists
+                else: thumbnails.append("NA")
+                track = Vorbis_Track(audio, options)
+                # search web for tags
+                results, webScrapingWindow, characters, imageCounter, imageSelection = scrapeWeb(track, audio, filename, frame, webScrapingWindow, characters, options, imageCounter)
+                finalResults.append(results)
+                imageSelections.append(imageSelection)
 
-
-                else:
-                    thumbnails.append("NA")
         finalReportWindow = Toplevel()
         webScrapingWindow.lift()
-
         finalReportWindow.title("Final Report")
         canvas = Canvas(finalReportWindow)
         finalReport = Frame(canvas)
