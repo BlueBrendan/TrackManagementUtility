@@ -1,15 +1,15 @@
 from mutagen.aiff import AIFF
-from pydub import AudioSegment
 from mutagen.id3._frames import *
 from tkinter import messagebox
 import tkinter as tk
 import os
+import soundfile as sf
+import pyloudnorm as pyln
 
 #import methods
 from track_preparation.handleDiscrepancy import handleArtistTitleDiscrepancy
 from track_preparation.handleDiscrepancy import handleTitleDiscrepancy
 from track_preparation.handleTypo import handleTypo
-from track_preparation.handleReplayGain import handleReplayGain
 
 def initiateAIFF(filename, directory, frame, webScrapingWindow, options):
     audio = AIFF(str(directory) + "/" + str(filename))
@@ -96,8 +96,8 @@ def initiateAIFF(filename, directory, frame, webScrapingWindow, options):
     #check for discrepancies between tags and filename
     #check both artist and title tags
     if ' - ' in filename:
-        artist = str(filename.split(' - ')[0])
-        title = str(filename.split(' - ')[1][:-5])
+        artist = filename.split(' - ')[0]
+        title = filename[filename.index(filename.split(' - ')[1]):filename.rfind('.')]
         if artist!=str(audio["TPE1"]) or title!=str(audio["TIT2"]):
             # save artist and title to tag if both are empty
             if str(audio["TPE1"]) == '' and str(audio["TIT2"]) == '':
@@ -117,8 +117,8 @@ def initiateAIFF(filename, directory, frame, webScrapingWindow, options):
                     audio = AIFF(str(directory) + '/' + filename)
     #only check title tag
     else:
-        title = str(filename[:-5])
-        if title!=str(audio["TPE1"]):
+        title = filename[:filename.rfind('.')]
+        if title!=str(audio["TIT2"]):
             #save title to tag if tag is empty
             if str(audio["TIT2"])=='':
                 audio["TIT2"] = TIT2(encoding=3, text=title)
@@ -151,16 +151,6 @@ def initiateAIFF(filename, directory, frame, webScrapingWindow, options):
             audio = AIFF(directory + '/' + filename)
         if options["Scan Filename and Tags (B)"].get() == True: audio, filename = extractArtistAndTitle(audio, filename, directory, options, webScrapingWindow, "Title")
 
-    # handle replayGain
-    if options["Calculate ReplayGain (B)"].get() == True:
-        file = AudioSegment.from_file(directory + '/' + filename, "aiff")
-        rgvalue = str(round(-18 - float(file.dBFS),2))
-        if audio["TXXX:replaygain_track_gain"] != '' and audio["TXXX:replaygain_track_gain"] != rgvalue + " dB":
-            result = handleReplayGain(audio["TXXX:replaygain_track_gain"], rgvalue, webScrapingWindow)
-            if result!=None:
-                audio.pop("TXXX:replaygain_track_gain")
-                audio["TXXX:replaygain_track_gain"] = TXXX(encoding=3, desc="replaygain_track_gain", text=rgvalue + ' dB')
-                audio.save()
     return audio, filename
 
 def extractArtistAndTitle(audio, filename, directory, options, webScrapingWindow, format):

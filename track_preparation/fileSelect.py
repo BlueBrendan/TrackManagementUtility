@@ -1,6 +1,7 @@
 from tkinter import filedialog
 from mutagen.flac import FLAC
 from mutagen.aiff import AIFF
+from mutagen.mp3 import MP3
 import tkinter as tk
 from tkinter.tix import *
 import os
@@ -15,6 +16,7 @@ from classes.scrollbarClass import ScrollableFrame
 #import methods
 from track_preparation.initiateTrack.initiateFLAC import initiateFLAC
 from track_preparation.initiateTrack.initiateAIFF import initiateAIFF
+from track_preparation.initiateTrack.initiateMP3 import initiateMP3
 from track_scraping.scrapeWeb import scrapeWeb
 
 def fileSelect(window, options, imageCounter, CONFIG_FILE):
@@ -73,8 +75,9 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
                 results, webScrapingWindow, characters, imageCounter, imageSelection = scrapeWeb(track, audio, filename, frame, webScrapingWindow, characters, options, imageCounter)
                 finalResults.append(results)
                 imageSelections.append(imageSelection)
-            elif filename.endswith('mp3'):
-                print('mp3')
+            elif filename.endswith('mp3') and type(checkFileValidity(filename, directory, "MP3", frame, window))!=str:
+                audio, filename = initiateMP3(filename, directory, frame, webScrapingWindow, options)
+                # print(audio.pprint())
                 # test = ID3(str(directory) + "/" + str(filename))
                 # print(test.pprint())
                 # test.add(TCON(encoding=3, text="TEST"))
@@ -181,7 +184,7 @@ def checkFileValidity(filename, directory, format, frame, window):
             window.update()
             return "Invalid or corrupt file\n"
     elif format=="MP3":
-        try: audio = ID3(str(directory) + "/" + str(filename))
+        try: audio = MP3(str(directory) + "/" + str(filename))
         except:
             tk.Label(frame.scrollable_frame, text="Invalid or Corrupt File").pack(anchor='w')
             window.update()

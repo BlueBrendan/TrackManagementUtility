@@ -3,7 +3,6 @@ import time
 import requests
 from selenium import webdriver
 import getpass
-from PIL import Image, ImageTk
 
 def reverseImageSearch(link, frame, window, imageCounter, URLList, options):
     url = "https://images.google.com/searchbyimage?image_url=" + link
