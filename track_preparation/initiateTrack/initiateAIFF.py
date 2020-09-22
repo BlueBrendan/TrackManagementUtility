@@ -103,12 +103,12 @@ def initiateAIFF(filename, directory, frame, webScrapingWindow, options):
                 audio["TIT2"] = TIT2(encoding=3, text=title)
                 audio.save()
             else:
-                value = handleArtistTitleDiscrepancy(artist, str(audio["TPE1"]), title, str(audio["TIT2"]), webScrapingWindow)
-                if value=="file":
+                input = handleArtistTitleDiscrepancy(artist, str(audio["TPE1"]), title, str(audio["TIT2"]), webScrapingWindow)
+                if input == "file":
                     audio["TPE1"] = TPE1(encoding=3, text=artist)
                     audio["TIT2"] = TIT2(encoding=3, text=title)
                     audio.save()
-                elif value=="tag":
+                elif input == "tag":
                     extension = filename[filename.rfind('.'):]
                     os.rename(directory + '/' + filename, str(directory) + '/' + str(audio["TPE1"]) + " - " + str(audio["TIT2"]) + extension)
                     filename = str(audio["TPE1"]) + " - " + str(audio["TIT2"]) + extension
@@ -122,10 +122,11 @@ def initiateAIFF(filename, directory, frame, webScrapingWindow, options):
                 audio["TIT2"] = TIT2(encoding=3, text=title)
                 audio.save()
             else:
-                if handleTitleDiscrepancy(title, str(audio["TIT2"]),webScrapingWindow)=="file":
+                input = handleTitleDiscrepancy(title, str(audio["TIT2"]),webScrapingWindow)
+                if input == "file":
                     audio["TIT2"] = TIT2(encoding=3, text=title)
                     audio.save()
-                elif handleTitleDiscrepancy(title, str(audio["TIT2"]),webScrapingWindow)=="tag":
+                elif input == "tag":
                     extension = filename[filename.rfind('.'):]
                     os.rename(directory + '/' + filename, str(directory) + '/' + str(audio["TIT2"]) + extension)
                     filename = str(audio["TIT2"]) + extension

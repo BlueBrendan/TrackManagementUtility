@@ -75,15 +75,21 @@ def initiateFLAC(filename, directory, frame, webScrapingWindow, options):
         title = filename[filename.index(filename.split(' - ')[1]):filename.rfind('.')]
         if artist!=str(audio['artist'][0]) or title!=str(audio['title'][0]):
             # save artist and title to tag if both are empty
-            if str(audio['artist'][0]) == '' and str(audio['title'][0]) == '' or handleArtistTitleDiscrepancy(artist, str(audio["artist"][0]), title, str(audio["title"][0]), webScrapingWindow) == "file":
+            if str(audio['artist'][0]) == '' and str(audio['title'][0]) == '':
                 audio['artist'] = artist
                 audio['title'] = title
                 audio.save()
-            elif handleArtistTitleDiscrepancy(artist, str(audio["artist"][0]), title, str(audio["title"][0]), webScrapingWindow) == "tag":
-                extension = filename[filename.rfind('.'):]
-                os.rename(directory + '/' + filename, str(directory) + '/' + str(audio["artist"][0]) + " - " + str(audio["title"][0]) + extension)
-                filename = str(audio["artist"][0]) + " - " + str(audio["title"][0]) + extension
-                audio = FLAC(str(directory) + '/' + filename)
+            else:
+                input = handleArtistTitleDiscrepancy(artist, str(audio["artist"][0]), title, str(audio["title"][0]), webScrapingWindow)
+                if input == "file":
+                    audio['artist'] = artist
+                    audio['title'] = title
+                    audio.save()
+                elif input == "tag":
+                    extension = filename[filename.rfind('.'):]
+                    os.rename(directory + '/' + filename, str(directory) + '/' + str(audio["artist"][0]) + " - " + str(audio["title"][0]) + extension)
+                    filename = str(audio["artist"][0]) + " - " + str(audio["title"][0]) + extension
+                    audio = FLAC(str(directory) + '/' + filename)
     #only check title tag
     else:
         title = filename[:filename.rfind('.')]
@@ -93,10 +99,11 @@ def initiateFLAC(filename, directory, frame, webScrapingWindow, options):
                 audio['title'] = title
                 audio.save()
             else:
-                if handleTitleDiscrepancy(title, str(audio["artist"][0]), webScrapingWindow) == "file":
+                input = handleTitleDiscrepancy(title, str(audio["artist"][0]), webScrapingWindow)
+                if input == "file":
                     audio["title"] = title
                     audio.save()
-                elif handleTitleDiscrepancy(title,  str(audio["artist"][0]), webScrapingWindow)=="tag":
+                elif input == "tag":
                     extension = filename[filename.rfind('.'):]
                     os.rename(directory + '/' + filename, str(directory) + '/' + str(audio["artist"][0]) + extension)
                     filename = str(audio["artist"][0]) + extension
