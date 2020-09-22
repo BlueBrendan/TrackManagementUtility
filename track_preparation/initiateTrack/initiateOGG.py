@@ -28,7 +28,7 @@ def initiateOGG(filename, directory, frame, webScrapingWindow, options):
         'genre': 'Genre',
         'metadata_block_picture': 'Image',
         'initialkey': 'Key',
-        'date': 'Release Date',
+        'date': 'Release_Date',
         'title': 'Title',
         'replaygain_track_gain': 'ReplayGain',
     }
@@ -45,7 +45,7 @@ def initiateOGG(filename, directory, frame, webScrapingWindow, options):
         'Genre': 'genre',
         'Image': 'metadata_block_picture',
         'Key': 'initialkey',
-        'Release Date': 'date',
+        'Release_Date': 'date',
         'Title': 'title',
         'ReplayGain': 'replaygain_track_gain',
     }

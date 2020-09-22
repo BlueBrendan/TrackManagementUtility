@@ -4,38 +4,42 @@ from mutagen import id3
 from PIL import Image, ImageTk
 from io import BytesIO
 import getpass
+import math
 
 def ID3_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow):
     if audio["TDRC"] != '' or audio["TBPM"] != '' or audio["TKEY"] != '' or audio["TCON"] != '':
         buttons = []
         #tag conflict
-        if str(audio["TDRC"]) != str(track.year) or str(audio["TBPM"]) != str(track.bpm) or str(audio["TKEY"]) != track.key or str(audio["TCON"]) != track.genre:
+        if str(audio["TDRC"]) != str(track.release_date) or str(audio["TBPM"]) != str(track.bpm) or str(audio["TKEY"]) != track.key or str(audio["TCON"]) != track.genre:
             conflictPopup = tk.Toplevel()
             conflictPopup.attributes("-topmost", True)
             conflictPopup.title("Conflicting Tags")
             canvas = tk.Canvas(conflictPopup)
             window = tk.Frame(canvas)
             scrollbar = tk.Scrollbar(conflictPopup, orient="vertical", command=canvas.yview)
-            canvas.create_window(0, 0, window=window)
+            canvas.configure(yscrollcommand=scrollbar.set)
             ws = conflictPopup.winfo_screenwidth()  # width of the screen
             hs = conflictPopup.winfo_screenheight()  # height of the screen
             x = (ws / 2) - (550 / 2)
             y = (hs / 2) - (242 / 2)
             conflictPopup.geometry('%dx%d+%d+%d' % (550, 220, x, y))
+            canvas.create_window(550 / 2, 0, window=window, anchor="n")
             if len(str(track.artist) + " - " + str(track.title)) > 30:
                 x = (ws / 2) - ((550 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)) / 2)
                 conflictPopup.geometry('%dx%d+%d+%d' % (550 + (len(str(track.artist) + " - " + str(track.title)) * 1.5), 220, x, y))
+                canvas.create_window((550 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)) / 2, 0, window=window, anchor="n")
             # tags and images
             if options["Reverse Image Search (B)"].get() == True and (imageCounter - initialCounter) >= 1:
-                y = (hs / 2) - (880 / 2)
-                x = (ws / 2) - ((400 + (200 * (min(imageCounter - initialCounter, 4)))) / 2)
-                conflictPopup.geometry('%dx%d+%d+%d' % (400 + (200 * (min(imageCounter - initialCounter, 4))), 800, x, y))
+                y = (hs / 2) - (902 / 2)
+                x = (ws / 2) - ((500 + (200 * (min(imageCounter - initialCounter, 4)))) / 2)
+                conflictPopup.geometry('%dx%d+%d+%d' % (500 + (200 * (min(imageCounter - initialCounter, 4))), 820, x, y))
+                canvas.create_window((500 + (200 * (min(imageCounter - initialCounter, 4))))/ 2, 0, window=window, anchor="n")
                 tk.Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(20, 5))
                 tags = tk.Frame(window)
                 tags.pack(side="top")
                 # tags
                 tk.Label(tags,text="CURRENT TAGS:\nYear: " + str(audio["TDRC"]) + "\nBPM: " + str(audio["TBPM"]) + "\nKey: " + str(audio["TKEY"]) + "\nGenre: " + str(audio["TCON"]), justify="left").pack(side="left", padx=(0, 40), pady=(10, 10))
-                tk.Label(tags, text="NEW TAGS:\nYear: " + str(track.year) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), justify="left").pack(side="right",  padx=(40, 0), pady=(10, 10))
+                tk.Label(tags, text="NEW TAGS:\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), justify="left").pack(side="right",  padx=(40, 0), pady=(10, 10))
 
                 # load current thumbnail
                 thumbnail = tk.Frame(window)
@@ -64,6 +68,7 @@ def ID3_conflict(audio, track, options, initialCounter, imageCounter, webScrapin
                 images.pack(side="top")
                 imageButtons = {}
                 imageResolutions = []
+                rows = (imageCounter - initialCounter)/4
                 tk.Label(images, text="Artwork from search", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(10, 5))
                 for i in range(initialCounter, imageCounter):
                     imageRow = tk.Frame(images)
@@ -96,21 +101,33 @@ def ID3_conflict(audio, track, options, initialCounter, imageCounter, webScrapin
                 tk.Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15),pady=(25, 10))
                 tk.Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25, 10))
                 canvas.update_idletasks()
-                canvas.configure(scrollregion=canvas.bbox('all'), yscrollcommand=scrollbar.set)
+                print(rows)
+                canvas.configure(scrollregion=(0,0,0,(600 + (250 * math.floor(rows)))))
                 canvas.pack(fill='both', expand=True, side='left')
                 scrollbar.pack(side="right", fill="y")
                 conflictPopup.lift()
                 conflictPopup.wait_window()
             # tags only
             else:
-                tk.Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, columnspan=4, pady=(10, 0))
-                tk.Label(window, text="CURRENT TAGS:\nYear: " + str(audio["TDRC"]) + "\nBPM: " + str(audio["TBPM"]) + "\nKey: " + str(audio["TKEY"]) + "\nGenre: " + str(audio["TCON"]), justify="left").grid(row=1,column=1,pady=(10, 35))
-                tk.Label(window, text="NEW TAGS: \nYear: " + str(track.year) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre)).grid(row=1, column=2, pady=(10, 35))
-                tk.Button(window, text="Overwrite", command=lambda: overwriteOption(audio, track, window, webScrapingWindow, )).grid(row=2, column=0)
-                tk.Button(window, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track, window, webScrapingWindow)).grid(row=2, column=1)
-                tk.Button(window, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow)).grid(row=2, column=2)
-                tk.Button(window, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow)).grid(row=2, column=3)
-                window.wait_window()
+                tk.Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(20, 5))
+                tags = tk.Frame(window)
+                tags.pack(side="top")
+                # tags
+                tk.Label(tags,text="CURRENT TAGS:\nYear: " + str(audio["TDRC"]) + "\nBPM: " + str(audio["TBPM"]) + "\nKey: " + str(audio["TKEY"]) + "\nGenre: " + str(audio["TCON"]), justify="left").pack(side="left", padx=(0, 40), pady=(10, 10))
+                tk.Label(tags, text="NEW TAGS:\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), justify="left").pack(side="right", padx=(40, 0), pady=(10, 10))
+                # buttons
+                optionButtons = tk.Frame(window)
+                optionButtons.pack(side="top")
+                tk.Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25, 10))
+                tk.Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25, 10))
+                tk.Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25, 10))
+                tk.Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25, 10))
+                canvas.update_idletasks()
+
+                canvas.pack(fill='both', expand=True, side='left')
+                scrollbar.pack(side="right", fill="y")
+                conflictPopup.lift()
+                conflictPopup.wait_window()
         # images only
         elif imageCounter >= 1:
             window = tk.Toplevel()
@@ -175,7 +192,7 @@ def ID3_conflict(audio, track, options, initialCounter, imageCounter, webScrapin
             window.lift()
             window.wait_window()
     else:
-        audio["TDRC"] = TDRC(encoding=3, text=str(track.year))
+        audio["TDRC"] = TDRC(encoding=3, text=str(track.release_date))
         audio["TBPM"] = TBPM(encoding=3, text=str(track.bpm))
         audio["TKEY"] = TKEY(encoding=3, text=track.key)
         audio["TCON"] = TCON(encoding=3, text=track.genre)
@@ -183,7 +200,7 @@ def ID3_conflict(audio, track, options, initialCounter, imageCounter, webScrapin
 
 #four button options
 def overwriteOption(audio, track, window, webScrapingWindow):
-    audio["TDRC"] = TDRC(encoding=3, text=str(track.year))
+    audio["TDRC"] = TDRC(encoding=3, text=str(track.release_date))
     audio["TBPM"] = TBPM(encoding=3, text=str(track.bpm))
     audio["TKEY"] = TKEY(encoding=3, text=track.key)
     audio["TCON"] = TCON(encoding=3, text=track.genre)
@@ -195,7 +212,7 @@ def overwriteOption(audio, track, window, webScrapingWindow):
         webScrapingWindow.lift()
 
 def mergeScrapeOption(audio, track, window, webScrapingWindow):
-    if str(track.year) != '': audio["TDRC"] = TDRC(encoding=3, text=str(track.year))
+    if str(track.release_date) != '': audio["TDRC"] = TDRC(encoding=3, text=str(track.release_date))
     if str(track.bpm) != '': audio["TBPM"] = TBPM(encoding=3, text=str(track.bpm))
     if track.key != '': audio["TKEY"] = TKEY(encoding=3, text=track.key)
     if track.genre != '': audio["TCON"] = TCON(encoding=3, text=track.genre)
@@ -207,8 +224,8 @@ def mergeScrapeOption(audio, track, window, webScrapingWindow):
         webScrapingWindow.lift()
 
 def mergeSourceOption(audio, track, window, webScrapingWindow):
-    if audio["TDRC"] == '': audio["TDRC"] = TDRC(encoding=3, text=str(track.year))
-    else: track.year = str(audio["TDRC"])
+    if audio["TDRC"] == '': audio["TDRC"] = TDRC(encoding=3, text=str(track.release_date))
+    else: track.release_date = str(audio["TDRC"])
     if audio["TBPM"] == '': audio["TBPM"] = TBPM(encoding=3, text=str(track.bpm))
     else: track.bpm = str(audio["TBPM"])
     if audio["TKEY"] == '': audio["TKEY"] = TKEY(encoding=3, text=track.key)
@@ -223,7 +240,7 @@ def mergeSourceOption(audio, track, window, webScrapingWindow):
         webScrapingWindow.lift()
 
 def skipOption(audio, track, window, webScrapingWindow):
-    track.year = str(audio["TDRC"])
+    track.release_date = str(audio["TDRC"])
     track.bpm = str(audio["TBPM"])
     track.key = str(audio["TKEY"])
     track.genre = str(audio["TCON"])

@@ -12,7 +12,7 @@ class FLAC_Track:
             'Discnumber': 'discnumber',
             'Genre': 'genre',
             'Key': 'initialkey',
-            'Release Date': 'date',
+            'Release_Date': 'date',
             'Title': 'title',
             'ReplayGain': 'replaygain_track_gain',
         }
@@ -35,7 +35,7 @@ class Vorbis_Track:
             'Genre': 'genre',
             'Image': 'metadata_block_picture',
             'Key': 'initialkey',
-            'Release Date': 'date',
+            'Release_Date': 'date',
             'Title': 'title',
             'ReplayGain': 'replaygain_track_gain',
         }
@@ -58,7 +58,7 @@ class ID3_Track:
             'Genre': 'TCON',
             'Image': 'APIC:',
             'Key': 'TKEY',
-            'Release Date': 'TDRC',
+            'Release_Date': 'TDRC',
             'Title': 'TIT2',
             'ReplayGain': 'TXXX:replaygain_track_gain',  # desc="replay_track_gain"
         }

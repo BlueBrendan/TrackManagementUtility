@@ -123,24 +123,25 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
         canvas = Canvas(finalReportWindow)
         finalReport = Frame(canvas)
         scrollbar = Scrollbar(finalReportWindow, orient="vertical", command=canvas.yview)
-        canvas.create_window(0, 0, window=finalReport)
+        canvas.configure(yscrollcommand=scrollbar.set)
 
         ws = finalReportWindow.winfo_screenwidth()  # width of the screen
         hs = finalReportWindow.winfo_screenheight()  # height of the screen
-        y = (hs / 2) - (528 / 2)
-        if characters <= 40:
-            x = (ws / 2) - (450 / 2)
-            finalReportWindow.geometry('%dx%d+%d+%d' % (450, 480, x, y))
-            if len(directories) > 1:
-                y = (hs / 2) - (770 / 2)
-                finalReportWindow.geometry('%dx%d+%d+%d' % (450, 700, x, y))
-        else:
+        y = (hs / 2) - (572 / 2)
+        x = (ws / 2) - (450 / 2)
+        finalReportWindow.geometry('%dx%d+%d+%d' % (450, 520, x, y))
+        canvas.create_window((450 / 2), 0, window=finalReport, anchor="n")
+        if len(directories) > 1:
+            y = (hs / 2) - (770 / 2)
+            finalReportWindow.geometry('%dx%d+%d+%d' % (450, 700, x, y))
+        if characters > 40:
             x = (ws / 2) - ((450 + (characters * 1.5)) / 2)
-            finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters * 1.5), 480, x, y))
+            finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters * 1.5), 520, x, y))
+            canvas.create_window(((450 + (characters * 1.5)) / 2), 0, window=finalReport, anchor="n")
             if len(directories) > 1:
                 y = (hs / 2) - (770 / 2)
                 finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters * 1.5), 700, x, y))
-        Label(finalReport, text="Final Report", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(15, 0))
+        Label(finalReport, text="Final Report", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(15, 10))
         for i in range(len(finalResults)):
             Label(finalReport, text=finalResults[i] + '\n').pack(side="top")
             # load non-thumbnailimage
@@ -156,7 +157,7 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
                 Label(finalReport, text=str(width) + "x" + str(height)).pack(side="top", pady=(5, 10))
             #load thumbnail image
             else:
-                if thumbnails[i] == 'NA': Label(finalReport, text="No Artwork Found").pack(side="top", pady=(5,10))
+                if thumbnails[i] == 'NA': Label(finalReport, text="No Artwork Found").pack(side="top", pady=(5,20))
                 else:
                     fileImageImport = thumbnails[i]
                     width, height = fileImageImport.size
@@ -166,15 +167,15 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
                     fileImage.image = photo
                     fileImage.pack(side="top", padx=(10, 10))
                     # resolution
-                    Label(finalReport, text=str(width) + "x" + str(height)).pack(side="top", pady=(5, 10))
+                    Label(finalReport, text=str(width) + "x" + str(height)).pack(side="top", pady=(5, 20))
         # load button and checkbox
         Button(finalReport, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, options)).pack(side=TOP, pady=(15, 15))
         Checkbutton(finalReport, text="Close scraping window", var=options["Close Scraping Window (B)"], command=lambda: closeScrapingWindowSelection(CONFIG_FILE)).pack(side=TOP, pady=(0,10))
         finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closePopup(finalReportWindow, webScrapingWindow))
         finalReportWindow.lift()
         canvas.update_idletasks()
-        canvas.configure(scrollregion=canvas.bbox('all'), yscrollcommand=scrollbar.set)
-        canvas.pack(fill='both', expand=True, side='left')
+        canvas.pack(side="left", expand=YES, fill=BOTH)
+        canvas.configure(scrollregion=(0,0,0,(520 + (361 * (len(directories)-1)))))
         scrollbar.pack(side="right", fill=Y)
 
 #handle subdirectory selection

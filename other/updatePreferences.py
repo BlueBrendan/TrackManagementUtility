@@ -80,7 +80,7 @@ def updatePreferences(options, CONFIG_FILE, root):
 
     tk.Label(rightListbox, text="Selected Tags").pack()
     selectedListbox = tk.Listbox(rightListbox)
-    comprehensiveList = ['Artist', 'Album', 'Album Artist', 'BPM', 'Comment', 'Compilation', 'Copyright', 'Discnumber', 'Genre', 'Key','Release Date', 'Title', 'ReplayGain']
+    comprehensiveList = ['Artist', 'Album', 'Album Artist', 'BPM', 'Comment', 'Compilation', 'Copyright', 'Discnumber', 'Genre', 'Key','Release_Date', 'Title', 'ReplayGain']
     #insert all tags in unselectedListbox
     for tag in comprehensiveList:
         if tag not in options['Selected Tags (L)']:

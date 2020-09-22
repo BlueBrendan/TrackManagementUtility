@@ -28,7 +28,7 @@ def initiateWAVE(filename, directory, frame, webScrapingWindow, options):
         'TCON': 'Genre',
         'APIC:': 'Image',
         'TKEY': 'Key',
-        'TDRC': 'Release Date',
+        'TDRC': 'Release_Date',
         'TIT2': 'Title',
         'TXXX:replaygain_track_gain': 'ReplayGain',
     }
@@ -45,7 +45,7 @@ def initiateWAVE(filename, directory, frame, webScrapingWindow, options):
         'Genre': 'TCON',
         'Image': 'APIC:',
         'Key': 'TKEY',
-        'Release Date': 'TDRC',
+        'Release_Date': 'TDRC',
         'Title': 'TIT2',
         'ReplayGain': 'TXXX:replaygain_track_gain',   #desc="replay_track_gain"
     }

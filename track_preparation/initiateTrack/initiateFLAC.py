@@ -27,7 +27,7 @@ def initiateFLAC(filename, directory, frame, webScrapingWindow, options):
         'discnumber': 'Discnumber',
         'genre': 'Genre',
         'initialkey': 'Key',
-        'date': 'Release Date',
+        'date': 'Release_Date',
         'title': 'Title',
         'replaygain_track_gain': 'ReplayGain',
     }
@@ -43,7 +43,7 @@ def initiateFLAC(filename, directory, frame, webScrapingWindow, options):
         'Discnumber': 'discnumber',
         'Genre': 'genre',
         'Key': 'initialkey',
-        'Release Date': 'date',
+        'Release_Date': 'date',
         'Title': 'title',
         'ReplayGain': 'replaygain_track_gain',
     }

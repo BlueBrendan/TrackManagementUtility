@@ -4,7 +4,7 @@ import requests
 from selenium import webdriver
 import getpass
 
-def reverseImageSearch(link, frame, window, imageCounter, URLList, options):
+def reverseImageSearch(link, headers, window, imageCounter, URLList, options):
     url = "https://images.google.com/searchbyimage?image_url=" + link
     if "https://" in link:
         link = link.replace("https://", '')
@@ -60,8 +60,10 @@ def reverseImageSearch(link, frame, window, imageCounter, URLList, options):
                         if browser.current_url not in URLList:
                             URLList.append(browser.current_url)
                             with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
-                                file.write(requests.get(browser.current_url).content)
+                                file.write(requests.get(browser.current_url, headers=headers).content)
                             imageCounter+=1
+                            #give time for image writing
+                            time.sleep(1)
                         break
     browser.quit()
     window.lift()

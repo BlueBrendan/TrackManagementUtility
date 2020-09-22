@@ -74,7 +74,7 @@ def junodownloadSearch(artist, title, var, yearList, BPMList, genreList, URLList
                                                 link = link.find('img').get('data-src-full')
                                                 # write junodownload image to drive
                                                 with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
-                                                    file.write(requests.get(link).content)
+                                                    file.write(requests.get(link, headers=headers).content)
                                                 URLList.append(link)
                                                 # load file icon
                                                 fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
@@ -85,7 +85,7 @@ def junodownloadSearch(artist, title, var, yearList, BPMList, genreList, URLList
                                                 fileImage.pack(anchor="w")
                                                 window.update()
                                                 imageCounter += 1
-                                                imageCounter, URLList = reverseImageSearch(link, frame, window, imageCounter, URLList, options)
+                                                imageCounter, URLList = reverseImageSearch(link, headers, window, imageCounter, URLList, options)
     return yearList, BPMList, genreList, imageCounter, URLList
 
 def sendRequest(url, headers, frame, window):

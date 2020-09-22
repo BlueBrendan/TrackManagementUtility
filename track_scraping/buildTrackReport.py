@@ -14,7 +14,7 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, filena
     # check year for false values
     if len(yearList) != 0:
         commonYear = [word for word, word_count in Counter(yearList).most_common(5)]
-        track.year = commonYear[0]
+        track.release_date = commonYear[0]
         conflict = True
         if len(commonYear) > 1:
             for i in range(len(commonYear) - 1):
@@ -22,11 +22,11 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, filena
                 if len(yearList) <= 5:
                     if int(commonYear[0]) > int(commonYear[i + 1]) and yearList.count(
                             commonYear[0]) <= yearList.count(commonYear[i + 1]) * 2:
-                        track.year = commonYear[i + 1]
+                        track.release_date = commonYear[i + 1]
                 else:
                     if int(commonYear[0]) > int(commonYear[i + 1]) and yearList.count(
                             commonYear[0]) <= yearList.count(commonYear[i + 1]) * 2 and yearList.count(commonYear[0]) > 1:
-                        track.year = commonYear[i + 1]
+                        track.release_date = commonYear[i + 1]
     # check BPM for false values
     if len(BPMList) != 0:
         commonBPM = ([word for word, word_count in Counter(BPMList).most_common(3)])
@@ -45,7 +45,7 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, filena
     if conflict == True:
         if filename.endswith(".flac"): FLAC_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow)
         elif filename.endswith(".aiff") or filename.endswith(".mp3") or filename.endswith(".wav"): ID3_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow)
-        elif filename.endswith(".ogg"):Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow)
+        elif filename.endswith(".ogg"): Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow)
     if len(str(track.artist) + " - " + str(track.title)) > characters: characters = len(str(track.artist) + " - " + str(track.title))
-    return "\nTrack: " + str(track.artist) + " - " + str(track.title) + "\nYear: " + str(track.year) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), webScrapingWindow, characters, track.imageSelection
+    return "\nTrack: " + str(track.artist) + " - " + str(track.title) + "\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), webScrapingWindow, characters, track.imageSelection
 

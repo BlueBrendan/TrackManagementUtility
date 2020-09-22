@@ -10,7 +10,7 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScra
     if audio['date'][0] != '' or audio['bpm'][0] != '' or audio['initialkey'][0] != '' or audio['genre'][0] != '':
         buttons = []
         #tag conflict
-        if str(audio['date'][0]) != str(track.year) or str(audio['bpm'][0]) != str(track.bpm) or str(audio['initialkey'][0]) != track.key or str(audio['genre'][0]) != track.genre:
+        if str(audio['date'][0]) != str(track.release_date) or str(audio['bpm'][0]) != str(track.bpm) or str(audio['initialkey'][0]) != track.key or str(audio['genre'][0]) != track.genre:
             conflictPopup = Toplevel()
             conflictPopup.attributes("-topmost", True)
             conflictPopup.title("Conflicting Tags")
@@ -38,7 +38,7 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScra
                 Label(tags,
                       text="CURRENT TAGS:\nYear: " + str(audio['date'][0]) + "\nBPM: " + str(audio['bpm'][0]) + "\nKey: " + str(audio['initialkey'][0]) + "\nGenre: " + str(audio['genre'][0]),
                       justify="left").pack(side="left", padx=(0, 40), pady=(10, 10))
-                Label(tags, text="NEW TAGS:\nYear: " + str(track.year) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), justify="left").pack(side="right",  padx=(40, 0), pady=(10, 10))
+                Label(tags, text="NEW TAGS:\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), justify="left").pack(side="right",  padx=(40, 0), pady=(10, 10))
 
                 # load current thumbnail
                 thumbnail = Frame(window)
@@ -108,14 +108,25 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScra
                 conflictPopup.wait_window()
             # tags only
             else:
-                Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, columnspan=4, pady=(10, 0))
-                Label(window, text="CURRENT TAGS: \nYear: " + str(audio['date'][0]) + "\nBPM: " + str(audio['bpm'][0]) + "\nKey: " + str(audio['initialkey'][0]) + "\nGenre: " + str(audio['genre'][0])).grid(row=1,column=1,pady=(10, 35))
-                Label(window, text="NEW TAGS: \nYear: " + str(track.year) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre)).grid(row=1, column=2, pady=(10, 35))
-                Button(window, text="Overwrite", command=lambda: overwriteOption(audio, track, window, webScrapingWindow, )).grid(row=2, column=0)
-                Button(window, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track, window, webScrapingWindow)).grid(row=2, column=1)
-                Button(window, text="Merge (favor source data)", command=lambda: mergeSourceOption(track, audio, window, webScrapingWindow)).grid(row=2, column=2)
-                Button(window, text="Skip", command=lambda: skipOption(track, audio, window, webScrapingWindow)).grid(row=2, column=3)
-                window.wait_window()
+                Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(20, 5))
+                tags = Frame(window)
+                tags.pack(side="top")
+                # tags
+                Label(tags, text="CURRENT TAGS:\nYear: " + str(audio['date'][0]) + "\nBPM: " + str(audio['bpm'][0]) + "\nKey: " + str(audio['initialkey'][0]) + "\nGenre: " + str(audio['genre'][0]), justify="left").pack(side="left", padx=(0, 40), pady=(10, 10))
+                Label(tags, text="NEW TAGS:\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), justify="left").pack(side="right", padx=(40, 0),pady=(10, 10))
+                # buttons
+                optionButtons = Frame(window)
+                optionButtons.pack(side="top")
+                Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25, 10))
+                Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25, 10))
+                Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25, 10))
+                Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25, 10))
+                canvas.update_idletasks()
+                canvas.configure(scrollregion=canvas.bbox('all'), yscrollcommand=scrollbar.set)
+                canvas.pack(fill='both', expand=True, side='left')
+                scrollbar.pack(side="right", fill="y")
+                conflictPopup.lift()
+                conflictPopup.wait_window()
         # images only
         elif imageCounter >= 1:
             window = Toplevel()
@@ -182,7 +193,7 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScra
             window.lift()
             window.wait_window()
     else:
-        audio['date'] = str(track.year)
+        audio['date'] = str(track.release_date)
         audio['bpm'] = str(track.bpm)
         audio['initialkey'] = track.key
         audio['genre'] = track.genre
@@ -190,7 +201,7 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScra
 
 #four button options
 def overwriteOption(audio, track, window, webScrapingWindow):
-    audio['date'] = str(track.year)
+    audio['date'] = str(track.release_date)
     audio['bpm'] = str(track.bpm)
     audio['initialkey'] = track.key
     audio['genre'] = track.genre
@@ -202,8 +213,8 @@ def overwriteOption(audio, track, window, webScrapingWindow):
         webScrapingWindow.lift()
 
 def mergeScrapeOption(audio, track, window, webScrapingWindow):
-    if str(track.year) != '':
-        audio['date'] = str(track.year)
+    if str(track.release_date) != '':
+        audio['date'] = str(track.release_date)
     if str(track.bpm) != '':
         audio['bpm'] = str(track.bpm)
     if track.key != '':
@@ -218,8 +229,8 @@ def mergeScrapeOption(audio, track, window, webScrapingWindow):
         webScrapingWindow.lift()
 
 def mergeSourceOption(audio, track, window, webScrapingWindow):
-    if audio['date'] == ['']: audio['date'] = str(track.year)
-    else: track.year = str(audio['date'][0])
+    if audio['date'] == ['']: audio['date'] = str(track.release_date)
+    else: track.release_date = str(audio['date'][0])
     if audio['bpm'] == ['']: audio['bpm'] = str(track.bpm)
     else: track.bpm = str(audio['BPM'][0])
     if audio['initialkey'] == ['']: audio['initialkey'] = track.key
@@ -234,7 +245,7 @@ def mergeSourceOption(audio, track, window, webScrapingWindow):
         webScrapingWindow.lift()
 
 def skipOption(audio, track, window, webScrapingWindow):
-    track.year = str(audio['date'][0])
+    track.release_date = str(audio['date'][0])
     track.bpm = str(audio['BPM'][0])
     track.key = str(audio['initialkey'][0])
     track.genre = str(audio['genre'][0])
