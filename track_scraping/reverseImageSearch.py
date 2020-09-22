@@ -59,6 +59,7 @@ def reverseImageSearch(link, headers, window, imageCounter, URLList, options):
                         #avoid duplicates
                         if browser.current_url not in URLList:
                             URLList.append(browser.current_url)
+                            print(browser.current_url)
                             with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
                                 file.write(requests.get(browser.current_url, headers=headers).content)
                             imageCounter+=1
