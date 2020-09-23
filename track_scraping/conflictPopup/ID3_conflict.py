@@ -31,7 +31,6 @@ def ID3_conflict(audio, track, options, initialCounter, imageCounter, webScrapin
             # tags and images
             print(imageCounter - initialCounter)
             if options["Reverse Image Search (B)"].get() == True and (imageCounter - initialCounter) >= 1:
-                print("zinger")
                 y = (hs / 2) - (902 / 2)
                 x = (ws / 2) - ((500 + (200 * (min(imageCounter - initialCounter, 4)))) / 2)
                 conflictPopup.geometry('%dx%d+%d+%d' % (500 + (200 * (min(imageCounter - initialCounter, 4))), 820, x, y))
@@ -48,7 +47,7 @@ def ID3_conflict(audio, track, options, initialCounter, imageCounter, webScrapin
                 thumbnail.pack(side="top")
                 tk.Label(thumbnail, text="Current artwork", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(20, 10))
                 image = audio["APIC:"]
-                if image != '':
+                if image.data != b'':
                     stream = BytesIO(image.data)
                     image = Image.open(stream).convert("RGBA")
                     stream.close()
@@ -103,7 +102,6 @@ def ID3_conflict(audio, track, options, initialCounter, imageCounter, webScrapin
                 tk.Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15),pady=(25, 10))
                 tk.Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25, 10))
                 canvas.update_idletasks()
-                print(math.ceil(rows))
                 canvas.configure(scrollregion=(0,0,0,(570 + (250 * math.ceil(rows)))))
                 canvas.pack(fill='both', expand=True, side='left')
                 scrollbar.pack(side="right", fill="y")
@@ -200,7 +198,6 @@ def ID3_conflict(audio, track, options, initialCounter, imageCounter, webScrapin
             optionButtons.pack(side="top")
             tk.Button(optionButtons, text="Select", command=lambda: saveImage(track, audio, conflictPopup, webScrapingWindow)).pack(side="top", pady=(25, 10))
             canvas.update_idletasks()
-            print(math.ceil(rows))
             canvas.configure(scrollregion=(0, 0, 0, (410 + (250 * math.ceil(rows)))))
             canvas.pack(fill='both', expand=True, side='left')
             scrollbar.pack(side="right", fill="y")

@@ -45,7 +45,7 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScra
                 thumbnail.pack(side="top")
                 Label(thumbnail, text="Current artwork", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(20, 10))
                 images = audio["metadata_block_picture"]
-                if len(images) > 0:
+                if images[0] != '':
                     data = base64.b64decode(images[0])
                     image = Picture(data)
                     stream = BytesIO(image.data)
@@ -141,7 +141,7 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScra
             # print current thumbnail
             Label(window, text="Current artwork", font=("TkDefaultFont", 9, 'bold')).pack(pady=(20, 10))
             images = audio["metadata_block_picture"]
-            if len(images) > 0:
+            if images[0] != '':
                 data = base64.b64decode(images[0])
                 image = Picture(data)
                 stream = BytesIO(image.data)
