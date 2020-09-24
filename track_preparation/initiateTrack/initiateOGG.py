@@ -33,22 +33,7 @@ def initiateOGG(filename, directory, frame, webScrapingWindow, options):
         'replaygain_track_gain': 'ReplayGain',
     }
     # transcribe informal tagnames into formal counterpart
-    informalTagDict = {
-        'Artist': 'artist',
-        'Album': 'album',
-        'Album Artist': 'albumartist',
-        'BPM': 'bpm',
-        'Comment': 'comment',
-        'Compilation': 'compilation',
-        'Copyright': 'copyright',
-        'Discnumber': 'discnumber',
-        'Genre': 'genre',
-        'Image': 'metadata_block_picture',
-        'Key': 'initialkey',
-        'Release_Date': 'date',
-        'Title': 'title',
-        'ReplayGain': 'replaygain_track_gain',
-    }
+    informalTagDict = {v: k for k, v in formalTagDict.items()}
     fileParameters = []
     for tag in audio:
         # delete extraneous tags if the tag is not in the list of selected tags and the delete unselected tags option is activated
@@ -100,7 +85,7 @@ def initiateOGG(filename, directory, frame, webScrapingWindow, options):
                 audio['title'] = title
                 audio.save()
             else:
-                input = handleTitleDiscrepancy(title, str(audio["artist"][0]), webScrapingWindow)
+                input = handleTitleDiscrepancy(title, str(audio["title"][0]), webScrapingWindow)
                 if input == "file":
                     audio["title"] = title
                     audio.save()
@@ -128,7 +113,7 @@ def initiateOGG(filename, directory, frame, webScrapingWindow, options):
             audio = OggVorbis(directory + '/' + filename)
         if options["Scan Filename and Tags (B)"].get() == True: audio, filename = extractArtistAndTitle(audio, filename, directory, options, webScrapingWindow, "Title")
 
-    return audio, filename
+    return audio, filename, informalTagDict
 
 def extractArtistAndTitle(audio, filename, directory, options, webScrapingWindow, format):
     extension = filename[filename.rfind('.'):]

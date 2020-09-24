@@ -33,22 +33,7 @@ def initiateWAVE(filename, directory, frame, webScrapingWindow, options):
         'TXXX:replaygain_track_gain': 'ReplayGain',
     }
     # transcribe informal tagnames into formal counterpart
-    informalTagDict = {
-        'Artist': 'TPE1',
-        'Album': 'TALB',
-        'Album Artist': 'TPE2',
-        'BPM': 'TBPM',
-        'Comment': 'COMM::eng',  #lang="eng"
-        'Compilation': 'TCMP',
-        'Copyright': 'TCOP',
-        'Discnumber': 'TPOS',
-        'Genre': 'TCON',
-        'Image': 'APIC:',
-        'Key': 'TKEY',
-        'Release_Date': 'TDRC',
-        'Title': 'TIT2',
-        'ReplayGain': 'TXXX:replaygain_track_gain',   #desc="replay_track_gain"
-    }
+    informalTagDict = {v: k for k, v in formalTagDict.items()}
 
     ID3Frames = {
         'TPE1': TPE1,
@@ -149,7 +134,7 @@ def initiateWAVE(filename, directory, frame, webScrapingWindow, options):
             audio = WAVE(directory + '/' + filename)
         if options["Scan Filename and Tags (B)"].get() == True: audio, filename = extractArtistAndTitle(audio, filename, directory, options, webScrapingWindow, "Title")
 
-    return audio, filename
+    return audio, filename, informalTagDict
 
 def extractArtistAndTitle(audio, filename, directory, options, webScrapingWindow, format):
     extension = filename[filename.rfind('.'):]

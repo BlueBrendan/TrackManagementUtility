@@ -56,7 +56,7 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
                 #handle FLAC file
                 if filename.endswith('.flac') and type(checkFileValidity(filename, directory, "FLAC", frame, window))!=str:
                     #handle naming preferences, tag settings, and replay gain
-                    audio, filename = initiateFLAC(filename, directory, frame, webScrapingWindow, options)
+                    audio, filename, informalTagDict = initiateFLAC(filename, directory, frame, webScrapingWindow, options)
                     if type(audio) != bool:
                         images = audio.pictures
                         # append thumbnail image to list if artwork exists
@@ -66,10 +66,10 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
                             thumbnails.append(image)
                             stream.close()
                         else: thumbnails.append("NA")
-                        track = FLAC_Track(audio, options)
+                        track = FLAC_Track(audio, options, informalTagDict)
                 #handle AIFF file
                 elif filename.endswith('.aiff') and type(checkFileValidity(filename, directory, "AIFF", frame, window))!=str:
-                    audio, filename = initiateAIFF(filename, directory, frame, webScrapingWindow, options)
+                    audio, filename, informalTagDict = initiateAIFF(filename, directory, frame, webScrapingWindow, options)
                     if type(audio) != bool:
                         image = audio["APIC:"]
                         if image.data != b'':
@@ -78,10 +78,10 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
                             thumbnails.append(image)
                             stream.close()
                         else: thumbnails.append("NA")
-                        track = ID3_Track(audio, options)
+                        track = ID3_Track(audio, options, informalTagDict)
                 #handle MP3 file
                 elif filename.endswith('mp3') and type(checkFileValidity(filename, directory, "MP3", frame, window))!=str:
-                    audio, filename = initiateMP3(filename, directory, frame, webScrapingWindow, options)
+                    audio, filename, informalTagDict = initiateMP3(filename, directory, frame, webScrapingWindow, options)
                     if type(audio) != bool:
                         image = audio["APIC:"]
                         if image.data != b'':
@@ -90,10 +90,10 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
                             thumbnails.append(image)
                             stream.close()
                         else: thumbnails.append("NA")
-                        track = ID3_Track(audio, options)
+                        track = ID3_Track(audio, options, informalTagDict)
                 #handle OGG file
                 elif filename.endswith('.ogg') and type(checkFileValidity(filename, directory, "OGG", frame, window))!=str:
-                    audio, filename = initiateOGG(filename, directory, frame, webScrapingWindow, options)
+                    audio, filename, informalTagDict = initiateOGG(filename, directory, frame, webScrapingWindow, options)
                     if type(audio) != bool:
                         images = audio["metadata_block_picture"]
                         if images[0] != '':
@@ -105,10 +105,10 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
                             stream.close()
                         # append thumbnail image to list if artwork exists
                         else: thumbnails.append("NA")
-                        track = Vorbis_Track(audio, options)
+                        track = Vorbis_Track(audio, options, informalTagDict)
                 #handle WAV file
                 elif filename.endswith('.wav') and type(checkFileValidity(filename, directory, "WAV", frame, window))!=str:
-                    audio, filename = initiateWAVE(filename, directory, frame, webScrapingWindow, options)
+                    audio, filename, informalTagDict = initiateWAVE(filename, directory, frame, webScrapingWindow, options)
                     if type(audio) != bool:
                         image = audio["APIC:"]
                         if image.data != b'':
@@ -117,10 +117,19 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
                             thumbnails.append(image)
                             stream.close()
                         else: thumbnails.append("NA")
-                        track = ID3_Track(audio, options)
+                        track = ID3_Track(audio, options, informalTagDict)
                 #handle AAC file
                 elif filename.endswith('.m4a') and type(checkFileValidity(filename, directory, "ALAC", frame, window))!=str:
-                    initiateALAC(filename, directory, frame, webScrapingWindow, options)
+                    audio, filename, informalTagDict = initiateALAC(filename, directory, frame, webScrapingWindow, options)
+                    if type(audio) != bool:
+                        image = audio["covr"]
+                        if len(image) != 0:
+                            stream = BytesIO(image[0])
+                            image = Image.open(stream).convert("RGBA")
+                            thumbnails.append(image)
+                            stream.close()
+                        else: thumbnails.append("NA")
+                        track = ALAC_Track(audio, options, informalTagDict)
                 # search web for tags
                 if type(audio) != bool:
                     results, webScrapingWindow, characters, imageCounter, imageSelection = scrapeWeb(track, audio, filename, frame, webScrapingWindow, characters, options, imageCounter)

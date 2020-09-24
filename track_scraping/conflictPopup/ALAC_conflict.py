@@ -1,15 +1,15 @@
 from tkinter import Toplevel, Button, Canvas, Frame, Scrollbar, Label
 from mutagen.flac import Picture
+from mutagen import id3
 from PIL import Image, ImageTk
 from io import BytesIO
 import getpass
-import base64
 
-def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow):
-    if audio['date'][0] != '' or audio['bpm'][0] != '' or audio['initialkey'][0] != '' or audio['genre'][0] != '':
+def ALAC_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow):
+    if audio["\xa9day"][0] != '' or audio["tmpo"][0] != '' or audio["----:com.apple.iTunes:INITIALKEY"][0] != '' or audio["\xa9gen"][0] != '':
         buttons = []
         #tag conflict
-        if str(audio['date'][0]) != str(track.release_date) or str(audio['bpm'][0]) != str(track.bpm) or str(audio['initialkey'][0]) != track.key or str(audio['genre'][0]) != track.genre:
+        if str(audio["\xa9day"][0]) != str(track.release_date) or str(audio["tmpo"][0]) != str(track.bpm) or str(audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')) != str(track.key) or str(audio["\xa9gen"][0]) != track.genre:
             conflictPopup = Toplevel()
             conflictPopup.attributes("-topmost", True)
             conflictPopup.title("Conflicting Tags")
@@ -35,7 +35,7 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScra
                 tags.pack(side="top")
                 # tags
                 Label(tags,
-                      text="CURRENT TAGS:\nYear: " + str(audio['date'][0]) + "\nBPM: " + str(audio['bpm'][0]) + "\nKey: " + str(audio['initialkey'][0]) + "\nGenre: " + str(audio['genre'][0]),
+                      text="CURRENT TAGS:\nYear: " + str(audio["\xa9day"][0]) + "\nBPM: " + str(audio["tmpo"][0]) + "\nKey: " + str(audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')) + "\nGenre: " + str(audio["\xa9gen"][0]),
                       justify="left").pack(side="left", padx=(0, 40), pady=(10, 10))
                 Label(tags, text="NEW TAGS:\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), justify="left").pack(side="right",  padx=(40, 0), pady=(10, 10))
 
@@ -43,11 +43,9 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScra
                 thumbnail = Frame(window)
                 thumbnail.pack(side="top")
                 Label(thumbnail, text="Current artwork", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(20, 10))
-                images = audio["metadata_block_picture"]
-                if images[0] != '':
-                    data = base64.b64decode(images[0])
-                    image = Picture(data)
-                    stream = BytesIO(image.data)
+                image = audio["covr"]
+                if len(image) != 0:
+                    stream = BytesIO(image[0])
                     image = Image.open(stream).convert("RGBA")
                     stream.close()
                     width, height = image.size
@@ -111,7 +109,7 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScra
                 tags = Frame(window)
                 tags.pack(side="top")
                 # tags
-                Label(tags, text="CURRENT TAGS:\nYear: " + str(audio['date'][0]) + "\nBPM: " + str(audio['bpm'][0]) + "\nKey: " + str(audio['initialkey'][0]) + "\nGenre: " + str(audio['genre'][0]), justify="left").pack(side="left", padx=(0, 40), pady=(10, 10))
+                Label(tags, text="CURRENT TAGS:\nYear: " + str(audio["\xa9day"][0]) + "\nBPM: " + str(audio["tmpo"][0]) + "\nKey: " + str(audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')) + "\nGenre: " + str(audio["\xa9gen"][0]), justify="left").pack(side="left", padx=(0, 40), pady=(10, 10))
                 Label(tags, text="NEW TAGS:\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), justify="left").pack(side="right", padx=(40, 0),pady=(10, 10))
                 # buttons
                 optionButtons = Frame(window)
@@ -139,11 +137,9 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScra
 
             # print current thumbnail
             Label(window, text="Current artwork", font=("TkDefaultFont", 9, 'bold')).pack(pady=(20, 10))
-            images = audio["metadata_block_picture"]
-            if images[0] != '':
-                data = base64.b64decode(images[0])
-                image = Picture(data)
-                stream = BytesIO(image.data)
+            image = audio["covr"]
+            if len(image) != 0:
+                stream = BytesIO(image[0])
                 image = Image.open(stream).convert("RGBA")
                 stream.close()
                 width, height = image.size
@@ -192,18 +188,18 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScra
             window.lift()
             window.wait_window()
     else:
-        audio['date'] = str(track.release_date)
-        audio['bpm'] = str(track.bpm)
-        audio['initialkey'] = track.key
-        audio['genre'] = track.genre
+        audio["\xa9day"] = str(track.release_date)
+        audio["tmpo"] = str(track.bpm)
+        audio["----:com.apple.iTunes:INITIALKEY"] = track.key.encode('utf-8')
+        audio["\xa9gen"] = track.genre
         audio.save()
 
 #four button options
 def overwriteOption(audio, track, window, webScrapingWindow):
-    audio['date'] = str(track.release_date)
-    audio['bpm'] = str(track.bpm)
-    audio['initialkey'] = track.key
-    audio['genre'] = track.genre
+    audio["\xa9day"] = str(track.release_date)
+    audio["tmpo"] = [track.bpm]
+    audio["----:com.apple.iTunes:INITIALKEY"] = track.key.encode('utf-8')
+    audio["\xa9gen"] = track.genre
     audio.save()
     if track.imageSelection!="THUMB":
         saveImage(track, audio, window, webScrapingWindow)
@@ -213,13 +209,13 @@ def overwriteOption(audio, track, window, webScrapingWindow):
 
 def mergeScrapeOption(audio, track, window, webScrapingWindow):
     if str(track.release_date) != '':
-        audio['date'] = str(track.release_date)
+        audio["\xa9day"] = str(track.release_date)
     if str(track.bpm) != '':
-        audio['bpm'] = str(track.bpm)
+        audio["tmpo"] = [track.bpm]
     if track.key != '':
-        audio['initialkey'] = track.key
+        audio["----:com.apple.iTunes:INITIALKEY"] = track.key.encode('utf-8')
     if track.genre != '':
-        audio['genre'] = track.genre
+        audio["\xa9gen"] = track.genre
     audio.save()
     if track.imageSelection!="THUMB":
         saveImage(track, audio, window, webScrapingWindow)
@@ -228,14 +224,14 @@ def mergeScrapeOption(audio, track, window, webScrapingWindow):
         webScrapingWindow.lift()
 
 def mergeSourceOption(audio, track, window, webScrapingWindow):
-    if audio['date'] == ['']: audio['date'] = str(track.release_date)
-    else: track.release_date = str(audio['date'][0])
-    if audio['bpm'] == ['']: audio['bpm'] = str(track.bpm)
-    else: track.bpm = str(audio['BPM'][0])
-    if audio['initialkey'] == ['']: audio['initialkey'] = track.key
-    else: track.key = str(audio['initialkey'][0])
-    if audio['genre'] == ['']: audio['genre'] = track.genre
-    else: track.genre = str(audio['genre'][0])
+    if audio["\xa9day"] == ['']: audio["\xa9day"] = str(track.release_date)
+    else: track.release_date = str(audio["\xa9day"][0])
+    if audio["tmpo"] == ['']: audio["tmpo"] = [track.bpm]
+    else: track.bpm = str(audio["tmpo"][0])
+    if audio["----:com.apple.iTunes:INITIALKEY"] == ['']: audio["----:com.apple.iTunes:INITIALKEY"] = track.key.encode('utf-8')
+    else: track.key = str(audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8'))
+    if audio["\xa9gen"] == ['']: audio["\xa9gen"] = track.genre
+    else: track.genre = str(audio["\xa9gen"][0])
     audio.save()
     if track.imageSelection!="THUMB":
         saveImage(track, audio, window, webScrapingWindow)
@@ -244,10 +240,10 @@ def mergeSourceOption(audio, track, window, webScrapingWindow):
         webScrapingWindow.lift()
 
 def skipOption(audio, track, window, webScrapingWindow):
-    track.release_date = str(audio['date'][0])
-    track.bpm = str(audio['BPM'][0])
-    track.key = str(audio['initialkey'][0])
-    track.genre = str(audio['genre'][0])
+    track.release_date = str(audio["\xa9day"][0])
+    track.bpm = str(audio["tmpo"][0])
+    track.key = audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')
+    track.genre = str(audio["\xa9gen"][0])
     webScrapingWindow.lift()
     if track.imageSelection!="THUMB":
         saveImage(track, audio, window, webScrapingWindow)
@@ -269,16 +265,10 @@ def selectImage(i, track, button, buttons, window):
 def saveImage(track, audio, window, webScrapingWindow):
     #first clear all images from audio file
     if track.imageSelection != "THUMB":
-        image = Picture()
-        audio['metadata_block_picture'] = ''
+        audio["covr"] = ''
         with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(track.imageSelection) + ".jpg", 'rb') as f:
-            image.data = f.read()
-        image.type = 17
-        image.mime = u"image/jpeg"
-        image = image.write()
-        value = base64.b64encode(image)
-        value = value.decode("ascii")
-        audio['metadata_block_picture'] = [value]
+            image = f.read()
+        audio["covr"] = [image]
         audio.save()
     window.destroy()
     webScrapingWindow.lift()
