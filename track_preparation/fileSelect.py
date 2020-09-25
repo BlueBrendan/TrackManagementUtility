@@ -24,7 +24,7 @@ from track_preparation.initiateTrack.initiateAIFF import initiateAIFF
 from track_preparation.initiateTrack.initiateMP3 import initiateMP3
 from track_preparation.initiateTrack.initiateOGG import initiateOGG
 from track_preparation.initiateTrack.initiateWAVE import initiateWAVE
-from track_preparation.initiateTrack.initiateAAC import initiateALAC
+from track_preparation.initiateTrack.initiateM4A import initiateM4A
 from track_scraping.scrapeWeb import scrapeWeb
 
 def fileSelect(window, options, imageCounter, CONFIG_FILE):
@@ -118,9 +118,9 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
                             stream.close()
                         else: thumbnails.append("NA")
                         track = ID3_Track(audio, options, informalTagDict)
-                #handle AAC file
-                elif filename.endswith('.m4a') and type(checkFileValidity(filename, directory, "ALAC", frame, window))!=str:
-                    audio, filename, informalTagDict = initiateALAC(filename, directory, frame, webScrapingWindow, options)
+                #handle AAC and ALAC files
+                elif filename.endswith('.m4a') and type(checkFileValidity(filename, directory, "M4A", frame, window))!=str:
+                    audio, filename, informalTagDict = initiateM4A(filename, directory, frame, webScrapingWindow, options)
                     if type(audio) != bool:
                         image = audio["covr"]
                         if len(image) != 0:
@@ -256,7 +256,8 @@ def checkFileValidity(filename, directory, format, frame, window):
             tk.Label(frame.scrollable_frame, text="Invalid or Corrupt File").pack(anchor='w')
             window.update()
             return "Invalid or corrupt file\n"
-    elif format=="ALAC":
+    elif format=="M4A":
+        #M4A is deprecated in mutagen, MP4 is suggested instead
         try: audio = MP4(str(directory) + "/" + str(filename))
         except:
             tk.Label(frame.scrollable_frame, text="Invalid or Corrupt File").pack(anchor='w')

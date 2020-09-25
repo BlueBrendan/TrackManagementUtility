@@ -5,11 +5,21 @@ from PIL import Image, ImageTk
 from io import BytesIO
 import getpass
 
-def ALAC_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow):
-    if audio["\xa9day"][0] != '' or audio["tmpo"][0] != '' or audio["----:com.apple.iTunes:INITIALKEY"][0] != '' or audio["\xa9gen"][0] != '':
+def M4A_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow):
+    #M4A does not allow indexing of empty list, so we declare the tags as variables
+    if len(audio["\xa9day"]) > 0:release_date = audio["\xa9day"][0]
+    else:release_date = ''
+    if len(audio["tmpo"]) > 0: tempo = audio["tmpo"][0]
+    else:tempo = ''
+    if len(audio["----:com.apple.iTunes:INITIALKEY"]) > 0: key =  audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')
+    else:key = ''
+    if len(audio["\xa9gen"]) > 0: genre = audio["\xa9gen"][0]
+    else: genre = ''
+
+    if release_date != '' or tempo != '' or key != '' or genre != '':
         buttons = []
         #tag conflict
-        if str(audio["\xa9day"][0]) != str(track.release_date) or str(audio["tmpo"][0]) != str(track.bpm) or str(audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')) != str(track.key) or str(audio["\xa9gen"][0]) != track.genre:
+        if str(release_date) != [str(track.release_date)] or str(tempo) != [str(track.bpm)] or str(key) != [str(track.key)] or str(genre) != [track.genre]:
             conflictPopup = Toplevel()
             conflictPopup.attributes("-topmost", True)
             conflictPopup.title("Conflicting Tags")
@@ -34,9 +44,7 @@ def ALAC_conflict(audio, track, options, initialCounter, imageCounter, webScrapi
                 tags = Frame(window)
                 tags.pack(side="top")
                 # tags
-                Label(tags,
-                      text="CURRENT TAGS:\nYear: " + str(audio["\xa9day"][0]) + "\nBPM: " + str(audio["tmpo"][0]) + "\nKey: " + str(audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')) + "\nGenre: " + str(audio["\xa9gen"][0]),
-                      justify="left").pack(side="left", padx=(0, 40), pady=(10, 10))
+                Label(tags, text="CURRENT TAGS:\nYear: " + str(release_date) + "\nBPM: " + str(tempo) + "\nKey: " + str(key) + "\nGenre: " + str(genre), justify="left").pack(side="left", padx=(0, 40), pady=(10, 10))
                 Label(tags, text="NEW TAGS:\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), justify="left").pack(side="right",  padx=(40, 0), pady=(10, 10))
 
                 # load current thumbnail
@@ -109,7 +117,7 @@ def ALAC_conflict(audio, track, options, initialCounter, imageCounter, webScrapi
                 tags = Frame(window)
                 tags.pack(side="top")
                 # tags
-                Label(tags, text="CURRENT TAGS:\nYear: " + str(audio["\xa9day"][0]) + "\nBPM: " + str(audio["tmpo"][0]) + "\nKey: " + str(audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')) + "\nGenre: " + str(audio["\xa9gen"][0]), justify="left").pack(side="left", padx=(0, 40), pady=(10, 10))
+                Label(tags, text="CURRENT TAGS:\nYear: " + str(release_date) + "\nBPM: " + str(tempo) + "\nKey: " + str(key) + "\nGenre: " + str(genre), justify="left").pack(side="left", padx=(0, 40), pady=(10, 10))
                 Label(tags, text="NEW TAGS:\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), justify="left").pack(side="right", padx=(40, 0),pady=(10, 10))
                 # buttons
                 optionButtons = Frame(window)
@@ -197,7 +205,8 @@ def ALAC_conflict(audio, track, options, initialCounter, imageCounter, webScrapi
 #four button options
 def overwriteOption(audio, track, window, webScrapingWindow):
     audio["\xa9day"] = str(track.release_date)
-    audio["tmpo"] = [track.bpm]
+    #m4a format requires bpm to be an int in a list
+    audio["tmpo"] = [int(track.bpm)]
     audio["----:com.apple.iTunes:INITIALKEY"] = track.key.encode('utf-8')
     audio["\xa9gen"] = track.genre
     audio.save()
@@ -211,7 +220,7 @@ def mergeScrapeOption(audio, track, window, webScrapingWindow):
     if str(track.release_date) != '':
         audio["\xa9day"] = str(track.release_date)
     if str(track.bpm) != '':
-        audio["tmpo"] = [track.bpm]
+        audio["tmpo"] = [int(track.bpm)]
     if track.key != '':
         audio["----:com.apple.iTunes:INITIALKEY"] = track.key.encode('utf-8')
     if track.genre != '':
@@ -225,13 +234,22 @@ def mergeScrapeOption(audio, track, window, webScrapingWindow):
 
 def mergeSourceOption(audio, track, window, webScrapingWindow):
     if audio["\xa9day"] == ['']: audio["\xa9day"] = str(track.release_date)
-    else: track.release_date = str(audio["\xa9day"][0])
-    if audio["tmpo"] == ['']: audio["tmpo"] = [track.bpm]
-    else: track.bpm = str(audio["tmpo"][0])
+    else:
+        if len(audio["\xa9day"]) > 0: track.release_date = str(audio["\xa9day"][0])
+        else: track.release_date = ''
+    if audio["tmpo"] == ['']: audio["tmpo"] = [int(track.bpm)]
+    else:
+        if len(audio["tmpo"]) > 0: track.bpm = str(audio["tmpo"][0])
+        else: track.bpm = [int('')]
     if audio["----:com.apple.iTunes:INITIALKEY"] == ['']: audio["----:com.apple.iTunes:INITIALKEY"] = track.key.encode('utf-8')
-    else: track.key = str(audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8'))
+    else:
+        if len(audio["----:com.apple.iTunes:INITIALKEY"]) > 0:
+            track.key = str(audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8'))
+        else: track.key = ''
     if audio["\xa9gen"] == ['']: audio["\xa9gen"] = track.genre
-    else: track.genre = str(audio["\xa9gen"][0])
+    else:
+        if len(str(audio["\xa9gen"])) > 0: track.genre = str(audio["\xa9gen"][0])
+        else: track.genre = ''
     audio.save()
     if track.imageSelection!="THUMB":
         saveImage(track, audio, window, webScrapingWindow)
@@ -240,10 +258,14 @@ def mergeSourceOption(audio, track, window, webScrapingWindow):
         webScrapingWindow.lift()
 
 def skipOption(audio, track, window, webScrapingWindow):
-    track.release_date = str(audio["\xa9day"][0])
-    track.bpm = str(audio["tmpo"][0])
-    track.key = audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')
-    track.genre = str(audio["\xa9gen"][0])
+    if len(audio["\xa9day"]) > 0: track.release_date = str(audio["\xa9day"][0])
+    else:track.release_date = ''
+    if len(str(audio["tmpo"])) > 0: track.bpm = str(audio["tmpo"][0])
+    else: track.bpm = ''
+    if len(str(audio["----:com.apple.iTunes:INITIALKEY"])) > 0: track.key = audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')
+    else: track.key = ''
+    if len(str(audio["\xa9gen"])) > 0: track.genre = str(audio["\xa9gen"][0])
+    else: track.genre = ''
     webScrapingWindow.lift()
     if track.imageSelection!="THUMB":
         saveImage(track, audio, window, webScrapingWindow)

@@ -23,7 +23,6 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, webScrapi
             conflictPopup.geometry('%dx%d+%d+%d' % (550, 220, x, y))
             canvas.create_window(550/2, 0, window=window, anchor="n")
             if len(str(track.artist) + " - " + str(track.title)) > 30:
-                print("in here")
                 x = (ws / 2) - ((550 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)) / 2)
                 conflictPopup.geometry('%dx%d+%d+%d' % (550 + (len(str(track.artist) + " - " + str(track.title)) * 1.5), 220, x, y))
                 canvas.create_window((550 + (len(str(track.artist) + " - " + str(track.title)) * 1.5))/2, 0, window=window, anchor="n")

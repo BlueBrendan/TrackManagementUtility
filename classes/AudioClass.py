@@ -26,6 +26,8 @@ class ALAC_Track:
             if tag in informalTagDict and tag != "Image":
                 #key value contained in bytes form
                 if tag.lower() == 'key':
-                    setattr(self, tag.lower(), audio[informalTagDict[tag]][0].decode('utf-8'))
-                else: setattr(self, tag.lower(), str(audio[informalTagDict[tag]][0]))
+                    if len(audio[informalTagDict[tag]]) > 0: setattr(self, tag.lower(), audio[informalTagDict[tag]][0].decode('utf-8'))
+                    else: setattr(self, tag.lower(), "")
+                elif len(audio[informalTagDict[tag]]) > 0: setattr(self, tag.lower(), str(audio[informalTagDict[tag]][0]))
+                else: setattr(self, tag.lower(), "")
         self.imageSelection = "THUMB"

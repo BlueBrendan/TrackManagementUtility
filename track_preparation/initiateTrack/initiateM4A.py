@@ -8,7 +8,7 @@ from track_preparation.handleDiscrepancy import handleArtistTitleDiscrepancy
 from track_preparation.handleDiscrepancy import handleTitleDiscrepancy
 from track_preparation.handleTypo import handleTypo
 
-def initiateALAC(filename, directory, frame, webScrapingWindow, options):
+def initiateM4A(filename, directory, frame, webScrapingWindow, options):
     audio = MP4(str(directory) + "/" + str(filename))
     # verify artist information is present before preceeding
     if ' - ' not in filename and str(audio["\xa9ART"][0]) == '':

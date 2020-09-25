@@ -40,31 +40,33 @@ def reverseImageSearch(link, headers, window, imageCounter, URLList, options):
             browser.find_element_by_link_text(sizes[len(sizes)-1]).click()
             for i in range(1):
                 images = browser.find_elements_by_class_name("rg_i.Q4LuWd")
-                images[i].click()
-                time.sleep(1)
-                counter = 0
-                subImages = browser.find_elements_by_xpath("//img[@class='n3VNCb']")
-                #wait for image to load with 1 second increments
-                while subImages==None and counter < int(options["Image Load Wait Time (I)"].get()):
+                #make sure images have actualy appeared
+                if len(images) > 0:
+                    images[i].click()
                     time.sleep(1)
+                    counter = 0
                     subImages = browser.find_elements_by_xpath("//img[@class='n3VNCb']")
-                    counter+=1
-                for image in subImages:
-                    counter=0
-                    while 'data:image' in image.get_attribute('src') and counter < int(options["Image Load Wait Time (I)"].get()):
+                    #wait for image to load with 1 second increments
+                    while subImages==None and counter < int(options["Image Load Wait Time (I)"].get()):
                         time.sleep(1)
+                        subImages = browser.find_elements_by_xpath("//img[@class='n3VNCb']")
                         counter+=1
-                    if 'data:image' not in image.get_attribute('src'):
-                        browser.get(image.get_attribute('src'))
-                        #avoid duplicates
-                        if browser.current_url not in URLList:
-                            URLList.append(browser.current_url)
-                            with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
-                                file.write(requests.get(browser.current_url, headers=headers).content)
-                            imageCounter+=1
-                            #give time for image writing
+                    for image in subImages:
+                        counter=0
+                        while 'data:image' in image.get_attribute('src') and counter < int(options["Image Load Wait Time (I)"].get()):
                             time.sleep(1)
-                        break
+                            counter+=1
+                        if 'data:image' not in image.get_attribute('src'):
+                            browser.get(image.get_attribute('src'))
+                            #avoid duplicates
+                            if browser.current_url not in URLList:
+                                URLList.append(browser.current_url)
+                                with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
+                                    file.write(requests.get(browser.current_url, headers=headers).content)
+                                imageCounter+=1
+                                #give time for image writing
+                                time.sleep(1)
+                            break
     browser.quit()
     window.lift()
     return imageCounter, URLList

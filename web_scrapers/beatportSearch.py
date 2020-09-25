@@ -53,13 +53,13 @@ def beatportSearch(artist, title, var, yearList, BPMList, keyList, genreList, UR
                     if soup != False and "Oops... the page you were looking for could not be found" not in str(soup):
                         #check if page is a track (single) or a release (album)
                         #case 1: release
-                        if link[25:32] == "release": yearList, BPMList, keyList, genreList, imageCounter, URLList = beatportRelease(soup, titleVariations, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, headers, frame, window, options, imageCounter)
+                        if link[25:32] == "release": yearList, BPMList, keyList, genreList, imageCounter, URLList = beatportRelease(soup, titleVariations, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, frame, window, options, imageCounter)
                         #case 2: track
                         elif link[25:30] == "track": yearList, BPMList, keyList, genreList, imageCounter, URLList = beatportTrack(soup, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, frame, window, options, imageCounter)
     return yearList, BPMList, keyList, genreList, imageCounter, URLList
 
 #search beatport releases, filter individual tracks
-def beatportRelease(soup, titleVariations, yearList, BPMList, keyList, genreList, URLList, audio, title, headers, frame, window, options, imageCounter):
+def beatportRelease(soup, titleVariations, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, frame, window, options, imageCounter):
     for link in soup.find_all('li', class_="bucket-item ec-item track"):
         # find all tracks in the release that contain the title
         link = link.find('p', class_="buk-track-title")
