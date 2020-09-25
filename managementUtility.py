@@ -12,9 +12,10 @@ root = tk.Tk()
 root.title("Track Management Utility V1.0")
 ws = root.winfo_screenwidth() # width of the screen
 hs = root.winfo_screenheight() # height of the screen
-x = (ws/2) - (520/2)
-y = (hs/2) - (275/2)
-root.geometry('%dx%d+%d+%d' % (520, 250, x, y))
+x = (ws/2) - (800/2)
+y = (hs/2) - (550/2)
+root.geometry('%dx%d+%d+%d' % (800, 500, x, y))
+root.configure(bg='#28303e')
 
 def createConfigFile(flag):
     CONFIG_FILE = r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt"
@@ -107,7 +108,9 @@ options = readValuesFromConfig(CONFIG_FILE)
 # print(options)
 
 #file topmenu button
-menufile = tk.Menubutton(root, text="File")
+optionMenu = tk.Frame(root, bg="#28303e")
+optionMenu.pack(fill="both")
+menufile = tk.Menubutton(optionMenu, text="File",fg="white", bg="#28303e", anchor="w")
 menufile.menu = tk.Menu(menufile, tearoff=0)
 menufile["menu"] = menufile.menu
 updates = tk.IntVar()
@@ -116,21 +119,28 @@ menufile.menu.add_command(label="Check for Updates", command=checkForUpdates)
 menufile.menu.add_command(label="Exit", command=root.destroy)
 
 #option topmenu button
-menuoption = tk.Menubutton(root, text="Option")
+menuoption = tk.Menubutton(optionMenu, text="Option", fg="white", bg="#28303e")
 menuoption.menu = tk.Menu(menuoption, tearoff=0)
 menuoption['menu'] = menuoption.menu
 menuoption.menu.add_command(label="Preferences", command=lambda: openPreferences(CONFIG_FILE, root))
-menufile.grid(row=0, column=0, columnspan=1, sticky='w')
-menuoption.grid(row=0, column=0, columnspan=1, sticky='w', padx=(30,0))
+menufile.pack(side="left")
+menuoption.pack(side="left")
 
-titleLabel = tk.Label(root, text="Track Management Utility").grid(row=1, column=1, pady=(5,13))
+main = tk.Frame(root, bg="#28303e")
+main.pack(side="top")
+
+titleLabel = tk.Label(main, text="Track Management Utility").pack(pady=(130,140))
 # Scans for files in a directory and find their tags online
-tk.Button(root, text="Search Web for Tags", command=lambda: selectSearchTags(CONFIG_FILE)).grid(row=2, column=1, pady=(5,3))
-tk.Label(root, text="Scan for files in a directory and find their tags online").grid(row=3, column=1, pady=(3,15))
+tk.Button(main, text="Search Web for Tags", command=lambda: selectSearchTags(CONFIG_FILE), fg="white", bg="#364153").pack(pady=(0,10))
+tk.Label(main, text="Scan for files in a directory and find their tags online", fg="white", bg="#28303e").pack(pady=(3,30))
 # Scans for differences in files between two separate directories
-tk.Button(root, text="Compare Directories", command=lambda: selectCompare(CONFIG_FILE)).grid(row=4, column=1, pady=(5,3))
-tk.Label(root, text="Scan for differences in files and folders between two separate directories").grid(row=5, column=1, pady=(3, 20))
-tk.Checkbutton(root, text="Include Subdirectories: ", var=options['Subdirectories (B)']).grid(row=6, column=0, columnspan=2, padx=(10,0), pady=(0, 0), sticky='w')
+tk.Button(main, text="Compare Directories", command=lambda: selectCompare(CONFIG_FILE), fg="white", bg="#364153").pack(pady=(0,10))
+tk.Label(main, text="Scan for differences in files and folders between two separate directories", fg="white", bg="#28303e").pack(pady=(3, 0))
+
+bottom = tk.Frame(root, bg="#28303e")
+bottom.pack(side="left")
+tk.Checkbutton(bottom, var=options['Subdirectories (B)'], bg="#28303e").pack(padx=(10,0), side='left')
+tk.Label(bottom, text="Include Subdirectories", fg="white", bg="#28303e").pack(side="left")
 root.mainloop()
 
 
