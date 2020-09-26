@@ -13,7 +13,8 @@ complete = False
 def compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory):
     global complete
     if firstDefaultDirectory == '':
-        first_directory = filedialog.askdirectory(title="Select First Directory")
+        print("LA")
+        first_directory = filedialog.askdirectory()
     else:
         first_directory = filedialog.askdirectory(initialdir=firstDefaultDirectory, title="Select First Directory")
     if first_directory!='':

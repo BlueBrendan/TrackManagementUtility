@@ -6,6 +6,11 @@ from tkinter.tix import *
 global tagList
 global CONFIG
 
+#main bg color
+bg = "#282f3b"
+#secondary color
+secondary_bg = "#364153"
+
 def updatePreferences(options, CONFIG_FILE, root):
     global tagList
     global CONFIG
@@ -15,33 +20,59 @@ def updatePreferences(options, CONFIG_FILE, root):
     ws = window.winfo_screenwidth()  # width of the screen
     hs = window.winfo_screenheight()  # height of the screen
     x = (ws / 2) - (600 / 2)
-    y = (hs / 2) - (330 / 2)
-    window.geometry('%dx%d+%d+%d' % (600, 300, x, y))
+    y = (hs / 2) - (385 / 2)
+    window.geometry('%dx%d+%d+%d' % (600, 350, x, y))
+    window.configure(bg=bg)
     tab_parent = ttk.Notebook(window)
-    tab1 = ttk.Frame(tab_parent)
+    tab1 = tk.Frame(tab_parent, bg=bg)
 
     #Web Scraping Tab
     tab_parent.pack(expand=1, fill='both')
     tab_parent.add(tab1, text="Scraping")
     #website settings
-    tk.Label(tab1, text="Web Scraping", font=("TkDefaultFont", 9, 'bold')).pack(padx=(5, 0), pady=(10,5), anchor="w")
-    tk.Checkbutton(tab1, text="Juno Download", variable=options['Scrape Junodownload (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Scrape Junodownload (B)', [])).pack(padx=(10, 0), anchor="w")
-    tk.Checkbutton(tab1, text="Beatport", variable=options['Scrape Beatport (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Scrape Beatport (B)', [])).pack(padx=(10, 0), anchor="w")
-    tk.Checkbutton(tab1, text="Discogs", variable=options['Scrape Discogs (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Scrape Discogs (B)', [])).pack(padx=(10, 0), anchor="w")
+    tk.Label(tab1, text="Web Scraping", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(padx=(10, 0), pady=(20,5), anchor="w")
+
+    junodownloadFrame = tk.Frame(tab1, bg=bg)
+    junodownloadFrame.pack(anchor="w")
+    tk.Checkbutton(junodownloadFrame, variable=options['Scrape Junodownload (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Scrape Junodownload (B)', []), bg=bg).pack(padx=(20, 0),side="left")
+    tk.Label(junodownloadFrame, text="Junodownload", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+    beatportFrame = tk.Frame(tab1, bg=bg)
+    beatportFrame.pack(anchor="w")
+    tk.Checkbutton(beatportFrame, variable=options['Scrape Beatport (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Scrape Beatport (B)', []), bg=bg).pack(padx=(20, 0), side="left")
+    tk.Label(beatportFrame, text="Beatport", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+    discogsFrame = tk.Frame(tab1, bg=bg)
+    discogsFrame.pack(anchor="w")
+    tk.Checkbutton(discogsFrame, variable=options['Scrape Discogs (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Scrape Discogs (B)', []), bg=bg).pack(padx=(20, 0), side="left")
+    tk.Label(discogsFrame, text="Discogs", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
 
     #image scraping settings
-    tk.Label(tab1, text="Image Scraping", font=("TkDefaultFont", 9, 'bold')).pack(padx=(5, 0),pady=(15,5), anchor="w")
+    tk.Label(tab1, text="Image Scraping", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(padx=(10, 0),pady=(20,5), anchor="w")
     imageSuboptions = []
-    deleteImages = tk.Checkbutton(tab1, text="Delete Stored Images after Completion", variable=options['Delete Stored Images (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Delete Stored Images (B)', []))
+
+    # reverse image search
+    reverseImageFrame = tk.Frame(tab1, bg=bg)
+    reverseImageFrame.pack(anchor="w")
+    tk.Checkbutton(reverseImageFrame, variable=options['Reverse Image Search (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Reverse Image Search (B)', imageSuboptions), bg=bg).pack(padx=(20, 0), side="left")
+    tk.Label(reverseImageFrame, text="Reverse Image Search with Selenium", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+
+    #delete images
+    deleteImagesFrame = tk.Frame(tab1, bg=bg)
+    deleteImagesFrame.pack(anchor="w")
+    deleteImages = tk.Checkbutton(deleteImagesFrame, variable=options['Delete Stored Images (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Delete Stored Images (B)', []), bg=bg)
+    deleteImages.pack(padx=(30, 0), side="left")
+    tk.Label(deleteImagesFrame, text="Delete Stored Images after Completion", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     if options["Reverse Image Search (B)"].get()==False:
         deleteImages.config(state=DISABLED)
     imageSuboptions.append(deleteImages)
+
     #wait time
-    waitTimeText = tk.Label(tab1, text="Image Load Wait Time (s)")
+    waitTimeForm = tk.Frame(tab1, bg=bg)
+    waitTimeForm.pack(anchor="w")
+    waitTimeText = tk.Label(waitTimeForm, text="Image Load Wait Time (s)", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
     time = StringVar(value=options["Image Load Wait Time (I)"].get())
     time.trace("w", lambda name, index, mode, time=time: entrybox(CONFIG_FILE, "Image Load Wait Time (I)", time))
 
-    waitTime = tk.Entry(tab1, width=5, textvariable=time, validate="key")
+    waitTime = tk.Entry(waitTimeForm, width=3, textvariable=time, validate="key", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg)
     validate = (waitTime.register(checkInt))
     waitTime.configure(validatecommand=(validate, '%S'))
 
@@ -49,37 +80,35 @@ def updatePreferences(options, CONFIG_FILE, root):
     if options["Reverse Image Search (B)"].get()==False:
         deleteImages.config(state=DISABLED)
     imageSuboptions.append(waitTime)
-    tk.Checkbutton(tab1, text="Reverse Image Search with Selenium", variable=options['Reverse Image Search (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Reverse Image Search (B)',imageSuboptions)).pack(padx=(10, 0), anchor="w")
-    deleteImages.pack(padx=(10, 0), anchor="w")
-    waitTimeText.pack(padx=(10, 0), pady=(5,0), anchor="w")
-    waitTime.pack(padx=(15, 0), anchor="w")
+    waitTime.pack(padx=(35, 0), side="left")
+    waitTimeText.pack(padx=(10,0), pady=(5,0), side="left")
 
     #Tag Settings Tab
-    tab2 = ttk.Frame(tab_parent)
+    tab2 = tk.Frame(tab_parent, bg=bg)
     tab_parent.add(tab2, text="Tagging")
-    tagFrame = Frame(tab2)
+    tagFrame = Frame(tab2, bg=bg)
     tagFrame.pack(side="left", anchor="nw", padx=(5,0))
-    tk.Label(tagFrame, text="Tags", font=("TkDefaultFont", 9, 'bold')).pack(padx=(5, 0), pady=(10, 5), anchor="w")
+    tk.Label(tagFrame, text="Tags", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(padx=(10, 0), pady=(20, 5), anchor="w")
     tagList = options["Selected Tags (L)"]
 
     #top row of tagFrame
-    tagFrameTopRow = Frame(tagFrame)
+    tagFrameTopRow = Frame(tagFrame, bg=bg)
     tagFrameTopRow.pack()
     #container for unselected tags
-    leftListbox = Frame(tagFrameTopRow)
+    leftListbox = Frame(tagFrameTopRow, bg=bg)
     leftListbox.pack(side="left")
     #container for listbox button controls
-    listboxButtons = Frame(tagFrameTopRow)
+    listboxButtons = Frame(tagFrameTopRow, bg=bg)
     listboxButtons.pack(side="left")
     #container for selected listbox tags
-    rightListbox = Frame(tagFrameTopRow)
+    rightListbox = Frame(tagFrameTopRow, bg=bg)
     rightListbox.pack(side="left")
     #Default Tag settings
-    tk.Label(leftListbox, text="Unselected Tags").pack()
-    unselectedListbox = tk.Listbox(leftListbox)
+    tk.Label(leftListbox, text="Unselected Tags", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack()
+    unselectedListbox = tk.Listbox(leftListbox, font=("Proxima Nova Rg", 11),fg="white", bg=secondary_bg)
 
-    tk.Label(rightListbox, text="Selected Tags").pack()
-    selectedListbox = tk.Listbox(rightListbox)
+    tk.Label(rightListbox, text="Selected Tags", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack()
+    selectedListbox = tk.Listbox(rightListbox, font=("Proxima Nova Rg", 11),fg="white", bg=secondary_bg)
     comprehensiveList = ['Artist', 'Album', 'Album Artist', 'BPM', 'Comment', 'Compilation', 'Copyright', 'Discnumber', 'Genre', 'Key','Release_Date', 'Title', 'ReplayGain']
     #insert all tags in unselectedListbox
     for tag in comprehensiveList:
@@ -88,64 +117,76 @@ def updatePreferences(options, CONFIG_FILE, root):
     #insert all selected tags into selectedListbox and remove from unselectedListbox
     for tag in options['Selected Tags (L)']:
         selectedListbox.insert(END, tag)
-    unselectedListbox.pack(padx=(5,5), pady=(5,5))
+    unselectedListbox.pack(padx=(20,5), pady=(5,5))
 
-    select = tk.Button(listboxButtons, text="Select", width=7, state=DISABLED)
+    select = tk.Button(listboxButtons, text="Select", width=7, state=DISABLED, font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg)
     select.pack(side="top")
-    deselect = tk.Button(listboxButtons, text="Deselect", width=7, state=DISABLED)
+    deselect = tk.Button(listboxButtons, text="Deselect", width=7, state=DISABLED, font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg)
     deselect.pack(side="top")
     selectedListbox.pack(padx=(5,0), pady=(5,5))
     unselectedListbox.bind('<<ListboxSelect>>', lambda event, firstListbox=unselectedListbox, secondListbox=selectedListbox, list=tagList, select=select, deselect=deselect: selectTag(firstListbox, secondListbox, list, select, deselect))
     selectedListbox.bind('<<ListboxSelect>>', lambda event, firstListbox=selectedListbox, secondListbox=unselectedListbox, list=tagList, select=select, deselect=deselect: selectTag(firstListbox, secondListbox, list, select, deselect))
 
-
     # bottom row of tagFrame
-    tagFrameBottomRow = Frame(tagFrame)
-    tagFrameBottomRow.pack(side="left")
-    tk.Checkbutton(tagFrameBottomRow, text="Delete Unselected Tags from File", variable=options["Delete Unselected Tags (B)"], command=lambda: checkbox(CONFIG_FILE, 'Delete Unselected Tags (B)', [])).pack(padx=(5, 0), side="left")
-
-    # replayGain settings
-    replayGainFrame = Frame(tab2)
-    replayGainFrame.pack(side="right", anchor="nw", padx=(0,5))
-    tk.Label(replayGainFrame, text="ReplayGain", font=("TkDefaultFont", 9, 'bold')).pack(padx=(5, 0), pady=(10, 5), anchor="w")
-    replayGainSuboptions = []
-    calculateReplayGain = tk.Checkbutton(replayGainFrame, text="Override Existing ReplayGain value", variable=options['Overwrite existing ReplayGain value (B)'], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Overwrite existing ReplayGain value (B)', []))
-    if options['Calculate ReplayGain (B)'].get()==False:
-        calculateReplayGain.config(state=DISABLED)
-    replayGainSuboptions.append(calculateReplayGain)
-    tk.Checkbutton(replayGainFrame, text="Calculate ReplayGain", variable=options['Calculate ReplayGain (B)'], onvalue=True, offvalue=False,command=lambda: checkbox(CONFIG_FILE, 'Calculate ReplayGain (B)', replayGainSuboptions)).pack(padx=(10, 0), anchor="w")
-    calculateReplayGain.pack(padx=(10, 0), anchor="w")
+    tagCheckboxFrame = Frame(tagFrame, bg=bg)
+    tagCheckboxFrame.pack(side="left")
+    tk.Checkbutton(tagCheckboxFrame, variable=options["Delete Unselected Tags (B)"], command=lambda: checkbox(CONFIG_FILE, 'Delete Unselected Tags (B)', []), bg=bg).pack(padx=(20, 0), pady=(20, 0), side="left")
+    tk.Label(tagCheckboxFrame, text="Delete Unselected Tags from File", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(pady=(20, 0), side="left")
 
     #Others Tab
-    tab3 = ttk.Frame(tab_parent)
+    tab3 = tk.Frame(tab_parent, bg=bg)
     tab_parent.add(tab3, text="Other")
-    leftPane = Frame(tab3)
+    leftPane = Frame(tab3, bg=bg)
     leftPane.pack(padx=(5,0), side="left", anchor="nw")
-    topLeftComponent = Frame(leftPane)
+    topLeftComponent = Frame(leftPane, bg=bg)
     topLeftComponent.pack()
-    tk.Label(topLeftComponent, text="File Format").pack(padx=(5, 0), pady=(10,5), anchor="w")
-    tk.Radiobutton(topLeftComponent, text="Artist - Title", variable=options["Audio naming format (S)"], value="Artist - Title", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Artist - Title")).pack(padx=(10, 0), anchor="w")
-    tk.Radiobutton(topLeftComponent, text="Title", variable=options["Audio naming format (S)"], value="Title", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Title")).pack(padx=(10, 0), anchor="w")
+    tk.Label(topLeftComponent, text="File Format", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(padx=(10, 0), pady=(20,5), anchor="w")
+    #frame for first radio button
+    artistTitleButtonFrame = tk.Frame(topLeftComponent, bg=bg)
+    artistTitleButtonFrame.pack(anchor="w")
+    tk.Radiobutton(artistTitleButtonFrame, variable=options["Audio naming format (S)"], value="Artist - Title", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Artist - Title"), bg=bg).pack(padx=(20, 0), side="left")
+    tk.Label(artistTitleButtonFrame, text="Artist - Title", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+    # frame for second radio button
+    titleButtonFrame = tk.Frame(topLeftComponent, bg=bg)
+    titleButtonFrame.pack(anchor="w")
+    tk.Radiobutton(topLeftComponent, variable=options["Audio naming format (S)"], value="Title", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Title"), bg=bg).pack(padx=(20, 0), side="left")
+    tk.Label(topLeftComponent, text="Title", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
 
-    rightPane = Frame(tab3)
+    rightPane = Frame(tab3, bg=bg)
     rightPane.pack(padx=(0,50), side="right", anchor="nw")
-    tk.Label(rightPane, text="Audio Formatting").pack(padx=(5, 0), pady=(10, 5), anchor="w")
+    tk.Label(rightPane, text="Audio Formatting", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(padx=(5, 0), pady=(20, 5), anchor="w")
     typoSuboptions = []
-    numberingPrefix = tk.Checkbutton(rightPane, text="Check for Numbering Prefix", variable=options["Check for Numbering Prefix (B)"], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, "Check for Numbering Prefix (B)", []))
+    #frame for scan filename and tags checkbutton
+    scanButtonFrame = tk.Frame(rightPane, bg=bg)
+    scanButtonFrame.pack(anchor="w")
+    tk.Checkbutton(scanButtonFrame, variable=options["Scan Filename and Tags (B)"], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Scan Filename and Tags (B)', typoSuboptions), bg=bg).pack(padx=(10, 0), side="left")
+    tk.Label(scanButtonFrame, text="Scan Filename and Tags", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+    #frame for numbering prefix checkbutton
+    prefixButtonFrame = tk.Frame(rightPane, bg=bg)
+    prefixButtonFrame.pack(anchor="w")
+    numberingPrefix = tk.Checkbutton(prefixButtonFrame, variable=options["Check for Numbering Prefix (B)"], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, "Check for Numbering Prefix (B)", []), bg=bg)
+    numberingPrefix.pack(padx=(20, 0), side="left")
+    tk.Label(prefixButtonFrame, text="Check for Numbering Prefix", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     typoSuboptions.append(numberingPrefix)
-    hyphenCheck = tk.Checkbutton(rightPane, text="Check for Extraneous Hyphens", variable=options["Check for Extraneous Hyphens (B)"], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, "Check for Extraneous Hyphens (B)", []))
+    #frame for hyphen checkbutton
+    hyphenButtonFrame = tk.Frame(rightPane, bg=bg)
+    hyphenButtonFrame.pack(anchor="w")
+    hyphenCheck = tk.Checkbutton(hyphenButtonFrame, variable=options["Check for Extraneous Hyphens (B)"], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, "Check for Extraneous Hyphens (B)", []), bg=bg)
+    hyphenCheck.pack(padx=(20, 0), side="left")
+    tk.Label(hyphenButtonFrame, text="Check for Extraneous Hyphens", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     typoSuboptions.append(hyphenCheck)
-    capitalizationCheck = tk.Checkbutton(rightPane, text="Check for Capitalization", variable=options["Check for Capitalization (B)"], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, "Check for Capitalization (B)", []))
+    #frame for capitalization checkbutton
+    capitalizationButtonFrame = tk.Frame(rightPane, bg=bg)
+    capitalizationButtonFrame.pack(anchor="w")
+    capitalizationCheck = tk.Checkbutton(capitalizationButtonFrame, variable=options["Check for Capitalization (B)"], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, "Check for Capitalization (B)", []), bg=bg)
+    capitalizationCheck.pack(padx=(20, 0), side="left")
+    tk.Label(capitalizationButtonFrame, text="Check for Capitalization", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     typoSuboptions.append(capitalizationCheck)
 
     if options["Scan Filename and Tags (B)"].get()==False:
         numberingPrefix.config(state=DISABLED)
         hyphenCheck.config(state=DISABLED)
         capitalizationCheck.config(state=DISABLED)
-    tk.Checkbutton(rightPane, text="Scan Filename and Tags", variable=options["Scan Filename and Tags (B)"], onvalue=True, offvalue=False, command=lambda: checkbox(CONFIG_FILE, 'Scan Filename and Tags (B)', typoSuboptions)).pack(padx=(10, 0), anchor="w")
-    numberingPrefix.pack(padx=(15, 0), anchor="w")
-    hyphenCheck.pack(padx=(15, 0), anchor="w")
-    capitalizationCheck.pack(padx=(15, 0), anchor="w")
     root.mainloop()
 
 def checkbox(CONFIG_FILE, term, suboptions):

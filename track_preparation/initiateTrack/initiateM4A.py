@@ -202,4 +202,3 @@ def rename(directory, filename, artist, title, extension, format):
             audio.save()
             return audio, filename
         except PermissionError:messagebox.showinfo("Permission Error", "File cannot be renamed, it may still be open")
-        except PermissionError:messagebox.showinfo("Permission Error", "File cannot be renamed, it may still be open")
