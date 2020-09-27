@@ -4,28 +4,28 @@ import PIL.Image
 import PIL.ImageTk
 from io import BytesIO
 import shutil
-from tkinter import *
+import tkinter as tk
 from functools import partial
 from tkinter import messagebox
-from tkinter import filedialog
+from tkinter.filedialog import *
 
 complete = False
 def compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory):
     global complete
     if firstDefaultDirectory == '':
         print("LA")
-        first_directory = filedialog.askdirectory()
+        first_directory = askdirectory()
     else:
-        first_directory = filedialog.askdirectory(initialdir=firstDefaultDirectory, title="Select First Directory")
+        first_directory = askdirectory(initialdir=firstDefaultDirectory, title="Select First Directory")
     if first_directory!='':
         #check directory and default values for a match
         if firstDefaultDirectory == '' or first_directory != firstDefaultDirectory:
             # write value to firstDefaultDirectory
             writeFirstDefaultDirectory(CONFIG_FILE, first_directory)
         if secondDefaultDirectory == '':
-            second_directory = filedialog.askdirectory(title="Select Second Directory")
+            second_directory = askdirectory(title="Select Second Directory")
         else:
-            second_directory = filedialog.askdirectory(initialdir=secondDefaultDirectory, title="Select Second Directory")
+            second_directory = askdirectory(initialdir=secondDefaultDirectory, title="Select Second Directory")
         if first_directory!='' and second_directory!='':
             if secondDefaultDirectory == '' or second_directory != secondDefaultDirectory:
                 # write value to secondDefaultDirectory

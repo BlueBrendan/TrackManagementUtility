@@ -8,11 +8,11 @@ from track_preparation.handleDiscrepancy import handleArtistTitleDiscrepancy
 from track_preparation.handleDiscrepancy import handleTitleDiscrepancy
 from track_preparation.handleTypo import handleTypo
 
-def initiateFLAC(filename, directory, frame, webScrapingWindow, options):
+def initiateFLAC(filename, directory, options):
     audio = FLAC(str(directory) + "/" + str(filename))
     # verify artist information is present before preceeding
     if ' - ' not in filename and str(audio['artist'][0]) == '':
-        tk.Label(frame.scrollable_frame, text="No artist information found, aborting procedure", justify='left').pack(anchor='w')
+        tk.Label(webScrapingWindow, text="No artist information found, aborting procedure", justify='left').pack(anchor='w')
         return False, filename
 
     # transcribe formal tagnames into informal counterpart

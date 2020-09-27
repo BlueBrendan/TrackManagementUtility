@@ -5,6 +5,11 @@ from PIL import Image, ImageTk
 from io import BytesIO
 import getpass
 
+#main bg color
+bg = "#282f3b"
+#secondary color
+secondary_bg = "#364153"
+
 def M4A_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow):
     #M4A does not allow indexing of empty list, so we declare the tags as variables
     if len(audio["\xa9day"]) > 0:release_date = audio["\xa9day"][0]
@@ -23,7 +28,7 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, webScrapin
             conflictPopup = Toplevel()
             conflictPopup.attributes("-topmost", True)
             conflictPopup.title("Conflicting Tags")
-            canvas = Canvas(conflictPopup)
+            canvas = Canvas(conflictPopup, highlightthickness=0)
             window = Frame(canvas)
             scrollbar = Scrollbar(conflictPopup, orient="vertical", command=canvas.yview)
             canvas.create_window(0, 0, window=window)
@@ -40,17 +45,17 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, webScrapin
                 y = (hs / 2) - (880 / 2)
                 x = (ws / 2) - ((400 + (200 * (min(imageCounter - initialCounter, 4)))) / 2)
                 conflictPopup.geometry('%dx%d+%d+%d' % (400 + (200 * (min(imageCounter - initialCounter, 4))), 800, x, y))
-                Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(20, 5))
+                Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(20, 5))
                 tags = Frame(window)
                 tags.pack(side="top")
                 # tags
-                Label(tags, text="CURRENT TAGS:\nYear: " + str(release_date) + "\nBPM: " + str(tempo) + "\nKey: " + str(key) + "\nGenre: " + str(genre), justify="left").pack(side="left", padx=(0, 40), pady=(10, 10))
-                Label(tags, text="NEW TAGS:\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), justify="left").pack(side="right",  padx=(40, 0), pady=(10, 10))
+                Label(tags, text="CURRENT TAGS:\nYear: " + str(release_date) + "\nBPM: " + str(tempo) + "\nKey: " + str(key) + "\nGenre: " + str(genre), font=("Proxima Nova Rg", 13), fg="white", bg=bg, justify="left").pack(side="left", padx=(0, 40), pady=(10, 10))
+                Label(tags, text="NEW TAGS:\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), font=("Proxima Nova Rg", 13), fg="white", bg=bg, justify="left").pack(side="right",  padx=(40, 0), pady=(10, 10))
 
                 # load current thumbnail
-                thumbnail = Frame(window)
+                thumbnail = Frame(window, bg=bg)
                 thumbnail.pack(side="top")
-                Label(thumbnail, text="Current artwork", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(20, 10))
+                Label(thumbnail, text="Current artwork", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(20, 10))
                 image = audio["covr"]
                 if len(image) != 0:
                     stream = BytesIO(image[0])
@@ -61,12 +66,12 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, webScrapin
                     photo = ImageTk.PhotoImage(thumbnailImageImport)
                     thumbnailImage = Label(thumbnail, image=photo)
                     thumbnailImage.image = photo
-                    thumbnailButton = Button(thumbnail, image=photo, bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, window))
+                    thumbnailButton = Button(thumbnail, image=photo, font=("Proxima Nova Rg", 13), bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, window))
                     thumbnailButton.pack(side="top")
                     buttons.append(thumbnailButton)
                     Label(thumbnail, text=str(width) + "x" + str(height)).pack(side="top", pady=(5, 10))
                 else:
-                    thumbnailButton = Button(window, text="No Artwork Found", bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, thumbnail), height=12, width=28)
+                    thumbnailButton = Button(window, text="No Artwork Found", font=("Proxima Nova Rg", 13), bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, thumbnail), height=12, width=28)
                     thumbnailButton.pack(side="top", pady=(5, 10))
                     buttons.append(thumbnailButton)
                 # print images as buttons
@@ -74,7 +79,7 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, webScrapin
                 images.pack(side="top")
                 imageButtons = {}
                 imageResolutions = []
-                Label(images, text="Artwork from search", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(10, 5))
+                Label(images, text="Artwork from search", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(10, 5))
                 for i in range(initialCounter, imageCounter):
                     imageRow = Frame(images)
                     imageRow.pack(side="top")
@@ -84,7 +89,7 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, webScrapin
                         fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(j) + ".jpg")
                         fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
                         photo = ImageTk.PhotoImage(fileImageImport)
-                        fileImage = Label(imageRow, image=photo)
+                        fileImage = Label(imageRow, image=photo, bg=bg)
                         fileImage.image = photo
                         imageButtons[j] = Button(imageRow, image=photo, highlightthickness=3, command=lambda j=j: selectImage(j, track, imageButtons[j], buttons, images))
                         imageButtons[j].pack(side="left", padx=(10, 10))

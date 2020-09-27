@@ -4,7 +4,7 @@ from tkinter import Toplevel, Button, Label, Frame
 file = False
 tag = False
 
-def handleArtistTitleDiscrepancy(fileArtist, tagArtist, fileTitle, tagTitle, webScrapingWindow):
+def handleArtistTitleDiscrepancy(fileArtist, tagArtist, fileTitle, tagTitle):
     global file
     global tag
     popup = Toplevel()
@@ -48,8 +48,8 @@ def handleArtistTitleDiscrepancy(fileArtist, tagArtist, fileTitle, tagTitle, web
 
     buttons = Frame(popup)
     buttons.pack(side="top")
-    Button(buttons, text='File Name', command=lambda: selectFile(popup, webScrapingWindow)).pack(pady=(15, 10), padx=(10, 30), side="left")
-    Button(buttons, text='Tag Name', command=lambda: selectTag(popup, webScrapingWindow)).pack(pady=(15, 10), padx=(30, 10), side="left")
+    Button(buttons, text='File Name', command=lambda: selectFile(popup)).pack(pady=(15, 10), padx=(10, 30), side="left")
+    Button(buttons, text='Tag Name', command=lambda: selectTag(popup)).pack(pady=(15, 10), padx=(30, 10), side="left")
     popup.protocol("WM_DELETE_WINDOW", lambda: popup.destroy())
     popup.wait_window()
     if file == True:
@@ -59,7 +59,7 @@ def handleArtistTitleDiscrepancy(fileArtist, tagArtist, fileTitle, tagTitle, web
         tag = False
         return "tag"
 
-def handleTitleDiscrepancy(fileTitle, tagTitle, webScrapingWindow):
+def handleTitleDiscrepancy(fileTitle, tagTitle):
     global file
     global tag
     popup = Toplevel()
@@ -102,8 +102,8 @@ def handleTitleDiscrepancy(fileTitle, tagTitle, webScrapingWindow):
 
     buttons = Frame(popup)
     buttons.pack(side="top")
-    Button(buttons, text='File', command=lambda: selectFile(popup, webScrapingWindow)).pack(pady=(15, 10), padx=(10, 30), side="left")
-    Button(buttons, text='Tag', command=lambda: selectTag(popup, webScrapingWindow)).pack(pady=(15, 10), padx=(30, 10), side="left")
+    Button(buttons, text='File', command=lambda: selectFile(popup)).pack(pady=(15, 10), padx=(10, 30), side="left")
+    Button(buttons, text='Tag', command=lambda: selectTag(popup)).pack(pady=(15, 10), padx=(30, 10), side="left")
     popup.protocol("WM_DELETE_WINDOW", lambda: popup.destroy())
     popup.wait_window()
     if file==True:
@@ -113,14 +113,12 @@ def handleTitleDiscrepancy(fileTitle, tagTitle, webScrapingWindow):
         tag=False
         return "tag"
 
-def selectFile(popup, webScrapingWindow):
+def selectFile(popup):
     global file
     file = True
     popup.destroy()
-    webScrapingWindow.lift()
 
-def selectTag(popup, webScrapingWindow):
+def selectTag(popup):
     global tag
     tag = True
     popup.destroy()
-    webScrapingWindow.lift()

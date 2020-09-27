@@ -11,9 +11,9 @@ import random
 #import methods
 from track_scraping.reverseImageSearch import reverseImageSearch
 
-def discogsSearch(artist, title, var, yearList, genreList, URLList, artistVariations, titleVariations, headers, search, frame, window, options, imageCounter):
+def discogsSearch(title, var, yearList, genreList, URLList, artistVariations, titleVariations, headers, search, window, options, imageCounter):
     # THIRD QUERY - DISCOGS
-    Label(frame.scrollable_frame, text="\nSearching Discogs for " + str(var), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
+    Label(frame, text="\nSearching Discogs for " + str(var), font=("TkDefaultFont", 9, 'bold')).pack(anchor='w')
     window.update()
     url = "https://www.google.co.in/search?q=" + search + " Discogs"
     soup = sendRequest(url, headers, frame, window)
@@ -35,7 +35,7 @@ def discogsSearch(artist, title, var, yearList, genreList, URLList, artistVariat
 
 def searchQuery(title, result, headers, frame, window, yearList, genreList, URLList, titleVariations, options, imageCounter):
     link = str(result.find('a').get('href')).split('&')[0].split('=')[1]
-    label = Label(frame.scrollable_frame, text="\n" + str(link), cursor="hand2")
+    label = Label(frame, text="\n" + str(link), cursor="hand2")
     label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
     label.pack(anchor='w')
     window.update()
@@ -94,7 +94,7 @@ def discogsRelease(soup, yearList, genreList, URLList, headers, frame, window, o
             header = link['href']
             if "year" in header:
                 # Discog releases tend to have more credible tags, so each instance counts twice
-                Label(frame.scrollable_frame, text="Year: " + str(link.get_text().strip())).pack(anchor='w')
+                Label(frame, text="Year: " + str(link.get_text().strip())).pack(anchor='w')
                 window.update()
                 if " " in link.get_text().strip():
                     yearList.append(int(link.get_text().strip()[-4:]))
@@ -110,7 +110,7 @@ def discogsRelease(soup, yearList, genreList, URLList, headers, frame, window, o
                 else:
                     genre += ", " + str(link.get_text()).strip()
                 genreList.append(link.get_text().strip())
-    Label(frame.scrollable_frame, text="Genre: " + genre).pack(anchor='w')
+    Label(frame, text="Genre: " + genre).pack(anchor='w')
     window.update()
     if options["Reverse Image Search (B)"].get()==True:
         image = soup.find('div', class_="image_gallery image_gallery_large")['data-images']
@@ -127,7 +127,7 @@ def discogsRelease(soup, yearList, genreList, URLList, headers, frame, window, o
             fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
             fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
             photo = ImageTk.PhotoImage(fileImageImport)
-            fileImage = Label(frame.scrollable_frame, image=photo)
+            fileImage = Label(frame, image=photo)
             fileImage.image = photo
             fileImage.pack(anchor="w")
             window.update()
@@ -143,7 +143,7 @@ def sendRequest(url, headers, frame, window):
         time.sleep(random.uniform(1, 3.5))
         return soup
     except requests.exceptions.ConnectionError:
-        Label(frame.scrollable_frame, text="Connection refused").pack(anchor='w')
+        Label(frame, text="Connection refused").pack(anchor='w')
         window.update()
         # generate random waiting time to avoid being blocked
         time.sleep(random.uniform(1, 3.5))

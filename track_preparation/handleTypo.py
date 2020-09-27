@@ -11,7 +11,7 @@ secondary_bg = "#364153"
 #global variable
 change = False
 
-def handleTypo(artist, newArtist, title, newTitle, webScrapingWindow, type):
+def handleTypo(artist, newArtist, title, newTitle, type):
     global change
     popup = Toplevel()
     popup.title("Potential Typo - " + type)
@@ -51,8 +51,8 @@ def handleTypo(artist, newArtist, title, newTitle, webScrapingWindow, type):
 
     buttons = Frame(popup, bg=bg)
     buttons.pack(side="top")
-    Button(buttons, text='Accept', command=lambda: setChange(popup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(pady=(25, 10), padx=(10, 30), side="left")
-    Button(buttons, text='Reject', command=lambda: closePopup(popup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(pady=(25, 10), padx=(30, 10), side="left")
+    Button(buttons, text='Accept', command=lambda: setChange(popup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(pady=(25, 10), padx=(10, 30), side="left")
+    Button(buttons, text='Reject', command=lambda: closePopup(popup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(pady=(25, 10), padx=(30, 10), side="left")
     popup.protocol("WM_DELETE_WINDOW", lambda: popup.destroy())
     popup.wait_window()
     if change:
@@ -60,14 +60,12 @@ def handleTypo(artist, newArtist, title, newTitle, webScrapingWindow, type):
         title = newTitle
         return artist, title
 
-def setChange(popup, webScrapingWindow):
+def setChange(popup):
     global change
     change = True
     popup.destroy()
-    webScrapingWindow.lift()
 
-def closePopup(popup, webScrapingWindow):
+def closePopup(popup):
     global change
     change = False
     popup.destroy()
-    webScrapingWindow.lift()
