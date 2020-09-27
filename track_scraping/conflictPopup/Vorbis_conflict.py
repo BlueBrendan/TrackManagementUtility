@@ -17,7 +17,6 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScra
         #tag conflict
         if str(audio['date'][0]) != str(track.release_date) or str(audio['bpm'][0]) != str(track.bpm) or str(audio['initialkey'][0]) != track.key or str(audio['genre'][0]) != track.genre:
             conflictPopup = tk.Toplevel()
-            conflictPopup.attributes("-topmost", True)
             conflictPopup.title("Conflicting Tags")
             ws = conflictPopup.winfo_screenwidth()  # width of the screen
             hs = conflictPopup.winfo_screenheight()  # height of the screen

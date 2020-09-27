@@ -6,7 +6,7 @@ from PIL import Image, ImageTk
 
 #import methods
 from compareDrives import compareDrives
-from track_preparation.scanTagsOnline import selectFileOrDirectory
+from track_preparation.scanTagsOnline import scanTagsOnline
 from other.checkForUpdates import checkForUpdates
 from other.updatePreferences import updatePreferences
 
@@ -107,7 +107,7 @@ def openPreferences(CONFIG_FILE, root):
 
 def selectSearchTags(CONFIG_FILE):
     options = readValuesFromConfig(CONFIG_FILE)
-    selectFileOrDirectory(options, CONFIG_FILE)
+    scanTagsOnline(options, CONFIG_FILE)
 
 def selectCompare(CONFIG_FILE):
     options = readValuesFromConfig(CONFIG_FILE)

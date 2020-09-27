@@ -56,7 +56,10 @@ def handleFinalReport(finalResults, directories, characters, imageCounter, image
                     tk.Label(finalReportWindow, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(5, 20))
         # load button and checkbox
         tk.Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, options), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side=TOP, pady=(15, 15))
-        tk.Checkbutton(finalReportWindow, text="Close scraping window", var=options["Close Scraping Window (B)"], command=lambda: closeScrapingWindowSelection(CONFIG_FILE), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side=TOP, pady=(0,10))
+        closeWindowButtonFrame = tk.Frame(finalReportWindow, bg=bg)
+        closeWindowButtonFrame.pack()
+        tk.Checkbutton(closeWindowButtonFrame, var=options["Close Scraping Window (B)"], command=lambda: closeScrapingWindowSelection(CONFIG_FILE), bg=bg).pack(side="left", pady=(0,10))
+        tk.Label(closeWindowButtonFrame, text="Close scraping window", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", pady=(0,10))
         finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closePopup(finalReportWindow, webScrapingWindow))
         finalReportWindow.lift()
 

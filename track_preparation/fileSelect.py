@@ -30,11 +30,9 @@ bg = "#282f3b"
 #secondary color
 secondary_bg = "#364153"
 
-def fileSelect(window, options, imageCounter, CONFIG_FILE):
-    window.lift()
-    directories = filedialog.askopenfilenames(parent=window, title="Select File")
+def fileSelect(options, imageCounter, CONFIG_FILE):
+    directories = filedialog.askopenfilenames(title="Select File")
     if directories != '':
-        window.destroy()
         imageSelections = []
         finalResults = []
 
@@ -48,7 +46,7 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
                 audio = False
                 track = ''
                 #handle FLAC file
-                if filename.endswith('.flac') and type(checkFileValidity(filename, directory, "FLAC", window))!=str:
+                if filename.endswith('.flac') and type(checkFileValidity(filename, directory, "FLAC"))!=str:
                     #handle naming preferences, tag settings, and replay gain
                     audio, filename, informalTagDict = initiateFLAC(filename, directory, options)
                     if type(audio) != bool:
@@ -62,7 +60,7 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
                         else: thumbnails.append("NA")
                         track = FLAC_Track(audio, options, informalTagDict)
                 #handle AIFF file
-                elif filename.endswith('.aiff') and type(checkFileValidity(filename, directory, "AIFF", window))!=str:
+                elif filename.endswith('.aiff') and type(checkFileValidity(filename, directory, "AIFF"))!=str:
                     audio, filename, informalTagDict = initiateAIFF(filename, directory, options)
                     if type(audio) != bool:
                         image = audio["APIC:"]
@@ -74,7 +72,7 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
                         else: thumbnails.append("NA")
                         track = ID3_Track(audio, options, informalTagDict)
                 #handle MP3 file
-                elif filename.endswith('mp3') and type(checkFileValidity(filename, directory, "MP3", window))!=str:
+                elif filename.endswith('mp3') and type(checkFileValidity(filename, directory, "MP3"))!=str:
                     audio, filename, informalTagDict = initiateMP3(filename, directory, options)
                     if type(audio) != bool:
                         image = audio["APIC:"]
@@ -86,7 +84,7 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
                         else: thumbnails.append("NA")
                         track = ID3_Track(audio, options, informalTagDict)
                 #handle OGG file
-                elif filename.endswith('.ogg') and type(checkFileValidity(filename, directory, "OGG", window))!=str:
+                elif filename.endswith('.ogg') and type(checkFileValidity(filename, directory, "OGG"))!=str:
                     audio, filename, informalTagDict = initiateOGG(filename, directory, options)
                     if type(audio) != bool:
                         images = audio["metadata_block_picture"]
@@ -101,7 +99,7 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
                         else: thumbnails.append("NA")
                         track = Vorbis_Track(audio, options, informalTagDict)
                 #handle WAV file
-                elif filename.endswith('.wav') and type(checkFileValidity(filename, directory, "WAV", window))!=str:
+                elif filename.endswith('.wav') and type(checkFileValidity(filename, directory, "WAV"))!=str:
                     audio, filename, informalTagDict = initiateWAVE(filename, directory, options)
                     if type(audio) != bool:
                         image = audio["APIC:"]
@@ -113,7 +111,7 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
                         else: thumbnails.append("NA")
                         track = ID3_Track(audio, options, informalTagDict)
                 #handle AAC and ALAC files
-                elif filename.endswith('.m4a') and type(checkFileValidity(filename, directory, "M4A", window))!=str:
+                elif filename.endswith('.m4a') and type(checkFileValidity(filename, directory, "M4A"))!=str:
                     audio, filename, informalTagDict = initiateM4A(filename, directory, options)
                     if type(audio) != bool:
                         image = audio["covr"]
@@ -137,13 +135,12 @@ def fileSelect(window, options, imageCounter, CONFIG_FILE):
         if type(webScrapingWindow)!=str: handleFinalReport(finalResults, directories, characters, imageCounter, imageSelections, thumbnails, webScrapingWindow, options, CONFIG_FILE)
 
 #check if mutagen object can be made from file
-def checkFileValidity(filename, directory, format, window):
+def checkFileValidity(filename, directory, format):
     audio = ""
     if format=="FLAC":
         try:audio = FLAC(str(directory) + "/" + str(filename))
         except:
             messagebox.showinfo("Invalid or Corrupt File")
-            window.update()
             return "Invalid or corrupt file\n"
     elif format=="AIFF":
         try: audio = AIFF(str(directory) + "/" + str(filename))
@@ -154,26 +151,22 @@ def checkFileValidity(filename, directory, format, window):
         try: audio = MP3(str(directory) + "/" + str(filename))
         except:
             messagebox.showinfo("Invalid or Corrupt File")
-            window.update()
             return "Invalid or corrupt file\n"
     elif format=="OGG":
         try: audio = OggVorbis(str(directory) + "/" + str(filename))
         except:
             messagebox.showinfo("Invalid or Corrupt File")
-            window.update()
             return "Invalid or corrupt file\n"
     elif format=="WAV":
         try: audio = WAVE(str(directory) + "/" + str(filename))
         except:
             messagebox.showinfo("Invalid or Corrupt File")
-            window.update()
             return "Invalid or corrupt file\n"
     elif format=="M4A":
         #M4A is deprecated in mutagen, MP4 is suggested instead
         try: audio = MP4(str(directory) + "/" + str(filename))
         except:
             messagebox.showinfo("Invalid or Corrupt File")
-            window.update()
             return "Invalid or corrupt file\n"
     return audio
 
