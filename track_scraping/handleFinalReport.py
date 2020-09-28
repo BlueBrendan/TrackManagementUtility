@@ -15,19 +15,13 @@ def handleFinalReport(finalResults, directories, characters, imageCounter, image
         finalReportWindow.configure(bg=bg)
         ws = finalReportWindow.winfo_screenwidth()  # width of the screen
         hs = finalReportWindow.winfo_screenheight()  # height of the screen
-        y = (hs / 2) - (572 / 2)
-        x = (ws / 2) - (450 / 2)
-        finalReportWindow.geometry('%dx%d+%d+%d' % (450, 520, x, y))
-        if len(directories) > 1:
-            y = (hs / 2) - (770 / 2)
-            finalReportWindow.geometry('%dx%d+%d+%d' % (450, 700, x, y))
+        y = (hs / 2) - (605 / 2)
+        x = (ws / 2) - (550 / 2)
+        finalReportWindow.geometry('%dx%d+%d+%d' % (550, 550, x, y))
         if characters > 40:
-            x = (ws / 2) - ((450 + (characters * 1.5)) / 2)
-            finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters * 1.5), 520, x, y))
-            if len(directories) > 1:
-                y = (hs / 2) - (770 / 2)
-                finalReportWindow.geometry('%dx%d+%d+%d' % (450 + (characters * 1.5), 700, x, y))
-        tk.Label(finalReportWindow, text="Final Report", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(15, 10))
+            x = (ws / 2) - ((550 + (characters * 1.5)) / 2)
+            finalReportWindow.geometry('%dx%d+%d+%d' % (550 + (characters * 1.5), 600, x, y))
+        tk.Label(finalReportWindow, text="Final Report", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(25, 10))
         for i in range(len(finalResults)):
             tk.Label(finalReportWindow, text=finalResults[i] + '\n', font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top")
             # load non-thumbnailimage

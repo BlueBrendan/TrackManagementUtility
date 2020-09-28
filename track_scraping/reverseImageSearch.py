@@ -40,7 +40,7 @@ def reverseImageSearch(link, headers, window, imageCounter, URLList, options):
             browser.find_element_by_link_text(sizes[len(sizes)-1]).click()
             for i in range(1):
                 images = browser.find_elements_by_class_name("rg_i.Q4LuWd")
-                #make sure images have actualy appeared
+                #make sure images have actually appeared
                 if len(images) > 0:
                     images[i].click()
                     time.sleep(1)

@@ -40,7 +40,9 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
     #component for image
     rightComponentFrame = tk.Frame(componentFrame, bg=bg)
     rightComponentFrame.pack(side="left", fill=Y)
+
     window.update()
+    window.lift()
     url = "https://www.google.co.in/search?q=" + search + " Junodownload"
     soup = sendRequest(url, headers, leftComponentFrame, window)
     if soup!=False:
@@ -49,8 +51,8 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
                 for variation in titleVariations:
                     variation = variation.replace('-', ' ')
                     if variation.lower() in str(result).lower():
-            # if (any(variation in link.find('div', class_="BNeawe s3v9rd AP7Wnd").get_text().lower() for variation in artistVariations) or any(variation in link.find('div', class_="BNeawe s3v9rd AP7Wnd").get_text().lower() for variation in titleVariations) or any(variation in link.find('div', class_="BNeawe vvjwJb AP7Wnd").get_text().lower() for variation in artistVariations) or any(variation in link.find('div', class_="BNeawe vvjwJb AP7Wnd").get_text().lower() for variation in titleVariations)):
                         link = result.find('a').get('href').split('&')[0][7:]
+                        #clear component frames of existing content
                         widgetList = allWidgets(leftComponentFrame)
                         for item in widgetList:
                             item.pack_forget()
@@ -109,7 +111,7 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
                                             URLList.append(link)
                                             # load file icon
                                             fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
-                                            fileImageImport = fileImageImport.resize((170, 170), Image.ANTIALIAS)
+                                            fileImageImport = fileImageImport.resize((180, 180), Image.ANTIALIAS)
                                             photo = ImageTk.PhotoImage(fileImageImport)
                                             fileImage = tk.Label(rightComponentFrame, image=photo, bg=bg)
                                             fileImage.image = photo

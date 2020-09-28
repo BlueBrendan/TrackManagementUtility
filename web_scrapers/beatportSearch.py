@@ -1,8 +1,8 @@
 import tkinter as tk
+from tkinter.tix import *
 import requests
 from bs4 import BeautifulSoup
 import getpass
-from tkinter import *
 from PIL import Image, ImageTk
 import webbrowser
 import time
@@ -42,6 +42,7 @@ def beatportSearch(title, var, yearList, BPMList, keyList, genreList, URLList, a
     rightComponentFrame.pack(side="left", fill=Y)
 
     window.update()
+    window.lift()
     url = "https://www.google.co.in/search?q=" + search + " Beatport"
     soup = sendRequest(url, headers, window)
     if soup == False:
@@ -69,6 +70,14 @@ def beatportSearch(title, var, yearList, BPMList, keyList, genreList, URLList, a
                             if not mismatch:break
                     if not mismatch:break
             if mismatch == False:
+                #clear component frames of existing content
+                widgetList = allWidgets(leftComponentFrame)
+                for item in widgetList:
+                    item.pack_forget()
+                widgetList = allWidgets(rightComponentFrame)
+                for item in widgetList:
+                    item.pack_forget()
+
                 link = link.get('href').split('&')[0].split('=')[1]
                 if "remix" in link and "remix" in title.lower() or "remix" not in title.lower() and "remix" not in link:
                     label = tk.Label(leftComponentFrame, text="\n" + str(link), cursor="hand2", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
@@ -162,7 +171,7 @@ def extractInfo(soup, yearList, BPMList, keyList, genreList, URLList, headers, l
         URLList.append(link)
         # load file icon
         fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
-        fileImageImport = fileImageImport.resize((170, 170), Image.ANTIALIAS)
+        fileImageImport = fileImageImport.resize((180, 180), Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(fileImageImport)
         fileImage = Label(rightComponentFrame, image=photo, bg=bg)
         fileImage.image = photo
@@ -182,7 +191,7 @@ def sendRequest(url, headers, window):
         time.sleep(random.uniform(1, 3.5))
         return soup
     except requests.exceptions.ConnectionError:
-        Label(window, text="Connection refused").pack(anchor='w')
+        tk.Label(window, text="Connection refused").pack(anchor='w')
         window.update()
         # generate random waiting time to avoid being blocked
         time.sleep(random.uniform(1, 3.5))
