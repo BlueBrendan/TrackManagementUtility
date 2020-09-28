@@ -1,143 +1,69 @@
-from tkinter import Toplevel, Button, Canvas, Frame, Scrollbar, Label
+import tkinter as tk
+from tkinter.tix import *
 from mutagen.flac import Picture
 from mutagen import id3
 from PIL import Image, ImageTk
 from io import BytesIO
 import getpass
+import math
+
+#main bg color
+bg = "#282f3b"
+#secondary color
+secondary_bg = "#364153"
+
+#global variables
+page = 0
 
 def FLAC_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow):
+    global page
     if audio['date'][0] != '' or audio['bpm'][0] != '' or audio['initialkey'][0] != '' or audio['genre'][0] != '':
-        buttons = []
         #tag conflict
         if str(audio['date'][0]) != str(track.release_date) or str(audio['bpm'][0]) != str(track.bpm) or str(audio['initialkey'][0]) != track.key or str(audio['genre'][0]) != track.genre:
-            conflictPopup = Toplevel()
-            conflictPopup.attributes("-topmost", True)
+            conflictPopup = tk.Toplevel()
             conflictPopup.title("Conflicting Tags")
-            canvas = Canvas(conflictPopup)
-            window = Frame(canvas)
-            scrollbar = Scrollbar(conflictPopup, orient="vertical", command=canvas.yview)
             ws = conflictPopup.winfo_screenwidth()  # width of the screen
             hs = conflictPopup.winfo_screenheight()  # height of the screen
-            x = (ws / 2) - (550 / 2)
-            y = (hs / 2) - (242 / 2)
-            conflictPopup.geometry('%dx%d+%d+%d' % (550, 220, x, y))
-            canvas.create_window(550/2, 0, window=window, anchor="n")
+            x = (ws / 2) - (650 / 2)
+            y = (hs / 2) - (330 / 2)
+            conflictPopup.geometry('%dx%d+%d+%d' % (650, 300, x, y))
             if len(str(track.artist) + " - " + str(track.title)) > 30:
-                x = (ws / 2) - ((550 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)) / 2)
-                conflictPopup.geometry('%dx%d+%d+%d' % (550 + (len(str(track.artist) + " - " + str(track.title)) * 1.5), 220, x, y))
-                canvas.create_window((550 + (len(str(track.artist) + " - " + str(track.title)) * 1.5))/2, 0, window=window, anchor="n")
-            # tags and images
-            if options["Reverse Image Search (B)"].get() == True and (imageCounter - initialCounter) >= 1:
-                y = (hs / 2) - (880 / 2)
-                x = (ws / 2) - ((400 + (200 * (min(imageCounter - initialCounter, 4)))) / 2)
-                conflictPopup.geometry('%dx%d+%d+%d' % (400 + (200 * (min(imageCounter - initialCounter, 4))), 800, x, y))
-                Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(20, 5))
-                tags = Frame(window)
-                tags.pack(side="top")
-                # tags
-                Label(tags,
-                      text="CURRENT TAGS:\nYear: " + str(audio['date'][0]) + "\nBPM: " + str(audio['bpm'][0]) + "\nKey: " + str(audio['initialkey'][0]) + "\nGenre: " + str(audio['genre'][0]),
-                      justify="left").pack(side="left", padx=(0, 40), pady=(10, 10))
-                Label(tags, text="NEW TAGS:\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), justify="left").pack(side="right",  padx=(40, 0), pady=(10, 10))
+                x = (ws / 2) - ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)) / 2)
+                conflictPopup.geometry('%dx%d+%d+%d' % ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)), 300, x, y))
+            conflictPopup.config(bg=bg)
+            #tag conflict window
+            # tags
+            tags = tk.Frame(conflictPopup, bg=bg)
+            tags.pack()
+            tk.Label(tags, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(30, 40), side="top")
+            tk.Label(tags, text="CURRENT TAGS:\nYear: " + str(audio['date'][0]) + "\nBPM: " + str(audio['bpm'][0]) + "\nKey: " + str(audio['initialkey'][0]) + "\nGenre: " + str(audio['genre'][0]), font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left").pack(side="left", pady=(0, 50))
+            tk.Label(tags, text="SCRAPED TAGS:\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left").pack(side="right", pady=(0, 50))
+            # buttons
+            optionButtons = tk.Frame(conflictPopup, bg=bg)
+            optionButtons.pack()
+            tk.Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
+            tk.Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
+            tk.Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(audio, track, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
+            tk.Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
+            conflictPopup.attributes("-topmost", 1)
+            conflictPopup.attributes("-topmost", 0)
+            conflictPopup.wait_window()
 
-                # load current thumbnail
-                thumbnail = Frame(window)
-                thumbnail.pack(side="top")
-                Label(thumbnail, text="Current artwork", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(20, 10))
-                if len(audio.pictures) > 0:
-                    stream = BytesIO(audio.pictures[0].data)
-                    image = Image.open(stream).convert("RGBA")
-                    stream.close()
-                    width, height = image.size
-                    thumbnailImageImport = image.resize((200, 200), Image.ANTIALIAS)
-                    photo = ImageTk.PhotoImage(thumbnailImageImport)
-                    thumbnailImage = Label(thumbnail, image=photo)
-                    thumbnailImage.image = photo
-                    thumbnailButton = Button(thumbnail, image=photo, bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, window))
-                    thumbnailButton.pack(side="top")
-                    buttons.append(thumbnailButton)
-                    Label(thumbnail, text=str(width) + "x" + str(height)).pack(side="top", pady=(5, 10))
-                else:
-                    thumbnailButton = Button(window, text="No Artwork Found", bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, thumbnail), height=12, width=28)
-                    thumbnailButton.pack(side="top", pady=(5, 10))
-                    buttons.append(thumbnailButton)
-                # print images as buttons
-                images = Frame(window)
-                images.pack(side="top")
-                imageButtons = {}
-                imageResolutions = []
-                Label(images, text="Artwork from search", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(10, 5))
-                for i in range(initialCounter, imageCounter):
-                    imageRow = Frame(images)
-                    imageRow.pack(side="top")
-                    start = initialCounter
-                    end = min(initialCounter + 4, imageCounter)
-                    for j in range(start, end):
-                        fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(j) + ".jpg")
-                        fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-                        photo = ImageTk.PhotoImage(fileImageImport)
-                        fileImage = Label(imageRow, image=photo)
-                        fileImage.image = photo
-                        imageButtons[j] = Button(imageRow, image=photo, highlightthickness=3, command=lambda j=j: selectImage(j, track, imageButtons[j], buttons, images))
-                        imageButtons[j].pack(side="left", padx=(10, 10))
-                        buttons.append(imageButtons[j])
-                        im = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(j) + ".jpg")
-                        width, height = im.size
-                        imageResolutions.append(str(height) + "x" + str(width))
-                        initialCounter += 1
-                    resolutionRow = Frame(images)
-                    resolutionRow.pack(side="top")
-                    # print resolutions underneath respective images
-                    for j in range(start, end):
-                        Label(resolutionRow, text=imageResolutions[j]).pack(side="left", padx=(90, 90), pady=(5, 10))
-                # load option buttons
-                optionButtons = Frame(window)
-                optionButtons.pack(side="top")
-                Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25, 10))
-                Button(optionButtons, text="Merge (favor scraped data)",command=lambda: mergeScrapeOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25, 10))
-                Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15),pady=(25, 10))
-                Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25, 10))
-                canvas.update_idletasks()
-                canvas.configure(yscrollcommand=scrollbar.set)
-                canvas.pack(fill='both', expand=True, side='left')
-                scrollbar.pack(side="right", fill="y")
-                conflictPopup.lift()
-                conflictPopup.wait_window()
-            # tags only
-            else:
-                print("Hsere")
-                Label(window, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(20, 5))
-                tags = Frame(window)
-                tags.pack(side="top")
-                # tags
-                Label(tags, text="CURRENT TAGS:\nYear: " + str(audio['date'][0]) + "\nBPM: " + str(audio['bpm'][0]) + "\nKey: " + str(audio['initialkey'][0]) + "\nGenre: " + str(audio['genre'][0]), justify="left").pack(side="left", padx=(0, 40), pady=(10, 10))
-                Label(tags, text="NEW TAGS:\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), justify="left").pack(side="right", padx=(40, 0), pady=(10, 10))
-                #buttons
-                optionButtons = Frame(window)
-                optionButtons.pack(side="top")
-                Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25, 10))
-                Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25, 10))
-                Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25, 10))
-                Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, conflictPopup, webScrapingWindow)).pack(side="left", padx=(15, 15), pady=(25, 10))
-                canvas.update_idletasks()
-                canvas.configure(yscrollcommand=scrollbar.set)
-                canvas.pack(fill="Both", expand=True, side='left')
-                scrollbar.pack(side="right", fill="y")
-                conflictPopup.lift()
-                conflictPopup.wait_window()
-        # images only
-        elif imageCounter >= 1:
-            window = Toplevel()
-            window.attributes("-topmost", True)
-            window.title("Multiple Images Found")
-            ws = window.winfo_screenwidth()  # width of the screen
-            hs = window.winfo_screenheight()  # height of the screen
-            y = (hs / 2) - (715 / 2)
-            x = (ws / 2) - ((250 + (200 * (imageCounter - initialCounter))) / 2)
-            window.geometry('%dx%d+%d+%d' % (250 + (200 * (imageCounter - initialCounter)), 650, x, y))
-
+        # image conflict
+        if options["Reverse Image Search (B)"].get() == True and imageCounter >= 1:
+            buttons = []
+            conflictFrame = tk.Toplevel()
+            conflictFrame.title("Conflicting Images")
+            ws = conflictFrame.winfo_screenwidth()  # width of the screen
+            hs = conflictFrame.winfo_screenheight()  # height of the screen
+            y = (hs / 2) - (770 / 2)
+            x = (ws / 2) - ((350 + (200 * min((imageCounter - initialCounter), 4))) / 2)
+            conflictFrame.geometry('%dx%d+%d+%d' % (350 + (200 * min((imageCounter - initialCounter), 4)), 700, x, y))
+            conflictFrame.config(bg=bg)
             # print current thumbnail
-            Label(window, text="Current artwork", font=("TkDefaultFont", 9, 'bold')).pack(pady=(20, 10))
+            Label(conflictFrame, text="Current artwork", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(20, 10))
+            thumbnailFrame = tk.Frame(conflictFrame)
+            thumbnailFrame.pack()
             if len(audio.pictures) > 0:
                 stream = BytesIO(audio.pictures[0].data)
                 image = Image.open(stream).convert("RGBA")
@@ -145,48 +71,60 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, webScrapi
                 width, height = image.size
                 thumbnailImageImport = image.resize((200, 200), Image.ANTIALIAS)
                 photo = ImageTk.PhotoImage(thumbnailImageImport)
-                thumbnailImage = Label(window, image=photo)
+                thumbnailImage = tk.Label(conflictFrame, image=photo)
                 thumbnailImage.image = photo
-                thumbnailButton = Button(window, image=photo, bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, window))
+                thumbnailButton = tk.Button(thumbnailFrame, image=photo, bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictFrame))
                 thumbnailButton.pack(side="top")
                 buttons.append(thumbnailButton)
-                Label(window, text=str(width) + "x" + str(height)).pack(side="top", pady=(5, 10))
+                tk.Label(conflictFrame, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(5, 10))
+                thumbnail = [thumbnailImageImport, width, height]
             else:
-                thumbnailButton = Button(window, text="No Artwork Found", bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, window), height=12, width=28)
+                thumbnail = "NA"
+                thumbnailButton = tk.Button(thumbnailFrame, text="No Artwork Found", bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictFrame), height=12, width=28)
                 thumbnailButton.pack(side="top", pady=(5, 10))
                 buttons.append(thumbnailButton)
 
-            Label(window, text="Select a cover image", font=("TkDefaultFont", 9, 'bold')).pack(side="top", pady=(15, 10))
-            images = Frame(window)
-            images.pack(side="top")
-            tags = Frame(window)
-            tags.pack(side="top")
-            optionButtons = Frame(window)
-            imageButtons = {}
+            tk.Label(conflictFrame, text="Scraped artwork", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(15, 10))
+            imageFrame = tk.Frame(conflictFrame, bg=bg)
+            imageFrame.pack(side="top")
+            imageButtons = []
             imageResolutions = []
+
             # print images as buttons
-            for i in range(initialCounter, imageCounter):
-                window.columnconfigure(i, weight=1)
-                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
+            start = initialCounter
+            end = imageCounter
+            for i in range(min(end - start, 2)):
+                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(start) + ".jpg")
                 fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
                 photo = ImageTk.PhotoImage(fileImageImport)
-                fileImage = Label(images, image=photo)
+                fileImage = tk.Label(imageFrame, image=photo)
                 fileImage.image = photo
-                imageButtons[i] = Button(images, image=photo, highlightthickness=3, command=lambda i=i: selectImage(i, track, imageButtons[i], buttons, window))
-                imageButtons[i].pack(side="left", padx=(10, 10))
-                buttons.append(imageButtons[i])
+                imageButtons.append(tk.Button(imageFrame, image=photo, highlightthickness=3, command=lambda i=i: selectImage(i, track, imageButtons[i], buttons, conflictFrame)))
+                imageButtons[len(imageButtons)-1].pack(side="left", padx=(20, 20))
+                buttons.append(imageButtons[len(imageButtons)-1])
                 im = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
                 width, height = im.size
                 imageResolutions.append(str(height) + "x" + str(width))
-            resolutions = Frame(window)
-            resolutions.pack(side="top")
+
+            resolutionsFrame = tk.Frame(conflictFrame, bg=bg)
+            resolutionsFrame.pack(side="top")
             # print resolutions underneath respective images
-            for i in imageResolutions:
-                Label(resolutions, text=i).pack(side="left", padx=(90, 90), pady=(5, 5))
-            optionButtons.pack(side="top")
-            Button(optionButtons, text="Select", command=lambda: saveImage(track, audio, window, webScrapingWindow)).pack(side="top", pady=(25, 10))
-            window.lift()
-            window.wait_window()
+            for i in imageResolutions: tk.Label(resolutionsFrame, text=i, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", padx=(90, 90), pady=(5, 5))
+            # page indicator
+            pageFrame = tk.Frame(conflictFrame, bg=bg)
+            pageFrame.pack()
+            #left navigation button
+            leftButton = tk.Button(pageFrame, text=" < ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="w", state=DISABLED, command=lambda: navigateLeft(start, end, imageFrame, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail))
+            leftButton.pack(side="left", padx=(0, 15), pady=(15, 10))
+            tk.Label(pageFrame, text=str(page+1) + "/" + str(math.ceil(float(imageCounter - initialCounter) / 2.0)), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", pady=(15, 10))
+            tk.Button(conflictFrame, text="Select", font=("Proxima Nova Rg", 11), fg="white", bg=bg, command=lambda: saveImage(track, audio, conflictFrame, webScrapingWindow)).pack(side="top", pady=(10, 10))
+            # right navigation button
+            rightButton = tk.Button(pageFrame, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="e", command=lambda: navigateRight(start, end, imageFrame, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail))
+            if math.ceil(float(imageCounter - initialCounter) / 2.0) == 1: rightButton.config(state=DISABLED)
+            rightButton.pack(side="right", padx=(15, 0), pady=(15, 10))
+            conflictFrame.attributes("-topmost", 1)
+            conflictFrame.attributes("-topmost", 0)
+            conflictFrame.wait_window()
     else:
         audio['date'] = str(track.release_date)
         audio['bpm'] = str(track.bpm)
@@ -201,11 +139,8 @@ def overwriteOption(audio, track, window, webScrapingWindow):
     audio['initialkey'] = track.key
     audio['genre'] = track.genre
     audio.save()
-    if track.imageSelection!="THUMB":
-        saveImage(track, audio, window, webScrapingWindow)
-    else:
-        window.destroy()
-        webScrapingWindow.lift()
+    if track.imageSelection!="THUMB": saveImage(track, audio, window, webScrapingWindow)
+    else: window.destroy()
 
 def mergeScrapeOption(audio, track, window, webScrapingWindow):
     if str(track.release_date) != '':
@@ -217,11 +152,8 @@ def mergeScrapeOption(audio, track, window, webScrapingWindow):
     if track.genre != '':
         audio['genre'] = track.genre
     audio.save()
-    if track.imageSelection!="THUMB":
-        saveImage(track, audio, window, webScrapingWindow)
-    else:
-        window.destroy()
-        webScrapingWindow.lift()
+    if track.imageSelection!="THUMB": saveImage(track, audio, window, webScrapingWindow)
+    else: window.destroy()
 
 def mergeSourceOption(audio, track, window, webScrapingWindow):
     if audio['date'] == ['']: audio['date'] = str(track.release_date)
@@ -233,23 +165,16 @@ def mergeSourceOption(audio, track, window, webScrapingWindow):
     if audio['genre'] == ['']: audio['genre'] = track.genre
     else: track.genre = str(audio['genre'][0])
     audio.save()
-    if track.imageSelection!="THUMB":
-        saveImage(track, audio, window, webScrapingWindow)
-    else:
-        window.destroy()
-        webScrapingWindow.lift()
+    if track.imageSelection!="THUMB": saveImage(track, audio, window, webScrapingWindow)
+    else: window.destroy()
 
 def skipOption(audio, track, window, webScrapingWindow):
     track.release_date = str(audio['date'][0])
     track.bpm = str(audio['BPM'][0])
     track.key = str(audio['initialkey'][0])
     track.genre = str(audio['genre'][0])
-    webScrapingWindow.lift()
-    if track.imageSelection!="THUMB":
-        saveImage(track, audio, window, webScrapingWindow)
-    else:
-        window.destroy()
-        webScrapingWindow.lift()
+    if track.imageSelection!="THUMB": saveImage(track, audio, window, webScrapingWindow)
+    else: window.destroy()
 
 #selecting image to variable
 def selectImage(i, track, button, buttons, window):
@@ -274,4 +199,100 @@ def saveImage(track, audio, window, webScrapingWindow):
         audio.add_picture(image)
         audio.save()
     window.destroy()
-    webScrapingWindow.lift()
+
+def navigateLeft(start, end, imageFrame, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail):
+    global page
+    page-=1
+    track.imageSelection = "THUMB"
+    # buttons starts off as a list already containing the thumbnail button
+    buttons = []
+    # reload thumbnailFrame, imageFrame, resolutions Frame, and pageFrame
+    reloadFrames(thumbnailFrame, imageFrame, resolutionsFrame, pageFrame)
+    # reload thumbnail
+    buttons = reloadThumbnail(thumbnail, track, buttons, conflictFrame, thumbnailFrame)
+    # reload image buttons
+    reloadButtons(start, end, imageFrame, resolutionsFrame, conflictFrame, track, buttons)
+    # reload navigation buttons and page indicator
+    reloadNavigation(start, end, pageFrame, imageFrame, resolutionsFrame, conflictFrame, thumbnailFrame, track, thumbnail, "left")
+
+
+def navigateRight(start, end, imageFrame, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail):
+    global page
+    page+=1
+    track.imageSelection = "THUMB"
+    # buttons starts off as a list already containing the thumbnail button
+    buttons = []
+    # reload thumbnailFrame, imageFrame, resolutions Frame, and pageFrame
+    reloadFrames(thumbnailFrame, imageFrame, resolutionsFrame, pageFrame)
+    # reload thumbnail
+    buttons = reloadThumbnail(thumbnail, track, buttons, conflictFrame, thumbnailFrame)
+    # reload image buttons
+    reloadButtons(start, end, imageFrame, resolutionsFrame, conflictFrame, track, buttons)
+    # reload navigation buttons and page indicator
+    reloadNavigation(start, end, pageFrame, imageFrame, resolutionsFrame, conflictFrame, thumbnailFrame, track, thumbnail, "right")
+
+def allWidgets(window):
+    _list = window.winfo_children()
+    for item in _list :
+        if item.winfo_children() :
+            _list.extend(item.winfo_children())
+    return _list
+
+def reloadFrames(thumbnailFrame, imageFrame, resolutionsFrame, pageFrame):
+    widgetList = allWidgets(thumbnailFrame)
+    for item in widgetList: item.pack_forget()
+    widgetList = allWidgets(imageFrame)
+    for item in widgetList: item.pack_forget()
+    widgetList = allWidgets(resolutionsFrame)
+    for item in widgetList: item.pack_forget()
+    widgetList = allWidgets(pageFrame)
+    for item in widgetList: item.pack_forget()
+
+def reloadThumbnail(thumbnail, track, buttons, conflictFrame, thumbnailFrame):
+    if type(thumbnail) != str:
+        photo = ImageTk.PhotoImage(thumbnail[0])
+        thumbnailImage = tk.Label(conflictFrame, image=photo)
+        thumbnailImage.image = photo
+        thumbnailButton = tk.Button(thumbnailFrame, image=photo, bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictFrame))
+        thumbnailButton.pack(side="top")
+        buttons.append(thumbnailButton)
+        tk.Label(conflictFrame, text=str(thumbnail[1]) + "x" + str(thumbnail[2]), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(5, 10))
+    else:
+        thumbnailButton = tk.Button(thumbnailFrame, text="No Artwork Found", bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictFrame), height=12, width=28)
+        thumbnailButton.pack(side="top", pady=(5, 10))
+        buttons.append(thumbnailButton)
+    return buttons
+
+def reloadButtons(start, end, imageFrame, resolutionsFrame, conflictFrame, track, buttons):
+    global page
+    imageButtons = []
+    imageResolutions = []
+    for i in range(min(end - (start + (page * 2)), 2)):
+        fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i + (page * 2)) + ".jpg")
+        fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+        photo = ImageTk.PhotoImage(fileImageImport)
+        fileImage = tk.Label(imageFrame, image=photo)
+        fileImage.image = photo
+        imageButtons.append(tk.Button(imageFrame, image=photo, highlightthickness=3, command=lambda i=i + (page * 2), j=i: selectImage(i, track, imageButtons[j], buttons, conflictFrame)))
+        imageButtons[len(imageButtons) - 1].pack(side="left", padx=(20, 20))
+        buttons.append(imageButtons[len(imageButtons) - 1])
+        im = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i + (page * 2)) + ".jpg")
+        width, height = im.size
+        imageResolutions.append(str(height) + "x" + str(width))
+    # print resolutions underneath respective images
+    for i in imageResolutions:
+        tk.Label(resolutionsFrame, text=i, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", padx=(90, 90), pady=(5, 5))
+
+def reloadNavigation(start, end, pageFrame, imageFrame, resolutionsFrame, conflictFrame, thumbnailFrame, track, thumbnail, direction):
+    leftButton = tk.Button(pageFrame, text=" < ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="w", state=NORMAL, command=lambda: navigateLeft(start, end, imageFrame, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail))
+    leftButton.pack(side="left", padx=(0, 15), pady=(15, 10))
+    tk.Label(pageFrame, text=str(page + 1) + "/" + str(math.ceil(float(end - start) / 2.0)), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", pady=(15, 10))
+    # right button
+    rightButton = tk.Button(pageFrame, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="e",  state=NORMAL, command=lambda: navigateRight(start, end, imageFrame, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail))
+    rightButton.pack(side="left", padx=(15, 0), pady=(15, 10))
+    if direction == "left":
+        # deactivate left button if on first page
+        if page == 0: leftButton.config(state=DISABLED)
+    elif direction == "right":
+        # deactivate right button if on last page
+        if page+1 == math.ceil((end - start)/2.0): rightButton.config(state=DISABLED)

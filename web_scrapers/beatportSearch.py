@@ -42,7 +42,8 @@ def beatportSearch(title, var, yearList, BPMList, keyList, genreList, URLList, a
     rightComponentFrame.pack(side="left", fill=Y)
 
     window.update()
-    window.lift()
+    window.attributes("-topmost", 1)
+    window.attributes("-topmost", 0)
     url = "https://www.google.co.in/search?q=" + search + " Beatport"
     soup = sendRequest(url, headers, window)
     if soup == False:
@@ -80,10 +81,13 @@ def beatportSearch(title, var, yearList, BPMList, keyList, genreList, URLList, a
 
                 link = link.get('href').split('&')[0].split('=')[1]
                 if "remix" in link and "remix" in title.lower() or "remix" not in title.lower() and "remix" not in link:
-                    label = tk.Label(leftComponentFrame, text="\n" + str(link), cursor="hand2", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                    if len(link) > 75: label = tk.Label(leftComponentFrame, text="\n" + str(link)[0:74] + "...", cursor="hand2", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                    else: label = tk.Label(leftComponentFrame, text="\n" + str(link), cursor="hand2", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                     label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
                     label.pack(padx=(10, 0))
                     window.update()
+                    window.attributes("-topmost", 1)
+                    window.attributes("-topmost", 0)
                     soup = sendRequest(link, headers, window)
                     if soup != False and "Oops... the page you were looking for could not be found" not in str(soup):
                         #check if page is a track (single) or a release (album)

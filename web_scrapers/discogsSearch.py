@@ -41,7 +41,8 @@ def discogsSearch(title, var, yearList, genreList, URLList, artistVariations, ti
     rightComponentFrame.pack(side="left", fill=Y)
 
     window.update()
-    window.lift()
+    window.attributes("-topmost", 1)
+    window.attributes("-topmost", 0)
     url = "https://www.google.co.in/search?q=" + search + " Discogs"
     soup = sendRequest(url, headers, window)
     if soup != False:
@@ -73,6 +74,9 @@ def searchQuery(title, result, headers, window, yearList, genreList, URLList, le
     label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
     label.pack(padx=(10, 0), anchor="w")
     window.update()
+    window.attributes("-topmost", 1)
+    window.attributes("-topmost", 0)
+
     soup = sendRequest(link, headers, window)
     if soup != False:
         # first check if the title is in the tracklist, push data if it is
@@ -144,7 +148,7 @@ def discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFra
                 else:
                     genre += ", " + str(link.get_text()).strip()
                 genreList.append(link.get_text().strip())
-    if len(genre) >= 60: tk.Label(leftComponentFrame, text="Genre: " + genre[0:59] + "...", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
+    if len(genre) >= 75: tk.Label(leftComponentFrame, text="Genre: " + genre[0:74] + "...", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
     else: tk.Label(leftComponentFrame, text="Genre: " + genre, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
     window.update()
     if options["Reverse Image Search (B)"].get()==True:

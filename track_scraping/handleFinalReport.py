@@ -20,7 +20,7 @@ def handleFinalReport(finalResults, directories, characters, imageCounter, image
         finalReportWindow.geometry('%dx%d+%d+%d' % (550, 550, x, y))
         if characters > 40:
             x = (ws / 2) - ((550 + (characters * 1.5)) / 2)
-            finalReportWindow.geometry('%dx%d+%d+%d' % (550 + (characters * 1.5), 600, x, y))
+            finalReportWindow.geometry('%dx%d+%d+%d' % (550 + (characters * 1.5), 550, x, y))
         tk.Label(finalReportWindow, text="Final Report", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(25, 10))
         for i in range(len(finalResults)):
             tk.Label(finalReportWindow, text=finalResults[i] + '\n', font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top")

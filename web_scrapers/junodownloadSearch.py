@@ -42,7 +42,8 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
     rightComponentFrame.pack(side="left", fill=Y)
 
     window.update()
-    window.lift()
+    window.attributes("-topmost", 1)
+    window.attributes("-topmost", 0)
     url = "https://www.google.co.in/search?q=" + search + " Junodownload"
     soup = sendRequest(url, headers, leftComponentFrame, window)
     if soup!=False:
@@ -59,13 +60,13 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
                         widgetList = allWidgets(rightComponentFrame)
                         for item in widgetList:
                             item.pack_forget()
-
-                        label = tk.Label(leftComponentFrame, text="\n" + str(link), cursor="hand2", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                        if len(link) >= 75: label = tk.Label(leftComponentFrame, text="\n" + str(link)[0:74] + "...", cursor="hand2", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                        else: label = tk.Label(leftComponentFrame, text="\n" + str(link), cursor="hand2", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                         label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
                         label.pack(padx=(10, 0))
-                        # label.pack(anchor='w')
-                        # label.bind("<Button-1>", lambda e: webbrowser.open_new(link))
                         window.update()
+                        window.attributes("-topmost", 1)
+                        window.attributes("-topmost", 0)
                         soup = sendRequest(link, headers, leftComponentFrame, window)
                         if soup!=False:
                             #scrape release date and genre
