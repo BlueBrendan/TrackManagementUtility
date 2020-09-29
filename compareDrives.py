@@ -1,47 +1,52 @@
 import os
-from mutagen.flac import FLAC
-import PIL.Image
-import PIL.ImageTk
-from io import BytesIO
 import shutil
 import tkinter as tk
-from functools import partial
 from tkinter import messagebox
-from tkinter.filedialog import *
+from tkinter import filedialog
+from mutagen.flac import FLAC
+from mutagen.flac import Picture
+from mutagen.oggvorbis import OggVorbis
+from mutagen.mp4 import MP4
+from mutagen.mp3 import MP3
+from mutagen.id3._frames import *
+from mutagen.aiff import AIFF
+from mutagen.wave import WAVE
+from mutagen.id3 import ID3
+from PIL import Image, ImageTk
+from io import BytesIO
+import base64
+
+#main bg color
+bg = "#282f3b"
+#secondary color
+secondary_bg = "#364153"
 
 complete = False
-def compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory):
+def compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory, root):
     global complete
-    if firstDefaultDirectory == '':
-        print("LA")
-        first_directory = askdirectory()
-    else:
-        first_directory = askdirectory(initialdir=firstDefaultDirectory, title="Select First Directory")
+    if firstDefaultDirectory == '': first_directory = filedialog.askdirectory(master=root, title="Select First Directory")
+    else: first_directory = filedialog.askdirectory(initialdir=firstDefaultDirectory, title="Select First Directory")
     if first_directory!='':
-        #check directory and default values for a match
-        if firstDefaultDirectory == '' or first_directory != firstDefaultDirectory:
-            # write value to firstDefaultDirectory
-            writeFirstDefaultDirectory(CONFIG_FILE, first_directory)
-        if secondDefaultDirectory == '':
-            second_directory = askdirectory(title="Select Second Directory")
-        else:
-            second_directory = askdirectory(initialdir=secondDefaultDirectory, title="Select Second Directory")
+        # write value to firstDefaultDirectory
+        if firstDefaultDirectory == '' or first_directory != firstDefaultDirectory: writeFirstDefaultDirectory(CONFIG_FILE, first_directory)
+        if secondDefaultDirectory == '': second_directory = filedialog.askdirectory(title="Select Second Directory")
+        else: second_directory = filedialog.askdirectory(initialdir=secondDefaultDirectory, title="Select Second Directory")
         if first_directory!='' and second_directory!='':
-            if secondDefaultDirectory == '' or second_directory != secondDefaultDirectory:
-                # write value to secondDefaultDirectory
-                writeSecondDefaultDirectory(CONFIG_FILE, second_directory)
+            # write value to secondDefaultDirectory
+            if secondDefaultDirectory == '' or second_directory != secondDefaultDirectory: writeSecondDefaultDirectory(CONFIG_FILE, second_directory)
             if first_directory != second_directory:
-                fileCount=0
+                firstDirectoryFileCount=0
+                secondDirectoryFileCount=0
+                differenceCount=0
                 directoryCount=0
-                fileCount, directoryCount = directorySearch(first_directory, second_directory, fileCount, directoryCount)
-                fileCount, directoryCount = directorySearch(second_directory, first_directory, fileCount, directoryCount)
-                messagebox.showinfo(title="Search Complete", message="Total File Difference: " + str(fileCount) + "\nTotal Directory Difference: " + str(directoryCount) + '\n')
-            else:
-                messagebox.showinfo(title="Identical Directories", message="You selected the same directory twice, genius")
+                firstDirectoryFileCount, differenceCount, directoryCount = directorySearch(first_directory, second_directory, firstDirectoryFileCount, differenceCount, directoryCount)
+                secondDirectoryFileCount, differenceCount, directoryCount = directorySearch(second_directory, first_directory, secondDirectoryFileCount, differenceCount, directoryCount)
+                messagebox.showinfo(title="Search Complete", message="Files in First Directory: " + str(firstDirectoryFileCount) + "\nFiles in Second Directory: " + str(secondDirectoryFileCount) + "\nTotal File Difference: " + str(differenceCount) + "\nTotal Directory Difference: " + str(directoryCount) + '\n')
+            else: messagebox.showinfo(title="Identical Directories", message="You selected the same directory twice, genius")
 
-def directorySearch(first_directory, second_directory, fileCount, directoryCount):
+def directorySearch(first_directory, second_directory, directoryFileCount, differenceCount, directoryCount):
     if complete == True:
-        return fileCount, directoryCount
+        return differenceCount, directoryCount
     first_directory_files = os.listdir(first_directory)
     second_directory_files = os.listdir(second_directory)
     for var in first_directory_files:
@@ -50,64 +55,150 @@ def directorySearch(first_directory, second_directory, fileCount, directoryCount
             #check if second_directory has the same directory
             if var not in second_directory_files:
                 directoryCount+=1
-                popup = Toplevel()
+                popup = tk.Toplevel()
                 popup.title("Directory Conflict Detected")
                 ws = popup.winfo_screenwidth()  # width of the screen
                 hs = popup.winfo_screenheight()  # height of the screen
-                x = (ws / 2) - (450 / 2)
+                x = (ws / 2) - (550 / 2)
                 y = (hs / 2) - (260 / 2)
-                popup.geometry('%dx%d+%d+%d' % (450, 180, x, y))
-                popup.columnconfigure(0, weight=1)
-                popup.columnconfigure(1, weight=1)
-                popup.columnconfigure(2, weight=1)
-                Label(popup, text=var + " (" + str(len([name for name in os.listdir(first_directory + '/' + var)])) + " file(s) inside)", wraplength=420, font=("TkDefaultFont", 9, 'bold')).grid(row=0, column=0, columnspan=3, pady=(15, 5))
-                Label(popup, text="Found in " + first_directory, wraplength=420).grid(row=2, column=0, columnspan=3, pady=(5, 5))
-                Label(popup, text="Not found in " + second_directory, wraplength=420).grid(row=3, column=0, columnspan=3, pady=(5, 20))
-                Button(popup, text='Copy', command=partial(copyDirectory, first_directory, second_directory, var, popup)).grid(row=4, column=0)
-                Button(popup, text='Delete', command=partial(deleteDirectory, first_directory, var, popup)).grid(row=4, column=1)
-                Button(popup, text='Ignore', command=popup.destroy).grid(row=4, column=2)
+                popup.geometry('%dx%d+%d+%d' % (550, 180, x, y))
+                popup.config(bg=bg)
+                tk.Label(popup, text=var + " (" + str(len([name for name in os.listdir(first_directory + '/' + var)])) + " file(s) inside)", wraplength=500, font=('Proxima Nova Rg', 13), fg="white", bg=bg).pack(pady=(15, 5))
+                tk.Label(popup, text="Found in " + first_directory, wraplength=500, font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(pady=(5, 5))
+                tk.Label(popup, text="Not found in " + second_directory, wraplength=500, font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(pady=(5, 20))
+                buttonFrame = tk.Frame(popup)
+                buttonFrame.pack()
+                tk.Button(buttonFrame, text='Copy', command=lambda: copyDirectory(first_directory, second_directory, var, popup), font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left")
+                tk.Button(buttonFrame, text='Delete', command=lambda: deleteDirectory(first_directory, var, popup), font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left")
+                tk.Button(buttonFrame, text='Ignore', command=popup.destroy, font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left")
                 popup.protocol("WM_DELETE_WINDOW", lambda arg=popup: on_exit(arg))
                 popup.wait_window()
             #check files within that directory with those in the directory of second_directory
-            else:
-                fileCount, directoryCount = directorySearch(first_directory + '/' + var, second_directory  + '/' + var, fileCount, directoryCount)
+            else: directoryFileCount, differenceCount, directoryCount = directorySearch(first_directory + '/' + var, second_directory + '/' + var, directoryFileCount, differenceCount, directoryCount)
         elif complete==False:
+            directoryFileCount+=1
             #check if second_directory has the same file
             if var not in second_directory_files:
-                fileCount+=1
-                popup = Toplevel()
-                popup.title("Directory Conflict Detected")
+                differenceCount+=1
+                popup = tk.Toplevel()
+                popup.title("File Conflict Detected")
                 ws = popup.winfo_screenwidth()  # width of the screen
                 hs = popup.winfo_screenheight()  # height of the screen
-                x = (ws / 2) - (500 / 2)
-                y = (hs / 2) - (506 / 2)
-                popup.geometry('%dx%d+%d+%d' % (500, 460, x, y))
-                popup.columnconfigure(0, weight=1)
-                popup.columnconfigure(1, weight=1)
-                popup.columnconfigure(2, weight=1)
-                Label(popup, text=var, wraplength=420, font=("TkDefaultFont", 9, 'bold')).pack(side=TOP, pady=(20,5))
-                Label(popup, text="Found in " + first_directory, wraplength=420).pack(side=TOP, pady=(15,5))
-                Label(popup, text="Not found in " + second_directory, wraplength=420).pack(side=TOP, pady=(15,30))
+                x = (ws / 2) - (550 / 2)
+                y = (hs / 2) - (275 / 2)
+                popup.geometry('%dx%d+%d+%d' % (550, 250, x, y))
+                if len(var) > 65:
+                    y = (hs / 2) - (297 / 2)
+                    popup.geometry('%dx%d+%d+%d' % (550, 270, x, y))
+                popup.config(bg=bg)
+                tk.Label(popup, text=var, wraplength=500, font=('Proxima Nova Rg', 13), fg="white", bg=bg).pack(pady=(25,26))
+                tk.Label(popup, text="Present in " + first_directory, wraplength=500, font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(pady=(0,30))
+                tk.Label(popup, text="Missing in " + second_directory, wraplength=500, font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(pady=(0,30))
                 #artwork from FLAC
-                audio = FLAC(first_directory + '/' + var)
-                picture = audio.pictures
-                if len(picture) > 0:
-                    stream = BytesIO(picture[0].data)
-                    image = PIL.Image.open(stream).convert("RGBA")
-                    stream.close()
-                    directoryImageImport = image.resize((200, 200), PIL.Image.ANTIALIAS)
-                    photo = PIL.ImageTk.PhotoImage(directoryImageImport)
-                    directoryImage = Label(popup, image=photo)
-                    directoryImage.image = photo
-                    directoryImage.pack(side=TOP, pady=(0,30))
-                buttons = Frame(popup)
-                buttons.pack(side=TOP)
-                Button(buttons, text='Copy',command=partial(copyFile, first_directory, second_directory, var, popup)).pack(side="left", padx=(45,45))
-                Button(buttons, text='Delete', command=partial(deleteFile, first_directory, var, popup)).pack(side="left", padx=(45,45))
-                Button(buttons, text='Ignore', command=popup.destroy).pack(side="left", padx=(45,45))
+                if var.endswith(".flac"):
+                    audio = FLAC(first_directory + '/' + var)
+                    picture = audio.pictures
+                    if len(picture) > 0:
+                        y = (hs / 2) - (550 / 2)
+                        popup.geometry('%dx%d+%d+%d' % (550, 500, x, y))
+                        stream = BytesIO(picture[0].data)
+                        image = Image.open(stream).convert("RGBA")
+                        stream.close()
+                        directoryImageImport = image.resize((200, 200), Image.ANTIALIAS)
+                        photo = ImageTk.PhotoImage(directoryImageImport)
+                        directoryImage = tk.Label(popup, image=photo, bg=bg)
+                        directoryImage.image = photo
+                        directoryImage.pack(side="top", pady=(0,30))
+                # artwork from MP3
+                elif var.endswith(".mp3"):
+                    audio = MP3(first_directory + '/' + var)
+                    if 'APIC:' in audio:
+                        image = audio["APIC:"]
+                        if image != '':
+                            y = (hs / 2) - (550 / 2)
+                            popup.geometry('%dx%d+%d+%d' % (550, 500, x, y))
+                            stream = BytesIO(image.data)
+                            image = Image.open(stream).convert("RGBA")
+                            stream.close()
+                            directoryImageImport = image.resize((200, 200), Image.ANTIALIAS)
+                            photo = ImageTk.PhotoImage(directoryImageImport)
+                            directoryImage = tk.Label(popup, image=photo, bg=bg)
+                            directoryImage.image = photo
+                            directoryImage.pack(side="top", pady=(0, 30))
+                #artwork from AIFF
+                elif var.endswith(".aiff"):
+                    audio = AIFF(first_directory + '/' + var)
+                    if 'APIC:' in audio:
+                        image = audio["APIC:"]
+                        if image != '':
+                            y = (hs / 2) - (550 / 2)
+                            popup.geometry('%dx%d+%d+%d' % (550, 500, x, y))
+                            stream = BytesIO(image.data)
+                            image = Image.open(stream).convert("RGBA")
+                            stream.close()
+                            directoryImageImport = image.resize((200, 200), Image.ANTIALIAS)
+                            photo = ImageTk.PhotoImage(directoryImageImport)
+                            directoryImage = tk.Label(popup, image=photo, bg=bg)
+                            directoryImage.image = photo
+                            directoryImage.pack(side="top", pady=(0, 30))
+                #artwork from WAV
+                elif var.endswith(".wav"):
+                    audio = WAVE(first_directory + '/' + var)
+                    if 'APIC:' in audio:
+                        image = audio["APIC:"]
+                        if image != '':
+                            y = (hs / 2) - (550 / 2)
+                            popup.geometry('%dx%d+%d+%d' % (550, 500, x, y))
+                            stream = BytesIO(image.data)
+                            image = Image.open(stream).convert("RGBA")
+                            stream.close()
+                            directoryImageImport = image.resize((200, 200), Image.ANTIALIAS)
+                            photo = ImageTk.PhotoImage(directoryImageImport)
+                            directoryImage = tk.Label(popup, image=photo, bg=bg)
+                            directoryImage.image = photo
+                            directoryImage.pack(side="top", pady=(0, 30))
+                # artwork from OGG
+                elif var.endswith(".ogg"):
+                    audio = OggVorbis(first_directory + '/' + var)
+                    if "metadata_block_picture" in audio:
+                        imageFrame = audio["metadata_block_picture"]
+                        if imageFrame[0] != '':
+                            y = (hs / 2) - (550 / 2)
+                            popup.geometry('%dx%d+%d+%d' % (550, 500, x, y))
+                            data = base64.b64decode(imageFrame[0])
+                            image = Picture(data)
+                            stream = BytesIO(image.data)
+                            image = Image.open(stream).convert("RGBA")
+                            stream.close()
+                            directoryImageImport = image.resize((200, 200), Image.ANTIALIAS)
+                            photo = ImageTk.PhotoImage(directoryImageImport)
+                            directoryImage = tk.Label(popup, image=photo, bg=bg)
+                            directoryImage.image = photo
+                            directoryImage.pack(side="top", pady=(0, 30))
+                # artwork from M4A
+                elif var.endswith(".m4a"):
+                    audio = MP4(first_directory + '/' + var)
+                    if "covr" in audio:
+                        image = audio["covr"]
+                        if len(image) != 0:
+                            y = (hs / 2) - (550 / 2)
+                            popup.geometry('%dx%d+%d+%d' % (550, 500, x, y))
+                            stream = BytesIO(image[0])
+                            image = Image.open(stream).convert("RGBA")
+                            stream.close()
+                            directoryImageImport = image.resize((200, 200), Image.ANTIALIAS)
+                            photo = ImageTk.PhotoImage(directoryImageImport)
+                            directoryImage = tk.Label(popup, image=photo, bg=bg)
+                            directoryImage.image = photo
+                            directoryImage.pack(side="top", pady=(0, 30))
+                buttonFrame = tk.Frame(popup, bg=bg)
+                buttonFrame.pack(pady=(10, 10))
+                tk.Button(buttonFrame, text='Copy', command=lambda: copyFile(first_directory, second_directory, var, popup), font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left", padx=(20, 20))
+                tk.Button(buttonFrame, text='Delete', command=lambda: deleteFile(first_directory, var, popup), font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left", padx=(20, 20))
+                tk.Button(buttonFrame, text='Ignore', command=popup.destroy, font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left", padx=(20, 20))
                 popup.protocol("WM_DELETE_WINDOW", lambda arg=popup: on_exit(arg))
                 popup.wait_window()
-    return fileCount, directoryCount
+    return directoryFileCount, differenceCount, directoryCount
 
 def copyFile(first_directory, second_directory, var, popup):
     #copy file var from first_directory to second_directory

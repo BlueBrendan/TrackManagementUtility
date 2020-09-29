@@ -63,7 +63,7 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScra
             # print current thumbnail
             Label(conflictFrame, text="Current artwork", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(20, 10))
             imageFrame = audio["metadata_block_picture"]
-            thumbnailFrame = tk.Frame(conflictFrame)
+            thumbnailFrame = tk.Frame(conflictFrame, bg=bg)
             thumbnailFrame.pack()
             if imageFrame[0] != '':
                 data = base64.b64decode(imageFrame[0])
@@ -83,7 +83,12 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScra
                 thumbnail = [thumbnailImageImport, width, height]
             else:
                 thumbnail = "NA"
-                thumbnailButton = tk.Button(thumbnailFrame, text="No Artwork Found", bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictFrame), height=12, width=28)
+                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
+                fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+                photo = ImageTk.PhotoImage(fileImageImport)
+                fileImage = tk.Label(thumbnailFrame, image=photo, bg=bg)
+                fileImage.image = photo
+                thumbnailButton = tk.Button(thumbnailFrame, image=photo, font=("Proxima Nova Rg", 11), bg="yellow", highlightcolor='yellow', highlightthickness=3,  command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictFrame))
                 thumbnailButton.pack(side="top", pady=(5, 10))
                 buttons.append(thumbnailButton)
 
@@ -264,7 +269,12 @@ def reloadThumbnail(thumbnail, track, buttons, conflictFrame, thumbnailFrame):
         buttons.append(thumbnailButton)
         tk.Label(conflictFrame, text=str(thumbnail[1]) + "x" + str(thumbnail[2]), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(5, 10))
     else:
-        thumbnailButton = tk.Button(thumbnailFrame, text="No Artwork Found", bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictFrame), height=12, width=28)
+        fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
+        fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+        photo = ImageTk.PhotoImage(fileImageImport)
+        fileImage = tk.Label(thumbnailFrame, image=photo, bg=bg)
+        fileImage.image = photo
+        thumbnailButton = tk.Button(thumbnailFrame, image=photo, font=("Proxima Nova Rg", 11), bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictFrame))
         thumbnailButton.pack(side="top", pady=(5, 10))
         buttons.append(thumbnailButton)
     return buttons

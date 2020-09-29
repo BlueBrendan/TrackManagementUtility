@@ -35,7 +35,6 @@ def fileSelect(options, imageCounter, CONFIG_FILE):
     if directories != '':
         imageSelections = []
         finalResults = []
-
         characters = 0
         webScrapingWindow = ''
         thumbnails = []

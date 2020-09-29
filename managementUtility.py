@@ -10,10 +10,10 @@ from track_preparation.scanTagsOnline import scanTagsOnline
 from other.checkForUpdates import checkForUpdates
 from other.updatePreferences import updatePreferences
 
-#add proxima nova regular
-pyglet.font.add_file("C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Proxima Nova Regular.ttf")
-#add proxima nova bold
-pyglet.font.add_file("C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Proxima Nova Bold.otf")
+# #add proxima nova regular
+# pyglet.font.add_file("C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Proxima Nova Regular.ttf")
+# #add proxima nova bold
+# pyglet.font.add_file("C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Proxima Nova Bold.otf")
 #main bg color
 bg = "#282f3b"
 #secondary color
@@ -62,43 +62,48 @@ def compareDirectories(CONFIG_FILE):
     firstDefaultDirectory = config_file[config_file.index(term) + len(term):config_file.index('\n', config_file.index(term) + len(term))]
     term = "Second Default Directory (S):"
     secondDefaultDirectory = config_file[config_file.index(term) + len(term):config_file.index('\n', config_file.index(term) + len(term))]
-    compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory)
+    compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory, root)
 
 def readValuesFromConfig(CONFIG_FILE):
     config_file = open(CONFIG_FILE, 'r').read()
     terms = ['Subdirectories (B)', 'Close Scraping Window (B)', 'First Default Directory (S)', 'Second Default Directory (S)', 'Scrape Junodownload (B)', 'Scrape Beatport (B)', 'Scrape Discogs (B)', "Reverse Image Search (B)", "Delete Stored Images (B)", "Image Load Wait Time (I)", "Scan Filename and Tags (B)", "Check for Numbering Prefix (B)", "Check for Extraneous Hyphens (B)", "Check for Capitalization (B)", "Audio naming format (S)", "Selected Tags (L)", "Delete Unselected Tags (B)", "Calculate ReplayGain (B)", "Overwrite existing ReplayGain value (B)"]
     options = {}
     for term in terms:
-        #boolean
-        if (term[len(term) - 2:len(term) - 1]) == 'B':
-            try: options[term] = tk.BooleanVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.find('\n', config_file.index(term) + len(term))])
-            except:
-                os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
-                CONFIG_FILE = createConfigFile("F")
-                readValuesFromConfig(CONFIG_FILE)
-        #string
-        elif (term[len(term) - 2:len(term) - 1]) == 'S':
-            try: options[term] = tk.StringVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
-            except:
-                os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
-                CONFIG_FILE = createConfigFile("F")
-                readValuesFromConfig(CONFIG_FILE)
-        #integer
-        elif (term[len(term) - 2:len(term) - 1]) == 'I':
-            try:
-                options[term] = tk.IntVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
-            except:
-                os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
-                CONFIG_FILE = createConfigFile("F")
-                readValuesFromConfig(CONFIG_FILE)
-        #list
-        elif (term[len(term) - 2:len(term) - 1]) == 'L':
-            try:
-                options[term] = config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))].split(', ')
-            except:
-                os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
-                CONFIG_FILE = createConfigFile("F")
-                readValuesFromConfig(CONFIG_FILE)
+        if term in config_file:
+            #boolean
+            if (term[len(term) - 2:len(term) - 1]) == 'B':
+                try: options[term] = tk.BooleanVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.find('\n', config_file.index(term) + len(term))])
+                except:
+                    os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
+                    CONFIG_FILE = createConfigFile("F")
+                    readValuesFromConfig(CONFIG_FILE)
+            #string
+            elif (term[len(term) - 2:len(term) - 1]) == 'S':
+                try: options[term] = tk.StringVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
+                except:
+                    os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
+                    CONFIG_FILE = createConfigFile("F")
+                    readValuesFromConfig(CONFIG_FILE)
+            #integer
+            elif (term[len(term) - 2:len(term) - 1]) == 'I':
+                try:
+                    options[term] = tk.IntVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
+                except:
+                    os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
+                    CONFIG_FILE = createConfigFile("F")
+                    readValuesFromConfig(CONFIG_FILE)
+            #list
+            elif (term[len(term) - 2:len(term) - 1]) == 'L':
+                try:
+                    options[term] = config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))].split(', ')
+                except:
+                    os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
+                    CONFIG_FILE = createConfigFile("F")
+                    readValuesFromConfig(CONFIG_FILE)
+        else:
+            os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
+            CONFIG_FILE = createConfigFile("F")
+            readValuesFromConfig(CONFIG_FILE)
     return options
 
 def openPreferences(CONFIG_FILE, root):

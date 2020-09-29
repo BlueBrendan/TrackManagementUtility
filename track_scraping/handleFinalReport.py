@@ -37,7 +37,13 @@ def handleFinalReport(finalResults, directories, characters, imageCounter, image
                 tk.Label(finalReportWindow, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(5, 10))
             #load thumbnail image
             else:
-                if thumbnails[i] == 'NA': tk.Label(finalReportWindow, text="No Artwork Found", font=("Proxima Nova Rg", 11)).pack(side="top", pady=(5,20))
+                if thumbnails[i] == 'NA':
+                    fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
+                    fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+                    photo = ImageTk.PhotoImage(fileImageImport)
+                    fileImage = tk.Label(finalReportWindow, image=photo, bg=bg)
+                    fileImage.image = photo
+                    fileImage.pack(side="top", padx=(10, 10))
                 else:
                     fileImageImport = thumbnails[i]
                     width, height = fileImageImport.size
