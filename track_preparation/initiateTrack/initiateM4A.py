@@ -32,10 +32,8 @@ def initiateM4A(filename, directory, options):
         "\xa9nam": 'Title',
         "----:com.apple.iTunes:replaygain_track_gain": 'ReplayGain',
     }
-    # audio["----:com.apple.iTunes:INITIALKEY"] = 'C din'
-    # print(audio.pprint())
 
-#     # transcribe informal tagnames into formal counterpart
+    # transcribe informal tagnames into formal counterpart
     informalTagDict = {v: k for k, v in formalTagDict.items()}
     fileParameters = []
     tagList = list(audio.keys())

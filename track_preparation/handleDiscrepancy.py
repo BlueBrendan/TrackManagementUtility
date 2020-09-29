@@ -49,8 +49,8 @@ def handleArtistTitleDiscrepancy(fileArtist, tagArtist, fileTitle, tagTitle):
         if i != len(tagname) - 1: tk.Label(tagnameContainer, text='', borderwidth=-2,  font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
         # highlight word if it does not match with the current filename
         if len(filename) == len(tagname) and filename[i] != tagname[i]:
-            filenameDict[i].configure(background="yellow")
-            tagnameDict[i].configure(background="yellow")
+            filenameDict[i].configure(fg="black", background="yellow")
+            tagnameDict[i].configure(fg="black", background="yellow")
 
     buttons = tk.Frame(popup, bg=bg)
     buttons.pack(side="top")
@@ -103,8 +103,8 @@ def handleTitleDiscrepancy(fileTitle, tagTitle):
         if i != len(tagname) - 1: tk.Label(tagnameContainer, text='', borderwidth=-2, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
         # highlight word if it does not match with the current filename
         if len(filename) == len(tagname) and filename[i] != tagname[i]:
-            filenameDict[i].configure(background="yellow")
-            tagnameDict[i].configure(background="yellow")
+            filenameDict[i].configure(fg="black", background="yellow")
+            tagnameDict[i].configure(fg="black", background="yellow")
 
     buttons = tk.Frame(popup, bg=bg)
     buttons.pack(side="top")

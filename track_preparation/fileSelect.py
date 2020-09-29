@@ -131,7 +131,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE):
                     results, webScrapingWindow, characters, imageCounter, imageSelection = scrapeWeb(track, audio, filename, webScrapingWindow, characters, options, imageCounter)
                     finalResults.append(results)
                     imageSelections.append(imageSelection)
-        if type(webScrapingWindow)!=str: handleFinalReport(finalResults, directories, characters, imageCounter, imageSelections, thumbnails, webScrapingWindow, options, CONFIG_FILE)
+        if type(webScrapingWindow)!=str: handleFinalReport(finalResults, characters, imageCounter, imageSelections, thumbnails, webScrapingWindow, options, CONFIG_FILE)
 
 #check if mutagen object can be made from file
 def checkFileValidity(filename, directory, format):

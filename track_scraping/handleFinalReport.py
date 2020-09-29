@@ -9,7 +9,7 @@ bg = "#282f3b"
 #secondary color
 secondary_bg = "#364153"
 
-def handleFinalReport(finalResults, directories, characters, imageCounter, imageSelections, thumbnails, webScrapingWindow, options, CONFIG_FILE):
+def handleFinalReport(finalResults, characters, imageCounter, imageSelections, thumbnails, webScrapingWindow, options, CONFIG_FILE):
         finalReportWindow = tk.Toplevel()
         finalReportWindow.title("Final Report")
         finalReportWindow.configure(bg=bg)

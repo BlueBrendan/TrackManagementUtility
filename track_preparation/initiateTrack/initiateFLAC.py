@@ -141,8 +141,8 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
             newTitle = title
             if '.' in artistPrefix[0:5]:
                 if any(char.isdigit() for char in artistPrefix[0:artistPrefix.index('.')]):
-                    if handleTypo(artist, newArtist, title, newTitle, "Prefix")!=None:
-                        artist, title = handleTypo(artist, newArtist, title, newTitle, "Hyphen")
+                    if handleTypo(artist, newArtist, title, newTitle, "Prefix", options)!=None:
+                        artist, title = handleTypo(artist, newArtist, title, newTitle, "Hyphen", options)
                         audio, filename = rename(directory, filename, artist, title, extension, format)
 
     # scan artist and title for hyphens
@@ -152,8 +152,8 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
             newTitle = title
             if '-' in artist: newArtist = artist.replace('-', ' ')
             if '-' in title: newTitle = title.replace('-', ' ')
-            if handleTypo(artist, newArtist, title, newTitle, "Hyphen") != None:
-                artist, title = handleTypo(artist, newArtist, title, newTitle, "Hyphen")
+            if handleTypo(artist, newArtist, title, newTitle, "Hyphen", options) != None:
+                artist, title = handleTypo(artist, newArtist, title, newTitle, "Hyphen", options)
                 audio, filename = rename(directory, filename, artist, title, extension, format)
 
     # scan artist and title for capitalization
@@ -163,15 +163,28 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
         newArtist = ''
         newTitle = ''
         for word in artistList:
-            if word[:1].islower(): newArtist += word.capitalize() + " "
-            else: newArtist += word + " "
+            if word.lower() in (string.lower() for string in options["Always Capitalize (L)"]):
+                if word!=word.capitalize():
+                    #recreate artist with correct spelling
+                    artist = artist.replace(word, word.capitalize())
+                    audio, filename = rename(directory, filename, artist, title, ".flac", format)
+                newArtist += word.capitalize() + ' '
+            elif word.lower() in (string.lower() for string in options["Never Capitalize (L)"]):
+                if word!=word.lower():
+                    # recreate artist with correct spelling
+                    artist = artist.replace(word, word.lower())
+                    audio, filename = rename(directory, filename, artist, title, ".flac", format)
+                newArtist += word.lower() + ' '
+            else:
+                if word[:1].islower(): newArtist += word.capitalize() + " "
+                else: newArtist += word + ' '
         newArtist = newArtist.strip()
         for word in titleList:
             if word[:1].islower(): newTitle += word.capitalize() + " "
             else: newTitle += word + " "
         newTitle = newTitle.strip()
-        if (artist != newArtist or title != newTitle) and handleTypo(artist, newArtist, title, newTitle, "Capitalization") != None:
-            artist, title = handleTypo(artist, newArtist, title, newTitle,  "Capitalization")
+        if (artist != newArtist or title != newTitle) and handleTypo(artist, newArtist, title, newTitle, "Capitalization", options) != None:
+            artist, title = handleTypo(artist, newArtist, title, newTitle,  "Capitalization", options)
             audio, filename = rename(directory, filename, artist, title, extension, format)
     return audio, filename
 
