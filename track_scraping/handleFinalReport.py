@@ -80,9 +80,8 @@ def closeScrapingWindowSelection(CONFIG_FILE):
 
 def completeSearch(finalReportWindow, webScrapingWindow, options):
     finalReportWindow.destroy()
-    webScrapingWindow.lift()
-    if options["Close Scraping Window (B)"].get() != False:
-        webScrapingWindow.destroy()
+    if options["Close Scraping Window (B)"].get() != False: webScrapingWindow.destroy()
+    else: webScrapingWindow.lift()
     # delete all images in temp if both revese image search and delete stored image options are both true
     if options["Reverse Image Search (B)"].get() == True and options["Delete Stored Images (B)"].get() == True:
         images = os.listdir(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/")

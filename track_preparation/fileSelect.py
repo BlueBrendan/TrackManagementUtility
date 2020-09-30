@@ -44,6 +44,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE):
             if checkValidity(filename):
                 audio = False
                 track = ''
+                informalTagDict = ''
                 #handle FLAC file
                 if filename.endswith('.flac') and type(checkFileValidity(filename, directory, "FLAC"))!=str:
                     #handle naming preferences, tag settings, and replay gain
@@ -128,7 +129,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE):
                     webScrapingWindow.title("Web Scraping Display")
                     webScrapingWindow.configure(bg=bg)
                     webScrapingWindow.geometry("900x300+0+0")
-                    results, webScrapingWindow, characters, imageCounter, imageSelection = scrapeWeb(track, audio, filename, webScrapingWindow, characters, options, imageCounter)
+                    results, webScrapingWindow, characters, imageCounter, imageSelection = scrapeWeb(track, audio, filename, webScrapingWindow, characters, options, imageCounter, informalTagDict)
                     finalResults.append(results)
                     imageSelections.append(imageSelection)
         if type(webScrapingWindow)!=str: handleFinalReport(finalResults, characters, imageCounter, imageSelections, thumbnails, webScrapingWindow, options, CONFIG_FILE)

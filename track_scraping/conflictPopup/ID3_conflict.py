@@ -32,12 +32,11 @@ def ID3_conflict(audio, track, options, initialCounter, imageCounter, webScrapin
                 conflictPopup.geometry('%dx%d+%d+%d' % ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)), 300, x, y))
             conflictPopup.config(bg=bg)
             # tag conflict window
-            # tags
+            tk.Label(conflictPopup, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(30, 40), side="top")
             tags = tk.Frame(conflictPopup, bg=bg)
             tags.pack()
-            tk.Label(tags, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(30, 40), side="top")
-            tk.Label(tags, text="CURRENT TAGS:\nYear: " + str(audio["TDRC"]) + "\nBPM: " + str(audio["TBPM"]) + "\nKey: " + str(audio["TKEY"]) + "\nGenre: " + str(audio["TCON"]), justify="left", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", pady=(10, 50))
-            tk.Label(tags, text="NEW TAGS:\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), justify="left", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="right", pady=(0, 50))
+            tk.Label(tags, text="CURRENT TAGS:\nYear: " + str(audio["TDRC"]) + "\nBPM: " + str(audio["TBPM"]) + "\nKey: " + str(audio["TKEY"]) + "\nGenre: " + str(audio["TCON"]), justify="left", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", padx=(0, 50), pady=(0, 50))
+            tk.Label(tags, text="NEW TAGS:\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), justify="left", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="right", padx=(50, 0), pady=(0, 50))
             # buttons
             optionButtons = tk.Frame(conflictPopup, bg=bg)
             optionButtons.pack()

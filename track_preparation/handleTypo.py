@@ -57,7 +57,7 @@ def handleTypo(artist, newArtist, title, newTitle, type, options):
         #highlight word if it does not match with the current filename
         if len(currentFilename) == len(newFilename) and currentFilename[i] != newFilename[i]:
             word = str(newFilenameDict[i]["text"])
-            newFilenameDict[i].configure(fg="black", background="yellow")
+            newFilenameDict[i].configure(fg="black", bg="yellow")
 
     buttons = tk.Frame(popup, bg=bg)
     buttons.pack(side="top")

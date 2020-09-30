@@ -32,12 +32,12 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScra
                 conflictPopup.geometry('%dx%d+%d+%d' % ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)), 300, x, y))
             conflictPopup.config(bg=bg)
             #tag conflict window
+            tk.Label(conflictPopup, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(30, 40), side="top")
             # tags
             tags = tk.Frame(conflictPopup, bg=bg)
             tags.pack()
-            tk.Label(tags, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(30, 40), side="top")
-            tk.Label(tags, text="CURRENT TAGS:\nYear: " + str(audio['date'][0]) + "\nBPM: " + str(audio['bpm'][0]) + "\nKey: " + str(audio['initialkey'][0]) + "\nGenre: " + str(audio['genre'][0]), font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left").pack(side="left", pady=(0, 50))
-            tk.Label(tags, text="SCRAPED TAGS:\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left").pack(side="right", pady=(0, 50))
+            tk.Label(tags, text="CURRENT TAGS:\nYear: " + str(audio['date'][0]) + "\nBPM: " + str(audio['bpm'][0]) + "\nKey: " + str(audio['initialkey'][0]) + "\nGenre: " + str(audio['genre'][0]), font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left").pack(side="left", padx=(0, 50), pady=(0, 50))
+            tk.Label(tags, text="SCRAPED TAGS:\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left").pack(side="right", padx=(50, 0), pady=(0, 50))
             # buttons
             optionButtons = tk.Frame(conflictPopup, bg=bg)
             optionButtons.pack()

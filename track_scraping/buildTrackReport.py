@@ -10,7 +10,7 @@ from track_scraping.conflictPopup.ID3_conflict import ID3_conflict
 from track_scraping.conflictPopup.Vorbis_conflict import Vorbis_conflict
 from track_scraping.conflictPopup.M4A_conflict import M4A_conflict
 
-def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, filename, webScrapingWindow, characters, options, initialCounter, imageCounter):
+def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, filename, webScrapingWindow, characters, options, initialCounter, imageCounter, informalTagDict):
     conflict = False
     # check year for false values
     if len(yearList) != 0:
@@ -46,7 +46,7 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, filena
         conflict = True
     #update audio tags
     if conflict == True or imageCounter > 0:
-        if filename.endswith(".flac"): FLAC_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow)
+        if filename.endswith(".flac"): FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict, webScrapingWindow)
         elif filename.endswith(".aiff") or filename.endswith(".mp3") or filename.endswith(".wav"): ID3_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow)
         elif filename.endswith(".ogg"): Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow)
         elif filename.endswith(".m4a"): M4A_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow)

@@ -12,6 +12,7 @@ import random
 from track_scraping.compareTokens import compareTokens
 from track_scraping.reverseImageSearch import reverseImageSearch
 from web_scrapers.webScrapingWindowControl import rerenderControls
+from web_scrapers.webScrapingWindowControl import resetLeftRightFrames
 from web_scrapers.compareRuntime import compareRuntime
 
 #main bg color
@@ -38,23 +39,15 @@ def beatportSearch(title, var, yearList, BPMList, keyList, genreList, URLList, a
     searchFrame = tk.Frame(labelFrame, bg=bg)
     searchFrame.pack(side="left")
     pageFrame = tk.Frame(labelFrame, bg=bg)
-    pageFrame.pack(side="right", pady=(18, 0))
-    tk.Label(searchFrame, text="\nSearching Beatport for " + str(var), font=("Proxima Nova Rg", 13), fg="white", bg=bg, anchor='w').pack(side="left", padx=(10, 0))
+    pageFrame.pack(side="right", pady=(20, 0))
+    tk.Label(searchFrame, text="\nSearching Beatport for " + str(var), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="left", padx=(10, 0), anchor='w')
     # page counter and navigation buttons
     rerenderControls(pageFrame, webScrapingPage)
 
     componentFrame = tk.Frame(webScrapingWindow, bg=bg)
     componentFrame.pack(fill=X, pady=(10, 0))
-    # component for text
-    leftComponentFrame = tk.Frame(componentFrame, bg=bg)
-    leftComponentFrame.pack(side="left", anchor="w", fill=Y)
-    # component for image
-    rightComponentFrame = tk.Frame(componentFrame, bg=bg)
-    rightComponentFrame.pack(side="right", anchor="e", fill=Y)
-
-    webScrapingWindow.update()
-    webScrapingWindow.attributes("-topmost", 1)
-    webScrapingWindow.attributes("-topmost", 0)
+    leftComponentFrame, rightComponentFrame = resetLeftRightFrames(componentFrame)
+    refresh(webScrapingWindow)
     url = "https://www.google.co.in/search?q=" + search + " Beatport"
     soup = sendRequest(url, headers, webScrapingWindow)
     if soup == False:
@@ -67,8 +60,7 @@ def beatportSearch(title, var, yearList, BPMList, keyList, genreList, URLList, a
             content = link.get('href').split('&')[0].lower()[link.get('href').split('&')[0].lower().index('beatport.com') + len("beatport.com"):lastForwardslashIndex]
             content = content[content.index('/', 1)+1:].replace('-', ' ')
             contentVariations = [content]
-            if 'extended remix' in content.lower():
-                contentVariations.append(content.replace('extended remix', 'remix'))
+            if 'extended remix' in content.lower(): contentVariations.append(content.replace('extended remix', 'remix'))
             mismatch = True
             if '/' not in content:
                 for variation in titleVariations:
@@ -85,32 +77,32 @@ def beatportSearch(title, var, yearList, BPMList, keyList, genreList, URLList, a
                 link = link.get('href').split('&')[0].split('=')[1]
                 if "remix" in link and "remix" in title.lower() or "remix" not in title.lower() and "remix" not in link:
                     # clear component frames of existing content
-                    widgetList = allWidgets(leftComponentFrame)
-                    for item in widgetList: item.pack_forget()
-                    widgetList = allWidgets(rightComponentFrame)
+                    widgetList = allWidgets(componentFrame)
                     for item in widgetList: item.pack_forget()
                     widgetList = allWidgets(pageFrame)
                     for item in widgetList: item.pack_forget()
                     webScrapingPage += 1
+                    leftComponentFrame, rightComponentFrame = resetLeftRightFrames(componentFrame)
+
                     # page counter and navigation buttons
                     rerenderControls(pageFrame, webScrapingPage)
                     if len(link) > 75: label = tk.Label(leftComponentFrame, text="\n" + str(link)[0:74] + "...", cursor="hand2", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                     else: label = tk.Label(leftComponentFrame, text="\n" + str(link), cursor="hand2", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                     label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
-                    label.pack(padx=(10, 0))
+                    label.pack(padx=(10, 0), pady=(0, 25), anchor='w')
                     webScrapingLeftPane[webScrapingPage] = leftComponentFrame
+                    # assume match will fail and no image will be found
+                    webScrapingRightPane[webScrapingPage] = "NA"
                     webScrapingLinks[webScrapingPage] = link
-                    webScrapingWindow.update()
-                    webScrapingWindow.attributes("-topmost", 1)
-                    webScrapingWindow.attributes("-topmost", 0)
+                    refresh(webScrapingWindow)
                     soup = sendRequest(link, headers, webScrapingWindow)
                     if soup != False and "Oops... the page you were looking for could not be found" not in str(soup):
                         #check if page is a track (single) or a release (album)
                         #case 1: release
-                        if link[25:32] == "release": yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingPage = beatportRelease(soup, titleVariations, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
+                        if link[25:32] == "release": yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane = beatportRelease(soup, titleVariations, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
                         #case 2: track
-                        elif link[25:30] == "track": yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingPage = beatportTrack(soup, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
-    return yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, componentFrame
+                        elif link[25:30] == "track": yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane = beatportTrack(soup, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
+    return yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame
 
 #search beatport releases, filter individual tracks
 def beatportRelease(soup, titleVariations, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter):
@@ -124,8 +116,8 @@ def beatportRelease(soup, titleVariations, yearList, BPMList, keyList, genreList
                 tk.Label(webScrapingWindow, text="Connection Failed").pack(anchor='w')
                 refresh(webScrapingWindow)
                 return yearList, BPMList, keyList, genreList, imageCounter
-            yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingPage = beatportTrack(soup, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
-    return yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingPage
+            yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane = beatportTrack(soup, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
+    return yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane
 
 #search beatport tracks, extract info in the event of a match
 def beatportTrack(soup, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter):
@@ -140,33 +132,38 @@ def beatportTrack(soup, yearList, BPMList, keyList, genreList, URLList, headers,
             trackMix = trackHeader.find('h1', class_="remixed").get_text()
             if trackMix != '' and 'original' not in trackMix.lower() and '(' in title and ')' in title:
                 remix = title[title.rfind('(') + 1:title.rfind(')')]
-                if compareTokens(remix, trackMix) == False:
-                    yearList, BPMList, keyList, genreList, URLList, imageCounter, webScrapingLeftPane, webScrapingRightPane, webScrapingPage = extractInfo(soup, yearList, BPMList, keyList, genreList, URLList, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
-            else:
-                yearList, BPMList, keyList, genreList, URLList, imageCounter, webScrapingLeftPane, webScrapingRightPane, webScrapingPage = extractInfo(soup, yearList, BPMList, keyList, genreList, URLList, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
-    return yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingPage
+                if compareTokens(remix, trackMix) == False: yearList, BPMList, keyList, genreList, URLList, imageCounter, webScrapingLeftPane, webScrapingRightPane = extractInfo(soup, yearList, BPMList, keyList, genreList, URLList, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
+                else:
+                    tk.Label(leftComponentFrame, text="Track failed string comparison test, likely a remix or a different track entirely", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
+                    refresh(webScrapingWindow)
+            else: yearList, BPMList, keyList, genreList, URLList, imageCounter, webScrapingLeftPane, webScrapingRightPane = extractInfo(soup, yearList, BPMList, keyList, genreList, URLList, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
+        else:
+            tk.Label(leftComponentFrame, text="Track failed runtime comparison test, likely a radio or compilation mix edit", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
+            refresh(webScrapingWindow)
+    return yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane
 
 #extract year, BPM, key, and genre
 def extractInfo(soup, yearList, BPMList, keyList, genreList, URLList, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter):
     for link in soup.find_all('ul', class_="interior-track-content-list"):
+        # extract year
         release = link.find('li', class_="interior-track-content-item interior-track-released")
         release = release.find('span', class_="value").get_text()
-        tk.Label(leftComponentFrame, text="Year: " + str(release[0:4]), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(30, 0), anchor="w")
-        webScrapingLeftPane[webScrapingPage] = leftComponentFrame
+        tk.Label(leftComponentFrame, text="Year: " + str(release[0:4]), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
         refresh(webScrapingWindow)
         yearList.append(int(release[0:4]))
+        #extract BPM
         BPM = link.find('li', class_="interior-track-content-item interior-track-bpm")
         BPM = BPM.find('span', class_="value").get_text()
         tk.Label(leftComponentFrame, text="BPM: " + str(BPM), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
-        webScrapingLeftPane[webScrapingPage] = leftComponentFrame
         refresh(webScrapingWindow)
         BPMList.append(int(BPM))
+        #extract key
         key = link.find('li', class_="interior-track-content-item interior-track-key")
         key = key.find('span', class_="value").get_text()
         tk.Label(leftComponentFrame, text="Key: " + str(key), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
-        webScrapingLeftPane[webScrapingPage] = leftComponentFrame
         refresh(webScrapingWindow)
         keyList.append(key)
+        #extract genre
         genre = link.find('li', class_="interior-track-content-item interior-track-genre")
         if genre.find('span', class_="value sep"):
             firstGenre = genre.find('span', class_="value")
@@ -174,7 +171,6 @@ def extractInfo(soup, yearList, BPMList, keyList, genreList, URLList, headers, l
             secondGenre = genre.find('span', class_="value sep")
             secondGenre = secondGenre.find('a').get_text()
             tk.Label(leftComponentFrame, text="Genre: " + str(firstGenre) + ' | ' + str(secondGenre), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
-            webScrapingLeftPane[webScrapingPage] = leftComponentFrame
             refresh(webScrapingWindow)
             genreList.append(firstGenre)
             genreList.append(secondGenre)
@@ -182,9 +178,10 @@ def extractInfo(soup, yearList, BPMList, keyList, genreList, URLList, headers, l
             genre = genre.find('span', class_="value")
             genre = genre.find('a').get_text()
             tk.Label(leftComponentFrame, text="Genre: " + str(genre), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
-            webScrapingLeftPane[webScrapingPage] = leftComponentFrame
             refresh(webScrapingWindow)
             genreList.append(genre)
+    webScrapingLeftPane[webScrapingPage] = leftComponentFrame
+    #extract image
     link = soup.find('img', class_="interior-track-release-artwork")
     if link!=None:
         link = link['src']
@@ -199,13 +196,13 @@ def extractInfo(soup, yearList, BPMList, keyList, genreList, URLList, headers, l
         fileImage = Label(rightComponentFrame, image=photo, bg=bg)
         fileImage.image = photo
         fileImage.pack(padx=(0, 100), anchor="e")
-        webScrapingWindow.update()
+        refresh(webScrapingWindow)
         imageCounter+=1
         webScrapingRightPane[webScrapingPage] = rightComponentFrame
         # perform image scraping if enabled in options
         if options["Reverse Image Search (B)"].get() == True:
             imageCounter, URLList = reverseImageSearch(link, headers, webScrapingWindow, imageCounter, URLList, options)
-    return yearList, BPMList, keyList, genreList, URLList, imageCounter, webScrapingLeftPane, webScrapingRightPane, webScrapingPage
+    return yearList, BPMList, keyList, genreList, URLList, imageCounter, webScrapingLeftPane, webScrapingRightPane
 
 def sendRequest(url, headers, window):
     try:
@@ -216,12 +213,16 @@ def sendRequest(url, headers, window):
         return soup
     except requests.exceptions.ConnectionError:
         tk.Label(window, text="Connection refused").pack(anchor='w')
-        window.update()
+        refresh(window)
         # generate random waiting time to avoid being blocked
         time.sleep(random.uniform(1, 3.5))
         return False
 
-def refresh(window):
-    window.update()
+def refresh(webScrapingWindow):
+    webScrapingWindow.update()
+    webScrapingWindow.attributes("-topmost", 1)
+    webScrapingWindow.attributes("-topmost", 0)
+
+
 
 

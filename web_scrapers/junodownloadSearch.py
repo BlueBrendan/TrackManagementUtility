@@ -12,6 +12,7 @@ import random
 from track_scraping.compareTokens import compareTokens
 from track_scraping.reverseImageSearch import reverseImageSearch
 from web_scrapers.webScrapingWindowControl import rerenderControls
+from web_scrapers.webScrapingWindowControl import resetLeftRightFrames
 from web_scrapers.compareRuntime import compareRuntime
 
 #main bg color
@@ -38,22 +39,15 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
     searchFrame = tk.Frame(labelFrame, bg=bg)
     searchFrame.pack(side="left")
     pageFrame = tk.Frame(labelFrame, bg=bg)
-    pageFrame.pack(side="right", pady=(18, 0))
-    tk.Label(searchFrame, text="\nSearching Juno Download for " + str(var), font=("Proxima Nova Rg", 13), fg="white", bg=bg, anchor='w').pack(side="left", padx=(10, 0))
+    pageFrame.pack(side="right", pady=(20, 0))
+    tk.Label(searchFrame, text="\nSearching Juno Download for " + str(var), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="left", padx=(10, 0), anchor='w')
     #page counter and navigation buttons
     rerenderControls(pageFrame, webScrapingPage)
     componentFrame = tk.Frame(webScrapingWindow, bg=bg)
     componentFrame.pack(fill=X, pady=(10, 0))
-    #component for text
-    leftComponentFrame = tk.Frame(componentFrame, bg=bg)
-    leftComponentFrame.pack(side="left", anchor="w", fill=Y)
-    #component for image
-    rightComponentFrame = tk.Frame(componentFrame, bg=bg)
-    rightComponentFrame.pack(side="right", anchor="e", fill=Y)
+    leftComponentFrame, rightComponentFrame = resetLeftRightFrames(componentFrame)
 
-    webScrapingWindow.update()
-    webScrapingWindow.attributes("-topmost", 1)
-    webScrapingWindow.attributes("-topmost", 0)
+    refresh(webScrapingWindow)
     url = "https://www.google.co.in/search?q=" + search + " Junodownload"
     soup = sendRequest(url, headers, leftComponentFrame, webScrapingWindow)
     if soup!=False:
@@ -64,26 +58,25 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
                     if variation.lower() in str(result).lower():
                         link = result.find('a').get('href').split('&')[0][7:]
                         #clear component frames of existing content
-                        widgetList = allWidgets(leftComponentFrame)
-                        for item in widgetList: item.pack_forget()
-                        widgetList = allWidgets(rightComponentFrame)
+                        widgetList = allWidgets(componentFrame)
                         for item in widgetList: item.pack_forget()
                         widgetList = allWidgets(pageFrame)
                         for item in widgetList: item.pack_forget()
                         #increment web scraping page and rerender count
                         webScrapingPage+=1
+                        leftComponentFrame, rightComponentFrame = resetLeftRightFrames(componentFrame)
                         rerenderControls(pageFrame, webScrapingPage)
                         if len(link) >= 75: label = tk.Label(leftComponentFrame, text="\n" + str(link)[0:74] + "...", cursor="hand2", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                         else: label = tk.Label(leftComponentFrame, text="\n" + str(link), cursor="hand2", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                         label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
-                        label.pack(padx=(10, 0), pady=(0, 25))
+                        label.pack(padx=(10, 0), pady=(0, 25), anchor='w')
                         #update left component history frame
                         webScrapingLeftPane[webScrapingPage] = leftComponentFrame
+                        # assume match will fail and no image will be found
+                        webScrapingRightPane[webScrapingPage] = "NA"
                         #update link
                         webScrapingLinks[webScrapingPage] = link
-                        webScrapingWindow.update()
-                        webScrapingWindow.attributes("-topmost", 1)
-                        webScrapingWindow.attributes("-topmost", 0)
+                        refresh(webScrapingWindow)
                         soup = sendRequest(link, headers, leftComponentFrame, webScrapingWindow)
                         if soup!=False:
                             #scrape release date and genre
@@ -100,26 +93,27 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
                                     title = title.replace('-', ' ')
                                     mismatch = compareTokens(title, trackTitle)
                                     if not mismatch:break
+                                refresh(webScrapingWindow)
                                 if mismatch == False:
-                                #check runtime to ensure track is correct
+                                    #check runtime to ensure track is correct
                                     runtime = link.find('div', class_="col-1 d-none d-lg-block text-center").get_text()
                                     if compareRuntime(runtime, audio) == False:
                                         for value in link.find_all('div', class_="col-1 d-none d-lg-block text-center"):
                                             if ":" not in value.get_text() and value.get_text()!='\xa0':
                                                 BPM = value.get_text()
-                                                tk.Label(leftComponentFrame, text="BPM: " + str(BPM), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
+                                                tk.Label(leftComponentFrame, text="BPM: " + str(BPM), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
                                                 webScrapingLeftPane[webScrapingPage] = leftComponentFrame
-                                                webScrapingWindow.update()
+                                                refresh(webScrapingWindow)
                                                 BPMList.append(int(BPM))
                                                 BPMList.append(int(BPM))
                                         #only push release and genre from header if title is found in tracklist
                                         # scrape release date and genre
                                         for link in soup.select('div[class=mb-3]'):
                                             release = link.find("span", itemprop="datePublished").get_text()
-                                            tk.Label(leftComponentFrame, text="Year: " + str(release), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
+                                            tk.Label(leftComponentFrame, text="Year: " + str(release), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
                                             yearList.append(int(release[-4:]))
                                             genre = link.find("a").get_text()
-                                            tk.Label(leftComponentFrame, text="Genre: " + str(genre), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
+                                            tk.Label(leftComponentFrame, text="Genre: " + str(genre), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
                                             genreList.append(genre)
                                             webScrapingLeftPane[webScrapingPage] = leftComponentFrame
                                             # extract image
@@ -136,14 +130,18 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
                                             fileImage = tk.Label(rightComponentFrame, image=photo, bg=bg)
                                             fileImage.image = photo
                                             fileImage.pack(padx=(0, 100), anchor="e")
-                                            webScrapingWindow.update()
                                             imageCounter += 1
+                                            refresh(webScrapingWindow)
                                             webScrapingRightPane[webScrapingPage] = rightComponentFrame
                                             # perform image scraping if enabled in options
                                             if options["Reverse Image Search (B)"].get() == True:
                                                 imageCounter, URLList = reverseImageSearch(link, headers, webScrapingWindow, imageCounter, URLList, options)
                                             time.sleep(1)
-    return yearList, BPMList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, componentFrame
+                                    else:
+                                        tk.Label(leftComponentFrame, text="Track failed runtime comparison test, likely a radio or compilation mix edit", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
+                                        webScrapingLeftPane[webScrapingPage] = leftComponentFrame
+                                        refresh(webScrapingWindow)
+    return yearList, BPMList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame
 
 def sendRequest(url, headers, frame, window):
     try:
@@ -154,7 +152,12 @@ def sendRequest(url, headers, frame, window):
         return soup
     except requests.exceptions.ConnectionError:
         Label(frame, text="Connection refused", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), anchor='w')
-        window.update()
+        refresh(window)
         # generate random waiting time to avoid being blocked
         time.sleep(random.uniform(1, 3.5))
         return False
+
+def refresh(webScrapingWindow):
+    webScrapingWindow.update()
+    webScrapingWindow.attributes("-topmost", 1)
+    webScrapingWindow.attributes("-topmost", 0)
