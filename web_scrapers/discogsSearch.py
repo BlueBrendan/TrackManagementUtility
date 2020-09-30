@@ -11,6 +11,7 @@ import random
 #import methods
 from track_scraping.compareTokens import compareTokens
 from track_scraping.reverseImageSearch import reverseImageSearch
+from web_scrapers.webScrapingWindowControl import rerenderControls
 
 #main bg color
 bg = "#282f3b"
@@ -24,14 +25,23 @@ def allWidgets(window):
             _list.extend(item.winfo_children())
     return _list
 
-def discogsSearch(title, var, yearList, genreList, URLList, artistVariations, titleVariations, headers, search, window, options, imageCounter):
+def discogsSearch(title, var, yearList, genreList, URLList, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, options, imageCounter):
     # THIRD QUERY - DISCOGS
-    widgetList = allWidgets(window)
+    widgetList = allWidgets(webScrapingWindow)
     for item in widgetList:
         item.pack_forget()
 
-    tk.Label(window, text="\nSearching Discogs for " + str(var), font=("Proxima Nova Rg", 13), fg="white", bg=bg, anchor="w").pack(padx=(10, 0), pady=(10, 10), fill=X)
-    componentFrame = tk.Frame(window, bg=bg)
+    # component for search label and page indicator
+    labelFrame = tk.Frame(webScrapingWindow, bg=bg)
+    labelFrame.pack(fill=X, pady=(10, 10))
+    searchFrame = tk.Frame(labelFrame, bg=bg)
+    searchFrame.pack(side="left")
+    pageFrame = tk.Frame(labelFrame, bg=bg)
+    pageFrame.pack(side="right", pady=(18, 0))
+    tk.Label(searchFrame, text="\nSearching Discogs for " + str(var), font=("Proxima Nova Rg", 13), fg="white", bg=bg, anchor='w').pack(side="left", padx=(10, 0))
+    # page counter and navigation buttons
+    rerenderControls(pageFrame, webScrapingPage)
+    componentFrame = tk.Frame(webScrapingWindow, bg=bg)
     componentFrame.pack(fill=X, pady=(10, 0))
     # component for text
     leftComponentFrame = tk.Frame(componentFrame, bg=bg)
@@ -40,11 +50,11 @@ def discogsSearch(title, var, yearList, genreList, URLList, artistVariations, ti
     rightComponentFrame = tk.Frame(componentFrame, bg=bg)
     rightComponentFrame.pack(side="left", fill=Y)
 
-    window.update()
-    window.attributes("-topmost", 1)
-    window.attributes("-topmost", 0)
+    webScrapingWindow.update()
+    webScrapingWindow.attributes("-topmost", 1)
+    webScrapingWindow.attributes("-topmost", 0)
     url = "https://www.google.co.in/search?q=" + search + " Discogs"
-    soup = sendRequest(url, headers, window)
+    soup = sendRequest(url, headers, webScrapingWindow)
     if soup != False:
         #result includes link and description
         for result in soup.find_all('div', class_="ZINbbc xpd O9g5cc uUPGi"):
@@ -53,31 +63,35 @@ def discogsSearch(title, var, yearList, genreList, URLList, artistVariations, ti
                 if ' (' in title and ')' in title:
                     searchTitle = title[:title.index(' (')]
                 if searchTitle.lower() in str(result).lower():
-                    yearList, genreList, imageCounter, URLList = searchQuery(title, result, headers, window, yearList, genreList, URLList, leftComponentFrame, rightComponentFrame, titleVariations, options, imageCounter)
+                    yearList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = searchQuery(title, result, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, yearList, genreList, URLList, leftComponentFrame, rightComponentFrame, titleVariations, options, imageCounter)
                 else:
                     for variation in titleVariations:
                         variation = variation.replace('-', ' ')
                         if variation.lower() in str(result).lower():
-                            yearList, genreList, imageCounter, URLList = searchQuery(title, result, headers, window, yearList, genreList, URLList, leftComponentFrame, rightComponentFrame, titleVariations, options, imageCounter)
-    return yearList, genreList, imageCounter, URLList
+                            yearList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = searchQuery(title, result, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, yearList, genreList, URLList, leftComponentFrame, rightComponentFrame, titleVariations, options, imageCounter)
+    return yearList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, componentFrame
 
-def searchQuery(title, result, headers, window, yearList, genreList, URLList, leftComponentFrame, rightComponentFrame, titleVariations, options, imageCounter):
+def searchQuery(title, result, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, yearList, genreList, URLList, leftComponentFrame, rightComponentFrame, titleVariations, options, imageCounter):
     widgetList = allWidgets(leftComponentFrame)
-    for item in widgetList:
-        item.pack_forget()
-    leftComponentFrame.pack(side="left", fill=Y)
-    for item in widgetList:
-        item.pack_forget()
-
+    for item in widgetList: item.pack_forget()
+    widgetList = allWidgets(rightComponentFrame)
+    for item in widgetList: item.pack_forget()
+    widgetList = allWidgets(pageFrame)
+    for item in widgetList: item.pack_forget()
+    webScrapingPage+=1
+    # page counter and navigation buttons
+    rerenderControls(pageFrame, webScrapingPage)
     link = str(result.find('a').get('href')).split('&')[0].split('=')[1]
     label = tk.Label(leftComponentFrame, text="\n" + str(link), cursor="hand2", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
     label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
     label.pack(padx=(10, 0), anchor="w")
-    window.update()
-    window.attributes("-topmost", 1)
-    window.attributes("-topmost", 0)
+    webScrapingLeftPane[webScrapingPage] = leftComponentFrame
+    webScrapingLinks[webScrapingPage] = link
+    webScrapingWindow.update()
+    webScrapingWindow.attributes("-topmost", 1)
+    webScrapingWindow.attributes("-topmost", 0)
 
-    soup = sendRequest(link, headers, window)
+    soup = sendRequest(link, headers, webScrapingWindow)
     if soup != False:
         # first check if the title is in the tracklist, push data if it is
         link = soup.find('table', class_="playlist")
@@ -94,14 +108,14 @@ def searchQuery(title, result, headers, window, yearList, genreList, URLList, le
                             if remix.lower() not in name.lower() and '(' in name:
                                 name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
                     if title.lower() == name.lower():
-                        yearList, genreList, imageCounter, URLList = discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFrame, rightComponentFrame, window, options, imageCounter)
+                        yearList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingPage = discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
                         break
                     else:
                         for title in titleVariations:
                             title = title.replace('-', ' ')
                             mismatch = compareTokens(title, name)
                             if mismatch == False:
-                                yearList, genreList, imageCounter, URLList = discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFrame, rightComponentFrame, window, options, imageCounter)
+                                yearList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingPage = discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
                                 break
             #title format
             elif link.find('td', class_="track tracklist_track_title")!=None:
@@ -114,18 +128,18 @@ def searchQuery(title, result, headers, window, yearList, genreList, URLList, le
                             name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
                     # check if title and name are exact matches
                     if title.lower() == name.lower():
-                        yearList, genreList, imageCounter, URLList = discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFrame, rightComponentFrame, window, options, imageCounter)
+                        yearList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingPage = discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
                         break
                     else:
                         for title in titleVariations:
                             title = title.replace('-', ' ')
                             mismatch = compareTokens(title, name)
                             if mismatch == False:
-                                yearList, genreList, imageCounter, URLList = discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFrame, rightComponentFrame, window, options, imageCounter)
+                                yearList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingPage = discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
                                 break
-    return yearList, genreList, imageCounter, URLList
+    return yearList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage
 
-def discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFrame, rightComponentFrame, window, options, imageCounter):
+def discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter):
     genre = ''
     for link in soup.find_all('div', class_="content"):
         for link in link.find_all('a'):
@@ -133,7 +147,8 @@ def discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFra
             if "year" in header:
                 # Discog releases tend to have more credible tags, so each instance counts twice
                 tk.Label(leftComponentFrame, text="Year: " + str(link.get_text().strip()), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(30, 0), anchor="w")
-                window.update()
+                webScrapingLeftPane[webScrapingPage] = leftComponentFrame
+                webScrapingWindow.update()
                 if " " in link.get_text().strip():
                     yearList.append(int(link.get_text().strip()[-4:]))
                     yearList.append(int(link.get_text().strip()[-4:]))
@@ -150,29 +165,30 @@ def discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFra
                 genreList.append(link.get_text().strip())
     if len(genre) >= 75: tk.Label(leftComponentFrame, text="Genre: " + genre[0:74] + "...", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
     else: tk.Label(leftComponentFrame, text="Genre: " + genre, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
-    window.update()
-    if options["Reverse Image Search (B)"].get()==True:
-        image = soup.find('div', class_="image_gallery image_gallery_large")['data-images']
-        if "full" in image and ".jpg" in image:
-            link = image[image.index('full": ')+8:image.index(".jpg", image.index("full"))+4]
-            #check
-            if link[len(link)-5:len(link)-4]!='g':
-                link = link + '.jpg'
-            #write discogs image to drive
-            with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
-                file.write(requests.get(link, headers=headers).content)
-            URLList.append(link)
-            # load file icon
-            fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
-            fileImageImport = fileImageImport.resize((180, 180), Image.ANTIALIAS)
-            photo = ImageTk.PhotoImage(fileImageImport)
-            fileImage = tk.Label(rightComponentFrame, image=photo)
-            fileImage.image = photo
-            fileImage.pack(padx=(70, 0))
-            window.update()
-            imageCounter+=1
-            imageCounter, URLList = reverseImageSearch(link, headers, window, imageCounter, URLList, options)
-    return yearList, genreList, imageCounter, URLList
+    webScrapingLeftPane[webScrapingPage] = leftComponentFrame
+    webScrapingWindow.update()
+    image = soup.find('div', class_="image_gallery image_gallery_large")['data-images']
+    if "full" in image and ".jpg" in image:
+        link = image[image.index('full": ')+8:image.index(".jpg", image.index("full"))+4]
+        # check
+        if link[len(link)-5:len(link)-4]!='g': link = link + '.jpg'
+        # write discogs image to drive
+        with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
+            file.write(requests.get(link, headers=headers).content)
+        URLList.append(link)
+        # load file icon
+        fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
+        fileImageImport = fileImageImport.resize((180, 180), Image.ANTIALIAS)
+        photo = ImageTk.PhotoImage(fileImageImport)
+        fileImage = tk.Label(rightComponentFrame, image=photo)
+        fileImage.image = photo
+        fileImage.pack(padx=(70, 0), anchor="e")
+        webScrapingWindow.update()
+        imageCounter+=1
+        webScrapingRightPane[webScrapingPage] = rightComponentFrame
+        if options["Reverse Image Search (B)"].get() == True:
+            imageCounter, URLList = reverseImageSearch(link, headers, webScrapingWindow, imageCounter, URLList, options)
+    return yearList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingPage
 
 def sendRequest(url, headers, window):
     try:

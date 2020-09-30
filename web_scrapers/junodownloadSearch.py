@@ -11,6 +11,7 @@ import random
 #import methods
 from track_scraping.compareTokens import compareTokens
 from track_scraping.reverseImageSearch import reverseImageSearch
+from web_scrapers.webScrapingWindowControl import rerenderControls
 from web_scrapers.compareRuntime import compareRuntime
 
 #main bg color
@@ -25,27 +26,36 @@ def allWidgets(window):
             _list.extend(item.winfo_children())
     return _list
 
-def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariations, titleVariations, headers, search, window, audio, options, imageCounter):
+def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, audio, options, imageCounter):
     #FIRST QUERY - JUNO DOWNLOAD
-    widgetList = allWidgets(window)
+    widgetList = allWidgets(webScrapingWindow)
     for item in widgetList:
         item.pack_forget()
 
-    tk.Label(window, text="\nSearching Juno Download for " + str(var), font=("Proxima Nova Rg", 13), fg="white", bg=bg, anchor='w').pack(padx=(10, 0), pady=(10, 10), fill=X)
-    componentFrame = tk.Frame(window, bg=bg)
+    #component for search label and page indicator
+    labelFrame = tk.Frame(webScrapingWindow, bg=bg)
+    labelFrame.pack(fill=X, pady=(10, 10))
+    searchFrame = tk.Frame(labelFrame, bg=bg)
+    searchFrame.pack(side="left")
+    pageFrame = tk.Frame(labelFrame, bg=bg)
+    pageFrame.pack(side="right", pady=(18, 0))
+    tk.Label(searchFrame, text="\nSearching Juno Download for " + str(var), font=("Proxima Nova Rg", 13), fg="white", bg=bg, anchor='w').pack(side="left", padx=(10, 0))
+    #page counter and navigation buttons
+    rerenderControls(pageFrame, webScrapingPage)
+    componentFrame = tk.Frame(webScrapingWindow, bg=bg)
     componentFrame.pack(fill=X, pady=(10, 0))
     #component for text
     leftComponentFrame = tk.Frame(componentFrame, bg=bg)
-    leftComponentFrame.pack(side="left", fill=Y)
+    leftComponentFrame.pack(side="left", anchor="w", fill=Y)
     #component for image
     rightComponentFrame = tk.Frame(componentFrame, bg=bg)
-    rightComponentFrame.pack(side="left", fill=Y)
+    rightComponentFrame.pack(side="right", anchor="e", fill=Y)
 
-    window.update()
-    window.attributes("-topmost", 1)
-    window.attributes("-topmost", 0)
+    webScrapingWindow.update()
+    webScrapingWindow.attributes("-topmost", 1)
+    webScrapingWindow.attributes("-topmost", 0)
     url = "https://www.google.co.in/search?q=" + search + " Junodownload"
-    soup = sendRequest(url, headers, leftComponentFrame, window)
+    soup = sendRequest(url, headers, leftComponentFrame, webScrapingWindow)
     if soup!=False:
         for result in soup.find_all('div', class_="ZINbbc xpd O9g5cc uUPGi"):
             if 'junodownload.com' and 'products' in result.find('a').get('href').split('&')[0].lower():
@@ -55,19 +65,26 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
                         link = result.find('a').get('href').split('&')[0][7:]
                         #clear component frames of existing content
                         widgetList = allWidgets(leftComponentFrame)
-                        for item in widgetList:
-                            item.pack_forget()
+                        for item in widgetList: item.pack_forget()
                         widgetList = allWidgets(rightComponentFrame)
-                        for item in widgetList:
-                            item.pack_forget()
+                        for item in widgetList: item.pack_forget()
+                        widgetList = allWidgets(pageFrame)
+                        for item in widgetList: item.pack_forget()
+                        #increment web scraping page and rerender count
+                        webScrapingPage+=1
+                        rerenderControls(pageFrame, webScrapingPage)
                         if len(link) >= 75: label = tk.Label(leftComponentFrame, text="\n" + str(link)[0:74] + "...", cursor="hand2", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                         else: label = tk.Label(leftComponentFrame, text="\n" + str(link), cursor="hand2", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                         label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
-                        label.pack(padx=(10, 0))
-                        window.update()
-                        window.attributes("-topmost", 1)
-                        window.attributes("-topmost", 0)
-                        soup = sendRequest(link, headers, leftComponentFrame, window)
+                        label.pack(padx=(10, 0), pady=(0, 25))
+                        #update left component history frame
+                        webScrapingLeftPane[webScrapingPage] = leftComponentFrame
+                        #update link
+                        webScrapingLinks[webScrapingPage] = link
+                        webScrapingWindow.update()
+                        webScrapingWindow.attributes("-topmost", 1)
+                        webScrapingWindow.attributes("-topmost", 0)
+                        soup = sendRequest(link, headers, leftComponentFrame, webScrapingWindow)
                         if soup!=False:
                             #scrape release date and genre
                             for link in soup.find_all('div',class_="row gutters-sm align-items-center product-tracklist-track"):
@@ -90,8 +107,9 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
                                         for value in link.find_all('div', class_="col-1 d-none d-lg-block text-center"):
                                             if ":" not in value.get_text() and value.get_text()!='\xa0':
                                                 BPM = value.get_text()
-                                                tk.Label(leftComponentFrame, text="BPM: " + str(BPM), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(30, 0), anchor="w")
-                                                window.update()
+                                                tk.Label(leftComponentFrame, text="BPM: " + str(BPM), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
+                                                webScrapingLeftPane[webScrapingPage] = leftComponentFrame
+                                                webScrapingWindow.update()
                                                 BPMList.append(int(BPM))
                                                 BPMList.append(int(BPM))
                                         #only push release and genre from header if title is found in tracklist
@@ -103,6 +121,7 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
                                             genre = link.find("a").get_text()
                                             tk.Label(leftComponentFrame, text="Genre: " + str(genre), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
                                             genreList.append(genre)
+                                            webScrapingLeftPane[webScrapingPage] = leftComponentFrame
                                             # extract image
                                             link = soup.find('div', class_="jw-page")
                                             link = link.find('img').get('data-src-full')
@@ -116,14 +135,15 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
                                             photo = ImageTk.PhotoImage(fileImageImport)
                                             fileImage = tk.Label(rightComponentFrame, image=photo, bg=bg)
                                             fileImage.image = photo
-                                            fileImage.pack(padx=(70, 0))
-                                            window.update()
+                                            fileImage.pack(padx=(0, 100), anchor="e")
+                                            webScrapingWindow.update()
                                             imageCounter += 1
+                                            webScrapingRightPane[webScrapingPage] = rightComponentFrame
                                             # perform image scraping if enabled in options
                                             if options["Reverse Image Search (B)"].get() == True:
-                                                imageCounter, URLList = reverseImageSearch(link, headers, window, imageCounter, URLList, options)
+                                                imageCounter, URLList = reverseImageSearch(link, headers, webScrapingWindow, imageCounter, URLList, options)
                                             time.sleep(1)
-    return yearList, BPMList, genreList, imageCounter, URLList
+    return yearList, BPMList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, componentFrame
 
 def sendRequest(url, headers, frame, window):
     try:
