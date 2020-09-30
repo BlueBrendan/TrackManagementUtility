@@ -54,11 +54,11 @@ def handleTypo(artist, newArtist, title, newTitle, type, options):
         newFilenameDict[i] = tk.Label(newFilenameContainer, text=newFilename[i], borderwidth=-2, font=("Proxima Nova Rg", 11), fg="white", bg=bg)
         newFilenameDict[i].pack(side="left")
         if i!=len(newFilename)-1: tk.Label(newFilenameContainer, text='', borderwidth=-2, fg="white", bg=bg).pack(side="left")
-        #highlight word if it does not match with the current filename
-        if len(currentFilename) == len(newFilename) and currentFilename[i] != newFilename[i]:
+        #highlight word if it does not match with the current filename; only highlight the first mismatched word
+        if len(currentFilename) == len(newFilename) and currentFilename[i] != newFilename[i] and word=='':
             word = str(newFilenameDict[i]["text"])
+            currentFilenameDict[i].configure(fg="black", bg="yellow")
             newFilenameDict[i].configure(fg="black", bg="yellow")
-
     buttons = tk.Frame(popup, bg=bg)
     buttons.pack(side="top")
     tk.Button(buttons, text='Accept', command=lambda: setChange(popup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(pady=(25, 10), padx=(10, 30), side="left")
@@ -93,8 +93,8 @@ def addCapitalizedList(keyword, popup):
     term = "Always Capitalize (L)"
     originalListValues = str(config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
     newListValues = originalListValues
-    if originalListValues == '': newListValues += keyword
-    else:newListValues  += ", " + keyword
+    if originalListValues == '': newListValues += keyword.capitalize()
+    else:newListValues  += ", " + keyword.capitalize()
     with open(CONFIG_FILE, 'wt') as file:
         file.write(config_file.replace(term + ":" + str(config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]), term + ":" + str(newListValues)))
     file.close()
@@ -110,8 +110,8 @@ def addUncapitalizedList(keyword, popup):
     term = "Never Capitalize (L)"
     originalListValues = str(config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
     newListValues = originalListValues
-    if originalListValues == '': newListValues += keyword
-    else:newListValues += ", " + keyword
+    if originalListValues == '': newListValues += keyword.lower()
+    else:newListValues += ", " + keyword.lower()
     with open(CONFIG_FILE, 'wt') as file:
         file.write(config_file.replace(term + ":" + str(config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]), term + ":" + str(newListValues)))
     file.close()

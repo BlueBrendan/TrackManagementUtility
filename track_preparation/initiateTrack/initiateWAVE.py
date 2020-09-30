@@ -1,7 +1,6 @@
 from mutagen.wave import WAVE
 from mutagen.id3._frames import *
 from tkinter import messagebox
-import tkinter as tk
 import os
 
 #import methods
@@ -85,17 +84,7 @@ def initiateWAVE(filename, directory, options):
                 audio["TPE1"] = TPE1(encoding=3, text=artist)
                 audio["TIT2"] = TIT2(encoding=3, text=title)
                 audio.save()
-            else:
-                input = handleArtistTitleDiscrepancy(artist, str(audio["TPE1"]), title, str(audio["TIT2"]))
-                if input == "file":
-                    audio["TPE1"] = TPE1(encoding=3, text=artist)
-                    audio["TIT2"] = TIT2(encoding=3, text=title)
-                    audio.save()
-                elif input == "tag":
-                    extension = filename[filename.rfind('.'):]
-                    os.rename(directory + '/' + filename, str(directory) + '/' + str(audio["TPE1"]) + " - " + str(audio["TIT2"]) + extension)
-                    filename = str(audio["TPE1"]) + " - " + str(audio["TIT2"]) + extension
-                    audio = WAVE(str(directory) + '/' + filename)
+            else: audio, filename = compareArtistAndTitle(audio, artist, title, filename, directory, options)
     #only check title tag
     else:
         title = filename[:filename.rfind('.')]
@@ -104,16 +93,7 @@ def initiateWAVE(filename, directory, options):
             if str(audio["TIT2"])=='':
                 audio["TIT2"] = TIT2(encoding=3, text=title)
                 audio.save()
-            else:
-                input = handleTitleDiscrepancy(title, str(audio["TIT2"]))
-                if input == "file":
-                    audio["TIT2"] = TIT2(encoding=3, text=title)
-                    audio.save()
-                elif input == "tag":
-                    extension = filename[filename.rfind('.'):]
-                    os.rename(directory + '/' + filename, str(directory) + '/' + str(audio["TIT2"]) + extension)
-                    filename = str(audio["TIT2"]) + extension
-                    audio = WAVE(str(directory) + '/' + filename)
+            else: audio, filename = compareTitle(audio, title, filename, directory, options)
 
     # handle naming format and typo check
     if options["Audio naming format (S)"].get() == "Artist - Title":
@@ -132,7 +112,6 @@ def initiateWAVE(filename, directory, options):
             filename = filename[filename.index(' - ')+3:]
             audio = WAVE(directory + '/' + filename)
         if options["Scan Filename and Tags (B)"].get() == True: audio, filename = extractArtistAndTitle(audio, filename, directory, options, "Title")
-
     return audio, filename, informalTagDict
 
 def extractArtistAndTitle(audio, filename, directory, options, format):
@@ -178,36 +157,149 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
                 audio, filename = rename(directory, filename, artist, title, extension, format)
 
     # scan artist and title for capitalization
-    if options["Check for Capitalization (B)"].get()==True:
+    if options["Check for Capitalization (B)"].get() == True:
         artistList = artist.split(' ')
         titleList = title.split(' ')
-        newArtist = ''
-        newTitle = ''
-        for word in artistList:
-            if word.lower() in (string.lower() for string in options["Always Capitalize (L)"]):
-                if word!=word.capitalize():
-                    #recreate artist with correct spelling
-                    artist = artist.replace(word, word.capitalize())
-                    audio, filename = rename(directory, filename, artist, title, ".flac", format)
-                newArtist += word.capitalize() + ' '
-            elif word.lower() in (string.lower() for string in options["Never Capitalize (L)"]):
-                if word!=word.lower():
-                    # recreate artist with correct spelling
-                    artist = artist.replace(word, word.lower())
-                    audio, filename = rename(directory, filename, artist, title, ".flac", format)
-                newArtist += word.lower() + ' '
-            else:
-                if word[:1].islower(): newArtist += word.capitalize() + " "
-                else: newArtist += word + ' '
-        newArtist = newArtist.strip()
-        for word in titleList:
-            if word[:1].islower(): newTitle += word.capitalize() + " "
-            else: newTitle += word + " "
-        newTitle = newTitle.strip()
+        newArtist, artist, filename = checkCapitalization(artistList, artist, title, "artist", directory, filename, format, options)
+        newTitle, title, filename = checkCapitalization(titleList, artist, title, "title", directory, filename, format, options)
         if (artist != newArtist or title != newTitle) and handleTypo(artist, newArtist, title, newTitle, "Capitalization", options) != None:
-            artist, title = handleTypo(artist, newArtist, title, newTitle,  "Capitalization", options)
+            artist, title = handleTypo(artist, newArtist, title, newTitle, "Capitalization", options)
             audio, filename = rename(directory, filename, artist, title, extension, format)
     return audio, filename
+
+def compareArtistAndTitle(audio, artist, title, filename, directory, options):
+    # compare file artist with tag artist
+    fileArtistList = artist.split(' ')
+    tagArtistList = str(audio["TPE1"]).split(' ')
+    if len(fileArtistList) == len(tagArtistList):
+        for i in range(len(fileArtistList)):
+            if fileArtistList[i] != tagArtistList[i]:
+                if fileArtistList[i].lower() == tagArtistList[i].lower() and (fileArtistList[i].capitalize() in options["Always Capitalize (L)"] or fileArtistList[i].lower() in options["Never Capitalize (L)"]):
+                    if fileArtistList[i].capitalize() in options["Always Capitalize (L)"]:
+                        # capitalize both name and file tag
+                        fileArtistList[i] = fileArtistList[i].capitalize()
+                        artist = " ".join(fileArtistList)
+                        audio, filename = rename(directory, filename, artist, title, filename[filename.rfind("."):], "Artist - Title")
+                    elif fileArtistList[i].lower() in options["Never Capitalize (L)"]:
+                        # lower both name and file tag
+                        fileArtistList[i] = fileArtistList[i].lower()
+                        artist = " ".join(fileArtistList)
+                        audio, filename = rename(directory, filename, artist, title, filename[filename.rfind("."):], "Artist - Title")
+                else:
+                    input = handleArtistTitleDiscrepancy(artist, str(audio["TPE1"]), title, str(audio["TIT2"]))
+                    if input == "file":
+                        audio["TPE1"] = TPE1(encoding=3, text=artist)
+                        audio["TIT2"] = TIT2(encoding=3, text=title)
+                        audio.save()
+                    elif input == "tag":
+                        extension = filename[filename.rfind('.'):]
+                        audio, filename = rename(directory, filename, str(audio["TPE1"]), str(audio["TIT2"]), extension, "Artist - Title")
+    else:
+        input = handleArtistTitleDiscrepancy(artist, str(audio["TPE1"]), title, str(audio["TIT2"]))
+        if input == "file":
+            audio["TPE1"] = TPE1(encoding=3, text=artist)
+            audio["TIT2"] = TIT2(encoding=3, text=title)
+            audio.save()
+        elif input == "tag":
+            extension = filename[filename.rfind('.'):]
+            audio, filename = rename(directory, filename, str(audio["TPE1"]), str(audio["TIT2"]), extension, "Artist - Title")
+    # compare file title with tag title
+    fileTitleList = title.split(' ')
+    tagTitleList = str(audio["TIT2"]).split(' ')
+    if len(fileTitleList) == len(tagTitleList):
+        for i in range(len(fileTitleList)):
+            if fileTitleList[i] != tagTitleList[i]:
+                if fileTitleList[i].lower() == tagTitleList[i].lower() and (
+                        fileTitleList[i].capitalize() in options["Always Capitalize (L)"] or fileTitleList[i].lower() in options["Never Capitalize (L)"]):
+                    if fileTitleList[i].capitalize() in options["Always Capitalize (L)"]:
+                        # capitalize both name and file tag
+                        fileTitleList[i] = fileTitleList[i].capitalize()
+                        title = " ".join(fileTitleList)
+                        audio, filename = rename(directory, filename, artist, title, filename[filename.rfind("."):], "Artist - Title")
+                    elif fileTitleList[i].lower() in options["Never Capitalize (L)"]:
+                        # lower both name and file tag
+                        fileTitleList[i] = fileTitleList[i].lower()
+                        title = " ".join(fileTitleList)
+                        audio, filename = rename(directory, filename, artist, title, filename[filename.rfind("."):], "Artist - Title")
+                else:
+                    input = handleArtistTitleDiscrepancy(artist, str(audio["TPE1"]), title, str(audio["TIT2"]))
+                    if input == "file":
+                        audio["TPE1"] = TPE1(encoding=3, text=artist)
+                        audio["TIT2"] = TIT2(encoding=3, text=title)
+                        audio.save()
+                    elif input == "tag":
+                        extension = filename[filename.rfind('.'):]
+                        audio, filename = rename(directory, filename, str(audio["TPE1"]), str(audio["TIT2"]), extension, "Artist - Title")
+    else:
+        input = handleArtistTitleDiscrepancy(artist, str(audio["TPE1"]), title, str(audio["TIT2"]))
+        if input == "file":
+            audio["TPE1"] = TPE1(encoding=3, text=artist)
+            audio["TIT2"] = TIT2(encoding=3, text=title)
+            audio.save()
+        elif input == "tag":
+            extension = filename[filename.rfind('.'):]
+            audio, filename = rename(directory, filename, str(audio["TPE1"]), str(audio["TIT"]), extension, "Artist - Title")
+    return audio, filename
+
+def compareTitle(audio, title, filename, directory, options):
+    # compare file title and tag title
+    fileTitleList = title.split(' ')
+    tagTitleList = str(audio["TIT2"]).split(' ')
+    if len(fileTitleList) == len(tagTitleList):
+        for i in range(len(fileTitleList)):
+            if fileTitleList[i] != tagTitleList[i]:
+                if fileTitleList[i].lower() == tagTitleList[i].lower() and (fileTitleList[i].capitalize() in options["Always Capitalize (L)"] or fileTitleList[i].lower() in options["Never Capitalize (L)"]):
+                    if fileTitleList[i].capitalize() in options["Always Capitalize (L)"]:
+                        # capitalize both name and file tag
+                        fileTitleList[i] = fileTitleList[i].capitalize()
+                        title = " ".join(fileTitleList)
+                        audio, filename = rename(directory, filename, str(audio["TPE1"]), title, filename[filename.rfind("."):], "Title")
+                    elif fileTitleList[i].lower() in options["Never Capitalize (L)"]:
+                        # lower both name and file tag
+                        fileTitleList[i] = fileTitleList[i].lower()
+                        title = " ".join(fileTitleList)
+                        audio, filename = rename(directory, filename, str(audio["TPE1"]), title, filename[filename.rfind("."):], "Title")
+                else:
+                    input = handleTitleDiscrepancy(title, str(audio["TIT2"]))
+                    if input == "file":
+                        audio["title"] = title
+                        audio.save()
+                    elif input == "tag":
+                        extension = filename[filename.rfind('.'):]
+                        audio, filename = rename(directory, filename, str(audio["TPE1"]), str(audio["TIT2"]), extension, "Title")
+    else:
+        input = handleTitleDiscrepancy(title, str(audio["title"][0]))
+        if input == "file":
+            audio["TIT2"] = TIT2(encoding=3, text=title)
+            audio.save()
+        elif input == "tag":
+            extension = filename[filename.rfind('.'):]
+            audio, filename = rename(directory, filename, str(audio["TPE1"]), str(audio["TIT2"]), extension, "Title")
+    return audio, filename
+
+def checkCapitalization(list, artist, title, subject, directory, filename, format, options):
+    newString = ''
+    for word in list:
+        if word.lower() in (string.lower() for string in options["Always Capitalize (L)"]):
+            if word != word.capitalize():
+                # recreate correct spelling
+                if subject == "artist": artist = artist.replace(word, word.capitalize())
+                elif subject == "title": title = title.replace(word, word.capitalize())
+                audio, filename = rename(directory, filename, artist, title, ".flac", format)
+            newString += word.capitalize() + ' '
+        elif word.lower() in (string.lower() for string in options["Never Capitalize (L)"]):
+            if word != word.lower():
+                # recreate correct spelling
+                if subject == "artist": artist = artist.replace(word, word.lower())
+                elif subject == "title": title = title.replace(word, word.lower())
+                audio, filename = rename(directory, filename, artist, title, ".flac", format)
+            newString += word.lower() + ' '
+        else:
+            if word[:1].islower(): newString += word.capitalize() + ' '
+            else: newString += word + ' '
+    newString = newString.strip()
+    if subject == "artist": return newString, artist, filename
+    elif subject == "title": return newString, title, filename
 
 def rename(directory, filename, artist, title, extension, format):
     if format == "Artist - Title":
@@ -224,8 +316,7 @@ def rename(directory, filename, artist, title, extension, format):
         try:
             os.rename(directory + '/' + filename, str(directory) + '/' + str(title) + extension)
             filename = str(title) + extension
-            audio = WAVE\
-                (str(directory) + '/' + str(title) + extension)
+            audio = WAVE(str(directory) + '/' + str(title) + extension)
             audio["TPE1"] = TPE1(encoding=3, text=artist)
             audio["TIT2"] = TIT2(encoding=3, text=title)
             audio.save()

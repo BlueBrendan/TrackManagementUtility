@@ -35,6 +35,8 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalT
             tk.Label(conflictPopup, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(30, 40), side="top")
             tags = tk.Frame(conflictPopup, bg=bg)
             tags.pack()
+
+            #print current tags
             leftTags = tk.Frame(tags, bg=bg)
             leftTags.pack(side="left", padx=(0, 50), pady=(0, 50))
             currentTagDict = {}
@@ -51,6 +53,8 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalT
                 else:
                     currentTagDict[i+1] = tk.Label(leftTags, text=list[i] + ": " + str(audio[informalTagDict[list[i]]][0]), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                     currentTagDict[i+1].pack(pady=(0, 0), anchor='w')
+
+            #print scraped tags
             rightTags = tk.Frame(tags, bg=bg)
             rightTags.pack(side="right", padx=(50, 0), pady=(0, 50))
             scrapedTagDict[0] = tk.Label(rightTags, text="SCRAPED TAGS:", font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left", bd=-10)

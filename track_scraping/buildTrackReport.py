@@ -47,9 +47,9 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, filena
     #update audio tags
     if conflict == True or imageCounter > 0:
         if filename.endswith(".flac"): FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict, webScrapingWindow)
-        elif filename.endswith(".aiff") or filename.endswith(".mp3") or filename.endswith(".wav"): ID3_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow)
-        elif filename.endswith(".ogg"): Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow)
-        elif filename.endswith(".m4a"): M4A_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow)
+        elif filename.endswith(".aiff") or filename.endswith(".mp3") or filename.endswith(".wav"): ID3_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict, webScrapingWindow)
+        elif filename.endswith(".ogg"): Vorbis_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict, webScrapingWindow)
+        elif filename.endswith(".m4a"): M4A_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict, webScrapingWindow)
     if len(str(track.artist) + " - " + str(track.title)) > characters: characters = len(str(track.artist) + " - " + str(track.title))
     return "\nTrack: " + str(track.artist) + " - " + str(track.title) + "\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), webScrapingWindow, characters, track.imageSelection
 

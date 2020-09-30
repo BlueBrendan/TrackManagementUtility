@@ -24,7 +24,7 @@ def handleArtistTitleDiscrepancy(fileArtist, tagArtist, fileTitle, tagTitle):
         x = (ws / 2) - ((450 + (len(fileTitle) * 1.5)) / 2)
         popup.geometry('%dx%d+%d+%d' % (500 + (len(fileTitle) * 1.5), 300, x, y))
     popup.config(bg=bg)
-    tk.Label(popup, text="The title and artist in filename confilct with their corresponding tags.\nChoose between the file and tag name\n", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(20, 10))
+    tk.Label(popup, text="The title and artist in filename conflict with their corresponding tags.\nChoose between the file and tag name\n", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(20, 10))
 
     # pack a label for each individual word in the file name
     tk.Label(popup, text="File Name", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack()

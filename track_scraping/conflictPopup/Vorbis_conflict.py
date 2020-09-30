@@ -15,7 +15,7 @@ secondary_bg = "#364153"
 #global variables
 page = 0
 
-def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScrapingWindow):
+def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict, webScrapingWindow):
     global page
     if audio['date'][0] != '' or audio['bpm'][0] != '' or audio['initialkey'][0] != '' or audio['genre'][0] != '':
         #tag conflict
@@ -36,8 +36,46 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, webScra
             # tags
             tags = tk.Frame(conflictPopup, bg=bg)
             tags.pack()
-            tk.Label(tags, text="CURRENT TAGS:\nYear: " + str(audio['date'][0]) + "\nBPM: " + str(audio['bpm'][0]) + "\nKey: " + str(audio['initialkey'][0]) + "\nGenre: " + str(audio['genre'][0]), font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left").pack(side="left", padx=(0, 50), pady=(0, 50))
-            tk.Label(tags, text="SCRAPED TAGS:\nYear: " + str(track.release_date) + "\nBPM: " + str(track.bpm) + "\nKey: " + str(track.key) + "\nGenre: " + str(track.genre), font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left").pack(side="right", padx=(50, 0), pady=(0, 50))
+
+            # print current tags
+            leftTags = tk.Frame(tags, bg=bg)
+            leftTags.pack(side="left", padx=(0, 50), pady=(0, 50))
+            currentTagDict = {}
+            scrapedTagDict = {}
+            # THIS is the list of tags that the user wants to retrieve
+            list = ["Release_Date", "BPM", "Key", "Genre"]
+            currentTagDict[0] = tk.Label(leftTags, text="CURRENT TAGS:", font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left", bd=-10)
+            currentTagDict[0].pack(anchor="w", pady=(0, 5))
+            for i in range(len(list)):
+                # Avoid printing the underscore
+                if list[i] == "Release_Date":
+                    currentTagDict[i + 1] = tk.Label(leftTags, text="Release Date: " + str(audio[informalTagDict[list[i]]][0]), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                    currentTagDict[i + 1].pack(pady=(0, 0), anchor='w')
+                else:
+                    currentTagDict[i + 1] = tk.Label(leftTags, text=list[i] + ": " + str(audio[informalTagDict[list[i]]][0]), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                    currentTagDict[i + 1].pack(pady=(0, 0), anchor='w')
+
+            # print scraped tags
+            rightTags = tk.Frame(tags, bg=bg)
+            rightTags.pack(side="right", padx=(50, 0), pady=(0, 50))
+            scrapedTagDict[0] = tk.Label(rightTags, text="SCRAPED TAGS:", font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left", bd=-10)
+            scrapedTagDict[0].pack(anchor="w", pady=(0, 5))
+            for i in range(len(list)):
+                # Avoid printing the underscore
+                if list[i] == "Release_Date":
+                    scrapedTagDict[i + 1] = tk.Label(rightTags, text="Release Date: " + str(getattr(track, list[i].lower())), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                    scrapedTagDict[i + 1].pack(pady=(0, 0), anchor='w')
+                else:
+                    scrapedTagDict[i + 1] = tk.Label(rightTags, text=list[i] + ": " + str(getattr(track, list[i].lower())), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                    scrapedTagDict[i + 1].pack(pady=(0, 0), anchor='w')
+            # check if both tag dictionaries are of equal length
+            if len(currentTagDict) == len(scrapedTagDict):
+                for i in range(1, len(currentTagDict)):
+                    # highlight yellow
+                    if str(currentTagDict[i]["text"]) != str(scrapedTagDict[i]["text"]):
+                        currentTagDict[i].config(fg="black", bg="yellow")
+                        scrapedTagDict[i].config(fg="black", bg="yellow")
+
             # buttons
             optionButtons = tk.Frame(conflictPopup, bg=bg)
             optionButtons.pack()

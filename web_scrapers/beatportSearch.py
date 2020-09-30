@@ -40,7 +40,8 @@ def beatportSearch(title, var, yearList, BPMList, keyList, genreList, URLList, a
     searchFrame.pack(side="left")
     pageFrame = tk.Frame(labelFrame, bg=bg)
     pageFrame.pack(side="right", pady=(20, 0))
-    tk.Label(searchFrame, text="\nSearching Beatport for " + str(var), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="left", padx=(10, 0), anchor='w')
+    if len(var) > 60: tk.Label(searchFrame, text="\nSearching Beatport for " + str(var)[0:59] + "...", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="left", padx=(10, 0), anchor='w')
+    else: tk.Label(searchFrame, text="\nSearching Beatport for " + str(var), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="left", padx=(10, 0), anchor='w')
     # page counter and navigation buttons
     rerenderControls(pageFrame, webScrapingPage)
 

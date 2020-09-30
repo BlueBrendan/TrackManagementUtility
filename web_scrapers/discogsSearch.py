@@ -31,7 +31,6 @@ def discogsSearch(title, var, yearList, genreList, URLList, artistVariations, ti
     widgetList = allWidgets(webScrapingWindow)
     for item in widgetList:
         item.pack_forget()
-
     # component for search label and page indicator
     labelFrame = tk.Frame(webScrapingWindow, bg=bg)
     labelFrame.pack(fill=X, pady=(10, 10))
@@ -39,7 +38,8 @@ def discogsSearch(title, var, yearList, genreList, URLList, artistVariations, ti
     searchFrame.pack(side="left")
     pageFrame = tk.Frame(labelFrame, bg=bg)
     pageFrame.pack(side="right", pady=(20, 0))
-    tk.Label(searchFrame, text="\nSearching Discogs for " + str(var), font=("Proxima Nova Rg", 13), fg="white", bg=bg, anchor='w').pack(side="left", padx=(10, 0))
+    if len(var) > 60: tk.Label(searchFrame, text="\nSearching Discogs for " + str(var)[0:59] + "...", font=("Proxima Nova Rg", 13), fg="white", bg=bg, anchor='w').pack(side="left", padx=(10, 0))
+    else: tk.Label(searchFrame, text="\nSearching Discogs for " + str(var), font=("Proxima Nova Rg", 13), fg="white", bg=bg, anchor='w').pack(side="left", padx=(10, 0))
     # page counter and navigation buttons
     rerenderControls(pageFrame, webScrapingPage)
     componentFrame = tk.Frame(webScrapingWindow, bg=bg)
