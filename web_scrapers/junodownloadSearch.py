@@ -136,5 +136,3 @@ def junodownloadSearch(filename, yearList, BPMList, genreList, URLList, artistVa
 
 def refresh(webScrapingWindow):
     webScrapingWindow.update()
-    webScrapingWindow.attributes("-topmost", 1)
-    webScrapingWindow.attributes("-topmost", 0)

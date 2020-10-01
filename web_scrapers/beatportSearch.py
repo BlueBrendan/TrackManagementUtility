@@ -207,8 +207,6 @@ def extractInfo(soup, yearList, BPMList, keyList, genreList, URLList, headers, l
 
 def refresh(webScrapingWindow):
     webScrapingWindow.update()
-    webScrapingWindow.attributes("-topmost", 1)
-    webScrapingWindow.attributes("-topmost", 0)
 
 
 

@@ -19,6 +19,9 @@ bg = "#282f3b"
 #secondary color
 secondary_bg = "#364153"
 
+#global variables
+window = False
+
 root = tk.Tk()
 root.title("Track Management Utility V1.0")
 ws = root.winfo_screenwidth() # width of the screen
@@ -112,8 +115,10 @@ def openPreferences(CONFIG_FILE, root):
     updatePreferences(options, CONFIG_FILE, root)
 
 def selectSearchTags(CONFIG_FILE):
+    global window
     options = readValuesFromConfig(CONFIG_FILE)
-    scanTagsOnline(options, CONFIG_FILE)
+    webScrapingWindow = scanTagsOnline(options, CONFIG_FILE, window)
+    if type(webScrapingWindow)!=bool: window = webScrapingWindow
 
 def selectCompare(CONFIG_FILE):
     options = readValuesFromConfig(CONFIG_FILE)
@@ -161,6 +166,7 @@ titleLabel = tk.Label(textContainer, text="TRACK\nMANAGEMENT\nUTILITY", font=('P
 
 buttons = tk.Frame(root, bg=bg)
 buttons.pack(fill="both")
+
 # Scans for files in a directory and find their tags online
 tk.Button(buttons, text="Perform Tag Analysis", command=lambda: selectSearchTags(CONFIG_FILE), font=('Proxima Nova Rg', 13), fg="white", bg=secondary_bg, width=18, height=1).pack(pady=(0,15))
 tk.Label(buttons, text="Scan for files in a directory and find their tags online", font=('Proxima Nova Rg', 12), fg="white", bg=bg).pack(pady=(0,30))

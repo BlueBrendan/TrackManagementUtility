@@ -11,10 +11,12 @@ secondary_bg = "#364153"
 
 #global variable
 change = False
+capitalize = False
+uncapitalize = False
 word = ''
 
 def handleTypo(artist, newArtist, title, newTitle, type, options):
-    global change, word
+    global change, word, capitalize, uncapitalize
     popup = tk.Toplevel()
     popup.title("Potential Typo - " + type)
     ws = popup.winfo_screenwidth()  # width of the screen
@@ -43,7 +45,6 @@ def handleTypo(artist, newArtist, title, newTitle, type, options):
         currentFilenameDict[i] = tk.Label(currentFilenameContainer, text=currentFilename[i], borderwidth=-2, font=("Proxima Nova Rg", 11), fg="white", bg=bg)
         currentFilenameDict[i].pack(side="left")
         if i != len(currentFilename) - 1: tk.Label(currentFilenameContainer, text='', borderwidth=-2, fg="white", bg=bg).pack(side="left")
-
     #pack a label for each individual word in the proposed filename
     tk.Label(popup, text="Proposed filename", font=("Proxima Nova Rg", 12), fg="white", bg=bg).pack(pady=(10, 0))
     newFilename = (str(newArtist) + " - " + str(newTitle)).split(' ')
@@ -66,13 +67,20 @@ def handleTypo(artist, newArtist, title, newTitle, type, options):
     if type == "Capitalization":
         tk.Button(buttons, text="Always Accept " + "(" + word + ")", command=lambda: addCapitalizedList(word, popup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(pady=(25, 10), padx=(30, 10), side="left")
         tk.Button(buttons, text="Always Reject " + "(" + word.lower() + ")", command=lambda: addUncapitalizedList(word, popup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(pady=(25, 10), padx=(30, 10), side="left")
-    popup.protocol("WM_DELETE_WINDOW", lambda: popup.destroy())
-    popup.wait_window()
+        popup.wait_window()
+        if capitalize: options["Always Capitalize (L)"].append(word.capitalize())
+        elif uncapitalize: options["Never Capitalize (L)"].append(word.lower())
+        capitalize = False
+        uncapitalize = False
+        word = ''
+    else:
+        popup.protocol("WM_DELETE_WINDOW", lambda: popup.destroy())
+        popup.wait_window()
     if change:
         artist = newArtist
         title = newTitle
-        return artist, title, True
-    return artist, title, False
+        return artist, title, options, True
+    return artist, title, options, False
 
 def setChange(popup):
     global change
@@ -85,9 +93,10 @@ def closePopup(popup):
     popup.destroy()
 
 def addCapitalizedList(keyword, popup):
-    global change, word
+    global change, capitalize, uncapitalize
     change = False
-    word = ''
+    capitalize = True
+    uncapitalize = False
     CONFIG_FILE = r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt"
     config_file = open(CONFIG_FILE, 'r').read()
     # convert to term
@@ -102,9 +111,10 @@ def addCapitalizedList(keyword, popup):
     popup.destroy()
 
 def addUncapitalizedList(keyword, popup):
-    global change, word
+    global change, capitalize, uncapitalize
     change = False
-    word = ''
+    capitalize = False
+    uncapitalize = True
     CONFIG_FILE = r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt"
     config_file = open(CONFIG_FILE, 'r').read()
     # convert to term

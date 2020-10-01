@@ -32,13 +32,15 @@ bg = "#282f3b"
 #secondary color
 secondary_bg = "#364153"
 
-def fileSelect(options, imageCounter, CONFIG_FILE):
+def fileSelect(options, imageCounter, CONFIG_FILE, window):
     directories = filedialog.askopenfilenames(title="Select File")
+    webScrapingWindow = False
     if directories != '':
+        # delete previous web scraping window from previous session
+        if type(window)!=bool: window.destroy()
         imageSelections = []
         finalResults = []
         characters = 0
-        webScrapingWindow = ''
         thumbnails = []
 
         # create webscraping window on top left corner
@@ -46,6 +48,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE):
         webScrapingWindow.title("Web Scraping Display")
         webScrapingWindow.configure(bg=bg)
         webScrapingWindow.geometry("1000x300+0+0")
+
         # dictionary to store web scraping window values
         webScrapingLeftPane = {}
         webScrapingRightPane = {}
@@ -65,7 +68,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE):
                 #handle FLAC file
                 if filename.endswith('.flac') and type(checkFileValidity(filename, directory, "FLAC"))!=str:
                     #handle naming preferences, tag settings, and replay gain
-                    audio, filename, informalTagDict = initiateFLAC(filename, directory, options)
+                    audio, filename, informalTagDict, options = initiateFLAC(filename, directory, options)
                     if type(audio) != bool:
                         images = audio.pictures
                         # append thumbnail image to list if artwork exists
@@ -78,7 +81,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE):
                         track = FLAC_Track(audio, options, informalTagDict)
                 #handle AIFF file
                 elif filename.endswith('.aiff') and type(checkFileValidity(filename, directory, "AIFF"))!=str:
-                    audio, filename, informalTagDict = initiateAIFF(filename, directory, options)
+                    audio, filename, informalTagDict, options = initiateAIFF(filename, directory, options)
                     if type(audio) != bool:
                         image = audio["APIC:"]
                         if image.data != b'':
@@ -90,7 +93,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE):
                         track = ID3_Track(audio, options, informalTagDict)
                 #handle MP3 file
                 elif filename.endswith('mp3') and type(checkFileValidity(filename, directory, "MP3"))!=str:
-                    audio, filename, informalTagDict = initiateMP3(filename, directory, options)
+                    audio, filename, informalTagDict, options = initiateMP3(filename, directory, options)
                     if type(audio) != bool:
                         image = audio["APIC:"]
                         if image.data != b'':
@@ -102,7 +105,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE):
                         track = ID3_Track(audio, options, informalTagDict)
                 #handle OGG file
                 elif filename.endswith('.ogg') and type(checkFileValidity(filename, directory, "OGG"))!=str:
-                    audio, filename, informalTagDict = initiateOGG(filename, directory, options)
+                    audio, filename, informalTagDict, options = initiateOGG(filename, directory, options)
                     if type(audio) != bool:
                         images = audio["metadata_block_picture"]
                         if images[0] != '':
@@ -117,7 +120,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE):
                         track = Vorbis_Track(audio, options, informalTagDict)
                 #handle WAV file
                 elif filename.endswith('.wav') and type(checkFileValidity(filename, directory, "WAV"))!=str:
-                    audio, filename, informalTagDict = initiateWAVE(filename, directory, options)
+                    audio, filename, informalTagDict, options = initiateWAVE(filename, directory, options)
                     if type(audio) != bool:
                         image = audio["APIC:"]
                         if image.data != b'':
@@ -129,7 +132,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE):
                         track = ID3_Track(audio, options, informalTagDict)
                 #handle AAC and ALAC files
                 elif filename.endswith('.m4a') and type(checkFileValidity(filename, directory, "M4A"))!=str:
-                    audio, filename, informalTagDict = initiateM4A(filename, directory, options)
+                    audio, filename, informalTagDict, options = initiateM4A(filename, directory, options)
                     if type(audio) != bool:
                         image = audio["covr"]
                         if len(image) != 0:
@@ -147,7 +150,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE):
         # enable controls in web scraping window
         if type(searchFrame)!=int and type(pageFrame)!=int and type(componentFrame)!=int: enableControls(searchFrame, pageFrame, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame)
         if type(webScrapingWindow)!=str: handleFinalReport(finalResults, characters, imageCounter, imageSelections, webScrapingWindow, thumbnails, options, CONFIG_FILE)
-
+    return webScrapingWindow
 #check if mutagen object can be made from file
 def checkFileValidity(filename, directory, format):
     audio = ""

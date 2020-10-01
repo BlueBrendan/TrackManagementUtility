@@ -180,5 +180,3 @@ def discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFra
 
 def refresh(webScrapingWindow):
     webScrapingWindow.update()
-    webScrapingWindow.attributes("-topmost", 1)
-    webScrapingWindow.attributes("-topmost", 0)

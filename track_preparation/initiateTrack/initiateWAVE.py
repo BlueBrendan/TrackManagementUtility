@@ -103,7 +103,7 @@ def initiateWAVE(filename, directory, options):
             os.rename(directory + '/' + filename, directory + '/' + artist + ' - ' + filename)
             filename = artist + ' - ' + filename
             audio = WAVE(directory + '/' + filename)
-        if options["Scan Filename and Tags (B)"].get() == True: audio, filename = extractArtistAndTitle(audio, filename, directory, options, "Artist - Title")
+        if options["Scan Filename and Tags (B)"].get() == True: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Artist - Title")
 
     elif options["Audio naming format (S)"].get() == "Title":
         # rename track so that the artist is removed from the title
@@ -111,8 +111,8 @@ def initiateWAVE(filename, directory, options):
             os.rename(directory + '/' + filename, directory + '/' + filename[filename.index(' - ')+3:])
             filename = filename[filename.index(' - ')+3:]
             audio = WAVE(directory + '/' + filename)
-        if options["Scan Filename and Tags (B)"].get() == True: audio, filename = extractArtistAndTitle(audio, filename, directory, options, "Title")
-    return audio, filename, informalTagDict
+        if options["Scan Filename and Tags (B)"].get() == True: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Title")
+    return audio, filename, informalTagDict, options
 
 def extractArtistAndTitle(audio, filename, directory, options, format):
     extension = filename[filename.rfind('.'):]
@@ -129,8 +129,8 @@ def extractArtistAndTitle(audio, filename, directory, options, format):
         if title == '':
             title = filename[:-5]
     # run through list of possible typos
-    audio, filename = checkTypos(audio, artist, title, directory, filename, extension, format, options)
-    return audio, filename
+    if options["Scan Filename and Tags (B)"]: audio, filename, options = checkTypos(audio, artist, title, directory, filename, extension, format, options)
+    return audio, filename, options
 
 def checkTypos(audio, artist, title, directory, filename, extension, format, options):
     # scan artist for numbering prefix
@@ -141,8 +141,8 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
             newTitle = title
             if '.' in artistPrefix[0:5]:
                 if any(char.isdigit() for char in artistPrefix[0:artistPrefix.index('.')]):
-                    artist, title = handleTypo(artist, newArtist, title, newTitle, "Prefix", options)
-                    if artist != None and title != None: audio, filename = rename(directory, filename, artist, title, extension, format)
+                    artist, title, options, renameFile = handleTypo(artist, newArtist, title, newTitle, "Prefix", options)
+                    if renameFile == True: audio, filename = rename(directory, filename, artist, title, extension, format)
 
     # scan artist and title for hyphens
     if options["Check for Extraneous Hyphens (B)"].get() == True:
@@ -151,8 +151,8 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
             newTitle = title
             if '-' in artist: newArtist = artist.replace('-', ' ')
             if '-' in title: newTitle = title.replace('-', ' ')
-            artist, title = handleTypo(artist, newArtist, title, newTitle, "Hyphen", options)
-            if artist != None and title != None: audio, filename = rename(directory, filename, artist, title, extension, format)
+            artist, title, options, renameFile = handleTypo(artist, newArtist, title, newTitle, "Hyphen", options)
+            if renameFile == True: audio, filename = rename(directory, filename, artist, title, extension, format)
 
     # scan artist and title for capitalization
     if options["Check for Capitalization (B)"].get() == True:
@@ -161,9 +161,9 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
         newArtist, artist, filename = checkCapitalization(artistList, artist, title, "artist", directory, filename, format, options)
         newTitle, title, filename = checkCapitalization(titleList, artist, title, "title", directory, filename, format, options)
         if (artist != newArtist or title != newTitle):
-            artist, title = handleTypo(artist, newArtist, title, newTitle, "Capitalization", options)
-            if artist != None and title != None: audio, filename = rename(directory, filename, artist, title, extension, format)
-    return audio, filename
+            artist, title, options, renameFile = handleTypo(artist, newArtist, title, newTitle, "Capitalization", options)
+            if renameFile == True: audio, filename = rename(directory, filename, artist, title, extension, format)
+    return audio, filename, options
 
 def compareArtistAndTitle(audio, artist, title, filename, directory, options):
     # compare file artist with tag artist

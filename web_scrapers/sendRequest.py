@@ -20,5 +20,3 @@ def sendRequest(url, headers, webScrapingWindow, leftComponentFrame):
 
 def refresh(webScrapingWindow):
     webScrapingWindow.update()
-    webScrapingWindow.attributes("-topmost", 1)
-    webScrapingWindow.attributes("-topmost", 0)

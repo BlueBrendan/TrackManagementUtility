@@ -14,6 +14,7 @@ currentPage = 1
 
 def handleFinalReport(finalResults, characters, imageCounter, imageSelections, webScrapingWindow, thumbnails, options, CONFIG_FILE):
         global currentPage
+        currentPage = 1
         finalReportWindow = tk.Toplevel()
         finalReportWindow.title("Final Report")
         finalReportWindow.configure(bg=bg)
@@ -89,9 +90,9 @@ def renderImage(contentFrame, imageSelections, imageCounter, thumbnails, index):
         photo = ImageTk.PhotoImage(fileImageImport)
         fileImage = tk.Label(contentFrame, image=photo, bg=bg)
         fileImage.image = photo
-        fileImage.pack(side="top", padx=(10, 10), pady=(20, 0))
+        fileImage.pack(side="top", pady=(10, 10))
         # resolution
-        tk.Label(contentFrame, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(10, 10))
+        tk.Label(contentFrame, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(10, 20))
     # load thumbnail image
     else:
         if thumbnails[index] == 'NA':
@@ -100,7 +101,7 @@ def renderImage(contentFrame, imageSelections, imageCounter, thumbnails, index):
             photo = ImageTk.PhotoImage(fileImageImport)
             fileImage = tk.Label(contentFrame, image=photo, bg=bg)
             fileImage.image = photo
-            fileImage.pack(side="top", padx=(10, 10))
+            fileImage.pack(side="top", pady=(7, 50))
         else:
             fileImageImport = thumbnails[index]
             width, height = fileImageImport.size
@@ -108,9 +109,9 @@ def renderImage(contentFrame, imageSelections, imageCounter, thumbnails, index):
             photo = ImageTk.PhotoImage(fileImageImport)
             fileImage = tk.Label(contentFrame, image=photo, bg=bg)
             fileImage.image = photo
-            fileImage.pack(side="top", padx=(10, 10))
+            fileImage.pack(side="top", pady=(10, 15))
             # resolution
-            tk.Label(contentFrame, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(5, 20))
+            tk.Label(contentFrame, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(0, 10))
 
 #handle subdirectory selection
 def closeScrapingWindowSelection(CONFIG_FILE):
