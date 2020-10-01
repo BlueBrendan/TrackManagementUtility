@@ -8,13 +8,15 @@ bg = "#282f3b"
 secondary_bg = "#364153"
 
 #global variables
-currentPage=0
+currentPage = 0
 
 def rerenderControls(pageFrame, webScrapingPage):
     # page counter and navigation buttons
-    tk.Button(pageFrame, text=" > ", state=DISABLED, font=("Proxima Nova Rg", 11), fg="white", bg=bg, anchor="e").pack(side="right", padx=(0, 30))
-    tk.Label(pageFrame, text=str(webScrapingPage) + "/" + str(webScrapingPage), font=("Proxima Nova Rg", 11), fg="white", bg=bg, anchor='e').pack(side="right", padx=(10, 10))
-    tk.Button(pageFrame, text=" < ", state=DISABLED, font=("Proxima Nova Rg", 11), fg="white", bg=bg, anchor="e").pack(side="right")
+    tk.Button(pageFrame, text=">>", state=DISABLED, font=("Proxima Nova Rg", 11), fg="white", bg=bg, width=2).pack(side="right", padx=(5, 30))
+    tk.Button(pageFrame, text=">", state=DISABLED, font=("Proxima Nova Rg", 11), fg="white", bg=bg, width=2).pack(side="right", padx=(5,5))
+    tk.Label(pageFrame, text=str(webScrapingPage) + "/" + str(webScrapingPage), font=("Proxima Nova Rg", 11), fg="white", bg=bg, anchor='e').pack(side="right", padx=(5,5))
+    tk.Button(pageFrame, text="<", state=DISABLED, font=("Proxima Nova Rg", 11), fg="white", bg=bg, width=2).pack(side="right", padx=(5,5))
+    tk.Button(pageFrame, text="<<", state=DISABLED, font=("Proxima Nova Rg", 11), fg="white", bg=bg, width=2).pack(side="right", padx=(5,5))
 
 def enableControls(searchFrame, pageFrame, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame):
     global currentPage
@@ -25,19 +27,28 @@ def enableControls(searchFrame, pageFrame, webScrapingLeftPane, webScrapingRight
     widgetList = allWidgets(pageFrame)
     for item in widgetList: item.pack_forget()
     tk.Label(searchFrame, text="\nSearch Complete", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="left", padx=(10, 0), anchor="w")
-    rightButton = tk.Button(pageFrame, text=" > ", state=DISABLED, font=("Proxima Nova Rg", 11), fg="white", bg=bg, anchor="e", command=lambda: navigateRight(leftButton, rightButton, pageIndicator, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame))
-    rightButton.pack(side="right", padx=(0, 30))
+    farRightButton = tk.Button(pageFrame, text=">>", state=DISABLED, font=("Proxima Nova Rg", 11), fg="white", bg=bg, width=2, command=lambda: navigateFarRight(leftButton, farLeftButton, rightButton, farRightButton, pageIndicator, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame))
+    farRightButton.pack(side="right", padx=(5, 30))
+    rightButton = tk.Button(pageFrame, text=">", state=DISABLED, font=("Proxima Nova Rg", 11), fg="white", bg=bg, width=2, command=lambda: navigateRight(leftButton, farLeftButton, rightButton, farRightButton, pageIndicator, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame))
+    rightButton.pack(side="right", padx=(5,5))
     pageIndicator = tk.Label(pageFrame, text=str(webScrapingPage) + "/" + str(webScrapingPage), font=("Proxima Nova Rg", 11), fg="white", bg=bg, anchor='e')
-    pageIndicator.pack(side="right", padx=(10, 10))
-    leftButton = tk.Button(pageFrame, text=" < ", font=("Proxima Nova Rg", 11), fg="white", bg=bg, command=lambda: navigateLeft(leftButton, rightButton, pageIndicator, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame), anchor="e")
-    if webScrapingPage <= 1: leftButton.config(state=DISABLED)
-    leftButton.pack(side="right")
+    pageIndicator.pack(side="right", padx=(5,5))
+    leftButton = tk.Button(pageFrame, text="<", font=("Proxima Nova Rg", 11), fg="white", bg=bg, width=2, command=lambda: navigateLeft(leftButton, farLeftButton, rightButton, farRightButton, pageIndicator, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame))
+    farLeftButton = tk.Button(pageFrame, text="<<", font=("Proxima Nova Rg", 11), fg="white", bg=bg, width=2, command=lambda: navigateFarLeft(leftButton, farLeftButton, rightButton, farRightButton, pageIndicator, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame))
+    leftButton.pack(side="right", padx=(5,5))
+    farLeftButton.pack(side="right", padx=(5,5))
+    if webScrapingPage <= 1:
+        leftButton.config(state=DISABLED)
+        farLeftButton.config(state=DISABLED)
 
-def navigateLeft(leftButton, rightButton, pageIndicator, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame):
+def navigateLeft(leftButton, farLeftButton, rightButton, farRightButton, pageIndicator, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame):
     global currentPage
     currentPage -= 1
-    if currentPage <= 1: leftButton.config(state=DISABLED)
+    if currentPage <= 1:
+        leftButton.config(state=DISABLED)
+        farLeftButton.config(state=DISABLED)
     rightButton.config(state=NORMAL)
+    farRightButton.config(state=NORMAL)
     # rerender page indicator
     pageIndicator.config(text=str(currentPage) + "/" + str(webScrapingPage))
 
@@ -55,11 +66,14 @@ def navigateLeft(leftButton, rightButton, pageIndicator, webScrapingLeftPane, we
     # right component
     renderRightComponent(webScrapingRightPane, rightComponentFrame, currentPage)
 
-def navigateRight(leftButton, rightButton, pageIndicator, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame):
+def navigateRight(leftButton, farLeftButton, rightButton, farRightButton, pageIndicator, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame):
     global currentPage
     currentPage+=1
-    if currentPage == webScrapingPage: rightButton.config(state=DISABLED)
+    if currentPage == webScrapingPage:
+        rightButton.config(state=DISABLED)
+        farRightButton.config(state=DISABLED)
     leftButton.config(state=NORMAL)
+    farLeftButton.config(state=NORMAL)
     # rerender page indicator
     pageIndicator.config(text=str(currentPage) + "/" + str(webScrapingPage))
 
@@ -69,6 +83,48 @@ def navigateRight(leftButton, rightButton, pageIndicator, webScrapingLeftPane, w
     leftComponentFrame, rightComponentFrame = resetLeftRightFrames(componentFrame)
 
     #left component
+    renderLeftComponent(webScrapingLeftPane, leftComponentFrame, webScrapingLinks, currentPage)
+    # right component
+    renderRightComponent(webScrapingRightPane, rightComponentFrame, currentPage)
+
+def navigateFarLeft(leftButton, farLeftButton, rightButton, farRightButton, pageIndicator, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame):
+    global currentPage
+    currentPage=1
+    leftButton.config(state=DISABLED)
+    farLeftButton.config(state=DISABLED)
+    if webScrapingPage > 1:
+        rightButton.config(state=NORMAL)
+        farRightButton.config(state=NORMAL)
+    # rerender page indicator
+    pageIndicator.config(text=str(currentPage) + "/" + str(webScrapingPage))
+
+    # rerender left and right components
+    widgetList = allWidgets(componentFrame)
+    for item in widgetList: item.pack_forget()
+    leftComponentFrame, rightComponentFrame = resetLeftRightFrames(componentFrame)
+
+    # left component
+    renderLeftComponent(webScrapingLeftPane, leftComponentFrame, webScrapingLinks, currentPage)
+    # right component
+    renderRightComponent(webScrapingRightPane, rightComponentFrame, currentPage)
+
+def navigateFarRight(leftButton, farLeftButton, rightButton, farRightButton, pageIndicator, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame):
+    global currentPage
+    currentPage = webScrapingPage
+    if webScrapingPage > 1:
+        leftButton.config(state=NORMAL)
+        farLeftButton.config(state=NORMAL)
+    rightButton.config(state=DISABLED)
+    farRightButton.config(state=DISABLED)
+    # rerender page indicator
+    pageIndicator.config(text=str(currentPage) + "/" + str(webScrapingPage))
+
+    # rerender left and right components
+    widgetList = allWidgets(componentFrame)
+    for item in widgetList: item.pack_forget()
+    leftComponentFrame, rightComponentFrame = resetLeftRightFrames(componentFrame)
+
+    # left component
     renderLeftComponent(webScrapingLeftPane, leftComponentFrame, webScrapingLinks, currentPage)
     # right component
     renderRightComponent(webScrapingRightPane, rightComponentFrame, currentPage)

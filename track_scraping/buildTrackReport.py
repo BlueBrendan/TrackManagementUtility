@@ -20,13 +20,9 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, filena
             for i in range(len(commonYearList) - 1):
                 # prioritize older years to avoid quoting re-releases
                 if len(yearList) <= 5:
-                    if int(commonYearList[0]) > int(commonYearList[i + 1]) and yearList.count(
-                            commonYearList[0]) <= yearList.count(commonYearList[i + 1]) * 2:
-                        commonYear = commonYearList[i + 1]
+                    if int(commonYearList[0]) > int(commonYearList[i + 1]) and yearList.count(commonYearList[0]) <= yearList.count(commonYearList[i + 1]) * 2: commonYear = commonYearList[i + 1]
                 else:
-                    if int(commonYearList[0]) > int(commonYearList[i + 1]) and yearList.count(
-                            commonYearList[0]) <= yearList.count(commonYearList[i + 1]) * 2 and yearList.count(commonYearList[0]) > 1:
-                        commonYear = commonYearList[i + 1]
+                    if int(commonYearList[0]) > int(commonYearList[i + 1]) and yearList.count(commonYearList[0]) <= yearList.count(commonYearList[i + 1]) * 2 and yearList.count(commonYearList[0]) > 1: commonYear = commonYearList[i + 1]
         if track.release_date != str(commonYear):
             track.release_date = str(commonYear)
             conflict = True

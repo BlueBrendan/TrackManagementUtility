@@ -9,59 +9,108 @@ bg = "#282f3b"
 #secondary color
 secondary_bg = "#364153"
 
-def handleFinalReport(finalResults, characters, imageCounter, imageSelections, thumbnails, webScrapingWindow, options, CONFIG_FILE):
+#global variables
+currentPage = 1
+
+def handleFinalReport(finalResults, characters, imageCounter, imageSelections, webScrapingWindow, thumbnails, options, CONFIG_FILE):
+        global currentPage
         finalReportWindow = tk.Toplevel()
         finalReportWindow.title("Final Report")
         finalReportWindow.configure(bg=bg)
         ws = finalReportWindow.winfo_screenwidth()  # width of the screen
         hs = finalReportWindow.winfo_screenheight()  # height of the screen
-        y = (hs / 2) - (605 / 2)
+        y = (hs / 2) - (660 / 2)
         x = (ws / 2) - (550 / 2)
-        finalReportWindow.geometry('%dx%d+%d+%d' % (550, 550, x, y))
+        finalReportWindow.geometry('%dx%d+%d+%d' % (550, 600, x, y))
         if characters > 40:
             x = (ws / 2) - ((550 + (characters * 1.5)) / 2)
-            finalReportWindow.geometry('%dx%d+%d+%d' % (550 + (characters * 1.5), 550, x, y))
-        tk.Label(finalReportWindow, text="Final Report", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(25, 10))
-        for i in range(len(finalResults)):
-            tk.Label(finalReportWindow, text=finalResults[i] + '\n', font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top")
-            # load non-thumbnailimage
-            if options["Reverse Image Search (B)"].get() == True and imageCounter >= 1 and imageSelections[i] != 'THUMB':
-                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageSelections[i]) + ".jpg")
-                width, height = fileImageImport.size
-                fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-                photo = ImageTk.PhotoImage(fileImageImport)
-                fileImage = tk.Label(finalReportWindow, image=photo, bg=bg)
-                fileImage.image = photo
-                fileImage.pack(side="top", padx=(10, 10))
-                #resolution
-                tk.Label(finalReportWindow, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(5, 10))
-            #load thumbnail image
-            else:
-                if thumbnails[i] == 'NA':
-                    fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
-                    fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-                    photo = ImageTk.PhotoImage(fileImageImport)
-                    fileImage = tk.Label(finalReportWindow, image=photo, bg=bg)
-                    fileImage.image = photo
-                    fileImage.pack(side="top", padx=(10, 10))
-                else:
-                    fileImageImport = thumbnails[i]
-                    width, height = fileImageImport.size
-                    fileImageImport = thumbnails[i].resize((200, 200), Image.ANTIALIAS)
-                    photo = ImageTk.PhotoImage(fileImageImport)
-                    fileImage = tk.Label(finalReportWindow, image=photo, bg=bg)
-                    fileImage.image = photo
-                    fileImage.pack(side="top", padx=(10, 10))
-                    # resolution
-                    tk.Label(finalReportWindow, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(5, 20))
+            finalReportWindow.geometry('%dx%d+%d+%d' % (550 + (characters * 1.5), 600, x, y))
+        tk.Label(finalReportWindow, text="Final Report", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(25, 15))
+        # frame for report contents and image
+        contentFrame = tk.Frame(finalReportWindow, bg=bg)
+        contentFrame.pack()
+        tk.Label(contentFrame, text=finalResults[0] + '\n', font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top")
+        renderImage(contentFrame, imageSelections, imageCounter, thumbnails, 0)
+
+        # navigation buttons
+        navigationButtons = tk.Frame(finalReportWindow, bg=bg)
+        navigationButtons.pack(pady=(10, 10))
+        rightNavigationButton = tk.Button(navigationButtons, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=bg, anchor="e", command=lambda: navigateRight(leftNavigationButton, rightNavigationButton, contentFrame, finalResults, imageSelections, imageCounter, thumbnails, pageIndicator))
+        rightNavigationButton.pack(side="right")
+        if len(finalResults) == 1: rightNavigationButton.config(state=DISABLED)
+        pageIndicator = tk.Label(navigationButtons, text=str(currentPage) + "/" + str(len(finalResults)), font=("Proxima Nova Rg", 11), fg="white", bg=bg, anchor='e')
+        pageIndicator.pack(side="right", padx=(10, 10))
+        leftNavigationButton = tk.Button(navigationButtons, text=" < ", state=DISABLED, font=("Proxima Nova Rg", 11), fg="white", bg=bg, anchor="e", command=lambda: navigateLeft(leftNavigationButton, rightNavigationButton, contentFrame, finalResults, imageSelections, imageCounter, thumbnails, pageIndicator))
+        leftNavigationButton.pack(side="right")
+
         # load button and checkbox
         tk.Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, options), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side=TOP, pady=(15, 15))
         closeWindowButtonFrame = tk.Frame(finalReportWindow, bg=bg)
         closeWindowButtonFrame.pack()
-        tk.Checkbutton(closeWindowButtonFrame, var=options["Close Scraping Window (B)"], command=lambda: closeScrapingWindowSelection(CONFIG_FILE), bg=bg).pack(side="left", pady=(0,10))
+        tk.Checkbutton(closeWindowButtonFrame, var=options["Close Scraping Window (B)"], activebackground=bg, command=lambda: closeScrapingWindowSelection(CONFIG_FILE), bg=bg).pack(side="left", pady=(0,10))
         tk.Label(closeWindowButtonFrame, text="Close scraping window", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", pady=(0,10))
-        finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: closePopup(finalReportWindow, webScrapingWindow))
+        finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: completeSearch(finalReportWindow, webScrapingWindow, options))
         finalReportWindow.lift()
+
+def navigateLeft(leftNavigationButton, rightNavigationButton, contentFrame, finalResults, imageSelections, imageCounter, thumbnails, pageIndicator):
+    global currentPage
+    currentPage-=1
+    # handle navigation frame
+    if currentPage == 1: leftNavigationButton.config(state=DISABLED)
+    rightNavigationButton.config(state=NORMAL)
+    pageIndicator.config(text=str(currentPage) + "/" + str(len(finalResults)))
+
+    # rerender content frame
+    widgetList = allWidgets(contentFrame)
+    for item in widgetList: item.pack_forget()
+    tk.Label(contentFrame, text=finalResults[(currentPage-1)] + '\n', font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top")
+    renderImage(contentFrame, imageSelections, imageCounter, thumbnails, (currentPage-1))
+
+def navigateRight(leftNavigationButton, rightNavigationButton, contentFrame, finalResults, imageSelections, imageCounter, thumbnails, pageIndicator):
+    global currentPage
+    currentPage+=1
+    # handle navigation frame
+    if currentPage == len(finalResults): rightNavigationButton.config(state=DISABLED)
+    leftNavigationButton.config(state=NORMAL)
+    pageIndicator.config(text=str(currentPage) + "/" + str(len(finalResults)))
+
+    # rerender content frame
+    widgetList = allWidgets(contentFrame)
+    for item in widgetList: item.pack_forget()
+    tk.Label(contentFrame, text=finalResults[(currentPage-1)] + '\n', font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top")
+    renderImage(contentFrame, imageSelections, imageCounter, thumbnails, (currentPage-1))
+
+def renderImage(contentFrame, imageSelections, imageCounter, thumbnails, index):
+    # load non-thumbnailimage
+    if imageCounter >= 1 and imageSelections[index] != 'THUMB':
+        fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageSelections[index]) + ".jpg")
+        width, height = fileImageImport.size
+        fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+        photo = ImageTk.PhotoImage(fileImageImport)
+        fileImage = tk.Label(contentFrame, image=photo, bg=bg)
+        fileImage.image = photo
+        fileImage.pack(side="top", padx=(10, 10), pady=(20, 0))
+        # resolution
+        tk.Label(contentFrame, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(10, 10))
+    # load thumbnail image
+    else:
+        if thumbnails[index] == 'NA':
+            fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
+            fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+            photo = ImageTk.PhotoImage(fileImageImport)
+            fileImage = tk.Label(contentFrame, image=photo, bg=bg)
+            fileImage.image = photo
+            fileImage.pack(side="top", padx=(10, 10))
+        else:
+            fileImageImport = thumbnails[index]
+            width, height = fileImageImport.size
+            fileImageImport = thumbnails[index].resize((200, 200), Image.ANTIALIAS)
+            photo = ImageTk.PhotoImage(fileImageImport)
+            fileImage = tk.Label(contentFrame, image=photo, bg=bg)
+            fileImage.image = photo
+            fileImage.pack(side="top", padx=(10, 10))
+            # resolution
+            tk.Label(contentFrame, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(5, 20))
 
 #handle subdirectory selection
 def closeScrapingWindowSelection(CONFIG_FILE):
@@ -85,9 +134,10 @@ def completeSearch(finalReportWindow, webScrapingWindow, options):
     # delete all images in temp if both revese image search and delete stored image options are both true
     if options["Reverse Image Search (B)"].get() == True and options["Delete Stored Images (B)"].get() == True:
         images = os.listdir(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/")
-        for image in images:
-            os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(image))
+        for image in images: os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(image))
 
-def closePopup(popup, webScrapingWindow):
-    popup.destroy()
-    webScrapingWindow.lift()
+def allWidgets(window):
+    _list = window.winfo_children()
+    for item in _list :
+        if item.winfo_children(): _list.extend(item.winfo_children())
+    return _list

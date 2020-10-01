@@ -28,8 +28,7 @@ def allWidgets(window):
 def junodownloadSearch(filename, yearList, BPMList, genreList, URLList, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, audio, options, imageCounter):
     #FIRST QUERY - JUNO DOWNLOAD
     widgetList = allWidgets(webScrapingWindow)
-    for item in widgetList:
-        item.pack_forget()
+    for item in widgetList: item.pack_forget()
 
     #component for search label and page indicator
     labelFrame = tk.Frame(webScrapingWindow, bg=bg)

@@ -24,6 +24,8 @@ from track_preparation.initiateTrack.initiateWAVE import initiateWAVE
 from track_preparation.initiateTrack.initiateM4A import initiateM4A
 from track_scraping.scrapeWeb import scrapeWeb
 from track_scraping.handleFinalReport import handleFinalReport
+from web_scrapers.webScrapingWindowControl import enableControls
+
 
 #main bg color
 bg = "#282f3b"
@@ -38,6 +40,21 @@ def fileSelect(options, imageCounter, CONFIG_FILE):
         characters = 0
         webScrapingWindow = ''
         thumbnails = []
+
+        # create webscraping window on top left corner
+        webScrapingWindow = Toplevel()
+        webScrapingWindow.title("Web Scraping Display")
+        webScrapingWindow.configure(bg=bg)
+        webScrapingWindow.geometry("1000x300+0+0")
+        # dictionary to store web scraping window values
+        webScrapingLeftPane = {}
+        webScrapingRightPane = {}
+        webScrapingLinks = {}
+        webScrapingPage = 0
+        searchFrame = 0
+        componentFrame = 0
+        pageFrame = 0
+
         for directory in directories:
             filename = os.path.basename(directory)
             directory = os.path.dirname(directory)
@@ -124,15 +141,12 @@ def fileSelect(options, imageCounter, CONFIG_FILE):
                         track = ALAC_Track(audio, options, informalTagDict)
                 # search web for tags
                 if type(audio) != bool:
-                    #create webscraping window on top left corner
-                    webScrapingWindow = Toplevel()
-                    webScrapingWindow.title("Web Scraping Display")
-                    webScrapingWindow.configure(bg=bg)
-                    webScrapingWindow.geometry("900x300+0+0")
-                    results, webScrapingWindow, characters, imageCounter, imageSelection = scrapeWeb(track, audio, filename, webScrapingWindow, characters, options, imageCounter, informalTagDict)
+                    results, webScrapingWindow, characters, imageCounter, imageSelection, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame = scrapeWeb(track, audio, filename, webScrapingWindow, characters, options, imageCounter, informalTagDict, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame)
                     finalResults.append(results)
                     imageSelections.append(imageSelection)
-        if type(webScrapingWindow)!=str: handleFinalReport(finalResults, characters, imageCounter, imageSelections, thumbnails, webScrapingWindow, options, CONFIG_FILE)
+        # enable controls in web scraping window
+        if type(searchFrame)!=int and type(pageFrame)!=int and type(componentFrame)!=int: enableControls(searchFrame, pageFrame, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame)
+        if type(webScrapingWindow)!=str: handleFinalReport(finalResults, characters, imageCounter, imageSelections, webScrapingWindow, thumbnails, options, CONFIG_FILE)
 
 #check if mutagen object can be made from file
 def checkFileValidity(filename, directory, format):
