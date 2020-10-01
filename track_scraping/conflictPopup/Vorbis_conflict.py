@@ -75,7 +75,6 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, informa
                     if str(currentTagDict[i]["text"]) != str(scrapedTagDict[i]["text"]):
                         currentTagDict[i].config(fg="black", bg="yellow")
                         scrapedTagDict[i].config(fg="black", bg="yellow")
-
             # buttons
             optionButtons = tk.Frame(conflictPopup, bg=bg)
             optionButtons.pack()

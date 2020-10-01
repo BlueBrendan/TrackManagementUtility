@@ -50,8 +50,8 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, informalTa
                     currentTagDict[i + 1] = tk.Label(leftTags, text="Release Date: " + str(audio[informalTagDict[list[i]]][0]), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                     currentTagDict[i + 1].pack(pady=(0, 0), anchor='w')
                 # decode key
-                if list[i] == "Key":
-                    currentTagDict[i + 1] = tk.Label(leftTags, text="Release Date: " + str(audio[informalTagDict[list[i]]][0].decode('utf-8')), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                elif list[i] == "Key":
+                    currentTagDict[i + 1] = tk.Label(leftTags, text="Key: " + str(audio[informalTagDict[list[i]]][0].decode('utf-8')), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                     currentTagDict[i + 1].pack(pady=(0, 0), anchor='w')
                 else:
                     currentTagDict[i + 1] = tk.Label(leftTags, text=list[i] + ": " + str(audio[informalTagDict[list[i]]][0]), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
