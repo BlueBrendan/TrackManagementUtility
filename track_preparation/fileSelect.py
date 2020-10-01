@@ -11,6 +11,7 @@ from tkinter.tix import *
 import os
 from PIL import Image
 from io import BytesIO
+import getpass
 
 #import classes
 from AudioClass import *
@@ -45,6 +46,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE, window):
 
         # create webscraping window on top left corner
         webScrapingWindow = Toplevel()
+        webScrapingWindow.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
         webScrapingWindow.title("Web Scraping Display")
         webScrapingWindow.configure(bg=bg)
         webScrapingWindow.geometry("1000x300+0+0")

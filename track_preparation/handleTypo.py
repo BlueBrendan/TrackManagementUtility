@@ -18,6 +18,7 @@ word = ''
 def handleTypo(artist, newArtist, title, newTitle, type, options):
     global change, word, capitalize, uncapitalize
     popup = tk.Toplevel()
+    popup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
     popup.title("Potential Typo - " + type)
     ws = popup.winfo_screenwidth()  # width of the screen
     hs = popup.winfo_screenheight()  # height of the screen

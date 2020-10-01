@@ -25,11 +25,12 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, informa
             ws = conflictPopup.winfo_screenwidth()  # width of the screen
             hs = conflictPopup.winfo_screenheight()  # height of the screen
             x = (ws / 2) - (650 / 2)
-            y = (hs / 2) - (330 / 2)
-            conflictPopup.geometry('%dx%d+%d+%d' % (650, 300, x, y))
+            y = (hs / 2) - (352 / 2)
+            conflictPopup.geometry('%dx%d+%d+%d' % (650, 320, x, y))
             if len(str(track.artist) + " - " + str(track.title)) > 30:
                 x = (ws / 2) - ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)) / 2)
-                conflictPopup.geometry('%dx%d+%d+%d' % ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)), 300, x, y))
+                conflictPopup.geometry('%dx%d+%d+%d' % ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)), 320, x, y))
+            conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
             conflictPopup.config(bg=bg)
             #tag conflict window
             tk.Label(conflictPopup, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(30, 40), side="top")
@@ -45,7 +46,7 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, informa
             # THIS is the list of tags that the user wants to retrieve
             list = ["Release_Date", "BPM", "Key", "Genre"]
             currentTagDict[0] = tk.Label(leftTags, text="CURRENT TAGS:", font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left", bd=-10)
-            currentTagDict[0].pack(anchor="w", pady=(0, 5))
+            currentTagDict[0].pack(anchor="w", pady=(0, 15))
             for i in range(len(list)):
                 # Avoid printing the underscore
                 if list[i] == "Release_Date":
@@ -59,7 +60,7 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, informa
             rightTags = tk.Frame(tags, bg=bg)
             rightTags.pack(side="right", padx=(50, 0), pady=(0, 50))
             scrapedTagDict[0] = tk.Label(rightTags, text="SCRAPED TAGS:", font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left", bd=-10)
-            scrapedTagDict[0].pack(anchor="w", pady=(0, 5))
+            scrapedTagDict[0].pack(anchor="w", pady=(0, 15))
             for i in range(len(list)):
                 # Avoid printing the underscore
                 if list[i] == "Release_Date":
@@ -83,24 +84,24 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, informa
             tk.Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(audio, track, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
             tk.Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
             conflictPopup.attributes("-topmost", 1)
-            conflictPopup.attributes("-topmost", 0)
             conflictPopup.wait_window()
 
         # image conflict
         if imageCounter >= 1:
             buttons = []
-            conflictFrame = tk.Toplevel()
-            conflictFrame.title("Conflicting Images")
-            ws = conflictFrame.winfo_screenwidth()  # width of the screen
-            hs = conflictFrame.winfo_screenheight()  # height of the screen
+            conflictPopup = tk.Toplevel()
+            conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
+            conflictPopup.title("Conflicting Images")
+            ws = conflictPopup.winfo_screenwidth()  # width of the screen
+            hs = conflictPopup.winfo_screenheight()  # height of the screen
             y = (hs / 2) - (770 / 2)
             x = (ws / 2) - ((350 + (200 * min((imageCounter - initialCounter), 4))) / 2)
-            conflictFrame.geometry('%dx%d+%d+%d' % (350 + (200 * min((imageCounter - initialCounter), 4)), 700, x, y))
-            conflictFrame.config(bg=bg)
+            conflictPopup.geometry('%dx%d+%d+%d' % (350 + (200 * min((imageCounter - initialCounter), 4)), 700, x, y))
+            conflictPopup.config(bg=bg)
             # print current thumbnail
-            Label(conflictFrame, text="Current artwork", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(20, 10))
+            Label(conflictPopup, text="Current artwork", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(20, 10))
             imageFrame = audio["metadata_block_picture"]
-            thumbnailFrame = tk.Frame(conflictFrame, bg=bg)
+            thumbnailFrame = tk.Frame(conflictPopup, bg=bg)
             thumbnailFrame.pack()
             if imageFrame[0] != '':
                 data = base64.b64decode(imageFrame[0])
@@ -111,12 +112,12 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, informa
                 width, height = image.size
                 thumbnailImageImport = image.resize((200, 200), Image.ANTIALIAS)
                 photo = ImageTk.PhotoImage(thumbnailImageImport)
-                thumbnailImage = tk.Label(conflictFrame, image=photo)
+                thumbnailImage = tk.Label(conflictPopup, image=photo)
                 thumbnailImage.image = photo
-                thumbnailButton = tk.Button(thumbnailFrame, image=photo, bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictFrame))
+                thumbnailButton = tk.Button(thumbnailFrame, image=photo, bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictPopup))
                 thumbnailButton.pack(side="top")
                 buttons.append(thumbnailButton)
-                tk.Label(conflictFrame, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(5, 10))
+                tk.Label(conflictPopup, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(5, 10))
                 thumbnail = [thumbnailImageImport, width, height]
             else:
                 thumbnail = "NA"
@@ -125,12 +126,12 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, informa
                 photo = ImageTk.PhotoImage(fileImageImport)
                 fileImage = tk.Label(thumbnailFrame, image=photo, bg=bg)
                 fileImage.image = photo
-                thumbnailButton = tk.Button(thumbnailFrame, image=photo, font=("Proxima Nova Rg", 11), bg="yellow", highlightcolor='yellow', highlightthickness=3,  command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictFrame))
+                thumbnailButton = tk.Button(thumbnailFrame, image=photo, font=("Proxima Nova Rg", 11), bg="yellow", highlightcolor='yellow', highlightthickness=3,  command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictPopup))
                 thumbnailButton.pack(side="top", pady=(5, 10))
                 buttons.append(thumbnailButton)
 
-            tk.Label(conflictFrame, text="Scraped artwork", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(15, 10))
-            imageFrame = tk.Frame(conflictFrame, bg=bg)
+            tk.Label(conflictPopup, text="Scraped artwork", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(15, 10))
+            imageFrame = tk.Frame(conflictPopup, bg=bg)
             imageFrame.pack(side="top")
             imageButtons = []
             imageResolutions = []
@@ -144,32 +145,32 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, informa
                 photo = ImageTk.PhotoImage(fileImageImport)
                 fileImage = tk.Label(imageFrame, image=photo)
                 fileImage.image = photo
-                imageButtons.append(tk.Button(imageFrame, image=photo, highlightthickness=3, command=lambda i=i: selectImage(i, track, imageButtons[i], buttons, conflictFrame)))
+                imageButtons.append(tk.Button(imageFrame, image=photo, highlightthickness=3, command=lambda i=i: selectImage(i, track, imageButtons[i], buttons, conflictPopup)))
                 imageButtons[len(imageButtons)-1].pack(side="left", padx=(20, 20))
                 buttons.append(imageButtons[len(imageButtons)-1])
                 im = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
                 width, height = im.size
                 imageResolutions.append(str(height) + "x" + str(width))
 
-            resolutionsFrame = tk.Frame(conflictFrame, bg=bg)
+            resolutionsFrame = tk.Frame(conflictPopup, bg=bg)
             resolutionsFrame.pack(side="top")
             # print resolutions underneath respective images
             for i in imageResolutions: tk.Label(resolutionsFrame, text=i, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", padx=(90, 90), pady=(5, 5))
             # page indicator
-            pageFrame = tk.Frame(conflictFrame, bg=bg)
+            pageFrame = tk.Frame(conflictPopup, bg=bg)
             pageFrame.pack()
             #left navigation button
-            leftButton = tk.Button(pageFrame, text=" < ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="w", state=DISABLED, command=lambda: navigateLeft(start, end, imageFrame, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail))
+            leftButton = tk.Button(pageFrame, text=" < ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="w", state=DISABLED, command=lambda: navigateLeft(start, end, imageFrame, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail))
             leftButton.pack(side="left", padx=(0, 15), pady=(15, 10))
             tk.Label(pageFrame, text=str(page+1) + "/" + str(math.ceil(float(imageCounter - initialCounter) / 2.0)), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", pady=(15, 10))
-            tk.Button(conflictFrame, text="Select", font=("Proxima Nova Rg", 11), fg="white", bg=bg, command=lambda: saveImage(track, audio, conflictFrame, webScrapingWindow)).pack(side="top", pady=(10, 10))
+            tk.Button(conflictPopup, text="Select", font=("Proxima Nova Rg", 11), fg="white", bg=bg, command=lambda: saveImage(track, audio, conflictPopup, webScrapingWindow)).pack(side="top", pady=(10, 10))
             # right navigation button
-            rightButton = tk.Button(pageFrame, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="e", command=lambda: navigateRight(start, end, imageFrame, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail))
+            rightButton = tk.Button(pageFrame, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="e", command=lambda: navigateRight(start, end, imageFrame, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail))
             if math.ceil(float(imageCounter - initialCounter) / 2.0) == 1: rightButton.config(state=DISABLED)
             rightButton.pack(side="right", padx=(15, 0), pady=(15, 10))
-            conflictFrame.attributes("-topmost", 1)
-            conflictFrame.attributes("-topmost", 0)
-            conflictFrame.wait_window()
+            conflictPopup.attributes("-topmost", 1)
+            conflictPopup.attributes("-topmost", 0)
+            conflictPopup.wait_window()
     else:
         audio['date'] = str(track.release_date)
         audio['bpm'] = str(track.bpm)

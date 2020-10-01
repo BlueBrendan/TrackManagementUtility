@@ -16,6 +16,7 @@ def handleFinalReport(finalResults, characters, imageCounter, imageSelections, w
         global currentPage
         currentPage = 1
         finalReportWindow = tk.Toplevel()
+        finalReportWindow.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
         finalReportWindow.title("Final Report")
         finalReportWindow.configure(bg=bg)
         ws = finalReportWindow.winfo_screenwidth()  # width of the screen

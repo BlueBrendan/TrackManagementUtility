@@ -1,4 +1,5 @@
 import tkinter as tk
+import getpass
 
 #main bg color
 bg = "#282f3b"
@@ -13,6 +14,7 @@ def handleArtistTitleDiscrepancy(fileArtist, tagArtist, fileTitle, tagTitle):
     global file
     global tag
     popup = tk.Toplevel()
+    popup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
     popup.title("Tag Filename Mismatch - Title")
     ws = popup.winfo_screenwidth()  # width of the screen
     hs = popup.winfo_screenheight()  # height of the screen

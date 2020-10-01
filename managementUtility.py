@@ -23,6 +23,7 @@ secondary_bg = "#364153"
 window = False
 
 root = tk.Tk()
+root.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
 root.title("Track Management Utility V1.0")
 ws = root.winfo_screenwidth() # width of the screen
 hs = root.winfo_screenheight() # height of the screen
