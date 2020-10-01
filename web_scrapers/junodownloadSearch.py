@@ -1,18 +1,16 @@
-import requests
-from bs4 import BeautifulSoup
 import tkinter as tk
 from tkinter.tix import *
 from PIL import Image, ImageTk
+import requests
 import webbrowser
 import getpass
-import time
-import random
 
 #import methods
 from track_scraping.compareTokens import compareTokens
 from track_scraping.reverseImageSearch import reverseImageSearch
 from web_scrapers.webScrapingWindowControl import rerenderControls
 from web_scrapers.webScrapingWindowControl import resetLeftRightFrames
+from web_scrapers.sendRequest import sendRequest
 from web_scrapers.compareRuntime import compareRuntime
 
 #main bg color
@@ -27,7 +25,7 @@ def allWidgets(window):
             _list.extend(item.winfo_children())
     return _list
 
-def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, audio, options, imageCounter):
+def junodownloadSearch(filename, yearList, BPMList, genreList, URLList, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, audio, options, imageCounter):
     #FIRST QUERY - JUNO DOWNLOAD
     widgetList = allWidgets(webScrapingWindow)
     for item in widgetList:
@@ -40,8 +38,8 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
     searchFrame.pack(side="left")
     pageFrame = tk.Frame(labelFrame, bg=bg)
     pageFrame.pack(side="right", pady=(20, 0))
-    if len(var) > 60: tk.Label(searchFrame, text="\nSearching Juno Download for " + str(var)[0:59] + "...", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="left", padx=(10, 0), anchor='w')
-    else: tk.Label(searchFrame, text="\nSearching Juno Download for " + str(var), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="left", padx=(10, 0), anchor='w')
+    if len(filename) > 60: tk.Label(searchFrame, text="\nSearching Juno Download for " + str(filename)[0:59] + "...", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="left", padx=(10, 0), anchor='w')
+    else: tk.Label(searchFrame, text="\nSearching Juno Download for " + str(filename), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="left", padx=(10, 0), anchor='w')
     #page counter and navigation buttons
     rerenderControls(pageFrame, webScrapingPage)
     componentFrame = tk.Frame(webScrapingWindow, bg=bg)
@@ -50,7 +48,7 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
 
     refresh(webScrapingWindow)
     url = "https://www.google.co.in/search?q=" + search + " Junodownload"
-    soup = sendRequest(url, headers, leftComponentFrame, webScrapingWindow)
+    soup = sendRequest(url, headers, webScrapingWindow, leftComponentFrame)
     if soup!=False:
         for result in soup.find_all('div', class_="ZINbbc xpd O9g5cc uUPGi"):
             if 'junodownload.com' and 'products' in result.find('a').get('href').split('&')[0].lower():
@@ -78,7 +76,7 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
                         #update link
                         webScrapingLinks[webScrapingPage] = link
                         refresh(webScrapingWindow)
-                        soup = sendRequest(link, headers, leftComponentFrame, webScrapingWindow)
+                        soup = sendRequest(link, headers, webScrapingWindow, leftComponentFrame)
                         if soup!=False:
                             #scrape release date and genre
                             for link in soup.find_all('div',class_="row gutters-sm align-items-center product-tracklist-track"):
@@ -89,13 +87,7 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
                                 else:
                                     trackArtist = ''
                                     trackTitle = link.find('span').get_text()
-                                mismatch = True
-                                for title in titleVariations:
-                                    title = title.replace('-', ' ')
-                                    mismatch = compareTokens(title, trackTitle)
-                                    if not mismatch:break
-                                refresh(webScrapingWindow)
-                                if mismatch == False:
+                                if not compareTokens(variation, trackTitle):
                                     #check runtime to ensure track is correct
                                     runtime = link.find('div', class_="col-1 d-none d-lg-block text-center").get_text()
                                     if compareRuntime(runtime, audio) == False:
@@ -117,7 +109,8 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
                                             tk.Label(leftComponentFrame, text="Genre: " + str(genre), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
                                             genreList.append(genre)
                                             webScrapingLeftPane[webScrapingPage] = leftComponentFrame
-                                            # extract image
+                                        # extract image
+                                        if options["Extract Image from Website (B)"].get() == True:
                                             link = soup.find('div', class_="jw-page")
                                             link = link.find('img').get('data-src-full')
                                             # write junodownload image to drive
@@ -135,28 +128,12 @@ def junodownloadSearch(var, yearList, BPMList, genreList, URLList, artistVariati
                                             refresh(webScrapingWindow)
                                             webScrapingRightPane[webScrapingPage] = rightComponentFrame
                                             # perform image scraping if enabled in options
-                                            if options["Reverse Image Search (B)"].get() == True:
-                                                imageCounter, URLList = reverseImageSearch(link, headers, webScrapingWindow, imageCounter, URLList, options)
-                                            time.sleep(1)
+                                            if options["Reverse Image Search (B)"].get() == True: imageCounter, URLList = reverseImageSearch(link, headers, webScrapingWindow, imageCounter, URLList, options)
                                     else:
                                         tk.Label(leftComponentFrame, text="Track failed runtime comparison test, likely a radio or compilation mix edit", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
                                         webScrapingLeftPane[webScrapingPage] = leftComponentFrame
                                         refresh(webScrapingWindow)
     return yearList, BPMList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame
-
-def sendRequest(url, headers, frame, window):
-    try:
-        response = requests.get(url, headers=headers)
-        soup = BeautifulSoup(response.text, "html.parser")
-        # generate random waiting time to avoid being blocked
-        time.sleep(random.uniform(1, 3.5))
-        return soup
-    except requests.exceptions.ConnectionError:
-        Label(frame, text="Connection refused", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), anchor='w')
-        refresh(window)
-        # generate random waiting time to avoid being blocked
-        time.sleep(random.uniform(1, 3.5))
-        return False
 
 def refresh(webScrapingWindow):
     webScrapingWindow.update()

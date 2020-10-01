@@ -1,17 +1,15 @@
 import tkinter as tk
 from tkinter.tix import *
 import requests
-from bs4 import BeautifulSoup
 from PIL import Image, ImageTk
 import getpass
 import webbrowser
-import time
-import random
 
 #import methods
 from track_scraping.compareTokens import compareTokens
 from track_scraping.reverseImageSearch import reverseImageSearch
 from web_scrapers.webScrapingWindowControl import resetLeftRightFrames
+from web_scrapers.sendRequest import sendRequest
 from web_scrapers.webScrapingWindowControl import rerenderControls
 
 #main bg color
@@ -48,7 +46,7 @@ def discogsSearch(title, var, yearList, genreList, URLList, artistVariations, ti
 
     refresh(webScrapingWindow)
     url = "https://www.google.co.in/search?q=" + search + " Discogs"
-    soup = sendRequest(url, headers, webScrapingWindow)
+    soup = sendRequest(url, headers, webScrapingWindow, leftComponentFrame)
     if soup != False:
         #result includes link and description
         for result in soup.find_all('div', class_="ZINbbc xpd O9g5cc uUPGi"):
@@ -84,7 +82,7 @@ def searchQuery(title, result, headers, webScrapingWindow, webScrapingLeftPane, 
     webScrapingLinks[webScrapingPage] = link
     refresh(webScrapingWindow)
 
-    soup = sendRequest(link, headers, webScrapingWindow)
+    soup = sendRequest(link, headers, webScrapingWindow, leftComponentFrame)
     if soup != False:
         # first check if the title is in the tracklist, push data if it is
         link = soup.find('table', class_="playlist")
@@ -157,7 +155,8 @@ def discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFra
     webScrapingLeftPane[webScrapingPage] = leftComponentFrame
     refresh(webScrapingWindow)
     image = soup.find('div', class_="image_gallery image_gallery_large")['data-images']
-    if "full" in image and ".jpg" in image:
+    # extract image
+    if "full" in image and ".jpg" in image and options["Extract Image from Website (B)"].get() == True:
         link = image[image.index('full": ')+8:image.index(".jpg", image.index("full"))+4]
         # check
         if link[len(link)-5:len(link)-4]!='g': link = link + '.jpg'
@@ -178,19 +177,6 @@ def discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFra
         if options["Reverse Image Search (B)"].get() == True:
             imageCounter, URLList = reverseImageSearch(link, headers, webScrapingWindow, imageCounter, URLList, options)
     return yearList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane
-
-def sendRequest(url, headers, window):
-    try:
-        response = requests.get(url, headers=headers)
-        soup = BeautifulSoup(response.text, "html.parser")
-        #generate random waiting time to avoid being blocked
-        time.sleep(random.uniform(1, 3.5))
-        return soup
-    except requests.exceptions.ConnectionError:
-        tk.Label(window, text="Connection refused").pack(anchor='w')
-        # generate random waiting time to avoid being blocked
-        time.sleep(random.uniform(1, 3.5))
-        return False
 
 def refresh(webScrapingWindow):
     webScrapingWindow.update()

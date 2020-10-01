@@ -14,7 +14,7 @@ def initiateAIFF(filename, directory, options):
     # verify artist information is present before preceeding
     if ' - ' not in filename and str(audio['TCON']) == '':
         messagebox.showinfo("No artist information found, aborting procedure")
-        return False, filename
+        return False, False, False
 
     # transcribe formal tagnames into informal counterpart
     formalTagDict = {
@@ -73,7 +73,7 @@ def initiateAIFF(filename, directory, options):
                     audio.save()
                 except:
                     messagebox.showinfo("Permission Error", "Unable to save tags, file may be open somewhere")
-                    return False, filename
+                    return False, False, False
 
     #check for discrepancies between tags and filename
     #check both artist and title tags
@@ -143,9 +143,8 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
             newTitle = title
             if '.' in artistPrefix[0:5]:
                 if any(char.isdigit() for char in artistPrefix[0:artistPrefix.index('.')]):
-                    if handleTypo(artist, newArtist, title, newTitle, "Prefix", options)!=None:
-                        artist, title = handleTypo(artist, newArtist, title, newTitle, "Hyphen", options)
-                        audio, filename = rename(directory, filename, artist, title, extension, format)
+                    artist, title = handleTypo(artist, newArtist, title, newTitle, "Prefix", options)
+                    if artist != None and title != None: audio, filename = rename(directory, filename, artist, title, extension, format)
 
     # scan artist and title for hyphens
     if options["Check for Extraneous Hyphens (B)"].get() == True:
@@ -154,9 +153,8 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
             newTitle = title
             if '-' in artist: newArtist = artist.replace('-', ' ')
             if '-' in title: newTitle = title.replace('-', ' ')
-            if handleTypo(artist, newArtist, title, newTitle, "Hyphen", options) != None:
-                artist, title = handleTypo(artist, newArtist, title, newTitle, "Hyphen", options)
-                audio, filename = rename(directory, filename, artist, title, extension, format)
+            artist, title = handleTypo(artist, newArtist, title, newTitle, "Hyphen", options)
+            if artist != None and title != None: audio, filename = rename(directory, filename, artist, title, extension, format)
 
     # scan artist and title for capitalization
     if options["Check for Capitalization (B)"].get()==True:
@@ -164,9 +162,9 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
         titleList = title.split(' ')
         newArtist, artist, filename = checkCapitalization(artistList, artist, title, "artist", directory, filename, format, options)
         newTitle, title, filename = checkCapitalization(titleList, artist, title, "title", directory, filename, format, options)
-        if (artist != newArtist or title != newTitle) and handleTypo(artist, newArtist, title, newTitle, "Capitalization", options) != None:
-            artist, title = handleTypo(artist, newArtist, title, newTitle,  "Capitalization", options)
-            audio, filename = rename(directory, filename, artist, title, extension, format)
+        if (artist != newArtist or title != newTitle):
+            artist, title = handleTypo(artist, newArtist, title, newTitle, "Capitalization", options)
+            if artist != None and title != None: audio, filename = rename(directory, filename, artist, title, extension, format)
     return audio, filename
 
 def compareArtistAndTitle(audio, artist, title, filename, directory, options):

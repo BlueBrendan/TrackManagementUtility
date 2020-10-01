@@ -16,13 +16,13 @@ def handleArtistTitleDiscrepancy(fileArtist, tagArtist, fileTitle, tagTitle):
     popup.title("Tag Filename Mismatch - Title")
     ws = popup.winfo_screenwidth()  # width of the screen
     hs = popup.winfo_screenheight()  # height of the screen
-    x = (ws / 2) - (500 / 2)
+    x = (ws / 2) - (550 / 2)
     y = (hs / 2) - (330 / 2)
     if len(fileTitle) <= 30:
-        popup.geometry('%dx%d+%d+%d' % (500, 300, x, y))
+        popup.geometry('%dx%d+%d+%d' % (550, 300, x, y))
     else:
         x = (ws / 2) - ((450 + (len(fileTitle) * 1.5)) / 2)
-        popup.geometry('%dx%d+%d+%d' % (500 + (len(fileTitle) * 1.5), 300, x, y))
+        popup.geometry('%dx%d+%d+%d' % (550 + (len(fileTitle) * 1.5), 300, x, y))
     popup.config(bg=bg)
     tk.Label(popup, text="The title and artist in filename conflict with their corresponding tags.\nChoose between the file and tag name\n", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(20, 10))
 

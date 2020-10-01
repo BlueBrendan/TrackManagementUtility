@@ -37,7 +37,7 @@ def createConfigFile(flag):
             os.mkdir(path + "/Track Management Utility")
         # create setttings file
         file = open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt", 'w')
-        file.write("-GENERAL-\nSubdirectories (B):True\nClose Scraping Window (B):True\nFirst Default Directory (S):\nSecond Default Directory (S):\n\n-SCRAPING SETTINGS-\nScrape Junodownload (B):True\nScrape Beatport (B):True\nScrape Discogs (B):True\n\n-IMAGE SCRAPING-\nReverse Image Search (B):True\nDelete Stored Images (B):True\nImage Load Wait Time (I):10\n\n-TAGGING-\nScan Filename and Tags (B):True\nCheck for Numbering Prefix (B):True\nCheck for Extraneous Hyphens (B):True\nCheck for Capitalization (B):True\nAlways Capitalize (L):\nNever Capitalize (L):\nAudio naming format (S):Artist - Title\nSelected Tags (L):Artist, BPM, Genre, Image, Key, Release_Date, ReplayGain, Title\nDelete Unselected Tags (B):False\nCalculate ReplayGain (B):True\nOverwrite existing ReplayGain value (B):False\n")
+        file.write("-GENERAL-\nSubdirectories (B):True\nClose Scraping Window (B):True\nFirst Default Directory (S):\nSecond Default Directory (S):\n\n-SCRAPING SETTINGS-\nScrape Junodownload (B):True\nScrape Beatport (B):True\nScrape Discogs (B):True\nExtract Image from Website (B):True\n\n-IMAGE SCRAPING-\nReverse Image Search (B):True\nDelete Stored Images (B):True\nImage Load Wait Time (I):10\n\n-TAGGING-\nScan Filename and Tags (B):True\nCheck for Numbering Prefix (B):True\nCheck for Extraneous Hyphens (B):True\nCheck for Capitalization (B):True\nAlways Capitalize (L):\nNever Capitalize (L):\nAudio naming format (S):Artist - Title\nSelected Tags (L):Artist, BPM, Genre, Image, Key, Release_Date, ReplayGain, Title\nDelete Unselected Tags (B):False\nCalculate ReplayGain (B):True\nOverwrite existing ReplayGain value (B):False\n")
         file.close()
     return CONFIG_FILE
 
@@ -66,7 +66,7 @@ def compareDirectories(CONFIG_FILE):
 
 def readValuesFromConfig(CONFIG_FILE):
     config_file = open(CONFIG_FILE, 'r').read()
-    terms = ['Subdirectories (B)', 'Close Scraping Window (B)', 'First Default Directory (S)', 'Second Default Directory (S)', 'Scrape Junodownload (B)', 'Scrape Beatport (B)', 'Scrape Discogs (B)', "Reverse Image Search (B)", "Delete Stored Images (B)", "Image Load Wait Time (I)", "Scan Filename and Tags (B)", "Check for Numbering Prefix (B)", "Check for Extraneous Hyphens (B)", "Check for Capitalization (B)", "Always Capitalize (L)", "Never Capitalize (L)", "Audio naming format (S)", "Selected Tags (L)", "Delete Unselected Tags (B)", "Calculate ReplayGain (B)", "Overwrite existing ReplayGain value (B)"]
+    terms = ["Subdirectories (B)", "Close Scraping Window (B)", "First Default Directory (S)", "Second Default Directory (S)", "Scrape Junodownload (B)", "Scrape Beatport (B)", 'Scrape Discogs (B)', "Extract Image from Website (B)", "Reverse Image Search (B)", "Delete Stored Images (B)", "Image Load Wait Time (I)", "Scan Filename and Tags (B)", "Check for Numbering Prefix (B)", "Check for Extraneous Hyphens (B)", "Check for Capitalization (B)", "Always Capitalize (L)", "Never Capitalize (L)", "Audio naming format (S)", "Selected Tags (L)", "Delete Unselected Tags (B)", "Calculate ReplayGain (B)", "Overwrite existing ReplayGain value (B)"]
     options = {}
     for term in terms:
         if term in config_file:
@@ -170,7 +170,7 @@ tk.Label(buttons, text="Scan for differences in files and folders between\ntwo s
 
 bottom = tk.Frame(root, bg=bg)
 bottom.pack(side="left")
-tk.Checkbutton(bottom, var=options['Subdirectories (B)'], bg=bg).pack(padx=(10,0), pady=(0, 5), side='left')
+tk.Checkbutton(bottom, var=options['Subdirectories (B)'], activebackground=bg, bg=bg).pack(padx=(10,0), pady=(0, 5), side='left')
 tk.Label(bottom, text="Include Subdirectories", font=('Proxima Nova Rg', 12), fg="white", bg=bg).pack(side="left")
 root.mainloop()
 

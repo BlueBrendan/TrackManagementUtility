@@ -1,18 +1,16 @@
 import tkinter as tk
 from tkinter.tix import *
 import requests
-from bs4 import BeautifulSoup
 import getpass
 from PIL import Image, ImageTk
 import webbrowser
-import time
-import random
 
 #import methods
 from track_scraping.compareTokens import compareTokens
 from track_scraping.reverseImageSearch import reverseImageSearch
 from web_scrapers.webScrapingWindowControl import rerenderControls
 from web_scrapers.webScrapingWindowControl import resetLeftRightFrames
+from web_scrapers.sendRequest import sendRequest
 from web_scrapers.compareRuntime import compareRuntime
 
 #main bg color
@@ -50,11 +48,11 @@ def beatportSearch(title, var, yearList, BPMList, keyList, genreList, URLList, a
     leftComponentFrame, rightComponentFrame = resetLeftRightFrames(componentFrame)
     refresh(webScrapingWindow)
     url = "https://www.google.co.in/search?q=" + search + " Beatport"
-    soup = sendRequest(url, headers, webScrapingWindow)
+    soup = sendRequest(url, headers, webScrapingWindow, leftComponentFrame)
     if soup == False:
-        Label(leftComponentFrame, text="Connection Failed").pack(anchor='w')
+        Label(leftComponentFrame, text="Connection Failure", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(anchor='w')
         refresh(webScrapingWindow)
-        return yearList, BPMList, keyList, genreList
+        return yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame
     for link in soup.find_all('a'):
         if "www.beatport.com" in link.get('href').split('&')[0]:
             lastForwardslashIndex = link.get('href').split('&')[0].lower().index('/', link.get('href').split('&')[0].lower().rfind('/'))
@@ -65,14 +63,13 @@ def beatportSearch(title, var, yearList, BPMList, keyList, genreList, URLList, a
             mismatch = True
             if '/' not in content:
                 for variation in titleVariations:
-                    variation = variation.replace('-', ' ')
                     for content in contentVariations:
                         if variation in content:
                             mismatch = False
                             break
                         else:
                             mismatch = compareTokens(variation, content)
-                            if not mismatch:break
+                            if not mismatch: break
                     if not mismatch:break
             if mismatch == False:
                 link = link.get('href').split('&')[0].split('=')[1]
@@ -96,13 +93,14 @@ def beatportSearch(title, var, yearList, BPMList, keyList, genreList, URLList, a
                     webScrapingRightPane[webScrapingPage] = "NA"
                     webScrapingLinks[webScrapingPage] = link
                     refresh(webScrapingWindow)
-                    soup = sendRequest(link, headers, webScrapingWindow)
+                    soup = sendRequest(link, headers, webScrapingWindow, leftComponentFrame)
                     if soup != False and "Oops... the page you were looking for could not be found" not in str(soup):
                         #check if page is a track (single) or a release (album)
                         #case 1: release
                         if link[25:32] == "release": yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane = beatportRelease(soup, titleVariations, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
                         #case 2: track
                         elif link[25:30] == "track": yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane = beatportTrack(soup, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
+                    else: tk.Label(leftComponentFrame, text="Track failed due to dead link or territory restriction", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
     return yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame
 
 #search beatport releases, filter individual tracks
@@ -110,13 +108,13 @@ def beatportRelease(soup, titleVariations, yearList, BPMList, keyList, genreList
     for link in soup.find_all('li', class_="bucket-item ec-item track"):
         # find all tracks in the release that contain the title
         link = link.find('p', class_="buk-track-title")
-        if link.find('a')['href'] in titleVariations:
+        if link.find('a')['href'].lower() in titleVariations:
             url = "https://www.beatport.com" + str(link.find('a')['href'])
-            soup = sendRequest(url, headers, webScrapingWindow)
+            soup = sendRequest(url, headers, webScrapingWindow, leftComponentFrame)
             if soup == False:
-                tk.Label(webScrapingWindow, text="Connection Failed").pack(anchor='w')
+                tk.Label(leftComponentFrame, text="Connection Failure", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(anchor='w')
                 refresh(webScrapingWindow)
-                return yearList, BPMList, keyList, genreList, imageCounter
+                return yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane
             yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane = beatportTrack(soup, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
     return yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane
 
@@ -141,6 +139,7 @@ def beatportTrack(soup, yearList, BPMList, keyList, genreList, URLList, headers,
         else:
             tk.Label(leftComponentFrame, text="Track failed runtime comparison test, likely a radio or compilation mix edit", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
             refresh(webScrapingWindow)
+    else: tk.Label(leftComponentFrame, text="Track failed due to dead link or territory restriction", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
     return yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane
 
 #extract year, BPM, key, and genre
@@ -183,41 +182,28 @@ def extractInfo(soup, yearList, BPMList, keyList, genreList, URLList, headers, l
             genreList.append(genre)
     webScrapingLeftPane[webScrapingPage] = leftComponentFrame
     #extract image
-    link = soup.find('img', class_="interior-track-release-artwork")
-    if link!=None:
-        link = link['src']
-        # write beatport image to drive
-        with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
-            file.write(requests.get(link, headers=headers).content)
-        URLList.append(link)
-        # load file icon
-        fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
-        fileImageImport = fileImageImport.resize((180, 180), Image.ANTIALIAS)
-        photo = ImageTk.PhotoImage(fileImageImport)
-        fileImage = Label(rightComponentFrame, image=photo, bg=bg)
-        fileImage.image = photo
-        fileImage.pack(padx=(0, 100), anchor="e")
-        refresh(webScrapingWindow)
-        imageCounter+=1
-        webScrapingRightPane[webScrapingPage] = rightComponentFrame
-        # perform image scraping if enabled in options
-        if options["Reverse Image Search (B)"].get() == True:
-            imageCounter, URLList = reverseImageSearch(link, headers, webScrapingWindow, imageCounter, URLList, options)
+    if options["Extract Image from Website (B)"].get() == True:
+        link = soup.find('img', class_="interior-track-release-artwork")
+        if link!=None:
+            link = link['src']
+            # write beatport image to drive
+            with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
+                file.write(requests.get(link, headers=headers).content)
+            URLList.append(link)
+            # load file icon
+            fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
+            fileImageImport = fileImageImport.resize((180, 180), Image.ANTIALIAS)
+            photo = ImageTk.PhotoImage(fileImageImport)
+            fileImage = Label(rightComponentFrame, image=photo, bg=bg)
+            fileImage.image = photo
+            fileImage.pack(padx=(0, 100), anchor="e")
+            refresh(webScrapingWindow)
+            imageCounter+=1
+            webScrapingRightPane[webScrapingPage] = rightComponentFrame
+            # perform image scraping if enabled in options
+            if options["Reverse Image Search (B)"].get() == True:
+                imageCounter, URLList = reverseImageSearch(link, headers, webScrapingWindow, imageCounter, URLList, options)
     return yearList, BPMList, keyList, genreList, URLList, imageCounter, webScrapingLeftPane, webScrapingRightPane
-
-def sendRequest(url, headers, window):
-    try:
-        response = requests.get(url, headers=headers)
-        soup = BeautifulSoup(response.text, "html.parser")
-        # generate random waiting time to avoid being blocked
-        time.sleep(random.uniform(1, 3.5))
-        return soup
-    except requests.exceptions.ConnectionError:
-        tk.Label(window, text="Connection refused").pack(anchor='w')
-        refresh(window)
-        # generate random waiting time to avoid being blocked
-        time.sleep(random.uniform(1, 3.5))
-        return False
 
 def refresh(webScrapingWindow):
     webScrapingWindow.update()

@@ -86,7 +86,7 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalT
             conflictPopup.wait_window()
 
         # image conflict
-        if options["Reverse Image Search (B)"].get() == True and imageCounter >= 1:
+        if imageCounter >= 1:
             buttons = []
             conflictFrame = tk.Toplevel()
             conflictFrame.title("Conflicting Images")

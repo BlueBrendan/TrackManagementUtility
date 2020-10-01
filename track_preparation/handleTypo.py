@@ -71,7 +71,8 @@ def handleTypo(artist, newArtist, title, newTitle, type, options):
     if change:
         artist = newArtist
         title = newTitle
-        return artist, title
+        return artist, title, True
+    return artist, title, False
 
 def setChange(popup):
     global change

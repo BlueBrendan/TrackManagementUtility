@@ -13,7 +13,7 @@ from PIL import Image
 from io import BytesIO
 
 #import classes
-from classes.AudioClass import *
+from AudioClass import *
 
 #import methods
 from track_preparation.initiateTrack.initiateFLAC import initiateFLAC
@@ -140,33 +140,33 @@ def checkFileValidity(filename, directory, format):
     if format=="FLAC":
         try:audio = FLAC(str(directory) + "/" + str(filename))
         except:
-            messagebox.showinfo("Invalid or Corrupt File")
+            messagebox.showinfo("Error", "Invalid or Corrupt File")
             return "Invalid or corrupt file\n"
     elif format=="AIFF":
         try: audio = AIFF(str(directory) + "/" + str(filename))
         except:
-            messagebox.showinfo("Invalid or Corrupt File")
+            messagebox.showinfo("Error", "Invalid or Corrupt File")
             return "Invalid or corrupt file\n"
     elif format=="MP3":
         try: audio = MP3(str(directory) + "/" + str(filename))
         except:
-            messagebox.showinfo("Invalid or Corrupt File")
+            messagebox.showinfo("Error", "Invalid or Corrupt File")
             return "Invalid or corrupt file\n"
     elif format=="OGG":
         try: audio = OggVorbis(str(directory) + "/" + str(filename))
         except:
-            messagebox.showinfo("Invalid or Corrupt File")
+            messagebox.showinfo("Error", "Invalid or Corrupt File")
             return "Invalid or corrupt file\n"
     elif format=="WAV":
         try: audio = WAVE(str(directory) + "/" + str(filename))
         except:
-            messagebox.showinfo("Invalid or Corrupt File")
+            messagebox.showinfo("Error", "Invalid or Corrupt File")
             return "Invalid or corrupt file\n"
     elif format=="M4A":
         #M4A is deprecated in mutagen, MP4 is suggested instead
         try: audio = MP4(str(directory) + "/" + str(filename))
         except:
-            messagebox.showinfo("Invalid or Corrupt File")
+            messagebox.showinfo("Error", "Invalid or Corrupt File")
             return "Invalid or corrupt file\n"
     return audio
 

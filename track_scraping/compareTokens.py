@@ -1,12 +1,8 @@
 def compareTokens(one, two):
     mismatch = False
     #string manipulations
-    one = one.replace("(", "")
-    one = one.replace(")", "")
-    one = one.lower().replace(" extended", "")
-    two = two.replace("(", "")
-    two = two.replace(")", "")
-    two = two.lower().replace(" extended", "")
+    one = one.lower().replace("(", "").replace(")", "").replace("-", ' ').replace(" extended", "").replace(" extended mix", "").replace(" original mix", "")
+    two = two.lower().replace("(", "").replace(")", "").replace("-", ' ').replace(" extended", "").replace(" extended mix", "").replace(" original mix", "")
 
     #test one
     tokens = two.split(' ')
