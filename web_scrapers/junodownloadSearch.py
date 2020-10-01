@@ -91,7 +91,8 @@ def junodownloadSearch(filename, yearList, BPMList, genreList, URLList, artistVa
                                     runtime = link.find('div', class_="col-1 d-none d-lg-block text-center").get_text()
                                     if compareRuntime(runtime, audio) == False:
                                         for value in link.find_all('div', class_="col-1 d-none d-lg-block text-center"):
-                                            if ":" not in value.get_text() and value.get_text()!='\xa0':
+                                            # extract BPM
+                                            if ":" not in value.get_text() and value.get_text()!='\xa0' and "BPM" in options["Selected Tags (L)"]:
                                                 BPM = value.get_text()
                                                 tk.Label(leftComponentFrame, text="BPM: " + str(BPM), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
                                                 webScrapingLeftPane[webScrapingPage] = leftComponentFrame
@@ -99,14 +100,17 @@ def junodownloadSearch(filename, yearList, BPMList, genreList, URLList, artistVa
                                                 BPMList.append(int(BPM))
                                                 BPMList.append(int(BPM))
                                         #only push release and genre from header if title is found in tracklist
-                                        # scrape release date and genre
                                         for link in soup.select('div[class=mb-3]'):
-                                            release = link.find("span", itemprop="datePublished").get_text()
-                                            tk.Label(leftComponentFrame, text="Year: " + str(release), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
-                                            yearList.append(int(release[-4:]))
-                                            genre = link.find("a").get_text()
-                                            tk.Label(leftComponentFrame, text="Genre: " + str(genre), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
-                                            genreList.append(genre)
+                                            # extract release date
+                                            if "Release_Date" in options["Selected Tags (L)"]:
+                                                release = link.find("span", itemprop="datePublished").get_text()
+                                                tk.Label(leftComponentFrame, text="Year: " + str(release), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
+                                                yearList.append(int(release[-4:]))
+                                            # extract genre
+                                            if "Genre" in options["Selected Tags (L)"]:
+                                                genre = link.find("a").get_text()
+                                                tk.Label(leftComponentFrame, text="Genre: " + str(genre), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
+                                                genreList.append(genre)
                                             webScrapingLeftPane[webScrapingPage] = leftComponentFrame
                                         # extract image
                                         if options["Extract Image from Website (B)"].get() == True:

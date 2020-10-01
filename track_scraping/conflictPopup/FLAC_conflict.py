@@ -7,29 +7,39 @@ from io import BytesIO
 import getpass
 import math
 
-#main bg color
+# main bg color
 bg = "#282f3b"
-#secondary color
+# secondary color
 secondary_bg = "#364153"
 
-#global variables
+# global variables
 page = 0
 
 def FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict, webScrapingWindow):
     global page
-    if audio['date'][0] != '' or audio['bpm'][0] != '' or audio['initialkey'][0] != '' or audio['genre'][0] != '':
-        #tag conflict
-        if str(audio['date'][0]) != str(track.release_date) or str(audio['bpm'][0]) != str(track.bpm) or str(audio['initialkey'][0]) != track.key or str(audio['genre'][0]) != track.genre:
+    tagAlert = False
+    if "Release_Date" in options["Selected Tags (L)"] and audio['date'][0] != '': tagAlert = True
+    if "BPM" in options["Selected Tags (L)"] and audio['bpm'][0] != '': tagAlert = True
+    if "Key" in options["Selected Tags (L)"] and audio['initialkey'][0] != '': tagAlert = True
+    if "Genre" in options["Selected Tags (L)"] and audio['genre'][0] != '': tagAlert = True
+    if tagAlert:
+        # tag conflict
+        tagConflict = False
+        if "Release_Date" in options["Selected Tags (L)"] and str(audio['date'][0]) != str(track.release_date): tagConflict = True
+        if "BPM" in options["Selected Tags (L)"] and str(audio['bpm'][0]) != str(track.bpm): tagConflict = True
+        if "Key" in options["Selected Tags (L)"] and str(audio['initialkey'][0]) != track.key: tagConflictt = True
+        if "Genre" in options["Selected Tags (L)"] and str(audio['genre'][0]) != track.genre: tagConflict = True
+        if tagConflict:
             conflictPopup = tk.Toplevel()
             conflictPopup.title("Conflicting Tags")
             ws = conflictPopup.winfo_screenwidth()  # width of the screen
             hs = conflictPopup.winfo_screenheight()  # height of the screen
             x = (ws / 2) - (650 / 2)
-            y = (hs / 2) - (352 / 2)
-            conflictPopup.geometry('%dx%d+%d+%d' % (650, 320, x, y))
+            y = (hs / 2) - (264 / 2)
+            conflictPopup.geometry('%dx%d+%d+%d' % (650, 240, x, y))
             if len(str(track.artist) + " - " + str(track.title)) > 30:
                 x = (ws / 2) - ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)) / 2)
-                conflictPopup.geometry('%dx%d+%d+%d' % ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)), 320, x, y))
+                conflictPopup.geometry('%dx%d+%d+%d' % ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)), 240, x, y))
             conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
             conflictPopup.config(bg=bg)
             #tag conflict window
@@ -42,8 +52,27 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalT
             leftTags.pack(side="left", padx=(0, 50), pady=(0, 50))
             currentTagDict = {}
             scrapedTagDict = {}
-            #THIS is the list of tags that the user wants to retrieve
-            list = ["Release_Date", "BPM", "Key", "Genre"]
+            list = []
+            if "Release_Date" in options["Selected Tags (L)"]:
+                list.append("Release_Date")
+                conflictPopup.update_idletasks()
+                y = (hs / 2) - (((conflictPopup.winfo_height() + 10) * 1.1) / 2)
+                conflictPopup.geometry('%dx%d+%d+%d' % (conflictPopup.winfo_width(), conflictPopup.winfo_height() + 20, x, y))
+            if "BPM" in options["Selected Tags (L)"]:
+                list.append("BPM")
+                conflictPopup.update_idletasks()
+                y = (hs / 2) - (((conflictPopup.winfo_height() + 10) * 1.1) / 2)
+                conflictPopup.geometry('%dx%d+%d+%d' % (conflictPopup.winfo_width(), conflictPopup.winfo_height() + 20, x, y))
+            if "Key" in options["Selected Tags (L)"]:
+                list.append("Key")
+                conflictPopup.update_idletasks()
+                y = (hs / 2) - (((conflictPopup.winfo_height() + 10) * 1.1) / 2)
+                conflictPopup.geometry('%dx%d+%d+%d' % (conflictPopup.winfo_width(), conflictPopup.winfo_height() + 20, x, y))
+            if "Genre" in options["Selected Tags (L)"]:
+                list.append("Genre")
+                conflictPopup.update_idletasks()
+                y = (hs / 2) - (((conflictPopup.winfo_height() + 10) * 1.1) / 2)
+                conflictPopup.geometry('%dx%d+%d+%d' % (conflictPopup.winfo_width(), conflictPopup.winfo_height() + 20, x, y))
             currentTagDict[0] = tk.Label(leftTags, text="CURRENT TAGS:", font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left", bd=-10)
             currentTagDict[0].pack(anchor="w", pady=(0, 15))
             for i in range(len(list)):
@@ -78,10 +107,10 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalT
             # buttons
             optionButtons = tk.Frame(conflictPopup, bg=bg)
             optionButtons.pack()
-            tk.Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
-            tk.Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
-            tk.Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(audio, track, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
-            tk.Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
+            tk.Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track, options, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
+            tk.Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track, options, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
+            tk.Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(audio, track, options, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
+            tk.Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, options, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
             conflictPopup.attributes("-topmost", 1)
             conflictPopup.wait_window()
 
@@ -167,54 +196,55 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalT
             conflictPopup.attributes("-topmost", 1)
             conflictPopup.attributes("-topmost", 0)
             conflictPopup.wait_window()
+    # no tags were collected, acquire tags directly from track
     else:
-        audio['date'] = str(track.release_date)
-        audio['bpm'] = str(track.bpm)
-        audio['initialkey'] = track.key
-        audio['genre'] = track.genre
+        if "Release_Date" in options["Selected Tags (L)"]: audio['date'] = str(track.release_date)
+        if "BPM" in options["Selected Tags (L)"]: audio['bpm'] = str(track.bpm)
+        if "Key" in options["Selected Tags (L)"]: audio['initialkey'] = track.key
+        if "Genre" in options["Selected Tags (L)"]: audio['genre'] = track.genre
         audio.save()
 
 #four button options
-def overwriteOption(audio, track, window, webScrapingWindow):
-    audio['date'] = str(track.release_date)
-    audio['bpm'] = str(track.bpm)
-    audio['initialkey'] = track.key
-    audio['genre'] = track.genre
+def overwriteOption(audio, track, options, window, webScrapingWindow):
+    if "Release_Date" in options["Selected Tags (L)"]: audio['date'] = str(track.release_date)
+    if "BPM" in options["Selected Tags (L)"]: audio['bpm'] = str(track.bpm)
+    if "Key" in options["Selected Tags (L)"]: audio['initialkey'] = track.key
+    if "Genre" in options["Selected Tags (L)"]: audio['genre'] = track.genre
     audio.save()
     if track.imageSelection!="THUMB": saveImage(track, audio, window, webScrapingWindow)
     else: window.destroy()
 
-def mergeScrapeOption(audio, track, window, webScrapingWindow):
-    if str(track.release_date) != '':
-        audio['date'] = str(track.release_date)
-    if str(track.bpm) != '':
-        audio['bpm'] = str(track.bpm)
-    if track.key != '':
-        audio['initialkey'] = track.key
-    if track.genre != '':
-        audio['genre'] = track.genre
+def mergeScrapeOption(audio, track, options, window, webScrapingWindow):
+    if "Release_Date" in options["Selected Tags (L)"] and str(track.release_date) != '': audio['date'] = str(track.release_date)
+    if "BPM" in options["Selected Tags (L)"] and str(track.bpm) != '': audio['bpm'] = str(track.bpm)
+    if "Key" in options["Selected Tags (L)"] and track.key != '': audio['initialkey'] = track.key
+    if "Genre" in options["Selected Tags (L)"] and track.genre != '': audio['genre'] = track.genre
     audio.save()
     if track.imageSelection!="THUMB": saveImage(track, audio, window, webScrapingWindow)
     else: window.destroy()
 
-def mergeSourceOption(audio, track, window, webScrapingWindow):
-    if audio['date'] == ['']: audio['date'] = str(track.release_date)
-    else: track.release_date = str(audio['date'][0])
-    if audio['bpm'] == ['']: audio['bpm'] = str(track.bpm)
-    else: track.bpm = str(audio['BPM'][0])
-    if audio['initialkey'] == ['']: audio['initialkey'] = track.key
-    else: track.key = str(audio['initialkey'][0])
-    if audio['genre'] == ['']: audio['genre'] = track.genre
-    else: track.genre = str(audio['genre'][0])
+def mergeSourceOption(audio, track, options, window, webScrapingWindow):
+    if "Release_Date" in options["Selected Tags (L)"]:
+        if audio['date'] == ['']: audio['date'] = str(track.release_date)
+        else: track.release_date = str(audio['date'][0])
+    if "BPM" in options["Selected Tags (L)"]:
+        if audio['bpm'] == ['']: audio['bpm'] = str(track.bpm)
+        else: track.bpm = str(audio['BPM'][0])
+    if "Key" in options["Selected Tags (L)"]:
+        if audio['initialkey'] == ['']: audio['initialkey'] = track.key
+        else: track.key = str(audio['initialkey'][0])
+    if "Genre" in options["Selected Tags (L)"]:
+        if audio['genre'] == ['']: audio['genre'] = track.genre
+        else: track.genre = str(audio['genre'][0])
     audio.save()
     if track.imageSelection!="THUMB": saveImage(track, audio, window, webScrapingWindow)
     else: window.destroy()
 
-def skipOption(audio, track, window, webScrapingWindow):
-    track.release_date = str(audio['date'][0])
-    track.bpm = str(audio['BPM'][0])
-    track.key = str(audio['initialkey'][0])
-    track.genre = str(audio['genre'][0])
+def skipOption(audio, track, options, window, webScrapingWindow):
+    if "Release_Date" in options["Selected Tags (L)"]: track.release_date = str(audio['date'][0])
+    if "BPM" in options["Selected Tags (L)"]: track.bpm = str(audio['BPM'][0])
+    if "Key" in options["Selected Tags (L)"]: track.key = str(audio['initialkey'][0])
+    if "Genre" in options["Selected Tags (L)"]:track.genre = str(audio['genre'][0])
     if track.imageSelection!="THUMB": saveImage(track, audio, window, webScrapingWindow)
     else: window.destroy()
 

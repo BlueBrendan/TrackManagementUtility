@@ -12,6 +12,8 @@ global CONFIG
 bg = "#282f3b"
 #secondary color
 secondary_bg = "#364153"
+#invalid selection color
+invalid_bg = "#801212"
 
 def updatePreferences(options, CONFIG_FILE, root):
     global tagList
@@ -133,17 +135,21 @@ def taggingTab(tab_parent, options, CONFIG_FILE):
     rightListbox.pack(side="left")
     # Default Tag settings
     tk.Label(leftListbox, text="Unselected Tags", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack()
-    unselectedListbox = tk.Listbox(leftListbox, font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg)
+    unselectedListbox = tk.Listbox(leftListbox, font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, highlightbackground="black", highlightcolor="grey", selectbackground=bg, activestyle="none")
 
     tk.Label(rightListbox, text="Selected Tags", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack()
-    selectedListbox = tk.Listbox(rightListbox, font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg)
+    selectedListbox = tk.Listbox(rightListbox, font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, highlightbackground="black", highlightcolor="grey", selectbackground=bg, activestyle="none")
     comprehensiveList = ['Artist', 'Album', 'Album Artist', 'BPM', 'Comment', 'Compilation', 'Copyright', 'Discnumber', 'Genre', 'Key', 'Release_Date', 'Title', 'ReplayGain']
-    # insert all tags in unselectedListbox
+
+    # insert tags in their corresponding listbox
     for tag in comprehensiveList:
-        if tag not in options['Selected Tags (L)']: unselectedListbox.insert(END, tag)
-    # insert all selected tags into selectedListbox and remove from unselectedListbox
-    for tag in options['Selected Tags (L)']:
-        selectedListbox.insert(END, tag)
+        if tag not in options['Selected Tags (L)']:
+            #remove underscore
+            if tag == "Release_Date": unselectedListbox.insert(END, "Release Date")
+            else: unselectedListbox.insert(END, tag)
+        else:
+            if tag == "Release_Date": selectedListbox.insert(END, "Release Date")
+            else: selectedListbox.insert(END, tag)
     unselectedListbox.pack(padx=(20, 5), pady=(5, 5))
 
     select = tk.Button(listboxButtons, text="Select", width=7, state=DISABLED, font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg)
@@ -184,8 +190,8 @@ def namingTab(tab_parent, options, CONFIG_FILE):
     rightListboxControls = tk.Frame(rightListboxFrame, bg=bg)
     rightListboxControls.pack()
 
-    capitalizedListbox = tk.Listbox(leftListboxContainer, font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, highlightbackground="black", highlightcolor="grey")
-    uncapitalizedListbox = tk.Listbox(rightListboxContainer, font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, highlightbackground="black", highlightcolor="grey")
+    capitalizedListbox = tk.Listbox(leftListboxContainer, font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, highlightbackground="black", highlightcolor="grey", selectbackground=bg, activestyle="none")
+    uncapitalizedListbox = tk.Listbox(rightListboxContainer, font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, highlightbackground="black", highlightcolor="grey", selectbackground=bg, activestyle="none")
 
     # populate listboxes
     for keyword in options["Always Capitalize (L)"]: capitalizedListbox.insert(END, keyword)
@@ -301,19 +307,28 @@ def selectTag(firstListbox, secondListbox, list, select, deselect):
     if len(firstListbox.curselection()) > 0:
         index = int(firstListbox.curselection()[0])
         tag = firstListbox.get(index)
-        if tag in list:
-            select.configure(state=DISABLED)
-            deselect.configure(state=NORMAL, command=lambda: disableTag(firstListbox, secondListbox, tag, index, list, deselect))
+        tag = tag.replace(' ', "_")
+        #lock1 artist and title tags
+        if tag == "Artist" or tag=="Title":
+            firstListbox.config(selectbackground=invalid_bg)
+            select.config(state=DISABLED)
+            deselect.config(state=DISABLED)
         else:
-            select.configure(state=NORMAL, command=lambda: enableTag(firstListbox, secondListbox, tag, index, list, select))
-            deselect.configure(state=DISABLED)
+            firstListbox.config(selectbackground=bg)
+            if tag in list:
+                select.config(state=DISABLED)
+                deselect.config(state=NORMAL, command=lambda: disableTag(firstListbox, secondListbox, tag, index, list, deselect))
+            else:
+                select.config(state=NORMAL, command=lambda: enableTag(firstListbox, secondListbox, tag, index, list, select))
+                deselect.config(state=DISABLED)
 
 def enableTag(firstListbox, secondListbox, tag, index, list, button):
     #first listbox is the unselected listbox, second listbox is the selected listbox
     global tagList, CONFIG
     config_file = open(CONFIG, 'r').read()
     firstListbox.delete(index, index)
-    secondListbox.insert(END, tag)
+    if tag == "Release_Date": secondListbox.insert(END, "Release Date")
+    else: secondListbox.insert(END, tag)
     list.append(tag)
     list.sort()
     tagList = list
@@ -334,7 +349,8 @@ def disableTag(firstListbox, secondListbox, tag, index, list, button):
     global tagList, CONFIG
     config_file = open(CONFIG, 'r').read()
     firstListbox.delete(index, index)
-    secondListbox.insert(END, tag)
+    if tag == "Release_Date": secondListbox.insert(END, "Release Date")
+    else: secondListbox.insert(END, tag)
     list.remove(tag)
     list.sort()
     tagList = list
@@ -381,10 +397,10 @@ def addKeywordPrompt(list, alternateList, listbox, options):
 #add keyword to list
 def addKeywordToList(term, alternateTerm, listbox, userInput, options, popup):
     if userInput.get().lower() in (string.lower() for string in options[term]):
-        messagebox.showinfo(parent=popup, title="Error", message="The keyword " + userInput.get().lower() + " is already in the list, you cretin")
+        messagebox.showinfo(parent=popup, title="Error", message=userInput.get().lower() + " is already in the list, you cretin")
         userInput.set("")
     elif userInput.get().lower() in (string.lower() for string in options[alternateTerm]):
-        messagebox.showinfo(parent=popup, title="Error", message="The keyword " + userInput.get().lower() + " is in the other list; keywords cannot be stored in both lists")
+        messagebox.showinfo(parent=popup, title="Error", message=userInput.get().lower() + " is already in the other list; keywords cannot be stored in both lists")
         userInput.set("")
     else:
         CONFIG_FILE = r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt"

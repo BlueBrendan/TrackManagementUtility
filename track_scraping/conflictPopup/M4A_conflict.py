@@ -16,19 +16,29 @@ page = 0
 
 def M4A_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict, webScrapingWindow):
     global page
-    if audio["\xa9day"][0] != '' or audio["tmpo"][0] != '' or audio["----:com.apple.iTunes:INITIALKEY"][0] != '' or audio["\xa9gen"][0] != '':
+    tagAlert = False
+    if "Release_Date" in options["Selected Tags (L)"] and audio["\xa9day"][0] != '': tagAlert = True
+    if "BPM" in options["Selected Tags (L)"] and audio["tmpo"][0] != '': tagAlert = True
+    if "Key" in options["Selected Tags (L)"] and audio["----:com.apple.iTunes:INITIALKEY"][0] != '': tagAlert = True
+    if "Genre" in options["Selected Tags (L)"] and audio["\xa9gen"][0] != '': tagAlert = True
+    if tagAlert:
         #tag conflict
-        if str(audio["\xa9day"][0]) != str(track.release_date) or str(audio["tmpo"][0]) != str(track.bpm) or str(audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')) != track.key or str(audio["\xa9gen"][0]) != track.genre:
+        tagConflict = False
+        if "Release_Date" in options["Selected Tags (L)"] and str(audio["\xa9day"][0]) != str(track.release_date): tagConflict = True
+        if "BPM" in options["Selected Tags (L)"] and str(audio["tmpo"][0]) != str(track.bpm): tagConflict = True
+        if "Key" in options["Selected Tags (L)"] and str(audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')) != track.key: tagConflict = True
+        if "Genre" in options["Selected Tags (L)"] and str(audio["\xa9gen"][0]) != track.genre: tagConflict = True
+        if tagConflict:
             conflictPopup = tk.Toplevel()
             conflictPopup.title("Conflicting Tags")
             ws = conflictPopup.winfo_screenwidth()  # width of the screen
             hs = conflictPopup.winfo_screenheight()  # height of the screen
             x = (ws / 2) - (650 / 2)
-            y = (hs / 2) - (352 / 2)
-            conflictPopup.geometry('%dx%d+%d+%d' % (650, 320, x, y))
+            y = (hs / 2) - (264 / 2)
+            conflictPopup.geometry('%dx%d+%d+%d' % (650, 240, x, y))
             if len(str(track.artist) + " - " + str(track.title)) > 30:
                 x = (ws / 2) - ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)) / 2)
-                conflictPopup.geometry('%dx%d+%d+%d' % ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)), 320, x, y))
+                conflictPopup.geometry('%dx%d+%d+%d' % ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)), 240, x, y))
             conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
             conflictPopup.config(bg=bg)
             #tag conflict window
@@ -41,8 +51,27 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, informalTa
             leftTags.pack(side="left", padx=(0, 50), pady=(0, 50))
             currentTagDict = {}
             scrapedTagDict = {}
-            # THIS is the list of tags that the user wants to retrieve
-            list = ["Release_Date", "BPM", "Key", "Genre"]
+            list = []
+            if "Release_Date" in options["Selected Tags (L)"]:
+                list.append("Release_Date")
+                conflictPopup.update_idletasks()
+                y = (hs / 2) - (((conflictPopup.winfo_height() + 10) * 1.1) / 2)
+                conflictPopup.geometry('%dx%d+%d+%d' % (conflictPopup.winfo_width(), conflictPopup.winfo_height() + 20, x, y))
+            if "BPM" in options["Selected Tags (L)"]:
+                list.append("BPM")
+                conflictPopup.update_idletasks()
+                y = (hs / 2) - (((conflictPopup.winfo_height() + 10) * 1.1) / 2)
+                conflictPopup.geometry('%dx%d+%d+%d' % (conflictPopup.winfo_width(), conflictPopup.winfo_height() + 20, x, y))
+            if "Key" in options["Selected Tags (L)"]:
+                list.append("Key")
+                conflictPopup.update_idletasks()
+                y = (hs / 2) - (((conflictPopup.winfo_height() + 10) * 1.1) / 2)
+                conflictPopup.geometry('%dx%d+%d+%d' % (conflictPopup.winfo_width(), conflictPopup.winfo_height() + 20, x, y))
+            if "Genre" in options["Selected Tags (L)"]:
+                list.append("Genre")
+                conflictPopup.update_idletasks()
+                y = (hs / 2) - (((conflictPopup.winfo_height() + 10) * 1.1) / 2)
+                conflictPopup.geometry('%dx%d+%d+%d' % (conflictPopup.winfo_width(), conflictPopup.winfo_height() + 20, x, y))
             currentTagDict[0] = tk.Label(leftTags, text="CURRENT TAGS:", font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left", bd=-10)
             currentTagDict[0].pack(anchor="w", pady=(0, 15))
             for i in range(len(list)):
@@ -78,14 +107,13 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, informalTa
                     if str(currentTagDict[i]["text"]) != str(scrapedTagDict[i]["text"]):
                         currentTagDict[i].config(fg="black", bg="yellow")
                         scrapedTagDict[i].config(fg="black", bg="yellow")
-
             # buttons
             optionButtons = tk.Frame(conflictPopup, bg=bg)
             optionButtons.pack()
-            tk.Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
-            tk.Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
-            tk.Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(audio, track, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
-            tk.Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
+            tk.Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track, options, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
+            tk.Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track, options, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
+            tk.Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(audio, track, options, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
+            tk.Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, options, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
             conflictPopup.attributes("-topmost", 1)
             conflictPopup.wait_window()
 
@@ -180,57 +208,64 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, informalTa
         audio.save()
 
 #four button options
-def overwriteOption(audio, track, window, webScrapingWindow):
-    audio["\xa9day"] = str(track.release_date)
+def overwriteOption(audio, track, options, window, webScrapingWindow):
+    if "Release_Date" in options["Selected Tags (L)"]: audio["\xa9day"] = str(track.release_date)
     #m4a format requires bpm to be an int in a list
-    audio["tmpo"] = [int(track.bpm)]
-    audio["----:com.apple.iTunes:INITIALKEY"] = track.key.encode('utf-8')
-    audio["\xa9gen"] = track.genre
+    if "BPM" in options["Selected Tags (L)"]: audio["tmpo"] = [int(track.bpm)]
+    if "Key" in options["Selected Tags (L)"]: audio["----:com.apple.iTunes:INITIALKEY"] = track.key.encode('utf-8')
+    if "Genre" in options["Selected Tags (L)"]: audio["\xa9gen"] = track.genre
     audio.save()
     if track.imageSelection!="THUMB": saveImage(track, audio, window, webScrapingWindow)
     else: window.destroy()
 
-def mergeScrapeOption(audio, track, window, webScrapingWindow):
-    if str(track.release_date) != '': audio["\xa9day"] = str(track.release_date)
-    if str(track.bpm) != '': audio["tmpo"] = [int(track.bpm)]
-    if track.key != '': audio["----:com.apple.iTunes:INITIALKEY"] = track.key.encode('utf-8')
-    if track.genre != '': audio["\xa9gen"] = track.genre
+def mergeScrapeOption(audio, track, options, window, webScrapingWindow):
+    if "Release_Date" in options["Selected Tags (L)"] and str(track.release_date) != '': audio["\xa9day"] = str(track.release_date)
+    if "BPM" in options["Selected Tags (L)"] and str(track.bpm) != '': audio["tmpo"] = [int(track.bpm)]
+    if "Key" in options["Selected Tags (L)"] and track.key != '': audio["----:com.apple.iTunes:INITIALKEY"] = track.key.encode('utf-8')
+    if "Genre" in options["Selected Tags (L)"] and track.genre != '': audio["\xa9gen"] = track.genre
     audio.save()
     if track.imageSelection != "THUMB":
         saveImage(track, audio, window, webScrapingWindow)
     else: window.destroy()
 
-def mergeSourceOption(audio, track, window, webScrapingWindow):
-    if audio["\xa9day"] == ['']: audio["\xa9day"] = str(track.release_date)
-    else:
-        if len(audio["\xa9day"]) > 0: track.release_date = str(audio["\xa9day"][0])
-        else: track.release_date = ''
-    if audio["tmpo"] == ['']: audio["tmpo"] = [int(track.bpm)]
-    else:
-        if len(audio["tmpo"]) > 0: track.bpm = str(audio["tmpo"][0])
-        else: track.bpm = [int('')]
-    if audio["----:com.apple.iTunes:INITIALKEY"] == ['']:
-        audio["----:com.apple.iTunes:INITIALKEY"] = track.key.encode('utf-8')
-    else:
-        if len(audio["----:com.apple.iTunes:INITIALKEY"]) > 0: track.key = str(audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8'))
-        else: track.key = ''
-    if audio["\xa9gen"] == ['']: audio["\xa9gen"] = track.genre
-    else:
-        if len(str(audio["\xa9gen"])) > 0: track.genre = str(audio["\xa9gen"][0])
-        else: track.genre = ''
+def mergeSourceOption(audio, track, options, window, webScrapingWindow):
+    if "Release_Date" in options["Selected Tags (L)"]:
+        if audio["\xa9day"] == ['']: audio["\xa9day"] = str(track.release_date)
+        else:
+            if len(audio["\xa9day"]) > 0: track.release_date = str(audio["\xa9day"][0])
+            else: track.release_date = ''
+    if "BPM" in options["Selected Tags (L)"]:
+        if audio["tmpo"] == ['']: audio["tmpo"] = [int(track.bpm)]
+        else:
+            if len(audio["tmpo"]) > 0: track.bpm = str(audio["tmpo"][0])
+            else: track.bpm = [int('')]
+    if "Key" in options["Selected Tags (L)"]:
+        if audio["----:com.apple.iTunes:INITIALKEY"] == ['']: audio["----:com.apple.iTunes:INITIALKEY"] = track.key.encode('utf-8')
+        else:
+            if len(audio["----:com.apple.iTunes:INITIALKEY"]) > 0: track.key = str(audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8'))
+            else: track.key = ''
+    if "Genre" in options["Selected Tags (L)"]:
+        if audio["\xa9gen"] == ['']: audio["\xa9gen"] = track.genre
+        else:
+            if len(str(audio["\xa9gen"])) > 0: track.genre = str(audio["\xa9gen"][0])
+            else: track.genre = ''
     audio.save()
     if track.imageSelection != "THUMB": saveImage(track, audio, window, webScrapingWindow)
     else: window.destroy()
 
-def skipOption(audio, track, window, webScrapingWindow):
-    if len(audio["\xa9day"]) > 0: track.release_date = str(audio["\xa9day"][0])
-    else:  track.release_date = ''
-    if len(str(audio["tmpo"])) > 0: track.bpm = str(audio["tmpo"][0])
-    else: track.bpm = ''
-    if len(str(audio["----:com.apple.iTunes:INITIALKEY"])) > 0: track.key = audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')
-    else: track.key = ''
-    if len(str(audio["\xa9gen"])) > 0: track.genre = str(audio["\xa9gen"][0])
-    else: track.genre = ''
+def skipOption(audio, track, options, window, webScrapingWindow):
+    if "Release_Date" in options["Selected Tags (L)"]:
+        if len(audio["\xa9day"]) > 0: track.release_date = str(audio["\xa9day"][0])
+        else:  track.release_date = ''
+    if "BPM" in options["Selected Tags (L)"]:
+        if len(str(audio["tmpo"])) > 0: track.bpm = str(audio["tmpo"][0])
+        else: track.bpm = ''
+    if "Key" in options["Selected Tags (L)"]:
+        if len(str(audio["----:com.apple.iTunes:INITIALKEY"])) > 0: track.key = audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')
+        else: track.key = ''
+    if "Genre" in options["Selected Tags (L)"]:
+        if len(str(audio["\xa9gen"])) > 0: track.genre = str(audio["\xa9gen"][0])
+        else: track.genre = ''
     if track.imageSelection!="THUMB": saveImage(track, audio, window, webScrapingWindow)
     else: window.destroy()
 

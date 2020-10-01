@@ -145,41 +145,45 @@ def beatportTrack(soup, yearList, BPMList, keyList, genreList, URLList, headers,
 #extract year, BPM, key, and genre
 def extractInfo(soup, yearList, BPMList, keyList, genreList, URLList, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter):
     for link in soup.find_all('ul', class_="interior-track-content-list"):
-        # extract year
-        release = link.find('li', class_="interior-track-content-item interior-track-released")
-        release = release.find('span', class_="value").get_text()
-        tk.Label(leftComponentFrame, text="Year: " + str(release[0:4]), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
-        refresh(webScrapingWindow)
-        yearList.append(int(release[0:4]))
-        #extract BPM
-        BPM = link.find('li', class_="interior-track-content-item interior-track-bpm")
-        BPM = BPM.find('span', class_="value").get_text()
-        tk.Label(leftComponentFrame, text="BPM: " + str(BPM), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
-        refresh(webScrapingWindow)
-        BPMList.append(int(BPM))
-        #extract key
-        key = link.find('li', class_="interior-track-content-item interior-track-key")
-        key = key.find('span', class_="value").get_text()
-        tk.Label(leftComponentFrame, text="Key: " + str(key), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
-        refresh(webScrapingWindow)
-        keyList.append(key)
-        #extract genre
-        genre = link.find('li', class_="interior-track-content-item interior-track-genre")
-        if genre.find('span', class_="value sep"):
-            firstGenre = genre.find('span', class_="value")
-            firstGenre = firstGenre.find('a').get_text()
-            secondGenre = genre.find('span', class_="value sep")
-            secondGenre = secondGenre.find('a').get_text()
-            tk.Label(leftComponentFrame, text="Genre: " + str(firstGenre) + ' | ' + str(secondGenre), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
+        # extract release date
+        if "Release_Date" in options["Selected Tags (L)"]:
+            release = link.find('li', class_="interior-track-content-item interior-track-released")
+            release = release.find('span', class_="value").get_text()
+            tk.Label(leftComponentFrame, text="Year: " + str(release[0:4]), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
             refresh(webScrapingWindow)
-            genreList.append(firstGenre)
-            genreList.append(secondGenre)
-        else:
-            genre = genre.find('span', class_="value")
-            genre = genre.find('a').get_text()
-            tk.Label(leftComponentFrame, text="Genre: " + str(genre), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
+            yearList.append(int(release[0:4]))
+        # extract BPM
+        if "BPM" in options["Selected Tags (L)"]:
+            BPM = link.find('li', class_="interior-track-content-item interior-track-bpm")
+            BPM = BPM.find('span', class_="value").get_text()
+            tk.Label(leftComponentFrame, text="BPM: " + str(BPM), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
             refresh(webScrapingWindow)
-            genreList.append(genre)
+            BPMList.append(int(BPM))
+        # extract key
+        if "Key" in options["Selected Tags (L)"]:
+            key = link.find('li', class_="interior-track-content-item interior-track-key")
+            key = key.find('span', class_="value").get_text()
+            tk.Label(leftComponentFrame, text="Key: " + str(key), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
+            refresh(webScrapingWindow)
+            keyList.append(key)
+        # extract genre
+        if "Genre" in options["Selected Tags (L)"]:
+            genre = link.find('li', class_="interior-track-content-item interior-track-genre")
+            if genre.find('span', class_="value sep"):
+                firstGenre = genre.find('span', class_="value")
+                firstGenre = firstGenre.find('a').get_text()
+                secondGenre = genre.find('span', class_="value sep")
+                secondGenre = secondGenre.find('a').get_text()
+                tk.Label(leftComponentFrame, text="Genre: " + str(firstGenre) + ' | ' + str(secondGenre), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
+                refresh(webScrapingWindow)
+                genreList.append(firstGenre)
+                genreList.append(secondGenre)
+            else:
+                genre = genre.find('span', class_="value")
+                genre = genre.find('a').get_text()
+                tk.Label(leftComponentFrame, text="Genre: " + str(genre), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
+                refresh(webScrapingWindow)
+                genreList.append(genre)
     webScrapingLeftPane[webScrapingPage] = leftComponentFrame
     #extract image
     if options["Extract Image from Website (B)"].get() == True:

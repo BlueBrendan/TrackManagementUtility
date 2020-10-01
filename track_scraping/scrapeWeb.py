@@ -1,5 +1,5 @@
 #import methods
-from track_scraping.buildTrackReport import buildTrackReport
+from track_scraping.handleTrackReport import buildTrackReport
 from track_preparation.buildVariations import buildVariations
 from web_scrapers.junodownloadSearch import junodownloadSearch
 from web_scrapers.beatportSearch import beatportSearch

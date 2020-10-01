@@ -31,7 +31,7 @@ def handleFinalReport(finalResults, characters, imageCounter, imageSelections, w
         # frame for report contents and image
         contentFrame = tk.Frame(finalReportWindow, bg=bg)
         contentFrame.pack()
-        tk.Label(contentFrame, text=finalResults[0] + '\n', font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top")
+        tk.Label(contentFrame, text=finalResults[0] + '\n', font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left").pack(side="top")
         renderImage(contentFrame, imageSelections, imageCounter, thumbnails, 0)
 
         # navigation buttons

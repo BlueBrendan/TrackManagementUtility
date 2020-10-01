@@ -135,7 +135,8 @@ def discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFra
     for link in soup.find_all('div', class_="content"):
         for link in link.find_all('a'):
             header = link['href']
-            if "year" in header:
+            # extract release date
+            if "year" in header and "Release_Date" in options["Selected Tags (L)"]:
                 # Discog releases tend to have more credible tags, so each instance counts twice
                 tk.Label(leftComponentFrame, text="Year: " + str(link.get_text().strip()), font=("Proxima Nova Rg", 11), fg="white", bg=bg, anchor="w").pack(padx=(10, 0), pady=(5, 0))
                 if " " in link.get_text().strip():
@@ -144,7 +145,8 @@ def discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFra
                 else:
                     yearList.append(int(link.get_text().strip()))
                     yearList.append(int(link.get_text().strip()))
-            elif "style" in header:
+            # extract genre
+            elif "style" in header and "Genre" in options["Selected Tags (L)"]:
                 #first genre
                 if genre == '': genre = str(link.get_text()).strip()
                 #multiple genres
