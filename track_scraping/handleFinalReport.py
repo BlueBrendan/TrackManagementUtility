@@ -12,7 +12,7 @@ secondary_bg = "#364153"
 #global variables
 currentPage = 1
 
-def handleFinalReport(finalResults, characters, imageCounter, imageSelections, webScrapingWindow, thumbnails, options, CONFIG_FILE):
+def handleFinalReport(finalTitles, finalResults, characters, imageCounter, imageSelections, webScrapingWindow, thumbnails, options, CONFIG_FILE):
         global currentPage
         currentPage = 1
         finalReportWindow = tk.Toplevel()
@@ -28,21 +28,29 @@ def handleFinalReport(finalResults, characters, imageCounter, imageSelections, w
             x = (ws / 2) - ((550 + (characters * 1.5)) / 2)
             finalReportWindow.geometry('%dx%d+%d+%d' % (550 + (characters * 1.5), 600, x, y))
         tk.Label(finalReportWindow, text="Final Report", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(25, 15))
-        # frame for report contents and image
+        # frame for title
+        titleFrame = tk.Frame(finalReportWindow, bg=bg)
+        titleFrame.pack(side="top", anchor="n")
+        tk.Label(titleFrame, text=finalTitles[0], font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left", bd=-10, anchor="w").pack(side="top", anchor="w")
+        # frame for report contents
         contentFrame = tk.Frame(finalReportWindow, bg=bg)
-        contentFrame.pack()
-        tk.Label(contentFrame, text=finalResults[0] + '\n', font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left").pack(side="top")
-        renderImage(contentFrame, imageSelections, imageCounter, thumbnails, 0)
+        contentFrame.pack(side="top", anchor="center")
+        # remove leading newline character
+        tk.Label(contentFrame, text=finalResults[0].lstrip() + '\n', font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left", bd=-10, anchor="w").pack(anchor="center")
+        # frame for image
+        imageFrame = tk.Frame(finalReportWindow, bg=bg)
+        imageFrame.pack(side="top", anchor="n")
+        renderImage(imageFrame, imageSelections, imageCounter, thumbnails, 0)
 
         # navigation buttons
         navigationButtons = tk.Frame(finalReportWindow, bg=bg)
         navigationButtons.pack(pady=(10, 10))
-        rightNavigationButton = tk.Button(navigationButtons, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=bg, anchor="e", command=lambda: navigateRight(leftNavigationButton, rightNavigationButton, contentFrame, finalResults, imageSelections, imageCounter, thumbnails, pageIndicator))
+        rightNavigationButton = tk.Button(navigationButtons, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=bg, anchor="e", width=2, command=lambda: navigateRight(leftNavigationButton, rightNavigationButton, titleFrame, contentFrame, imageFrame, finalTitles, finalResults, imageSelections, imageCounter, thumbnails, pageIndicator))
         rightNavigationButton.pack(side="right")
         if len(finalResults) == 1: rightNavigationButton.config(state=DISABLED)
         pageIndicator = tk.Label(navigationButtons, text=str(currentPage) + "/" + str(len(finalResults)), font=("Proxima Nova Rg", 11), fg="white", bg=bg, anchor='e')
         pageIndicator.pack(side="right", padx=(10, 10))
-        leftNavigationButton = tk.Button(navigationButtons, text=" < ", state=DISABLED, font=("Proxima Nova Rg", 11), fg="white", bg=bg, anchor="e", command=lambda: navigateLeft(leftNavigationButton, rightNavigationButton, contentFrame, finalResults, imageSelections, imageCounter, thumbnails, pageIndicator))
+        leftNavigationButton = tk.Button(navigationButtons, text=" < ", state=DISABLED, font=("Proxima Nova Rg", 11), fg="white", bg=bg, anchor="e", width=2, command=lambda: navigateLeft(leftNavigationButton, rightNavigationButton, titleFrame, contentFrame, imageFrame, finalTitles, finalResults, imageSelections, imageCounter, thumbnails, pageIndicator))
         leftNavigationButton.pack(side="right")
 
         # load button and checkbox
@@ -54,7 +62,7 @@ def handleFinalReport(finalResults, characters, imageCounter, imageSelections, w
         finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: completeSearch(finalReportWindow, webScrapingWindow, options))
         finalReportWindow.lift()
 
-def navigateLeft(leftNavigationButton, rightNavigationButton, contentFrame, finalResults, imageSelections, imageCounter, thumbnails, pageIndicator):
+def navigateLeft(leftNavigationButton, rightNavigationButton, titleFrame, contentFrame, imageFrame, finalTitles, finalResults, imageSelections, imageCounter, thumbnails, pageIndicator):
     global currentPage
     currentPage-=1
     # handle navigation frame
@@ -62,13 +70,19 @@ def navigateLeft(leftNavigationButton, rightNavigationButton, contentFrame, fina
     rightNavigationButton.config(state=NORMAL)
     pageIndicator.config(text=str(currentPage) + "/" + str(len(finalResults)))
 
-    # rerender content frame
+    # rerender title, content, and image frame
+    widgetList = allWidgets(titleFrame)
+    for item in widgetList: item.pack_forget()
     widgetList = allWidgets(contentFrame)
     for item in widgetList: item.pack_forget()
-    tk.Label(contentFrame, text=finalResults[(currentPage-1)] + '\n', font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top")
-    renderImage(contentFrame, imageSelections, imageCounter, thumbnails, (currentPage-1))
+    widgetList = allWidgets(imageFrame)
+    for item in widgetList: item.pack_forget()
+    tk.Label(titleFrame, text=finalTitles[(currentPage-1)], font=("Proxima Nova Rg", 11), fg="white", bg=bg, bd=-10, anchor="w").pack(side="top", anchor="w")
+    # remove leading newline character
+    tk.Label(contentFrame, text=finalResults[(currentPage-1)].lstrip() + '\n', font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left", bd=-10, anchor="center").pack(anchor="center")
+    renderImage(imageFrame, imageSelections, imageCounter, thumbnails, (currentPage-1))
 
-def navigateRight(leftNavigationButton, rightNavigationButton, contentFrame, finalResults, imageSelections, imageCounter, thumbnails, pageIndicator):
+def navigateRight(leftNavigationButton, rightNavigationButton, titleFrame, contentFrame, imageFrame, finalTitles, finalResults, imageSelections, imageCounter, thumbnails, pageIndicator):
     global currentPage
     currentPage+=1
     # handle navigation frame
@@ -76,11 +90,17 @@ def navigateRight(leftNavigationButton, rightNavigationButton, contentFrame, fin
     leftNavigationButton.config(state=NORMAL)
     pageIndicator.config(text=str(currentPage) + "/" + str(len(finalResults)))
 
-    # rerender content frame
+    # rerender title, content, and image frame
+    widgetList = allWidgets(titleFrame)
+    for item in widgetList: item.pack_forget()
     widgetList = allWidgets(contentFrame)
     for item in widgetList: item.pack_forget()
-    tk.Label(contentFrame, text=finalResults[(currentPage-1)] + '\n', font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top")
-    renderImage(contentFrame, imageSelections, imageCounter, thumbnails, (currentPage-1))
+    widgetList = allWidgets(imageFrame)
+    for item in widgetList: item.pack_forget()
+    tk.Label(titleFrame, text=finalTitles[(currentPage-1)], font=("Proxima Nova Rg", 11), fg="white", bg=bg, bd=-10, anchor="w").pack(side="top", anchor="w")
+    # remove leading newline character
+    tk.Label(contentFrame, text=finalResults[(currentPage-1)].lstrip() + '\n', font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left", bd=-10, anchor="center").pack(anchor="center")
+    renderImage(imageFrame, imageSelections, imageCounter, thumbnails, (currentPage-1))
 
 def renderImage(contentFrame, imageSelections, imageCounter, thumbnails, index):
     # load non-thumbnailimage
@@ -91,9 +111,9 @@ def renderImage(contentFrame, imageSelections, imageCounter, thumbnails, index):
         photo = ImageTk.PhotoImage(fileImageImport)
         fileImage = tk.Label(contentFrame, image=photo, bg=bg)
         fileImage.image = photo
-        fileImage.pack(side="top", pady=(10, 10))
+        fileImage.pack(side="top", pady=(10, 10), anchor="n")
         # resolution
-        tk.Label(contentFrame, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(10, 20))
+        tk.Label(contentFrame, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(10, 20), anchor="n")
     # load thumbnail image
     else:
         if thumbnails[index] == 'NA':

@@ -9,7 +9,7 @@ import webbrowser
 from track_scraping.compareTokens import compareTokens
 from track_scraping.reverseImageSearch import reverseImageSearch
 from web_scrapers.webScrapingWindowControl import resetLeftRightFrames
-from web_scrapers.sendRequest import sendRequest
+from web_scrapers.sendRequest import prepareRequest
 from web_scrapers.webScrapingWindowControl import rerenderControls
 
 #main bg color
@@ -46,7 +46,7 @@ def discogsSearch(title, var, yearList, genreList, URLList, artistVariations, ti
 
     refresh(webScrapingWindow)
     url = "https://www.google.co.in/search?q=" + search + " Discogs"
-    soup = sendRequest(url, headers, webScrapingWindow, leftComponentFrame)
+    soup = prepareRequest(url, headers, webScrapingWindow, leftComponentFrame)
     if soup != False:
         #result includes link and description
         for result in soup.find_all('div', class_="ZINbbc xpd O9g5cc uUPGi"):
@@ -82,7 +82,7 @@ def searchQuery(title, result, headers, webScrapingWindow, webScrapingLeftPane, 
     webScrapingLinks[webScrapingPage] = link
     refresh(webScrapingWindow)
 
-    soup = sendRequest(link, headers, webScrapingWindow, leftComponentFrame)
+    soup = prepareRequest(link, headers, webScrapingWindow, leftComponentFrame)
     if soup != False:
         # first check if the title is in the tracklist, push data if it is
         link = soup.find('table', class_="playlist")

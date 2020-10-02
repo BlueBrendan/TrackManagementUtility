@@ -10,7 +10,7 @@ from track_scraping.compareTokens import compareTokens
 from track_scraping.reverseImageSearch import reverseImageSearch
 from web_scrapers.webScrapingWindowControl import rerenderControls
 from web_scrapers.webScrapingWindowControl import resetLeftRightFrames
-from web_scrapers.sendRequest import sendRequest
+from web_scrapers.sendRequest import prepareRequest
 from web_scrapers.compareRuntime import compareRuntime
 
 #main bg color
@@ -48,7 +48,7 @@ def beatportSearch(title, var, yearList, BPMList, keyList, genreList, URLList, a
     leftComponentFrame, rightComponentFrame = resetLeftRightFrames(componentFrame)
     refresh(webScrapingWindow)
     url = "https://www.google.co.in/search?q=" + search + " Beatport"
-    soup = sendRequest(url, headers, webScrapingWindow, leftComponentFrame)
+    soup = prepareRequest(url, headers, webScrapingWindow, leftComponentFrame)
     if soup == False:
         Label(leftComponentFrame, text="Connection Failure", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(anchor='w')
         refresh(webScrapingWindow)
@@ -93,7 +93,7 @@ def beatportSearch(title, var, yearList, BPMList, keyList, genreList, URLList, a
                     webScrapingRightPane[webScrapingPage] = "NA"
                     webScrapingLinks[webScrapingPage] = link
                     refresh(webScrapingWindow)
-                    soup = sendRequest(link, headers, webScrapingWindow, leftComponentFrame)
+                    soup = prepareRequest(link, headers, webScrapingWindow, leftComponentFrame)
                     if soup != False and "Oops... the page you were looking for could not be found" not in str(soup):
                         #check if page is a track (single) or a release (album)
                         #case 1: release
@@ -110,7 +110,7 @@ def beatportRelease(soup, titleVariations, yearList, BPMList, keyList, genreList
         link = link.find('p', class_="buk-track-title")
         if link.find('a')['href'].lower() in titleVariations:
             url = "https://www.beatport.com" + str(link.find('a')['href'])
-            soup = sendRequest(url, headers, webScrapingWindow, leftComponentFrame)
+            soup = prepareRequest(url, headers, webScrapingWindow, leftComponentFrame)
             if soup == False:
                 tk.Label(leftComponentFrame, text="Connection Failure", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(anchor='w')
                 refresh(webScrapingWindow)

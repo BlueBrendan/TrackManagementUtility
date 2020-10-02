@@ -10,7 +10,7 @@ from track_scraping.conflictPopup.ID3_conflict import ID3_conflict
 from track_scraping.conflictPopup.Vorbis_conflict import Vorbis_conflict
 from track_scraping.conflictPopup.M4A_conflict import M4A_conflict
 
-def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, filename, webScrapingWindow, characters, options, initialCounter, imageCounter, informalTagDict):
+def handleTrackReport(track, yearList, BPMList, keyList, genreList, audio, filename, webScrapingWindow, characters, options, initialCounter, imageCounter, informalTagDict):
     conflict = False
     # check year for false values
     if "Release_Date" in options["Selected Tags (L)"] and len(yearList) != 0:
@@ -48,9 +48,10 @@ def buildTrackReport(track, yearList, BPMList, keyList, genreList, audio, filena
         elif filename.endswith(".m4a"): M4A_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict, webScrapingWindow)
     if len(str(track.artist) + " - " + str(track.title)) > characters: characters = len(str(track.artist) + " - " + str(track.title))
 
-    finalResult = "\nTrack: " + str(track.artist) + " - " + str(track.title)
-    if "Release_Date" in options["Selected Tags (L)"]: finalResult += "\nYear: " + str(track.release_date)
-    if "BPM" in options["Selected Tags (L)"]: finalResult += "\nBPM: " + str(track.bpm)
-    if "Key" in options["Selected Tags (L)"]: finalResult += "\nKey: " + str(track.key)
-    if "Genre" in options["Selected Tags (L)"]: finalResult += "\nGenre: " + str(track.genre)
-    return finalResult, webScrapingWindow, characters, track.imageSelection
+    title = "\nTrack: " + str(track.artist) + " - " + str(track.title)
+    results = ""
+    if "Release_Date" in options["Selected Tags (L)"]: results += "\nYear: " + str(track.release_date)
+    if "BPM" in options["Selected Tags (L)"]: results += "\nBPM: " + str(track.bpm)
+    if "Key" in options["Selected Tags (L)"]: results += "\nKey: " + str(track.key)
+    if "Genre" in options["Selected Tags (L)"]: results += "\nGenre: " + str(track.genre)
+    return title, results, webScrapingWindow, characters, track.imageSelection

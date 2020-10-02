@@ -5,12 +5,13 @@ import requests
 import webbrowser
 import getpass
 
+
 #import methods
 from track_scraping.compareTokens import compareTokens
 from track_scraping.reverseImageSearch import reverseImageSearch
 from web_scrapers.webScrapingWindowControl import rerenderControls
 from web_scrapers.webScrapingWindowControl import resetLeftRightFrames
-from web_scrapers.sendRequest import sendRequest
+from web_scrapers.sendRequest import prepareRequest
 from web_scrapers.compareRuntime import compareRuntime
 
 #main bg color
@@ -29,7 +30,6 @@ def junodownloadSearch(filename, yearList, BPMList, genreList, URLList, artistVa
     #FIRST QUERY - JUNO DOWNLOAD
     widgetList = allWidgets(webScrapingWindow)
     for item in widgetList: item.pack_forget()
-
     #component for search label and page indicator
     labelFrame = tk.Frame(webScrapingWindow, bg=bg)
     labelFrame.pack(fill=X, pady=(10, 10))
@@ -44,10 +44,9 @@ def junodownloadSearch(filename, yearList, BPMList, genreList, URLList, artistVa
     componentFrame = tk.Frame(webScrapingWindow, bg=bg)
     componentFrame.pack(fill=X, pady=(10, 0))
     leftComponentFrame, rightComponentFrame = resetLeftRightFrames(componentFrame)
-
     refresh(webScrapingWindow)
     url = "https://www.google.co.in/search?q=" + search + " Junodownload"
-    soup = sendRequest(url, headers, webScrapingWindow, leftComponentFrame)
+    soup = prepareRequest(url, headers, webScrapingWindow, leftComponentFrame)
     if soup!=False:
         for result in soup.find_all('div', class_="ZINbbc xpd O9g5cc uUPGi"):
             if 'junodownload.com' and 'products' in result.find('a').get('href').split('&')[0].lower():
@@ -75,7 +74,7 @@ def junodownloadSearch(filename, yearList, BPMList, genreList, URLList, artistVa
                         #update link
                         webScrapingLinks[webScrapingPage] = link
                         refresh(webScrapingWindow)
-                        soup = sendRequest(link, headers, webScrapingWindow, leftComponentFrame)
+                        soup = prepareRequest(link, headers, webScrapingWindow, leftComponentFrame)
                         if soup!=False:
                             #scrape release date and genre
                             for link in soup.find_all('div',class_="row gutters-sm align-items-center product-tracklist-track"):

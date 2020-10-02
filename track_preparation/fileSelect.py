@@ -40,6 +40,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE, window):
         # delete previous web scraping window from previous session
         if type(window)!=bool: window.destroy()
         imageSelections = []
+        finalTitles = []
         finalResults = []
         characters = 0
         thumbnails = []
@@ -148,13 +149,14 @@ def fileSelect(options, imageCounter, CONFIG_FILE, window):
                     track = ALAC_Track(audio, options, informalTagDict)
             # search web for tags
             if type(audio) != bool:
-                results, webScrapingWindow, characters, imageCounter, imageSelection, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame = scrapeWeb(track, audio, filename, webScrapingWindow, characters, options, imageCounter, informalTagDict, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame)
-                finalResults.append(results)
+                reportTitle, reportResults, webScrapingWindow, characters, imageCounter, imageSelection, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame = scrapeWeb(track, audio, filename, webScrapingWindow, characters, options, imageCounter, informalTagDict, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame)
+                finalTitles.append(reportTitle)
+                finalResults.append(reportResults)
                 imageSelections.append(imageSelection)
         # enable controls in web scraping window
         if type(searchFrame) != int and type(pageFrame) != int and type(componentFrame)!=int:
             enableControls(searchFrame, pageFrame, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame)
-            handleFinalReport(finalResults, characters, imageCounter, imageSelections, webScrapingWindow, thumbnails, options, CONFIG_FILE)
+            handleFinalReport(finalTitles, finalResults, characters, imageCounter, imageSelections, webScrapingWindow, thumbnails, options, CONFIG_FILE)
     return webScrapingWindow
 #check if mutagen object can be made from file
 def checkFileValidity(filename, directory, format):
