@@ -25,7 +25,7 @@ def scrapeWeb(track, audio, filename, webScrapingWindow, characters, options, im
     if options['Scrape Junodownload (B)'].get() == True:
         track.yearList, track.BPMList, track.genreList, imageCounter, track.URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame = junodownloadSearch(filename, track.yearList, track.BPMList, track.genreList, track.URLList, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, audio, options, imageCounter)
     # beatport
-    # if options['Scrape Beatport (B)'].get() == True:
+    if options['Scrape Beatport (B)'].get() == True:
         track.yearList, track.BPMList, track.keyList, track.genreList, imageCounter, track.URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame = beatportSearch(track.title, filename, track.yearList, track.BPMList, track.keyList, track.genreList, track.URLList, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, audio, options, imageCounter)
     # discogs
     if options['Scrape Discogs (B)'].get() == True:

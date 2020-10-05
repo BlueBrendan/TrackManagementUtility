@@ -34,7 +34,6 @@ def sendRequest(url, headers, q, s):
     q.put("Finished")
 
 def wait(q):
-    print
     time.sleep(random.uniform(1, 3.5))
     q.put("Finished")
 

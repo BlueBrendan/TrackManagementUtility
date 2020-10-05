@@ -40,13 +40,11 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, informa
             if len(str(track.artist) + " - " + str(track.title)) > 30:
                 x = (ws / 2) - ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)) / 2)
                 conflictPopup.geometry('%dx%d+%d+%d' % ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)), 240, x, y))
-            conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
             conflictPopup.config(bg=bg)
             # tag conflict window
             tk.Label(conflictPopup, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(30, 40), side="top")
             tags = tk.Frame(conflictPopup, bg=bg)
             tags.pack()
-
             # print current tags
             leftTags = tk.Frame(tags, bg=bg)
             leftTags.pack(side="left", padx=(0, 50), pady=(0, 50))
@@ -111,14 +109,14 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, informa
             tk.Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track, options, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
             tk.Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(audio, track, options, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
             tk.Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, options, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
-            conflictPopup.attributes("-topmost", 1)
+            conflictPopup.attributes("-topmost", True)
+            conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
             conflictPopup.wait_window()
 
         # image conflict
         if imageCounter >= 1:
             buttons = []
             conflictPopup = tk.Toplevel()
-            conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
             conflictPopup.title("Conflicting Images")
             ws = conflictPopup.winfo_screenwidth()  # width of the screen
             hs = conflictPopup.winfo_screenheight()  # height of the screen
@@ -196,8 +194,8 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, informa
             rightButton = tk.Button(pageFrame, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="e", command=lambda: navigateRight(start, end, imageFrame, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail))
             if math.ceil(float(imageCounter - initialCounter) / 2.0) == 1: rightButton.config(state=DISABLED)
             rightButton.pack(side="right", padx=(15, 0), pady=(15, 10))
-            conflictPopup.attributes("-topmost", 1)
-            conflictPopup.attributes("-topmost", 0)
+            conflictPopup.attributes("-topmost", True)
+            conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
             conflictPopup.wait_window()
     else:
         audio['date'] = str(track.release_date)
