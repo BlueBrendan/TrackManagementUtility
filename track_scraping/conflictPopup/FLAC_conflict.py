@@ -122,8 +122,8 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalT
             ws = conflictPopup.winfo_screenwidth()  # width of the screen
             hs = conflictPopup.winfo_screenheight()  # height of the screen
             y = (hs / 2) - (770 / 2)
-            x = (ws / 2) - ((350 + (200 * min((imageCounter - initialCounter), 4))) / 2)
-            conflictPopup.geometry('%dx%d+%d+%d' % ((350 + (200 * min((imageCounter - initialCounter), 4))), 700, x, y))
+            x = (ws / 2) - ((350 + (200 * min((imageCounter - initialCounter), 2))) / 2)
+            conflictPopup.geometry('%dx%d+%d+%d' % ((350 + (200 * min((imageCounter - initialCounter), 2))), 700, x, y))
             conflictPopup.config(bg=bg)
             # print current thumbnail
             Label(conflictPopup, text="Current artwork", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(20, 10))
@@ -162,7 +162,7 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalT
             start = initialCounter
             end = imageCounter
             for i in range(min(end - start, 2)):
-                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(start) + ".jpg")
+                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
                 fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
                 photo = ImageTk.PhotoImage(fileImageImport)
                 fileImage = tk.Label(imageFrame, image=photo)

@@ -25,7 +25,6 @@ window = False
 
 #MAIN DRIVER CODE
 root = tk.Tk()
-root.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
 root.title("Track Management Utility V1.0")
 ws = root.winfo_screenwidth() # width of the screen
 hs = root.winfo_screenheight() # height of the screen
@@ -33,6 +32,7 @@ x = (ws/2) - (1000/2)
 y = (hs/2) - (682/2)
 root.geometry('%dx%d+%d+%d' % (1000, 620, x, y))
 root.configure(bg=bg)
+root.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
 
 def createConfigFile(flag):
     CONFIG_FILE = r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt"

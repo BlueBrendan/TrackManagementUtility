@@ -21,7 +21,6 @@ def updatePreferences(options, CONFIG_FILE, root):
     CONFIG = CONFIG_FILE
     window = tk.Toplevel(master=root)
     window.title("Preferences Window")
-    window.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
     ws = window.winfo_screenwidth()  # width of the screen
     hs = window.winfo_screenheight()  # height of the screen
     x = (ws / 2) - (750 / 2)
@@ -36,7 +35,7 @@ def updatePreferences(options, CONFIG_FILE, root):
     taggingTab(tab_parent, options, CONFIG_FILE)
     #Naming Tab
     namingTab(tab_parent, options, CONFIG_FILE)
-
+    window.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
     root.mainloop()
 
 def webScrapingTab(tab_parent, options, CONFIG_FILE):

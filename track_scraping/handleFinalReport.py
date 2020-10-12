@@ -16,18 +16,17 @@ def handleFinalReport(finalTitles, finalResults, characters, imageCounter, image
         global currentPage
         currentPage = 1
         finalReportWindow = tk.Toplevel()
-        finalReportWindow.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
         finalReportWindow.title("Final Report")
         finalReportWindow.configure(bg=bg)
         ws = finalReportWindow.winfo_screenwidth()  # width of the screen
         hs = finalReportWindow.winfo_screenheight()  # height of the screen
-        y = (hs / 2) - (660 / 2)
+        y = (hs / 2) - (682 / 2)
         x = (ws / 2) - (550 / 2)
-        finalReportWindow.geometry('%dx%d+%d+%d' % (550, 600, x, y))
+        finalReportWindow.geometry('%dx%d+%d+%d' % (550, 620, x, y))
         if characters > 40:
             x = (ws / 2) - ((550 + (characters * 1.5)) / 2)
-            finalReportWindow.geometry('%dx%d+%d+%d' % (550 + (characters * 1.5), 600, x, y))
-        tk.Label(finalReportWindow, text="Final Report", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(25, 15))
+            finalReportWindow.geometry('%dx%d+%d+%d' % (550 + (characters * 1.5), 620, x, y))
+        tk.Label(finalReportWindow, text="Final Report", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(30, 15))
         # frame for title
         titleFrame = tk.Frame(finalReportWindow, bg=bg)
         titleFrame.pack(side="top", anchor="n")
@@ -54,12 +53,13 @@ def handleFinalReport(finalTitles, finalResults, characters, imageCounter, image
         leftNavigationButton.pack(side="right")
 
         # load button and checkbox
-        tk.Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, options), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side=TOP, pady=(15, 15))
+        tk.Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, options), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side=TOP, pady=(25, 15))
         closeWindowButtonFrame = tk.Frame(finalReportWindow, bg=bg)
         closeWindowButtonFrame.pack()
         tk.Checkbutton(closeWindowButtonFrame, var=options["Close Scraping Window (B)"], activebackground=bg, command=lambda: closeScrapingWindowSelection(CONFIG_FILE), bg=bg).pack(side="left", pady=(0,10))
         tk.Label(closeWindowButtonFrame, text="Close scraping window", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", pady=(0,10))
         finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: completeSearch(finalReportWindow, webScrapingWindow, options))
+        finalReportWindow.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
         finalReportWindow.lift()
 
 def navigateLeft(leftNavigationButton, rightNavigationButton, titleFrame, contentFrame, imageFrame, finalTitles, finalResults, imageSelections, imageCounter, thumbnails, pageIndicator):

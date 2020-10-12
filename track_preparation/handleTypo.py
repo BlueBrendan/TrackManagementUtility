@@ -18,7 +18,7 @@ word = ''
 def handleTypo(artist, newArtist, title, newTitle, type, options):
     global change, word, capitalize, uncapitalize
     popup = tk.Toplevel()
-    popup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
+
     popup.title("Potential Typo - " + type)
     ws = popup.winfo_screenwidth()  # width of the screen
     hs = popup.winfo_screenheight()  # height of the screen
@@ -68,6 +68,7 @@ def handleTypo(artist, newArtist, title, newTitle, type, options):
     if type == "Capitalization":
         tk.Button(buttons, text="Always Accept " + "(" + word + ")", command=lambda: addCapitalizedList(word, popup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(pady=(25, 10), padx=(30, 10), side="left")
         tk.Button(buttons, text="Always Reject " + "(" + word.lower() + ")", command=lambda: addUncapitalizedList(word, popup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(pady=(25, 10), padx=(30, 10), side="left")
+        popup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
         popup.wait_window()
         if capitalize: options["Always Capitalize (L)"].append(word.capitalize())
         elif uncapitalize: options["Never Capitalize (L)"].append(word.lower())
@@ -75,6 +76,7 @@ def handleTypo(artist, newArtist, title, newTitle, type, options):
         uncapitalize = False
         word = ''
     else:
+        popup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
         popup.protocol("WM_DELETE_WINDOW", lambda: popup.destroy())
         popup.wait_window()
     if change:
