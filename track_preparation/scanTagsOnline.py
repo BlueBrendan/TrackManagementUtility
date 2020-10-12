@@ -8,7 +8,6 @@ from track_preparation.fileSelect import fileSelect
 #global variables
 imageCounter = 0
 
-#driver code
 def scanTagsOnline(options, CONFIG_FILE, window):
     global imageCounter
     #delete all images stored in temp before proceeding

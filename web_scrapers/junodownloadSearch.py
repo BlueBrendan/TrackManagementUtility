@@ -132,7 +132,7 @@ def junodownloadSearch(filename, yearList, BPMList, genreList, URLList, artistVa
                                             # perform image scraping if enabled in options
                                             if options["Reverse Image Search (B)"].get() == True: imageCounter, URLList = reverseImageSearch(link, headers, webScrapingWindow, imageCounter, URLList, options)
                                     else:
-                                        tk.Label(leftComponentFrame, text="Track failed runtime comparison test, likely a radio or compilation mix edit", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
+                                        tk.Label(leftComponentFrame, text="Track failed runtime comparison test", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
                                         webScrapingLeftPane[webScrapingPage] = leftComponentFrame
                                         refresh(webScrapingWindow)
     return yearList, BPMList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame

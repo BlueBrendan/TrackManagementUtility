@@ -14,6 +14,7 @@ from other.updatePreferences import updatePreferences
 # pyglet.font.add_file("C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Proxima Nova Regular.ttf")
 # #add proxima nova bold
 # pyglet.font.add_file("C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Proxima Nova Bold.otf")
+
 #main bg color
 bg = "#282f3b"
 #secondary color
@@ -22,6 +23,7 @@ secondary_bg = "#364153"
 #global variables
 window = False
 
+#MAIN DRIVER CODE
 root = tk.Tk()
 root.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
 root.title("Track Management Utility V1.0")
