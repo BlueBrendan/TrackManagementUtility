@@ -117,87 +117,86 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, informalTa
             conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
             conflictPopup.wait_window()
 
-        # image conflict
-        if imageCounter >= 1:
-            buttons = []
-            conflictPopup = tk.Toplevel()
-            conflictPopup.title("Conflicting Images")
-            ws = conflictPopup.winfo_screenwidth()  # width of the screen
-            hs = conflictPopup.winfo_screenheight()  # height of the screen
-            y = (hs / 2) - (770 / 2)
-            x = (ws / 2) - ((350 + (200 * min((imageCounter - initialCounter), 2))) / 2)
-            conflictPopup.geometry('%dx%d+%d+%d' % (350 + (200 * min((imageCounter - initialCounter), 2)), 700, x, y))
-            conflictPopup.config(bg=bg)
-            # print current thumbnail
-            tk.Label(conflictPopup, text="Current artwork", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(20, 10))
-            thumbnailFrame = tk.Frame(conflictPopup, bg=bg)
-            thumbnailFrame.pack()
-            image = audio["covr"]
-            if len(image) > 0:
-                stream = BytesIO(image[0])
-                image = Image.open(stream).convert("RGBA")
-                stream.close()
-                width, height = image.size
-                thumbnailImageImport = image.resize((200, 200), Image.ANTIALIAS)
-                photo = ImageTk.PhotoImage(thumbnailImageImport)
-                thumbnailImage = tk.Label(conflictPopup, image=photo)
-                thumbnailImage.image = photo
-                thumbnailButton = tk.Button(thumbnailFrame, image=photo, bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictPopup))
-                thumbnailButton.pack(side="top")
-                buttons.append(thumbnailButton)
-                tk.Label(conflictPopup, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(5, 10))
-                thumbnail = [thumbnailImageImport, width, height]
-            else:
-                thumbnail = "NA"
-                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
-                fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-                photo = ImageTk.PhotoImage(fileImageImport)
-                fileImage = tk.Label(thumbnailFrame, image=photo, bg=bg)
-                fileImage.image = photo
-                thumbnailButton = tk.Button(thumbnailFrame, image=photo, font=("Proxima Nova Rg", 11), bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictPopup))
-                thumbnailButton.pack(side="top", pady=(5, 10))
-                buttons.append(thumbnailButton)
-            tk.Label(conflictPopup, text="Scraped artwork", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(15, 10))
-            imageFrame = tk.Frame(conflictPopup, bg=bg)
-            imageFrame.pack(side="top")
-            imageButtons = []
-            imageResolutions = []
+    # image conflict
+    if imageCounter >= 1:
+        buttons = []
+        conflictPopup = tk.Toplevel()
+        conflictPopup.title("Conflicting Images")
+        ws = conflictPopup.winfo_screenwidth()  # width of the screen
+        hs = conflictPopup.winfo_screenheight()  # height of the screen
+        y = (hs / 2) - (770 / 2)
+        x = (ws / 2) - ((350 + (200 * min((imageCounter - initialCounter), 2))) / 2)
+        conflictPopup.geometry('%dx%d+%d+%d' % (350 + (200 * min((imageCounter - initialCounter), 2)), 700, x, y))
+        conflictPopup.config(bg=bg)
+        # print current thumbnail
+        tk.Label(conflictPopup, text="Current artwork", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(20, 10))
+        thumbnailFrame = tk.Frame(conflictPopup, bg=bg)
+        thumbnailFrame.pack()
+        image = audio["covr"]
+        if len(image) > 0:
+            stream = BytesIO(image[0])
+            image = Image.open(stream).convert("RGBA")
+            stream.close()
+            width, height = image.size
+            thumbnailImageImport = image.resize((200, 200), Image.ANTIALIAS)
+            photo = ImageTk.PhotoImage(thumbnailImageImport)
+            thumbnailImage = tk.Label(conflictPopup, image=photo)
+            thumbnailImage.image = photo
+            thumbnailButton = tk.Button(thumbnailFrame, image=photo, bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictPopup))
+            thumbnailButton.pack(side="top")
+            buttons.append(thumbnailButton)
+            tk.Label(conflictPopup, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(5, 10))
+            thumbnail = [thumbnailImageImport, width, height]
+        else:
+            thumbnail = "NA"
+            fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
+            fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+            photo = ImageTk.PhotoImage(fileImageImport)
+            fileImage = tk.Label(thumbnailFrame, image=photo, bg=bg)
+            fileImage.image = photo
+            thumbnailButton = tk.Button(thumbnailFrame, image=photo, font=("Proxima Nova Rg", 11), bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictPopup))
+            thumbnailButton.pack(side="top", pady=(5, 10))
+            buttons.append(thumbnailButton)
+        tk.Label(conflictPopup, text="Scraped artwork", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(15, 10))
+        imageFrame = tk.Frame(conflictPopup, bg=bg)
+        imageFrame.pack(side="top")
+        imageButtons = []
+        imageResolutions = []
 
-            # print images as buttons
-            start = initialCounter
-            end = imageCounter
-            for i in range(min(end - start, 2)):
-                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
-                fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-                photo = ImageTk.PhotoImage(fileImageImport)
-                fileImage = tk.Label(imageFrame, image=photo)
-                fileImage.image = photo
-                imageButtons.append(tk.Button(imageFrame, image=photo, highlightthickness=3, command=lambda i=i: selectImage(i, track, imageButtons[i], buttons, conflictPopup)))
-                imageButtons[len(imageButtons)-1].pack(side="left", padx=(20, 20))
-                buttons.append(imageButtons[len(imageButtons)-1])
-                im = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
-                width, height = im.size
-                imageResolutions.append(str(height) + "x" + str(width))
+        # print images as buttons
+        start = initialCounter
+        end = imageCounter
+        for i in range(start, min(start + 2, end)):
+            fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
+            width, height = fileImageImport.size
+            fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+            photo = ImageTk.PhotoImage(fileImageImport)
+            fileImage = tk.Label(imageFrame, image=photo)
+            fileImage.image = photo
+            imageButtons.append(tk.Button(imageFrame, image=photo, highlightthickness=3, command=lambda i=i: selectImage(i, track, imageButtons[i-start], buttons, conflictPopup)))
+            imageButtons[len(imageButtons) - 1].pack(side="left", padx=(20, 20))
+            buttons.append(imageButtons[len(imageButtons) - 1])
+            imageResolutions.append(str(height) + "x" + str(width))
 
-            resolutionsFrame = tk.Frame(conflictPopup, bg=bg)
-            resolutionsFrame.pack(side="top")
-            # print resolutions underneath respective images
-            for i in imageResolutions: tk.Label(resolutionsFrame, text=i, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", padx=(90, 90), pady=(5, 5))
-            # page indicator
-            pageFrame = tk.Frame(conflictPopup, bg=bg)
-            pageFrame.pack()
-            #left navigation button
-            leftButton = tk.Button(pageFrame, text=" < ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="w", state=DISABLED, command=lambda: navigateLeft(start, end, imageFrame, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail))
-            leftButton.pack(side="left", padx=(0, 15), pady=(15, 10))
-            tk.Label(pageFrame, text=str(page+1) + "/" + str(math.ceil(float(imageCounter - initialCounter) / 2.0)), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", pady=(15, 10))
-            tk.Button(conflictPopup, text="Select", font=("Proxima Nova Rg", 11), fg="white", bg=bg, command=lambda: saveImage(track, audio, conflictPopup, webScrapingWindow)).pack(side="top", pady=(10, 10))
-            # right navigation button
-            rightButton = tk.Button(pageFrame, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="e", command=lambda: navigateRight(start, end, imageFrame, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail))
-            if math.ceil(float(imageCounter - initialCounter) / 2.0) == 1: rightButton.config(state=DISABLED)
-            rightButton.pack(side="right", padx=(15, 0), pady=(15, 10))
-            conflictPopup.attributes("-topmost", True)
-            conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
-            conflictPopup.wait_window()
+        resolutionsFrame = tk.Frame(conflictPopup, bg=bg)
+        resolutionsFrame.pack(side="top")
+        # print resolutions underneath respective images
+        for i in imageResolutions: tk.Label(resolutionsFrame, text=i, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", padx=(90, 90), pady=(5, 5))
+        # page indicator
+        pageFrame = tk.Frame(conflictPopup, bg=bg)
+        pageFrame.pack()
+        #left navigation button
+        leftButton = tk.Button(pageFrame, text=" < ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="w", state=DISABLED, command=lambda: navigateLeft(start, end, imageFrame, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail))
+        leftButton.pack(side="left", padx=(0, 15), pady=(15, 10))
+        tk.Label(pageFrame, text=str(page+1) + "/" + str(math.ceil(float(imageCounter - initialCounter) / 2.0)), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", pady=(15, 10))
+        tk.Button(conflictPopup, text="Select", font=("Proxima Nova Rg", 11), fg="white", bg=bg, command=lambda: saveImage(track, audio, conflictPopup, webScrapingWindow)).pack(side="top", pady=(10, 10))
+        # right navigation button
+        rightButton = tk.Button(pageFrame, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="e", command=lambda: navigateRight(start, end, imageFrame, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail))
+        if math.ceil(float(imageCounter - initialCounter) / 2.0) == 1: rightButton.config(state=DISABLED)
+        rightButton.pack(side="right", padx=(15, 0), pady=(15, 10))
+        conflictPopup.attributes("-topmost", True)
+        conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
+        conflictPopup.wait_window()
     else:
         audio["\xa9day"] = str(track.release_date)
         audio["tmpo"] = str(track.bpm)
@@ -344,7 +343,6 @@ def reloadThumbnail(thumbnail, track, buttons, conflictFrame, thumbnailFrame):
         thumbnailButton = tk.Button(thumbnailFrame, image=photo, bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictFrame))
         thumbnailButton.pack(side="top")
         buttons.append(thumbnailButton)
-        tk.Label(conflictFrame, text=str(thumbnail[1]) + "x" + str(thumbnail[2]), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(5, 10))
     else:
         fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
         fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
@@ -360,17 +358,16 @@ def reloadButtons(start, end, imageFrame, resolutionsFrame, conflictFrame, track
     global page
     imageButtons = []
     imageResolutions = []
-    for i in range(min(end - (start + (page * 2)), 2)):
-        fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i + (page * 2)) + ".jpg")
+    for i in range((start + (page * 2)), min((start + (page * 2) + 2), end)):
+        fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
+        width, height = fileImageImport.size
         fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(fileImageImport)
         fileImage = tk.Label(imageFrame, image=photo)
         fileImage.image = photo
-        imageButtons.append(tk.Button(imageFrame, image=photo, highlightthickness=3, command=lambda i=i + (page * 2), j=i: selectImage(i, track, imageButtons[j], buttons, conflictFrame)))
+        imageButtons.append(tk.Button(imageFrame, image=photo, highlightthickness=3, command=lambda i=i: selectImage(i, track, imageButtons[i], buttons, conflictFrame)))
         imageButtons[len(imageButtons) - 1].pack(side="left", padx=(20, 20))
         buttons.append(imageButtons[len(imageButtons) - 1])
-        im = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i + (page * 2)) + ".jpg")
-        width, height = im.size
         imageResolutions.append(str(height) + "x" + str(width))
     # print resolutions underneath respective images
     for i in imageResolutions:

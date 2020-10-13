@@ -138,7 +138,7 @@ def discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFra
             # extract release date
             if "year" in header and "Release_Date" in options["Selected Tags (L)"]:
                 # Discog releases tend to have more credible tags, so each instance counts twice
-                tk.Label(leftComponentFrame, text="Year: " + str(link.get_text().strip()), font=("Proxima Nova Rg", 11), fg="white", bg=bg, anchor="w").pack(padx=(10, 0), pady=(5, 0))
+                tk.Label(leftComponentFrame, text="Year: " + str(link.get_text().strip()), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
                 if " " in link.get_text().strip():
                     yearList.append(int(link.get_text().strip()[-4:]))
                     yearList.append(int(link.get_text().strip()[-4:]))
@@ -152,8 +152,8 @@ def discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFra
                 #multiple genres
                 else: genre += ", " + str(link.get_text()).strip()
                 genreList.append(link.get_text().strip())
-    if len(genre) >= 75: tk.Label(leftComponentFrame, text="Genre: " + genre[0:74] + "...", font=("Proxima Nova Rg", 11), fg="white", bg=bg, anchor="w").pack(padx=(10, 0), pady=(5, 0))
-    else: tk.Label(leftComponentFrame, text="Genre: " + genre, font=("Proxima Nova Rg", 11), fg="white", bg=bg, anchor="w").pack(padx=(10, 0), pady=(5, 0))
+    if len(genre) >= 75: tk.Label(leftComponentFrame, text="Genre: " + genre[0:74] + "...", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
+    else: tk.Label(leftComponentFrame, text="Genre: " + genre, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
     webScrapingLeftPane[webScrapingPage] = leftComponentFrame
     refresh(webScrapingWindow)
     image = soup.find('div', class_="image_gallery image_gallery_large")['data-images']
@@ -170,10 +170,10 @@ def discogsRelease(soup, yearList, genreList, URLList, headers, leftComponentFra
         fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
         fileImageImport = fileImageImport.resize((180, 180), Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(fileImageImport)
-        fileImage = tk.Label(rightComponentFrame, image=photo)
+        fileImage = tk.Label(rightComponentFrame, image=photo, bg=bg)
         fileImage.image = photo
-        fileImage.pack(padx=(70, 0), anchor="e")
-        imageCounter+=1
+        fileImage.pack(padx=(0, 100), anchor="e")
+        imageCounter += 1
         refresh(webScrapingWindow)
         webScrapingRightPane[webScrapingPage] = rightComponentFrame
         if options["Reverse Image Search (B)"].get() == True:

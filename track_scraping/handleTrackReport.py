@@ -48,7 +48,7 @@ def handleTrackReport(track, yearList, BPMList, keyList, genreList, audio, filen
         elif filename.endswith(".m4a"): M4A_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict, webScrapingWindow)
     if len(str(track.artist) + " - " + str(track.title)) > characters: characters = len(str(track.artist) + " - " + str(track.title))
 
-    title = "\nTrack: " + str(track.artist) + " - " + str(track.title)
+    title = str(track.artist) + " - " + str(track.title)
     results = ""
     if "Release_Date" in options["Selected Tags (L)"]: results += "\nYear: " + str(track.release_date)
     if "BPM" in options["Selected Tags (L)"]: results += "\nBPM: " + str(track.bpm)

@@ -30,7 +30,7 @@ def handleFinalReport(finalTitles, finalResults, characters, imageCounter, image
         # frame for title
         titleFrame = tk.Frame(finalReportWindow, bg=bg)
         titleFrame.pack(side="top", anchor="n")
-        tk.Label(titleFrame, text=finalTitles[0], font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left", bd=-10, anchor="w").pack(side="top", anchor="w")
+        tk.Label(titleFrame, text=finalTitles[0] + "\n", font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left", bd=-10, anchor="w").pack(side="top", anchor="w")
         # frame for report contents
         contentFrame = tk.Frame(finalReportWindow, bg=bg)
         contentFrame.pack(side="top", anchor="center")
@@ -53,7 +53,7 @@ def handleFinalReport(finalTitles, finalResults, characters, imageCounter, image
         leftNavigationButton.pack(side="right")
 
         # load button and checkbox
-        tk.Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, options), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side=TOP, pady=(25, 15))
+        tk.Button(finalReportWindow, text='OK', command=lambda: completeSearch(finalReportWindow, webScrapingWindow, options), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side=TOP, pady=(35, 15))
         closeWindowButtonFrame = tk.Frame(finalReportWindow, bg=bg)
         closeWindowButtonFrame.pack()
         tk.Checkbutton(closeWindowButtonFrame, var=options["Close Scraping Window (B)"], activebackground=bg, command=lambda: closeScrapingWindowSelection(CONFIG_FILE), bg=bg).pack(side="left", pady=(0,10))
@@ -77,7 +77,7 @@ def navigateLeft(leftNavigationButton, rightNavigationButton, titleFrame, conten
     for item in widgetList: item.pack_forget()
     widgetList = allWidgets(imageFrame)
     for item in widgetList: item.pack_forget()
-    tk.Label(titleFrame, text=finalTitles[(currentPage-1)], font=("Proxima Nova Rg", 11), fg="white", bg=bg, bd=-10, anchor="w").pack(side="top", anchor="w")
+    tk.Label(titleFrame, text=finalTitles[(currentPage-1)] + "\n", font=("Proxima Nova Rg", 11), fg="white", bg=bg, bd=-10, anchor="w").pack(side="top", anchor="w")
     # remove leading newline character
     tk.Label(contentFrame, text=finalResults[(currentPage-1)].lstrip() + '\n', font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left", bd=-10, anchor="center").pack(anchor="center")
     renderImage(imageFrame, imageSelections, imageCounter, thumbnails, (currentPage-1))
@@ -97,7 +97,7 @@ def navigateRight(leftNavigationButton, rightNavigationButton, titleFrame, conte
     for item in widgetList: item.pack_forget()
     widgetList = allWidgets(imageFrame)
     for item in widgetList: item.pack_forget()
-    tk.Label(titleFrame, text=finalTitles[(currentPage-1)], font=("Proxima Nova Rg", 11), fg="white", bg=bg, bd=-10, anchor="w").pack(side="top", anchor="w")
+    tk.Label(titleFrame, text=finalTitles[(currentPage-1)] + "\n", font=("Proxima Nova Rg", 11), fg="white", bg=bg, bd=-10, anchor="w").pack(side="top", anchor="w")
     # remove leading newline character
     tk.Label(contentFrame, text=finalResults[(currentPage-1)].lstrip() + '\n', font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left", bd=-10, anchor="center").pack(anchor="center")
     renderImage(imageFrame, imageSelections, imageCounter, thumbnails, (currentPage-1))
@@ -111,9 +111,9 @@ def renderImage(contentFrame, imageSelections, imageCounter, thumbnails, index):
         photo = ImageTk.PhotoImage(fileImageImport)
         fileImage = tk.Label(contentFrame, image=photo, bg=bg)
         fileImage.image = photo
-        fileImage.pack(side="top", pady=(10, 10), anchor="n")
+        fileImage.pack(side="top", pady=(10, 15), anchor="n")
         # resolution
-        tk.Label(contentFrame, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(10, 20), anchor="n")
+        tk.Label(contentFrame, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(0, 10), anchor="n")
     # load thumbnail image
     else:
         if thumbnails[index] == 'NA':
@@ -154,7 +154,7 @@ def completeSearch(finalReportWindow, webScrapingWindow, options):
     if options["Close Scraping Window (B)"].get() != False: webScrapingWindow.destroy()
     else: webScrapingWindow.lift()
     # delete all images in temp if both revese image search and delete stored image options are both true
-    if options["Reverse Image Search (B)"].get() == True and options["Delete Stored Images (B)"].get() == True:
+    if options["Delete Stored Images (B)"].get() == True:
         images = os.listdir(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/")
         for image in images: os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(image))
 
