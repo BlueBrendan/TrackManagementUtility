@@ -17,6 +17,7 @@ page = 0
 
 def FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict, webScrapingWindow):
     global page
+    page = 0
     tagAlert = False
     if "Release_Date" in options["Selected Tags (L)"] and audio['date'][0] != '': tagAlert = True
     if "BPM" in options["Selected Tags (L)"] and audio['bpm'][0] != '': tagAlert = True
@@ -113,6 +114,13 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalT
             conflictPopup.attributes("-topmost", True)
             conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
             conflictPopup.wait_window()
+    # no tags were collected, acquire tags directly from track
+    else:
+        if "Release_Date" in options["Selected Tags (L)"]: audio['date'] = str(track.release_date)
+        if "BPM" in options["Selected Tags (L)"]: audio['bpm'] = str(track.bpm)
+        if "Key" in options["Selected Tags (L)"]: audio['initialkey'] = track.key
+        if "Genre" in options["Selected Tags (L)"]: audio['genre'] = track.genre
+        audio.save()
 
     # image conflict
     if imageCounter >= 1:
@@ -173,7 +181,6 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalT
             imageButtons[len(imageButtons) - 1].pack(side="left", padx=(20, 20))
             buttons.append(imageButtons[len(imageButtons) - 1])
             imageResolutions.append(str(height) + "x" + str(width))
-
         resolutionsFrame = tk.Frame(conflictPopup, bg=bg)
         resolutionsFrame.pack(side="top")
         # print resolutions underneath respective images
@@ -193,13 +200,6 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalT
         conflictPopup.attributes("-topmost", True)
         conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
         conflictPopup.wait_window()
-    # no tags were collected, acquire tags directly from track
-    else:
-        if "Release_Date" in options["Selected Tags (L)"]: audio['date'] = str(track.release_date)
-        if "BPM" in options["Selected Tags (L)"]: audio['bpm'] = str(track.bpm)
-        if "Key" in options["Selected Tags (L)"]: audio['initialkey'] = track.key
-        if "Genre" in options["Selected Tags (L)"]: audio['genre'] = track.genre
-        audio.save()
 
 #four button options
 def overwriteOption(audio, track, options, window, webScrapingWindow):

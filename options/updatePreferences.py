@@ -293,12 +293,12 @@ def namingRadiobutton(CONFIG_FILE, term, value):
         file.close()
 
 def entrybox(CONFIG_FILE, term, value):
-    if value.get() == '':
-        value.set(0)
     config_file = open(CONFIG_FILE, 'r').read()
     # convert to term
-    with open(CONFIG_FILE, 'wt') as file:
-        file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1])) + str(value.get())))
+    if value.get() == '':
+        with open(CONFIG_FILE, 'wt') as file: file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1])) + str(0)))
+    else:
+        with open(CONFIG_FILE, 'wt') as file: file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1])) + str(value.get())))
     file.close()
 
 #handle listbox click interaction

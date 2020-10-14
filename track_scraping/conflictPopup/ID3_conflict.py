@@ -18,6 +18,7 @@ page = 0
 
 def ID3_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict, webScrapingWindow):
     global page
+    page = 0
     tagAlert = False
     if "Release_Date" in options["Selected Tags (L)"] and audio["TDRC"] != '': tagAlert = True
     if "BPM" in options["Selected Tags (L)"] and audio["TBPM"] != '': tagAlert = True
@@ -113,6 +114,12 @@ def ID3_conflict(audio, track, options, initialCounter, imageCounter, informalTa
             conflictPopup.attributes("-topmost", True)
             conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
             conflictPopup.wait_window()
+    else:
+        if "Release_Date" in options["Selected Tags (L)"]: audio["TDRC"] = TDRC(encoding=3, text=str(track.release_date))
+        if "BPM" in options["Selected Tags (L)"]: audio["TBPM"] = TBPM(encoding=3, text=str(track.bpm))
+        if "Key" in options["Selected Tags (L)"]: audio["TKEY"] = TKEY(encoding=3, text=track.key)
+        if "Genre" in options["Selected Tags (L)"]: audio["TCON"] = TCON(encoding=3, text=track.genre)
+        audio.save()
 
     # image conflict
     if imageCounter >= 1:
@@ -197,12 +204,6 @@ def ID3_conflict(audio, track, options, initialCounter, imageCounter, informalTa
         conflictPopup.attributes("-topmost", True)
         conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
         conflictPopup.wait_window()
-    else:
-        if "Release_Date" in options["Selected Tags (L)"]: audio["TDRC"] = TDRC(encoding=3, text=str(track.release_date))
-        if "BPM" in options["Selected Tags (L)"]: audio["TBPM"] = TBPM(encoding=3, text=str(track.bpm))
-        if "Key" in options["Selected Tags (L)"]: audio["TKEY"] = TKEY(encoding=3, text=track.key)
-        if "Genre" in options["Selected Tags (L)"]: audio["TCON"] = TCON(encoding=3, text=track.genre)
-        audio.save()
 
 #four button options
 def overwriteOption(audio, track, options, window, webScrapingWindow):

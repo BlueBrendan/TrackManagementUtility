@@ -16,6 +16,7 @@ page = 0
 
 def M4A_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict, webScrapingWindow):
     global page
+    page = 0
     tagAlert = False
     if "Release_Date" in options["Selected Tags (L)"] and audio["\xa9day"][0] != '': tagAlert = True
     if "BPM" in options["Selected Tags (L)"] and audio["tmpo"][0] != '': tagAlert = True
@@ -116,6 +117,12 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, informalTa
             conflictPopup.attributes("-topmost", True)
             conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
             conflictPopup.wait_window()
+    else:
+        if "Release_Date" in options["Selected Tags (L)"]: audio["\xa9day"] = str(track.release_date)
+        if "BPM" in options["Selected Tags (L)"]: audio["tmpo"] = str(track.bpm)
+        if "Key" in options["Selected Tags (L)"]: audio["----:com.apple.iTunes:INITIALKEY"] = track.key
+        if "Genre" in options["Selected Tags (L)"]: audio["\xa9gen"] = track.genre
+        audio.save()
 
     # image conflict
     if imageCounter >= 1:
@@ -197,12 +204,6 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, informalTa
         conflictPopup.attributes("-topmost", True)
         conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
         conflictPopup.wait_window()
-    else:
-        audio["\xa9day"] = str(track.release_date)
-        audio["tmpo"] = str(track.bpm)
-        audio["----:com.apple.iTunes:INITIALKEY"] = track.key
-        audio["\xa9gen"] = track.genre
-        audio.save()
 
 #four button options
 def overwriteOption(audio, track, options, window, webScrapingWindow):

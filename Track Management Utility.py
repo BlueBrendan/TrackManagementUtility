@@ -1,14 +1,12 @@
 import tkinter as tk
 import getpass
 import os
-import pyglet
 from PIL import Image, ImageTk
 
 #import methods
 from compareDrives import compareDrives
 from track_preparation.scanTagsOnline import scanTagsOnline
-from other.checkForUpdates import checkForUpdates
-from other.updatePreferences import updatePreferences
+from options.updatePreferences import updatePreferences
 
 # #add proxima nova regular
 # pyglet.font.add_file("C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Proxima Nova Regular.ttf")
@@ -125,7 +123,6 @@ menufile.menu = tk.Menu(menufile, tearoff=0)
 menufile["menu"] = menufile.menu
 updates = tk.IntVar()
 exit = tk.IntVar()
-menufile.menu.add_command(label="Check for Updates", font=('Proxima Nova Rg', 10), command=checkForUpdates)
 menufile.menu.add_command(label="Exit", font=('Proxima Nova Rg', 10), command=root.destroy)
 
 #option topmenu button
