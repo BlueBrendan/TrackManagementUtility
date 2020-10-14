@@ -361,7 +361,7 @@ def reloadButtons(start, end, imageFrame, resolutionsFrame, conflictFrame, track
         photo = ImageTk.PhotoImage(fileImageImport)
         fileImage = tk.Label(imageFrame, image=photo)
         fileImage.image = photo
-        imageButtons.append(tk.Button(imageFrame, image=photo, highlightthickness=3, command=lambda i=i: selectImage(i, track, imageButtons[i], buttons, conflictFrame)))
+        imageButtons.append(tk.Button(imageFrame, image=photo, highlightthickness=3, command=lambda i=i: selectImage(i, track, imageButtons[i - (start + (page * 2))], buttons, conflictFrame)))
         imageButtons[len(imageButtons) - 1].pack(side="left", padx=(20, 20))
         buttons.append(imageButtons[len(imageButtons) - 1])
         imageResolutions.append(str(height) + "x" + str(width))
