@@ -28,7 +28,7 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalT
         tagConflict = False
         if "Release_Date" in options["Selected Tags (L)"] and str(audio['date'][0]) != str(track.release_date): tagConflict = True
         if "BPM" in options["Selected Tags (L)"] and str(audio['bpm'][0]) != str(track.bpm): tagConflict = True
-        if "Key" in options["Selected Tags (L)"] and str(audio['initialkey'][0]) != track.key: tagConflictt = True
+        if "Key" in options["Selected Tags (L)"] and str(audio['initialkey'][0]) != track.key: tagConflict = True
         if "Genre" in options["Selected Tags (L)"] and str(audio['genre'][0]) != track.genre: tagConflict = True
         if tagConflict:
             conflictPopup = tk.Toplevel()
