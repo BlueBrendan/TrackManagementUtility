@@ -55,22 +55,22 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     # website options
     junodownloadFrame = tk.Frame(leftComponentFrame, bg=bg)
     junodownloadFrame.pack(anchor="w")
-    tk.Checkbutton(junodownloadFrame, variable=options['Scrape Junodownload (B)'], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scrape Junodownload (B)', []), bg=bg).pack(padx=(20, 0), side="left")
+    tk.Checkbutton(junodownloadFrame, variable=options['Scrape Junodownload (B)'], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scrape Junodownload (B)', [], True, 0), bg=bg).pack(padx=(20, 0), side="left")
     tk.Label(junodownloadFrame, text="Junodownload", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     beatportFrame = tk.Frame(leftComponentFrame, bg=bg)
     beatportFrame.pack(anchor="w")
-    tk.Checkbutton(beatportFrame, variable=options['Scrape Beatport (B)'], onvalue=True, offvalue=False,  activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scrape Beatport (B)', []), bg=bg).pack(padx=(20, 0), side="left")
+    tk.Checkbutton(beatportFrame, variable=options['Scrape Beatport (B)'], onvalue=True, offvalue=False,  activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scrape Beatport (B)', [], True, 0), bg=bg).pack(padx=(20, 0), side="left")
     tk.Label(beatportFrame, text="Beatport", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     discogsFrame = tk.Frame(leftComponentFrame, bg=bg)
     discogsFrame.pack(anchor="w")
-    tk.Checkbutton(discogsFrame, variable=options['Scrape Discogs (B)'], onvalue=True, offvalue=False,  activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scrape Discogs (B)', []), bg=bg).pack(padx=(20, 0), side="left")
+    tk.Checkbutton(discogsFrame, variable=options['Scrape Discogs (B)'], onvalue=True, offvalue=False,  activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scrape Discogs (B)', [], True, 0), bg=bg).pack(padx=(20, 0), side="left")
     tk.Label(discogsFrame, text="Discogs", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
 
     # web image option
     imageOptions = []
     imageCheckFrame = tk.Frame(rightComponentFrame, bg=bg)
     imageCheckFrame.pack(anchor="w")
-    tk.Checkbutton(imageCheckFrame, variable=options["Extract Image from Website (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Extract Image from Website (B)", imageOptions), bg=bg).pack(padx=(20, 0), side="left")
+    tk.Checkbutton(imageCheckFrame, variable=options["Extract Image from Website (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Extract Image from Website (B)", imageOptions, options['Reverse Image Search (B)'].get(), 1), bg=bg).pack(padx=(20, 0), side="left")
     tk.Label(imageCheckFrame, text="Extract Image from Website", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
 
     # image scraping settings
@@ -80,7 +80,7 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     # reverse image search
     reverseImageFrame = tk.Frame(tab1, bg=bg)
     reverseImageFrame.pack(anchor="w")
-    seleniumCheckbox = tk.Checkbutton(reverseImageFrame, variable=options['Reverse Image Search (B)'], onvalue=True, offvalue=False,  activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Reverse Image Search (B)', imageScrapingSuboptions), bg=bg)
+    seleniumCheckbox = tk.Checkbutton(reverseImageFrame, variable=options['Reverse Image Search (B)'], onvalue=True, offvalue=False,  activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Reverse Image Search (B)', imageScrapingSuboptions, True, 0), bg=bg)
     seleniumCheckbox.pack(padx=(20, 0), side="left")
     tk.Label(reverseImageFrame, text="Reverse Image Search with Selenium", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     if options["Extract Image from Website (B)"].get() == False: seleniumCheckbox.config(state=DISABLED)
@@ -89,11 +89,12 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     # delete images
     deleteImagesFrame = tk.Frame(tab1, bg=bg)
     deleteImagesFrame.pack(anchor="w")
-    deleteImages = tk.Checkbutton(deleteImagesFrame, variable=options['Delete Stored Images (B)'], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Delete Stored Images (B)', []), bg=bg)
+    deleteImages = tk.Checkbutton(deleteImagesFrame, variable=options['Delete Stored Images (B)'], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Delete Stored Images (B)', [], True, 0), bg=bg)
     deleteImages.pack(padx=(30, 0), side="left")
     tk.Label(deleteImagesFrame, text="Delete Stored Images after Completion", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     if options["Extract Image from Website (B)"].get()==False or options["Reverse Image Search (B)"].get() == False: deleteImages.config(state=DISABLED)
     imageScrapingSuboptions.append(deleteImages)
+    imageOptions.append(deleteImages)
 
     # wait time
     waitTimeForm = tk.Frame(tab1, bg=bg)
@@ -105,9 +106,10 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     waitTime = tk.Entry(waitTimeForm, width=3, textvariable=time, validate="key", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg)
     validate = (waitTime.register(checkInt))
     waitTime.configure(validatecommand=(validate, '%S'))
+    imageScrapingSuboptions.append(waitTime)
+    imageOptions.append(waitTime)
 
     if options["Extract Image from Website (B)"].get()==False or options["Reverse Image Search (B)"].get() == False: waitTime.config(state=DISABLED)
-    imageScrapingSuboptions.append(waitTime)
     waitTime.pack(padx=(35, 0), side="left")
     waitTimeText.pack(padx=(10, 0), pady=(5, 0), side="left")
 
@@ -162,7 +164,7 @@ def taggingTab(tab_parent, options, CONFIG_FILE):
     # bottom row of tagFrame
     tagCheckboxFrame = Frame(tagFrame, bg=bg)
     tagCheckboxFrame.pack(side="left")
-    tk.Checkbutton(tagCheckboxFrame, variable=options["Delete Unselected Tags (B)"], activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Delete Unselected Tags (B)', []), bg=bg).pack(padx=(20, 0), pady=(20, 0), side="left")
+    tk.Checkbutton(tagCheckboxFrame, variable=options["Delete Unselected Tags (B)"], activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Delete Unselected Tags (B)', [], True, 0), bg=bg).pack(padx=(20, 0), pady=(20, 0), side="left")
     tk.Label(tagCheckboxFrame, text="Delete Unselected Tags from File", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(pady=(20, 0), side="left")
 
 def namingTab(tab_parent, options, CONFIG_FILE):
@@ -219,26 +221,26 @@ def namingTab(tab_parent, options, CONFIG_FILE):
     # frame for scan filename and tags checkbutton
     scanButtonFrame = tk.Frame(rightPane, bg=bg)
     scanButtonFrame.pack(anchor="w")
-    tk.Checkbutton(scanButtonFrame, variable=options["Scan Filename and Tags (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scan Filename and Tags (B)', typoSuboptions), bg=bg).pack(padx=(10, 0), side="left")
+    tk.Checkbutton(scanButtonFrame, variable=options["Scan Filename and Tags (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scan Filename and Tags (B)', typoSuboptions, True, 0), bg=bg).pack(padx=(10, 0), side="left")
     tk.Label(scanButtonFrame, text="Scan Filename and Tags", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     # frame for numbering prefix checkbutton
     prefixButtonFrame = tk.Frame(rightPane, bg=bg)
     prefixButtonFrame.pack(anchor="w")
-    numberingPrefix = tk.Checkbutton(prefixButtonFrame, variable=options["Check for Numbering Prefix (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Check for Numbering Prefix (B)", []), bg=bg)
+    numberingPrefix = tk.Checkbutton(prefixButtonFrame, variable=options["Check for Numbering Prefix (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Check for Numbering Prefix (B)", [], True, 0), bg=bg)
     numberingPrefix.pack(padx=(20, 0), side="left")
     tk.Label(prefixButtonFrame, text="Check for Numbering Prefix", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     typoSuboptions.append(numberingPrefix)
     # frame for hyphen checkbutton
     hyphenButtonFrame = tk.Frame(rightPane, bg=bg)
     hyphenButtonFrame.pack(anchor="w")
-    hyphenCheck = tk.Checkbutton(hyphenButtonFrame, variable=options["Check for Extraneous Hyphens (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Check for Extraneous Hyphens (B)", []), bg=bg)
+    hyphenCheck = tk.Checkbutton(hyphenButtonFrame, variable=options["Check for Extraneous Hyphens (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Check for Extraneous Hyphens (B)", [], True, 0), bg=bg)
     hyphenCheck.pack(padx=(20, 0), side="left")
     tk.Label(hyphenButtonFrame, text="Check for Extraneous Hyphens", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     typoSuboptions.append(hyphenCheck)
     # frame for capitalization checkbutton
     capitalizationButtonFrame = tk.Frame(rightPane, bg=bg)
     capitalizationButtonFrame.pack(anchor="w")
-    capitalizationCheck = tk.Checkbutton(capitalizationButtonFrame, variable=options["Check for Capitalization (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Check for Capitalization (B)", []), bg=bg)
+    capitalizationCheck = tk.Checkbutton(capitalizationButtonFrame, variable=options["Check for Capitalization (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Check for Capitalization (B)", [], True, 0), bg=bg)
     capitalizationCheck.pack(padx=(20, 0), side="left")
     tk.Label(capitalizationButtonFrame, text="Check for Capitalization", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     typoSuboptions.append(capitalizationCheck)
@@ -263,7 +265,7 @@ def namingTab(tab_parent, options, CONFIG_FILE):
         hyphenCheck.config(state=DISABLED)
         capitalizationCheck.config(state=DISABLED)
 
-def checkbox(CONFIG_FILE, term, suboptions):
+def checkbox(CONFIG_FILE, term, suboptions, condition, count):
     config_file = open(CONFIG_FILE, 'r').read()
     # if true, turn option to false
     if config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))] == "True":
@@ -280,9 +282,14 @@ def checkbox(CONFIG_FILE, term, suboptions):
             file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1]) + "False",str(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1])) + "True"))
         file.close()
         if len(suboptions) > 0:
-            #enable all provided suboptions
-            for suboption in suboptions:
-                suboption.configure(state=NORMAL)
+            # enable all provided suboptions
+            if condition:
+                for suboption in suboptions: suboption.configure(state=NORMAL)
+            # only enable first suboption
+            else:
+                for i in range(count): suboptions[i].configure(state=NORMAL)
+
+
 
 def namingRadiobutton(CONFIG_FILE, term, value):
     config_file = open(CONFIG_FILE, 'r').read()

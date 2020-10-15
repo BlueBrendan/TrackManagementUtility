@@ -8,10 +8,6 @@ from mutagen.flac import Picture
 from mutagen.oggvorbis import OggVorbis
 from mutagen.mp4 import MP4
 from mutagen.mp3 import MP3
-from mutagen.id3._frames import *
-from mutagen.aiff import AIFF
-from mutagen.wave import WAVE
-from mutagen.id3 import ID3
 from PIL import Image, ImageTk
 from io import BytesIO
 import base64
@@ -109,41 +105,9 @@ def directorySearch(first_directory, second_directory, directoryFileCount, diffe
                         directoryImage = tk.Label(popup, image=photo, bg=bg)
                         directoryImage.image = photo
                         directoryImage.pack(side="top", pady=(0,30))
-                # artwork from MP3
-                elif var.endswith(".mp3"):
+                # artwork from MP3, AIFF, or WAV
+                elif var.endswith(".mp3") or var.endswith(".aiff") or var.endswith(".wav"):
                     audio = MP3(first_directory + '/' + var)
-                    if 'APIC:' in audio:
-                        image = audio["APIC:"]
-                        if image != '':
-                            y = (hs / 2) - (550 / 2)
-                            popup.geometry('%dx%d+%d+%d' % (550, 500, x, y))
-                            stream = BytesIO(image.data)
-                            image = Image.open(stream).convert("RGBA")
-                            stream.close()
-                            directoryImageImport = image.resize((200, 200), Image.ANTIALIAS)
-                            photo = ImageTk.PhotoImage(directoryImageImport)
-                            directoryImage = tk.Label(popup, image=photo, bg=bg)
-                            directoryImage.image = photo
-                            directoryImage.pack(side="top", pady=(0, 30))
-                #artwork from AIFF
-                elif var.endswith(".aiff"):
-                    audio = AIFF(first_directory + '/' + var)
-                    if 'APIC:' in audio:
-                        image = audio["APIC:"]
-                        if image != '':
-                            y = (hs / 2) - (550 / 2)
-                            popup.geometry('%dx%d+%d+%d' % (550, 500, x, y))
-                            stream = BytesIO(image.data)
-                            image = Image.open(stream).convert("RGBA")
-                            stream.close()
-                            directoryImageImport = image.resize((200, 200), Image.ANTIALIAS)
-                            photo = ImageTk.PhotoImage(directoryImageImport)
-                            directoryImage = tk.Label(popup, image=photo, bg=bg)
-                            directoryImage.image = photo
-                            directoryImage.pack(side="top", pady=(0, 30))
-                #artwork from WAV
-                elif var.endswith(".wav"):
-                    audio = WAVE(first_directory + '/' + var)
                     if 'APIC:' in audio:
                         image = audio["APIC:"]
                         if image != '':

@@ -77,28 +77,37 @@ def modeConflict(track, list, type):
     popup.configure(bg=bg)
     ws = popup.winfo_screenwidth()  # width of the screen
     hs = popup.winfo_screenheight()  # height of the screen
+    initialWidth = 550
     y = (hs / 2) - (242 / 2)
-    x = (ws / 2) - (550 / 2)
+    x = (ws / 2) - (initialWidth / 2)
     popup.geometry('%dx%d+%d+%d' % (500, 220, x, y))
     for i in range(len(multimode(list))):
-        x += len(multimode(list)[i])
+        initialWidth += (len(multimode(list)[i]) * 7)
+        x = (ws / 2) - (initialWidth / 2)
         popup.update_idletasks()
-        popup.geometry('%dx%d+%d+%d' % (popup.winfo_width() + len(multimode(list)[i]), 220, x, y))
+        popup.geometry('%dx%d+%d+%d' % (initialWidth, 220, x, y))
     tk.Label(popup, text= type.capitalize() + " Conflict", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(30, 15))
     tk.Label(popup, text= "The search returned equal instances of multiple more than one " + type, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(10, 20))
     radioFrame = tk.Frame(popup)
     radioFrame.config(bg=bg)
     radioFrame.pack()
+    selection = tk.StringVar()
+    selection.set(None)
     for i in range(len(multimode(list))):
-        tk.Radiobutton(radioFrame, value=list[i], command=lambda i=i: selectOption(track, list, i, type), activebackground=bg, selectcolor=bg, bg=bg, fg="white").pack(padx=(20, 0), side="left")
+        option = tk.Radiobutton(radioFrame, value=list[i], variable=selection, command=lambda i=i: selectOption(track, list, i, selection, selectButton, type), activebackground=bg, selectcolor=bg, bg=bg, fg="white")
+        option.deselect()
+        option.pack(padx=(20, 0), side="left")
         tk.Label(radioFrame, text=list[i], font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
-    tk.Button(popup, text="Select", font=("Proxima Nova Rg", 11), fg="white", bg=bg, command=popup.destroy).pack(pady=(20, 0))
+    selectButton = tk.Button(popup, text="Select", font=("Proxima Nova Rg", 11), state=tk.DISABLED, fg="white", bg=bg, command=popup.destroy)
+    selectButton.pack(pady=(20, 0))
     originalGenre = track.genre
     popup.lift()
     popup.protocol("WM_DELETE_WINDOW", lambda track=track, popup=popup, genre=originalGenre: onExit(track, genre, popup, type))
     popup.wait_window()
 
-def selectOption(track, list, i, type):
+def selectOption(track, list, i, selection, selectButton, type):
+    selectButton.config(state=tk.NORMAL)
+    selection.set(list[i])
     if type == "genre": track.genre = list[i]
 
 def onExit(track, genre, popup, type):

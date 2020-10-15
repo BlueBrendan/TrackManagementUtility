@@ -65,7 +65,7 @@ def reverseImageSearch(link, headers, window, imageCounter, URLList, options):
                                     file.write(requests.get(browser.current_url, headers=headers).content)
                                 imageCounter+=1
                                 #give time for image writing
-                                time.sleep(1)
+                                time.sleep(0.25)
                             break
     browser.quit()
     window.lift()

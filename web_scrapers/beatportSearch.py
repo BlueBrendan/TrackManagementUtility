@@ -57,50 +57,51 @@ def beatportSearch(title, var, yearList, BPMList, keyList, genreList, URLList, a
         if "www.beatport.com" in link.get('href').split('&')[0]:
             lastForwardslashIndex = link.get('href').split('&')[0].lower().index('/', link.get('href').split('&')[0].lower().rfind('/'))
             content = link.get('href').split('&')[0].lower()[link.get('href').split('&')[0].lower().index('beatport.com') + len("beatport.com"):lastForwardslashIndex]
-            content = content[content.index('/', 1)+1:].replace('-', ' ')
-            contentVariations = [content]
-            if 'extended remix' in content.lower(): contentVariations.append(content.replace('extended remix', 'remix'))
-            mismatch = True
-            if '/' not in content:
-                for variation in titleVariations:
-                    for content in contentVariations:
-                        if variation in content:
-                            mismatch = False
-                            break
-                        else:
-                            mismatch = compareTokens(variation, content)
-                            if not mismatch: break
-                    if not mismatch:break
-            if mismatch == False:
-                link = link.get('href').split('&')[0].split('=')[1]
-                if "remix" in link and "remix" in title.lower() or "remix" not in title.lower() and "remix" not in link:
-                    # clear component frames of existing content
-                    widgetList = allWidgets(componentFrame)
-                    for item in widgetList: item.pack_forget()
-                    widgetList = allWidgets(pageFrame)
-                    for item in widgetList: item.pack_forget()
-                    webScrapingPage += 1
-                    leftComponentFrame, rightComponentFrame = resetLeftRightFrames(componentFrame)
+            if content.count('/') > 1:
+                content = content[content.index('/', 1)+1:].replace('-', ' ')
+                contentVariations = [content]
+                if 'extended remix' in content.lower(): contentVariations.append(content.replace('extended remix', 'remix'))
+                mismatch = True
+                if '/' not in content:
+                    for variation in titleVariations:
+                        for content in contentVariations:
+                            if variation in content:
+                                mismatch = False
+                                break
+                            else:
+                                mismatch = compareTokens(variation, content)
+                                if not mismatch: break
+                        if not mismatch:break
+                if mismatch == False:
+                    link = link.get('href').split('&')[0].split('=')[1]
+                    if "remix" in link and "remix" in title.lower() or "remix" not in title.lower() and "remix" not in link:
+                        # clear component frames of existing content
+                        widgetList = allWidgets(componentFrame)
+                        for item in widgetList: item.pack_forget()
+                        widgetList = allWidgets(pageFrame)
+                        for item in widgetList: item.pack_forget()
+                        webScrapingPage += 1
+                        leftComponentFrame, rightComponentFrame = resetLeftRightFrames(componentFrame)
 
-                    # page counter and navigation buttons
-                    rerenderControls(pageFrame, webScrapingPage)
-                    if len(link) > 75: label = tk.Label(leftComponentFrame, text="\n" + str(link)[0:74] + "...", cursor="hand2", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
-                    else: label = tk.Label(leftComponentFrame, text="\n" + str(link), cursor="hand2", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
-                    label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
-                    label.pack(padx=(10, 0), pady=(0, 25), anchor='w')
-                    webScrapingLeftPane[webScrapingPage] = leftComponentFrame
-                    # assume match will fail and no image will be found
-                    webScrapingRightPane[webScrapingPage] = "NA"
-                    webScrapingLinks[webScrapingPage] = link
-                    refresh(webScrapingWindow)
-                    soup = prepareRequest(link, headers, webScrapingWindow, leftComponentFrame)
-                    if soup != False and "Oops... the page you were looking for could not be found" not in str(soup):
-                        #check if page is a track (single) or a release (album)
-                        #case 1: release
-                        if link[25:32] == "release": yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane = beatportRelease(soup, titleVariations, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
-                        #case 2: track
-                        elif link[25:30] == "track": yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane = beatportTrack(soup, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
-                    else: tk.Label(leftComponentFrame, text="Track failed due to dead link or territory restriction", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
+                        # page counter and navigation buttons
+                        rerenderControls(pageFrame, webScrapingPage)
+                        if len(link) > 75: label = tk.Label(leftComponentFrame, text="\n" + str(link)[0:74] + "...", cursor="hand2", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                        else: label = tk.Label(leftComponentFrame, text="\n" + str(link), cursor="hand2", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                        label.bind("<Button-1>", lambda e, link=link: webbrowser.open_new(link))
+                        label.pack(padx=(10, 0), pady=(0, 25), anchor='w')
+                        webScrapingLeftPane[webScrapingPage] = leftComponentFrame
+                        # assume match will fail and no image will be found
+                        webScrapingRightPane[webScrapingPage] = "NA"
+                        webScrapingLinks[webScrapingPage] = link
+                        refresh(webScrapingWindow)
+                        soup = prepareRequest(link, headers, webScrapingWindow, leftComponentFrame)
+                        if soup != False and "Oops... the page you were looking for could not be found" not in str(soup):
+                            #check if page is a track (single) or a release (album)
+                            #case 1: release
+                            if link[25:32] == "release": yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane = beatportRelease(soup, titleVariations, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
+                            #case 2: track
+                            elif link[25:30] == "track": yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane = beatportTrack(soup, yearList, BPMList, keyList, genreList, URLList, headers, audio, title, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter)
+                        else: tk.Label(leftComponentFrame, text="Track failed due to dead link or territory restriction", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
     return yearList, BPMList, keyList, genreList, imageCounter, URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame
 
 #search beatport releases, filter individual tracks
