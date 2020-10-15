@@ -1,3 +1,6 @@
+from io import BytesIO
+from PIL import Image, ImageTk
+
 #class for the FLAC format
 class FLAC_Track:
     def __init__(self, audio, options, informalTagDict):

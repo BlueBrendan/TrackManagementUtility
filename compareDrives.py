@@ -110,7 +110,7 @@ def directorySearch(first_directory, second_directory, directoryFileCount, diffe
                     audio = MP3(first_directory + '/' + var)
                     if 'APIC:' in audio:
                         image = audio["APIC:"]
-                        if image != '':
+                        if image != b'':
                             y = (hs / 2) - (550 / 2)
                             popup.geometry('%dx%d+%d+%d' % (550, 500, x, y))
                             stream = BytesIO(image.data)

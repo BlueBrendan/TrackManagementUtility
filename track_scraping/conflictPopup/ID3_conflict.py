@@ -16,7 +16,7 @@ secondary_bg = "#364153"
 page = 0
 
 
-def ID3_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict, webScrapingWindow):
+def ID3_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict):
     global page
     page = 0
     tagAlert = False
@@ -107,10 +107,10 @@ def ID3_conflict(audio, track, options, initialCounter, imageCounter, informalTa
             # buttons
             optionButtons = tk.Frame(conflictPopup, bg=bg)
             optionButtons.pack()
-            tk.Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track, options, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack( side="left", padx=(20, 20))
-            tk.Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track, options, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
-            tk.Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(audio, track, options, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
-            tk.Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, options, conflictPopup, webScrapingWindow), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack( side="left", padx=(20, 20))
+            tk.Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track, options, conflictPopup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack( side="left", padx=(20, 20))
+            tk.Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track, options, conflictPopup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
+            tk.Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(audio, track, options, conflictPopup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
+            tk.Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, options, conflictPopup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack( side="left", padx=(20, 20))
             conflictPopup.attributes("-topmost", True)
             conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
             conflictPopup.wait_window()
@@ -179,7 +179,7 @@ def ID3_conflict(audio, track, options, initialCounter, imageCounter, informalTa
             photo = ImageTk.PhotoImage(fileImageImport)
             fileImage = tk.Label(imageFrame, image=photo)
             fileImage.image = photo
-            imageButtons.append(tk.Button(imageFrame, image=photo, highlightthickness=3, command=lambda i=i: selectImage(i, track, imageButtons[i-start], buttons, conflictPopup)))
+            imageButtons.append(tk.Button(imageFrame, image=photo, highlightthickness=3, command=lambda i = i: selectImage(i, track, imageButtons[i-start], buttons, conflictPopup)))
             imageButtons[len(imageButtons) - 1].pack(side="left", padx=(20, 20))
             buttons.append(imageButtons[len(imageButtons) - 1])
             imageResolutions.append(str(height) + "x" + str(width))
@@ -195,8 +195,7 @@ def ID3_conflict(audio, track, options, initialCounter, imageCounter, informalTa
         leftButton = tk.Button(pageFrame, text=" < ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="w", state=DISABLED, command=lambda: navigateLeft(start, end, imageFrame, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail))
         leftButton.pack(side="left", padx=(0, 15), pady=(15, 10))
         tk.Label(pageFrame, text=str(page + 1) + "/" + str(math.ceil(float(imageCounter - initialCounter) / 2.0)), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", pady=(15, 10))
-        tk.Button(conflictPopup, text="Select", font=("Proxima Nova Rg", 11), fg="white", bg=bg, command=lambda: saveImage(track, audio, conflictPopup, webScrapingWindow)).pack(side="top",
-                                                                                                                                                                                 pady=(10, 10))
+        tk.Button(conflictPopup, text="Select", font=("Proxima Nova Rg", 11), fg="white", bg=bg, command=lambda: saveImage(track, audio, conflictPopup)).pack(side="top", pady=(10, 10))
         # right navigation button
         rightButton = tk.Button(pageFrame, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="e", command=lambda: navigateRight(start, end, imageFrame, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail))
         if math.ceil(float(imageCounter - initialCounter) / 2.0) == 1: rightButton.config(state=DISABLED)
@@ -206,31 +205,23 @@ def ID3_conflict(audio, track, options, initialCounter, imageCounter, informalTa
         conflictPopup.wait_window()
 
 #four button options
-def overwriteOption(audio, track, options, window, webScrapingWindow):
+def overwriteOption(audio, track, options, window):
     if "Release_Date" in options["Selected Tags (L)"]: audio["TDRC"] = TDRC(encoding=3, text=str(track.release_date))
     if "BPM" in options["Selected Tags (L)"]: audio["TBPM"] = TBPM(encoding=3, text=str(track.bpm))
     if "Key" in options["Selected Tags (L)"]: audio["TKEY"] = TKEY(encoding=3, text=track.key)
     if "Genre" in options["Selected Tags (L)"]: audio["TCON"] = TCON(encoding=3, text=track.genre)
     audio.save()
-    if track.imageSelection!="THUMB":
-        saveImage(track, audio, window, webScrapingWindow)
-    else:
-        window.destroy()
-        webScrapingWindow.lift()
+    window.destroy()
 
-def mergeScrapeOption(audio, track, options, window, webScrapingWindow):
+def mergeScrapeOption(audio, track, options, window):
     if "Release_Date" in options["Selected Tags (L)"] and str(track.release_date) != '': audio["TDRC"] = TDRC(encoding=3, text=str(track.release_date))
     if "BPM" in options["Selected Tags (L)"] and str(track.bpm) != '': audio["TBPM"] = TBPM(encoding=3, text=str(track.bpm))
     if "Key" in options["Selected Tags (L)"] and track.key != '': audio["TKEY"] = TKEY(encoding=3, text=track.key)
     if "Genre" in options["Selected Tags (L)"] and track.genre != '': audio["TCON"] = TCON(encoding=3, text=track.genre)
     audio.save()
-    if track.imageSelection!="THUMB":
-        saveImage(track, audio, window, webScrapingWindow)
-    else:
-        window.destroy()
-        webScrapingWindow.lift()
+    window.destroy()
 
-def mergeSourceOption(audio, track, options, window, webScrapingWindow):
+def mergeSourceOption(audio, track, options, window):
     if "Release_Date" in options["Selected Tags (L)"]:
         if audio["TDRC"] == '': audio["TDRC"] = TDRC(encoding=3, text=str(track.release_date))
         else: track.release_date = str(audio["TDRC"])
@@ -244,25 +235,16 @@ def mergeSourceOption(audio, track, options, window, webScrapingWindow):
         if audio["TCON"] == '': audio["TCON"] = TCON(encoding=3, text=track.genre)
         else: track.genre = str(audio["TCON"])
     audio.save()
-    if track.imageSelection!="THUMB":
-        saveImage(track, audio, window, webScrapingWindow)
-    else:
-        window.destroy()
-        webScrapingWindow.lift()
+    window.destroy()
 
-def skipOption(audio, track, options, window, webScrapingWindow):
+def skipOption(audio, track, options, window):
     if "Release_Date" in options["Selected Tags (L)"]: track.release_date = str(audio["TDRC"])
     if "BPM" in options["Selected Tags (L)"]: track.bpm = str(audio["TBPM"])
     if "Key" in options["Selected Tags (L)"]: track.key = str(audio["TKEY"])
     if "Genre" in options["Selected Tags (L)"]: track.genre = str(audio["TCON"])
-    webScrapingWindow.lift()
-    if track.imageSelection!="THUMB":
-        saveImage(track, audio, window, webScrapingWindow)
-    else:
-        window.destroy()
-        webScrapingWindow.lift()
+    window.destroy()
 
-#selecting image to variable
+# selecting image to variable
 def selectImage(i, track, button, buttons, window):
     track.imageSelection = i
     #unhighlight all buttons
@@ -273,16 +255,33 @@ def selectImage(i, track, button, buttons, window):
     window.update()
 
 
-#saving image to file
-def saveImage(track, audio, window, webScrapingWindow):
-    #first clear all images from audio file
+# saving image to file
+def saveImage(track, audio, window):
+    # store image data, width, and height from downloaded image into imageSelection field
     if track.imageSelection != "THUMB":
+        # first clear all images from audio file
         audio.pop("APIC:")
-        with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(track.imageSelection) + ".jpg", 'rb') as f:
-            audio["APIC:"] = APIC(encoding=3, mime=u"image/jpeg", type=id3.PictureType.COVER_FRONT, data=f.read())
+        # file image import will be used as a thumbnail in various windows
+        fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(track.imageSelection) + ".jpg")
+        width, height = fileImageImport.size
+        fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+        with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(track.imageSelection) + ".jpg", 'rb') as f: audio["APIC:"] = APIC(encoding=3, mime=u"image/jpeg", type=id3.PictureType.COVER_FRONT, data=f.read())
         audio.save()
+        track.imageSelection = [fileImageImport, width, height]
+    # check if current track has artwork image
+    else:
+        if audio["APIC"] != b'':
+            stream = BytesIO(audio["APIC"].data)
+            image = Image.open(stream).convert("RGBA")
+            stream.close()
+            width, height = image.size
+            image = image.resize((200, 200), Image.ANTIALIAS)
+            track.imageSelection = [image, width, height]
+        else:
+            image = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
+            image = image.resize((200, 200), Image.ANTIALIAS)
+            track.imageSelection = [image, "NA", "NA"]
     window.destroy()
-    webScrapingWindow.lift()
 
 def navigateLeft(start, end, imageFrame, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail):
     global page
@@ -362,7 +361,7 @@ def reloadButtons(start, end, imageFrame, resolutionsFrame, conflictFrame, track
         photo = ImageTk.PhotoImage(fileImageImport)
         fileImage = tk.Label(imageFrame, image=photo)
         fileImage.image = photo
-        imageButtons.append(tk.Button(imageFrame, image=photo, highlightthickness=3, command=lambda i=i: selectImage(i, track, imageButtons[i - (start + (page * 2))], buttons, conflictFrame)))
+        imageButtons.append(tk.Button(imageFrame, image=photo, highlightthickness=3, command=lambda i = i: selectImage(i, track, imageButtons[i - (start + (page * 2))], buttons, conflictFrame)))
         imageButtons[len(imageButtons) - 1].pack(side="left", padx=(20, 20))
         buttons.append(imageButtons[len(imageButtons) - 1])
         imageResolutions.append(str(height) + "x" + str(width))

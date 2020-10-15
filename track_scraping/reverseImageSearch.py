@@ -30,7 +30,7 @@ def reverseImageSearch(link, headers, window, imageCounter, URLList, options):
                     link = popup.get_attribute('src')
                     if 'consent.google.com/' in popup.get_attribute('src'):
                         link = popup.get_attribute('src').replace("consent.google.com/", "consent.google.com")
-                    break
+                        break
                 #switch frames
                 browser.switch_to.frame(browser.find_element_by_xpath("//iframe[@src='" + link + "']"))
                 browser.find_element_by_xpath("//form[@class='A28uDc']").click()

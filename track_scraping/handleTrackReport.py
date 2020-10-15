@@ -56,10 +56,10 @@ def handleTrackReport(track, yearList, BPMList, keyList, genreList, audio, filen
 
     #update audio tags
     if conflict == True or imageCounter > 0:
-        if filename.endswith(".flac"): FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict, webScrapingWindow)
-        elif filename.endswith(".aiff") or filename.endswith(".mp3") or filename.endswith(".wav"): ID3_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict, webScrapingWindow)
+        if filename.endswith(".flac"): FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict)
+        elif filename.endswith(".aiff") or filename.endswith(".mp3") or filename.endswith(".wav"): ID3_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict)
         elif filename.endswith(".ogg"): Vorbis_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict, webScrapingWindow)
-        elif filename.endswith(".m4a"): M4A_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict, webScrapingWindow)
+        elif filename.endswith(".m4a"): M4A_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict)
     if len(str(track.artist) + " - " + str(track.title)) > characters: characters = len(str(track.artist) + " - " + str(track.title))
 
     title = str(track.artist) + " - " + str(track.title)
@@ -101,7 +101,7 @@ def modeConflict(track, list, type):
     selectButton = tk.Button(popup, text="Select", font=("Proxima Nova Rg", 11), state=tk.DISABLED, fg="white", bg=bg, command=popup.destroy)
     selectButton.pack(pady=(20, 0))
     originalGenre = track.genre
-    popup.lift()
+    popup.attributes("-topmost", True)
     popup.protocol("WM_DELETE_WINDOW", lambda track=track, popup=popup, genre=originalGenre: onExit(track, genre, popup, type))
     popup.wait_window()
 

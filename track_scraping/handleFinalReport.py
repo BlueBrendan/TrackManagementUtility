@@ -104,16 +104,14 @@ def navigateRight(leftNavigationButton, rightNavigationButton, titleFrame, conte
 
 def renderImage(contentFrame, imageSelections, imageCounter, thumbnails, index):
     # load non-thumbnailimage
-    if imageCounter >= 1 and imageSelections[index] != 'THUMB':
-        fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageSelections[index]) + ".jpg")
-        width, height = fileImageImport.size
-        fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+    if imageCounter >= 1 and imageSelections[index][0] != 'THUMB':
+        fileImageImport = imageSelections[index][0]
         photo = ImageTk.PhotoImage(fileImageImport)
         fileImage = tk.Label(contentFrame, image=photo, bg=bg)
         fileImage.image = photo
         fileImage.pack(side="top", pady=(10, 15), anchor="n")
         # resolution
-        tk.Label(contentFrame, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(0, 10), anchor="n")
+        tk.Label(contentFrame, text=str(imageSelections[index][1]) + "x" + str(imageSelections[index][2]), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(0, 10), anchor="n")
     # load thumbnail image
     else:
         if thumbnails[index] == 'NA':

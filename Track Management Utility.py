@@ -75,8 +75,7 @@ def readValuesFromConfig(CONFIG_FILE):
                     readValuesFromConfig(CONFIG_FILE)
             #integer
             elif (term[len(term) - 2:len(term) - 1]) == 'I':
-                try:
-                    options[term] = tk.IntVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
+                try:options[term] = tk.IntVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
                 except:
                     os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
                     CONFIG_FILE = createConfigFile("F")
