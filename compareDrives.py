@@ -62,11 +62,11 @@ def directorySearch(first_directory, second_directory, directoryFileCount, diffe
                 tk.Label(popup, text=var + " (" + str(len([name for name in os.listdir(first_directory + '/' + var)])) + " file(s) inside)", wraplength=500, font=('Proxima Nova Rg', 13), fg="white", bg=bg).pack(pady=(15, 5))
                 tk.Label(popup, text="Found in " + first_directory, wraplength=500, font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(pady=(5, 5))
                 tk.Label(popup, text="Not found in " + second_directory, wraplength=500, font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(pady=(5, 20))
-                buttonFrame = tk.Frame(popup)
+                buttonFrame = tk.Frame(popup, bg=bg)
                 buttonFrame.pack()
-                tk.Button(buttonFrame, text='Copy', command=lambda: copyDirectory(first_directory, second_directory, var, popup), font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left")
-                tk.Button(buttonFrame, text='Delete', command=lambda: deleteDirectory(first_directory, var, popup), font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left")
-                tk.Button(buttonFrame, text='Ignore', command=popup.destroy, font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left")
+                tk.Button(buttonFrame, text='Copy', command=lambda: copyDirectory(first_directory, second_directory, var, popup), font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left", padx=(20, 20))
+                tk.Button(buttonFrame, text='Delete', command=lambda: deleteDirectory(first_directory, var, popup), font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left", padx=(20, 20))
+                tk.Button(buttonFrame, text='Ignore', command=popup.destroy, font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left", padx=(20, 20))
                 popup.protocol("WM_DELETE_WINDOW", lambda arg=popup: on_exit(arg))
                 popup.wait_window()
             #check files within that directory with those in the directory of second_directory
@@ -84,10 +84,10 @@ def directorySearch(first_directory, second_directory, directoryFileCount, diffe
                 y = (hs / 2) - (275 / 2)
                 popup.geometry('%dx%d+%d+%d' % (550, 250, x, y))
                 if len(var) > 65:
-                    y = (hs / 2) - (297 / 2)
-                    popup.geometry('%dx%d+%d+%d' % (550, 270, x, y))
+                    x = (ws / 2) - ((550 + ((len(var) - 65) * 9)) / 2)
+                    popup.geometry('%dx%d+%d+%d' % ((550 + ((len(var) - 65) * 9)), 270, x, y))
                 popup.config(bg=bg)
-                tk.Label(popup, text=var, wraplength=500, font=('Proxima Nova Rg', 13), fg="white", bg=bg).pack(pady=(25,26))
+                tk.Label(popup, text=var, font=('Proxima Nova Rg', 13), fg="white", bg=bg).pack(pady=(25,26))
                 tk.Label(popup, text="Present in " + first_directory, wraplength=500, font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(pady=(0,30))
                 tk.Label(popup, text="Missing in " + second_directory, wraplength=500, font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(pady=(0,30))
                 #artwork from FLAC
@@ -96,7 +96,8 @@ def directorySearch(first_directory, second_directory, directoryFileCount, diffe
                     picture = audio.pictures
                     if len(picture) > 0:
                         y = (hs / 2) - (550 / 2)
-                        popup.geometry('%dx%d+%d+%d' % (550, 500, x, y))
+                        popup.update_idletasks()
+                        popup.geometry('%dx%d+%d+%d' % (popup.winfo_width(), 500, x, y))
                         stream = BytesIO(picture[0].data)
                         image = Image.open(stream).convert("RGBA")
                         stream.close()
