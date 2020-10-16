@@ -146,7 +146,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE, window):
                         thumbnails.append(image)
                         stream.close()
                     else: thumbnails.append("NA")
-                    track = ALAC_Track(audio, options, informalTagDict)
+                    track = M4A_Track(audio, options, informalTagDict)
             # search web for tags
             if type(audio) != bool:
                 reportTitle, reportResults, webScrapingWindow, characters, imageCounter, imageSelection, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame = scrapeWeb(track, audio, filename, webScrapingWindow, characters, options, imageCounter, informalTagDict, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame)

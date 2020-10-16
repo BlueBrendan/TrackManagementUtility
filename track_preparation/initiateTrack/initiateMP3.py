@@ -73,7 +73,6 @@ def initiateMP3(filename, directory, options):
                 except:
                     messagebox.showinfo("Permission Error", "Unable to save tags, file may be open somewhere")
                     return False, False, False
-
     #check for discrepancies between tags and filename
     #check both artist and title tags
     if ' - ' in filename:

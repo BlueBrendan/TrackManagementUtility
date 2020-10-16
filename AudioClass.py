@@ -23,7 +23,7 @@ class ID3_Track:
         self.imageSelection = "THUMB"
 
 #class for ALAC file format (MP4)
-class ALAC_Track:
+class M4A_Track:
     def __init__(self, audio, options, informalTagDict):
         for tag in options["Selected Tags (L)"]:
             if tag in informalTagDict and tag != "Image" and tag != "Compilation":

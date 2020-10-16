@@ -18,17 +18,19 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, informalTa
     global page
     page = 0
     tagAlert = False
-    if "Release_Date" in options["Selected Tags (L)"] and audio["\xa9day"][0] != '': tagAlert = True
-    if "BPM" in options["Selected Tags (L)"] and audio["tmpo"][0] != '': tagAlert = True
-    if "Key" in options["Selected Tags (L)"] and audio["----:com.apple.iTunes:INITIALKEY"][0] != '': tagAlert = True
-    if "Genre" in options["Selected Tags (L)"] and audio["\xa9gen"][0] != '': tagAlert = True
+    if "Release_Date" in options["Selected Tags (L)"] and len(audio["\xa9day"]) != 0: tagAlert = True
+    if "BPM" in options["Selected Tags (L)"] and len(audio["tmpo"]) != 0: tagAlert = True
+    if "Key" in options["Selected Tags (L)"] and len(audio["----:com.apple.iTunes:INITIALKEY"]) != 0: tagAlert = True
+    if "Genre" in options["Selected Tags (L)"] and len(audio["\xa9gen"]) != 0: tagAlert = True
     if tagAlert:
         #tag conflict
         tagConflict = False
-        if "Release_Date" in options["Selected Tags (L)"] and str(audio["\xa9day"][0]) != str(track.release_date): tagConflict = True
-        if "BPM" in options["Selected Tags (L)"] and str(audio["tmpo"][0]) != str(track.bpm): tagConflict = True
-        if "Key" in options["Selected Tags (L)"] and str(audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')) != track.key: tagConflict = True
-        if "Genre" in options["Selected Tags (L)"] and str(audio["\xa9gen"][0]) != track.genre: tagConflict = True
+        if "Release_Date" in options["Selected Tags (L)"] and str(audio["\xa9day"])[2:-2] != str(track.release_date): tagConflict = True
+        if "BPM" in options["Selected Tags (L)"] and str(audio["tmpo"])[2:-2] != str(track.bpm): tagConflict = True
+        # key is stored in byte form for m4A files, value cannot be casted to string directly
+        if "Key" in options["Selected Tags (L)"] and len(audio["----:com.apple.iTunes:INITIALKEY"]) != 0:
+                if str(audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')) != track.key: tagConflict = True
+        if "Genre" in options["Selected Tags (L)"] and str(audio["\xa9gen"])[2:-2] != track.genre: tagConflict = True
         if tagConflict:
             conflictPopup = tk.Toplevel()
             conflictPopup.title("Conflicting Tags")
@@ -77,14 +79,18 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, informalTa
             for i in range(len(list)):
                 # avoid printing the underscore
                 if list[i] == "Release_Date":
-                    currentTagDict[i + 1] = tk.Label(leftTags, text="Release Date: " + str(audio[informalTagDict[list[i]]][0]), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                    currentTagDict[i + 1] = tk.Label(leftTags, text="Release Date: " + str(audio[informalTagDict[list[i]]])[2:-2], font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                     currentTagDict[i + 1].pack(pady=(0, 0), anchor='w')
                 # decode key
                 elif list[i] == "Key":
-                    currentTagDict[i + 1] = tk.Label(leftTags, text="Key: " + str(audio[informalTagDict[list[i]]][0].decode('utf-8')), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
-                    currentTagDict[i + 1].pack(pady=(0, 0), anchor='w')
+                    if len(audio[informalTagDict[list[i]]]) == 0:
+                        currentTagDict[i + 1] = tk.Label(leftTags, text="Key: ", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                        currentTagDict[i + 1].pack(pady=(0, 0), anchor='w')
+                    else:
+                        currentTagDict[i + 1] = tk.Label(leftTags, text="Key: " + str(audio[informalTagDict[list[i]]][0].decode('utf-8')), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                        currentTagDict[i + 1].pack(pady=(0, 0), anchor='w')
                 else:
-                    currentTagDict[i + 1] = tk.Label(leftTags, text=list[i] + ": " + str(audio[informalTagDict[list[i]]][0]), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                    currentTagDict[i + 1] = tk.Label(leftTags, text=list[i] + ": " + str(audio[informalTagDict[list[i]]])[2:-2], font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                     currentTagDict[i + 1].pack(pady=(0, 0), anchor='w')
 
             # print scraped tags
@@ -230,7 +236,7 @@ def mergeSourceOption(audio, track, options, window):
             if len(audio["\xa9day"]) > 0: track.release_date = str(audio["\xa9day"][0])
             else: track.release_date = ''
     if "BPM" in options["Selected Tags (L)"]:
-        if audio["tmpo"] == ['']: audio["tmpo"] = [int(track.bpm)]
+        if len(str(audio["tmpo"])) == 0: audio["tmpo"] = [int(track.bpm)]
         else:
             if len(audio["tmpo"]) > 0: track.bpm = str(audio["tmpo"][0])
             else: track.bpm = [int('')]

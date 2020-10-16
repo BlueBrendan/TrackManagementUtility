@@ -270,8 +270,8 @@ def saveImage(track, audio, window):
         track.imageSelection = [fileImageImport, width, height]
     # check if current track has artwork image
     else:
-        if audio["APIC"] != b'':
-            stream = BytesIO(audio["APIC"].data)
+        if audio["APIC:"] != b'':
+            stream = BytesIO(audio["APIC:"].data)
             image = Image.open(stream).convert("RGBA")
             stream.close()
             width, height = image.size
