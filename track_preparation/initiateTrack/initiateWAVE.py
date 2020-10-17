@@ -1,14 +1,17 @@
 from mutagen.wave import WAVE
 from mutagen.id3._frames import *
 from tkinter import messagebox
+from PIL import Image
+from io import BytesIO
 import os
 
 #import methods
 from track_preparation.handleDiscrepancy import handleArtistTitleDiscrepancy
 from track_preparation.handleDiscrepancy import handleTitleDiscrepancy
 from track_preparation.handleTypo import handleTypo
+from track_preparation.initiateTrack.commonOperations import saveThumbnail
 
-def initiateWAVE(filename, directory, options):
+def initiateWAVE(filename, directory, thumbnails, options):
     audio = WAVE(str(directory) + "/" + str(filename))
     # verify artist information is present before preceeding
     if ' - ' not in filename and str(audio['TCON']) == '':
@@ -112,7 +115,16 @@ def initiateWAVE(filename, directory, options):
             filename = filename[filename.index(' - ')+3:]
             audio = WAVE(directory + '/' + filename)
         if options["Scan Filename and Tags (B)"].get() == True: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Title")
-    return audio, filename, informalTagDict, options
+
+    # save thumbnail to list
+    image = audio["APIC:"]
+    if image.data != b'':
+        stream = BytesIO(image.data)
+        image = Image.open(stream).convert("RGBA")
+        thumbnails = saveThumbnail(image, thumbnails)
+        stream.close()
+    else: thumbnails = saveThumbnail("NA", thumbnails)
+    return audio, filename, informalTagDict, thumbnails, options
 
 def extractArtistAndTitle(audio, filename, directory, options, format):
     extension = filename[filename.rfind('.'):]

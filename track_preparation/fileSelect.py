@@ -9,8 +9,7 @@ import base64
 from tkinter import messagebox
 from tkinter.tix import *
 import os
-from PIL import Image
-from io import BytesIO
+
 import getpass
 
 #import classes
@@ -70,83 +69,32 @@ def fileSelect(options, imageCounter, CONFIG_FILE, window):
             audio = False
             track = ''
             informalTagDict = ''
+
             #handle FLAC file
             if filename.endswith('.flac') and type(checkFileValidity(filename, directory, "FLAC"))!=str:
                 #handle naming preferences, tag settings, and replay gain
-                audio, filename, informalTagDict, options = initiateFLAC(filename, directory, options)
-                if type(audio) != bool:
-                    images = audio.pictures
-                    # append thumbnail image to list if artwork exists
-                    if len(images) > 0:
-                        stream = BytesIO(images[0].data)
-                        image = Image.open(stream).convert("RGBA")
-                        thumbnails.append(image)
-                        stream.close()
-                    else: thumbnails.append("NA")
-                    track = FLAC_Track(audio, options, informalTagDict)
+                audio, filename, informalTagDict, thumbnails, options = initiateFLAC(filename, directory, thumbnails, options)
+                if type(audio) != bool: track = FLAC_Track(audio, options, informalTagDict)
             #handle AIFF file
             elif filename.endswith('.aiff') and type(checkFileValidity(filename, directory, "AIFF"))!=str:
-                audio, filename, informalTagDict, options = initiateAIFF(filename, directory, options)
-                if type(audio) != bool:
-                    image = audio["APIC:"]
-                    if image.data != b'':
-                        stream = BytesIO(image.data)
-                        image = Image.open(stream).convert("RGBA")
-                        thumbnails.append(image)
-                        stream.close()
-                    else: thumbnails.append("NA")
-                    track = ID3_Track(audio, options, informalTagDict)
+                audio, filename, informalTagDict, thumbnails, options = initiateAIFF(filename, directory, thumbnails, options)
+                if type(audio) != bool: track = ID3_Track(audio, options, informalTagDict)
             #handle MP3 file
             elif filename.endswith('mp3') and type(checkFileValidity(filename, directory, "MP3"))!=str:
-                audio, filename, informalTagDict, options = initiateMP3(filename, directory, options)
-                if type(audio) != bool:
-                    image = audio["APIC:"]
-                    if image.data != b'':
-                        stream = BytesIO(image.data)
-                        image = Image.open(stream).convert("RGBA")
-                        thumbnails.append(image)
-                        stream.close()
-                    else: thumbnails.append("NA")
-                    track = ID3_Track(audio, options, informalTagDict)
+                audio, filename, informalTagDict, thumbnails, options = initiateMP3(filename, directory, thumbnails, options)
+                if type(audio) != bool: track = ID3_Track(audio, options, informalTagDict)
             #handle OGG file
             elif filename.endswith('.ogg') and type(checkFileValidity(filename, directory, "OGG"))!=str:
-                audio, filename, informalTagDict, options = initiateOGG(filename, directory, options)
-                if type(audio) != bool:
-                    images = audio["metadata_block_picture"]
-                    if images[0] != '':
-                        data = base64.b64decode(images[0])
-                        image = Picture(data)
-                        stream = BytesIO(image.data)
-                        image = Image.open(stream).convert("RGBA")
-                        thumbnails.append(image)
-                        stream.close()
-                    # append thumbnail image to list if artwork exists
-                    else: thumbnails.append("NA")
-                    track = Vorbis_Track(audio, options, informalTagDict)
+                audio, filename, informalTagDict, thumbnails, options = initiateOGG(filename, directory, thumbnails, options)
+                if type(audio) != bool: track = Vorbis_Track(audio, options, informalTagDict)
             #handle WAV file
             elif filename.endswith('.wav') and type(checkFileValidity(filename, directory, "WAV"))!=str:
-                audio, filename, informalTagDict, options = initiateWAVE(filename, directory, options)
-                if type(audio) != bool:
-                    image = audio["APIC:"]
-                    if image.data != b'':
-                        stream = BytesIO(image.data)
-                        image = Image.open(stream).convert("RGBA")
-                        thumbnails.append(image)
-                        stream.close()
-                    else: thumbnails.append("NA")
-                    track = ID3_Track(audio, options, informalTagDict)
+                audio, filename, informalTagDict, thumbnails, options = initiateWAVE(filename, directory, thumbnails, options)
+                if type(audio) != bool: track = ID3_Track(audio, options, informalTagDict)
             #handle AAC and ALAC files
             elif filename.endswith('.m4a') and type(checkFileValidity(filename, directory, "M4A"))!=str:
-                audio, filename, informalTagDict, options = initiateM4A(filename, directory, options)
-                if type(audio) != bool:
-                    image = audio["covr"]
-                    if len(image) != 0:
-                        stream = BytesIO(image[0])
-                        image = Image.open(stream).convert("RGBA")
-                        thumbnails.append(image)
-                        stream.close()
-                    else: thumbnails.append("NA")
-                    track = M4A_Track(audio, options, informalTagDict)
+                audio, filename, informalTagDict, thumbnails, options = initiateM4A(filename, directory, thumbnails, options)
+                if type(audio) != bool: track = M4A_Track(audio, options, informalTagDict)
             # search web for tags
             if type(audio) != bool:
                 reportTitle, reportResults, webScrapingWindow, characters, imageCounter, imageSelection, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame = scrapeWeb(track, audio, filename, webScrapingWindow, characters, options, imageCounter, informalTagDict, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame)

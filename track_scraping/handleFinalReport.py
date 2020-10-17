@@ -114,23 +114,13 @@ def renderImage(contentFrame, imageSelections, imageCounter, thumbnails, index):
         tk.Label(contentFrame, text=str(imageSelections[index][1]) + "x" + str(imageSelections[index][2]), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(0, 10), anchor="n")
     # load thumbnail image
     else:
-        if thumbnails[index] == 'NA':
-            fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
-            fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-            photo = ImageTk.PhotoImage(fileImageImport)
-            fileImage = tk.Label(contentFrame, image=photo, bg=bg)
-            fileImage.image = photo
-            fileImage.pack(side="top", pady=(7, 50))
-        else:
-            fileImageImport = thumbnails[index]
-            width, height = fileImageImport.size
-            fileImageImport = thumbnails[index].resize((200, 200), Image.ANTIALIAS)
-            photo = ImageTk.PhotoImage(fileImageImport)
-            fileImage = tk.Label(contentFrame, image=photo, bg=bg)
-            fileImage.image = photo
-            fileImage.pack(side="top", pady=(10, 15))
-            # resolution
-            tk.Label(contentFrame, text=str(width) + "x" + str(height), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(0, 10))
+        fileImageImport = thumbnails[index][0]
+        photo = ImageTk.PhotoImage(fileImageImport)
+        fileImage = tk.Label(contentFrame, image=photo, bg=bg)
+        fileImage.image = photo
+        fileImage.pack(side="top", pady=(10, 15))
+        # resolution
+        tk.Label(contentFrame, text=str(thumbnails[index][1]) + "x" + str(thumbnails[index][2]), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(0, 10))
 
 #handle subdirectory selection
 def closeScrapingWindowSelection(CONFIG_FILE):

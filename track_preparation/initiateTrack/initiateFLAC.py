@@ -1,13 +1,16 @@
 from mutagen.flac import FLAC
 from tkinter import messagebox
+from PIL import Image
+from io import BytesIO
 import os
 
 #import methods
 from track_preparation.handleDiscrepancy import handleArtistTitleDiscrepancy
 from track_preparation.handleDiscrepancy import handleTitleDiscrepancy
 from track_preparation.handleTypo import handleTypo
+from track_preparation.initiateTrack.commonOperations import saveThumbnail
 
-def initiateFLAC(filename, directory, options):
+def initiateFLAC(filename, directory, thumbnails, options):
     audio = FLAC(str(directory) + "/" + str(filename))
     # verify artist information is present before preceeding
     if ' - ' not in filename and str(audio['artist'][0]) == '':
@@ -92,7 +95,17 @@ def initiateFLAC(filename, directory, options):
             filename = filename[filename.index(' - ')+3:]
             audio = FLAC(directory + '/' + filename)
         if options["Scan Filename and Tags (B)"].get() == True: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Title")
-    return audio, filename, informalTagDict, options
+
+    # save thumbnail to list
+    images = audio.pictures
+    # append thumbnail image to list if artwork exists
+    if len(images) > 0:
+        stream = BytesIO(images[0].data)
+        image = Image.open(stream).convert("RGBA")
+        thumbnails = saveThumbnail(image, thumbnails)
+        stream.close()
+    else: thumbnails = saveThumbnail("NA", thumbnails)
+    return audio, filename, informalTagDict, thumbnails, options
 
 def extractArtistAndTitle(audio, filename, directory, options, format):
     extension = filename[filename.rfind('.'):]

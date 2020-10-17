@@ -1,14 +1,18 @@
 from mutagen.oggvorbis import OggVorbis
+from mutagen.flac import Picture
 from tkinter import messagebox
-import tkinter as tk
+from PIL import Image
+from io import BytesIO
+import base64
 import os
 
 #import methods
 from track_preparation.handleDiscrepancy import handleArtistTitleDiscrepancy
 from track_preparation.handleDiscrepancy import handleTitleDiscrepancy
 from track_preparation.handleTypo import handleTypo
+from track_preparation.initiateTrack.commonOperations import saveThumbnail
 
-def initiateOGG(filename, directory, options):
+def initiateOGG(filename, directory, thumbnails, options):
     audio = OggVorbis(str(directory) + "/" + str(filename))
     # verify artist information is present before preceeding
     if ' - ' not in filename and str(audio['artist'][0]) == '':
@@ -91,7 +95,18 @@ def initiateOGG(filename, directory, options):
             filename = filename[filename.index(' - ')+3:]
             audio = OggVorbis(directory + '/' + filename)
         if options["Scan Filename and Tags (B)"].get() == True: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Title")
-    return audio, filename, informalTagDict, options
+
+    # save thumbnail to list
+    images = audio["metadata_block_picture"]
+    if images[0] != '':
+        data = base64.b64decode(images[0])
+        image = Picture(data)
+        stream = BytesIO(image.data)
+        image = Image.open(stream).convert("RGBA")
+        thumbnails = saveThumbnail(image, thumbnails)
+        stream.close()
+    else: thumbnails = saveThumbnail("NA", thumbnails)
+    return audio, filename, informalTagDict, thumbnails, options
 
 def extractArtistAndTitle(audio, filename, directory, options, format):
     extension = filename[filename.rfind('.'):]
@@ -299,3 +314,4 @@ def rename(directory, filename, artist, title, extension, format):
             audio.save()
             return audio, filename
         except PermissionError:messagebox.showinfo("Permission Error", "File cannot be renamed, it may still be open")
+

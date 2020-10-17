@@ -1,14 +1,16 @@
 from mutagen.mp4 import MP4
 from tkinter import messagebox
-import tkinter as tk
+from PIL import Image
+from io import BytesIO
 import os
 
 #import methods
 from track_preparation.handleDiscrepancy import handleArtistTitleDiscrepancy
 from track_preparation.handleDiscrepancy import handleTitleDiscrepancy
 from track_preparation.handleTypo import handleTypo
+from track_preparation.initiateTrack.commonOperations import saveThumbnail
 
-def initiateM4A(filename, directory, options):
+def initiateM4A(filename, directory, thumbnails, options):
     audio = MP4(str(directory) + "/" + str(filename))
     # verify artist information is present before preceeding
     if ' - ' not in filename and str(audio["\xa9ART"][0]) == '':
@@ -95,7 +97,16 @@ def initiateM4A(filename, directory, options):
             filename = filename[filename.index(' - ')+3:]
             audio = MP4(directory + '/' + filename)
         if options["Scan Filename and Tags (B)"].get() == True: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Title")
-    return audio, filename, informalTagDict, options
+
+    # save thumbnail to list
+    image = audio["covr"]
+    if len(image) != 0:
+        stream = BytesIO(image[0])
+        image = Image.open(stream).convert("RGBA")
+        thumbnails = saveThumbnail(image, thumbnails)
+        stream.close()
+    else: thumbnails = saveThumbnail("NA", thumbnails)
+    return audio, filename, informalTagDict, thumbnails, options
 
 def extractArtistAndTitle(audio, filename, directory, options, format):
     extension = filename[filename.rfind('.'):]
