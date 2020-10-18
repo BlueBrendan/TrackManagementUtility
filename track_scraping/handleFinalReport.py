@@ -4,6 +4,9 @@ from PIL import Image, ImageTk
 import getpass
 import os
 
+# import methods
+from track_scraping.conflictPopup.commonOperations import allWidgets
+
 #main bg color
 bg = "#282f3b"
 #secondary color
@@ -145,9 +148,3 @@ def completeSearch(finalReportWindow, webScrapingWindow, options):
     if options["Delete Stored Images (B)"].get() == True:
         images = os.listdir(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/")
         for image in images: os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(image))
-
-def allWidgets(window):
-    _list = window.winfo_children()
-    for item in _list :
-        if item.winfo_children(): _list.extend(item.winfo_children())
-    return _list

@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter.tix import *
 import webbrowser
 
+#import methods
+from track_scraping.conflictPopup.commonOperations import allWidgets
+
 #main bg color
 bg = "#282f3b"
 #secondary color
@@ -158,9 +161,3 @@ def resetLeftRightFrames(componentFrame):
     rightComponentFrame = tk.Frame(componentFrame, bg=bg)
     rightComponentFrame.pack(side="right", anchor="e", fill=Y)
     return leftComponentFrame, rightComponentFrame
-
-def allWidgets(window):
-    _list = window.winfo_children()
-    for item in _list :
-        if item.winfo_children() : _list.extend(item.winfo_children())
-    return _list

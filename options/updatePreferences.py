@@ -77,8 +77,13 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     tk.Label(tab1, text="Image Scraping", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(padx=(10, 0), pady=(20, 5), anchor="w")
     imageScrapingSuboptions = []
 
-    # reverse image search
-    reverseImageFrame = tk.Frame(tab1, bg=bg)
+    # left image options
+    imageOptionsContainer = tk.Frame(tab1, bg=bg)
+    imageOptionsContainer.pack(fill=X)
+    leftImageFrame = tk.Frame(imageOptionsContainer, bg=bg)
+    leftImageFrame.pack(side="left", anchor="w")
+    # reverse image search options
+    reverseImageFrame = tk.Frame(leftImageFrame, bg=bg)
     reverseImageFrame.pack(anchor="w")
     seleniumCheckbox = tk.Checkbutton(reverseImageFrame, variable=options['Reverse Image Search (B)'], onvalue=True, offvalue=False,  activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Reverse Image Search (B)', imageScrapingSuboptions, True, 0), bg=bg)
     seleniumCheckbox.pack(padx=(20, 0), side="left")
@@ -87,7 +92,7 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     imageOptions.append(seleniumCheckbox)
 
     # delete images
-    deleteImagesFrame = tk.Frame(tab1, bg=bg)
+    deleteImagesFrame = tk.Frame(leftImageFrame, bg=bg)
     deleteImagesFrame.pack(anchor="w")
     deleteImages = tk.Checkbutton(deleteImagesFrame, variable=options['Delete Stored Images (B)'], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Delete Stored Images (B)', [], True, 0), bg=bg)
     deleteImages.pack(padx=(30, 0), side="left")
@@ -97,11 +102,11 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     imageOptions.append(deleteImages)
 
     # wait time
-    waitTimeForm = tk.Frame(tab1, bg=bg)
+    waitTimeForm = tk.Frame(leftImageFrame, bg=bg)
     waitTimeForm.pack(anchor="w")
     waitTimeText = tk.Label(waitTimeForm, text="Image Load Wait Time (s)", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
     time = StringVar(value=options["Image Load Wait Time (I)"].get())
-    time.trace("w", lambda name, index, mode, time=time: entrybox(CONFIG_FILE, "Image Load Wait Time (I)", time))
+    time.trace("w", lambda name, index, mode, time=time: timeEntrybox(CONFIG_FILE, "Image Load Wait Time (I)", time))
 
     waitTime = tk.Entry(waitTimeForm, width=3, textvariable=time, validate="key", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg)
     validate = (waitTime.register(checkInt))
@@ -112,6 +117,35 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     if options["Extract Image from Website (B)"].get()==False or options["Reverse Image Search (B)"].get() == False: waitTime.config(state=DISABLED)
     waitTime.pack(padx=(35, 0), side="left")
     waitTimeText.pack(padx=(10, 0), pady=(5, 0), side="left")
+
+    # right image options
+    rightImageFrame = tk.Frame(imageOptionsContainer, bg=bg)
+    rightImageFrame.pack(side="left", anchor="w")
+    # disable search frame
+    disableSearchFrame = tk.Frame(rightImageFrame, bg=bg)
+    disableSearchFrame.pack(padx=(40, 0), anchor="w")
+    # disable search checkbox
+    disableImageSearchCheckbox = tk.Checkbutton(disableSearchFrame, variable=options['Stop Search After Conditions (B)'], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Stop Search After Conditions (B)', [], True, 0), bg=bg)
+    disableImageSearchCheckbox.pack(side="left")
+    tk.Label(disableSearchFrame, text="Stop Search After Conditions", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+    # disable resolution frame
+    disableResolutionFrame = tk.Frame(rightImageFrame, bg=bg)
+    disableResolutionFrame.pack(anchor="w")
+
+    width = StringVar(value=options["Stop Search After Finding Image of Resolution (S)"].get().split('x')[0])
+    width.trace("w", lambda name, index, mode, width=width: resolutionEntrybox(CONFIG_FILE, "Stop Search After Finding Image of Resolution (S)", width, "width"))
+    height = StringVar(value=options["Stop Search After Finding Image of Resolution (S)"].get().split('x')[1])
+    height.trace("w", lambda name, index, mode, height=height: resolutionEntrybox(CONFIG_FILE, "Stop Search After Finding Image of Resolution (S)", height, "height"))
+
+    widthEntrybox = tk.Entry(disableResolutionFrame, width=4, textvariable=width, validate="key", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg)
+    widthEntrybox.pack(padx=(40, 0), side="left")
+    tk.Label(disableResolutionFrame, text="  x  ", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+    heightEntrybox = tk.Entry(disableResolutionFrame, width=4, textvariable=height, validate="key", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg)
+    heightEntrybox.pack(side="left")
+    tk.Label(disableResolutionFrame, text=" Threshold to Stop Search (px)", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+    imageOptions.append(disableImageSearchCheckbox)
+
+
 
 def taggingTab(tab_parent, options, CONFIG_FILE):
     # Tag Settings Tab
@@ -299,13 +333,32 @@ def namingRadiobutton(CONFIG_FILE, term, value):
             file.write(config_file.replace(str(config_file[config_file.index(term):config_file.index('\n', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term)) + 1])) + value))
         file.close()
 
-def entrybox(CONFIG_FILE, term, value):
+def timeEntrybox(CONFIG_FILE, term, value):
     config_file = open(CONFIG_FILE, 'r').read()
     # convert to term
     if value.get() == '':
         with open(CONFIG_FILE, 'wt') as file: file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1])) + str(0)))
     else:
         with open(CONFIG_FILE, 'wt') as file: file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1])) + str(value.get())))
+    file.close()
+
+def resolutionEntrybox(CONFIG_FILE, term, value, dimension):
+    config_file = open(CONFIG_FILE, 'r').read()
+    # convert to term
+    if value.get() == '':
+        if dimension == "width":
+            with open(CONFIG_FILE, 'wt') as file:
+                file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index('x', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1])) + str(0)))
+        elif dimension == "height":
+            with open(CONFIG_FILE, 'wt') as file:
+                file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term) + 1:config_file.index('x', config_file.index(term)) + 1])) + str(0)))
+    else:
+        if dimension == "width":
+            with open(CONFIG_FILE, 'wt') as file:
+                file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index('x', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1])) + str(value.get())))
+        elif dimension == "height":
+            with open(CONFIG_FILE, 'wt') as file:
+                file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term) + 1:config_file.index('x', config_file.index(term)) + 1])) + str(value.get())))
     file.close()
 
 #handle listbox click interaction

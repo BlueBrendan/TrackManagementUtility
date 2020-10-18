@@ -1,15 +1,15 @@
 from tkinter import *
+from tkinter.tix import *
+from PIL import Image, ImageTk
 import time
 import requests
 from selenium import webdriver
 import getpass
 
-def reverseImageSearch(link, headers, window, imageCounter, URLList, options):
+def reverseImageSearch(link, headers, window, imageCounter, track, options):
     url = "https://images.google.com/searchbyimage?image_url=" + link
-    if "https://" in link:
-        link = link.replace("https://", '')
-    elif "http://" in link:
-        link = link.replace("http://", '')
+    if "https://" in link: link = link.replace("https://", '')
+    elif "http://" in link: link = link.replace("http://", '')
     browser = webdriver.Firefox(executable_path=r'C:/Users/' + str(getpass.getuser()) + '/Documents/Track Management Utility/geckodriver.exe')
     browser.get(url)
     text = browser.find_elements_by_class_name("O1id0e")
@@ -58,15 +58,21 @@ def reverseImageSearch(link, headers, window, imageCounter, URLList, options):
                             counter+=1
                         if 'data:image' not in image.get_attribute('src'):
                             browser.get(image.get_attribute('src'))
-                            #avoid duplicates
-                            if browser.current_url not in URLList:
-                                URLList.append(browser.current_url)
+                            # avoid duplicates
+                            if browser.current_url not in track.URLList:
+                                track.URLList.append(browser.current_url)
                                 with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
                                     file.write(requests.get(browser.current_url, headers=headers).content)
+                                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
                                 imageCounter+=1
-                                #give time for image writing
+                                # give time for image writing
                                 time.sleep(0.25)
+                                # check image parameters
+                                width, height = fileImageImport.size
+                                if options["Stop Search After Conditions (B)"].get() and width >= int(options["Stop Search After Finding Image of Resolution (S)"].get().split('x')[0]) and height >= int(options["Stop Search After Finding Image of Resolution (S)"].get().split('x')[1]):
+                                    print("FOUND")
+                                    track.stop=True
                             break
     browser.quit()
     window.lift()
-    return imageCounter, URLList
+    return imageCounter, track

@@ -13,45 +13,43 @@ bg = "#282f3b"
 # secondary color
 secondary_bg = "#364153"
 
-def handleTrackReport(track, yearList, BPMList, keyList, genreList, audio, filename, webScrapingWindow, characters, options, initialCounter, imageCounter, informalTagDict):
+def handleTrackReport(track, audio, filename, webScrapingWindow, characters, options, initialCounter, imageCounter, informalTagDict):
     conflict = False
     # check year for false values
-    if "Release_Date" in options["Selected Tags (L)"] and len(yearList) != 0:
-        commonYearList = [word for word, word_count in Counter(yearList).most_common(5)]
+    if "Release_Date" in options["Selected Tags (L)"] and len(track.yearList) != 0:
+        commonYearList = [word for word, word_count in Counter(track.yearList).most_common(5)]
         commonYear = commonYearList[0]
         if len(commonYearList) > 1:
             for i in range(len(commonYearList) - 1):
                 # prioritize older years to avoid quoting re-releases
-                if len(yearList) <= 5:
-                    if int(commonYearList[0]) > int(commonYearList[i + 1]) and yearList.count(commonYearList[0]) <= yearList.count(commonYearList[i + 1]) * 2: commonYear = commonYearList[i + 1]
-                else:
-                    if int(commonYearList[0]) > int(commonYearList[i + 1]) and yearList.count(commonYearList[0]) <= yearList.count(commonYearList[i + 1]) * 2 and yearList.count(commonYearList[0]) > 1: commonYear = commonYearList[i + 1]
+                if len(track.yearList) <= 5 and int(commonYearList[0]) > int(commonYearList[i + 1]) and track.yearList.count(commonYearList[0]) <= track.yearList.count(commonYearList[i + 1]) * 2: commonYear = commonYearList[i + 1]
+                elif int(commonYearList[0]) > int(commonYearList[i + 1]) and track.yearList.count(commonYearList[0]) <= track.yearList.count(commonYearList[i + 1]) * 2 and track.yearList.count(commonYearList[0]) > 1: commonYear = commonYearList[i + 1]
         if track.release_date != str(commonYear):
             track.release_date = str(commonYear)
             conflict = True
     # check BPM for false values
-    if "BPM" in options["Selected Tags (L)"] and len(BPMList) != 0:
-        commonBPMList = ([word for word, word_count in Counter(BPMList).most_common(3)])
+    if "BPM" in options["Selected Tags (L)"] and len(track.BPMList) != 0:
+        commonBPMList = ([word for word, word_count in Counter(track.BPMList).most_common(3)])
         commonBPM = commonBPMList[0]
         if len(commonBPMList) > 1 and int(commonBPMList[0]) * 2 == int(commonBPMList[1]) and int(commonBPMList[0]) < 85: commonBPM = commonBPMList[1]
         if track.bpm != str(commonBPM):
             track.bpm = str(commonBPM)
             conflict = True
-    if "Key" in options["Selected Tags (L)"] and len(keyList) != 0:
-        if len(multimode(keyList)) == 1:
-            if track.key != str(mode(keyList)):
-                track.key = str(mode(keyList))
+    if "Key" in options["Selected Tags (L)"] and len(track.keyList) != 0:
+        if len(multimode(track.keyList)) == 1:
+            if track.key != str(mode(track.keyList)):
+                track.key = str(mode(track.keyList))
                 conflict = True
         else:
-            modeConflict(track, keyList, "key")
+            modeConflict(track, track.keyList, "key")
             conflict = True
-    if "Genre" in options["Selected Tags (L)"] and len(genreList) != 0:
-        if len(multimode(genreList)) == 1:
-            if track.genre != str(mode(genreList)):
-                track.genre = str(mode(genreList))
+    if "Genre" in options["Selected Tags (L)"] and len(track.genreList) != 0:
+        if len(multimode(track.genreList)) == 1:
+            if track.genre != str(mode(track.genreList)):
+                track.genre = str(mode(track.genreList))
                 conflict = True
         else:
-            modeConflict(track, genreList, "genre")
+            modeConflict(track, track.genreList, "genre")
             conflict = True
 
     #update audio tags

@@ -7,6 +7,7 @@ class FLAC_Track:
         for tag in options["Selected Tags (L)"]:
             if tag in informalTagDict: setattr(self, tag.lower(), str(audio[informalTagDict[tag]][0]))
         self.imageSelection = "THUMB"
+        self.stop = False
 
 #class for all file formats that use Vorbis tags (OGG)
 class Vorbis_Track:
@@ -14,6 +15,7 @@ class Vorbis_Track:
         for tag in options["Selected Tags (L)"]:
             if tag in informalTagDict: setattr(self, tag.lower(), str(audio[informalTagDict[tag]][0]))
         self.imageSelection = "THUMB"
+        self.stop = False
 
 #class for all file formats that use ID3 tags (MP3, AIFF)
 class ID3_Track:
@@ -21,6 +23,7 @@ class ID3_Track:
         for tag in options["Selected Tags (L)"]:
             if tag in informalTagDict: setattr(self, tag.lower(), str(audio[informalTagDict[tag]]))
         self.imageSelection = "THUMB"
+        self.stop = False
 
 #class for ALAC file format (MP4)
 class M4A_Track:
@@ -34,3 +37,4 @@ class M4A_Track:
                 elif len(audio[informalTagDict[tag]]) > 0: setattr(self, tag.lower(), str(audio[informalTagDict[tag]][0]))
                 else: setattr(self, tag.lower(), "")
         self.imageSelection = "THUMB"
+        self.stop = False
