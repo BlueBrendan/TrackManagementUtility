@@ -6,6 +6,12 @@ from io import BytesIO
 import getpass
 import math
 
+#import methods
+from track_scraping.conflictPopup.commonOperations import navigateLeft
+from track_scraping.conflictPopup.commonOperations import navigateRight
+from track_scraping.conflictPopup.commonOperations import loadImageButtons
+from track_scraping.conflictPopup.commonOperations import selectImage
+
 #main bg color
 bg = "#282f3b"
 #secondary color
@@ -173,38 +179,24 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, informalTa
         tk.Label(conflictPopup, text="Scraped artwork", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(15, 10))
         imageFrame = tk.Frame(conflictPopup, bg=bg)
         imageFrame.pack(side="top")
-        imageButtons = []
-        imageResolutions = []
 
         # print images as buttons
         start = initialCounter
         end = imageCounter
-        for i in range(start, min(start + 2, end)):
-            fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
-            width, height = fileImageImport.size
-            fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-            photo = ImageTk.PhotoImage(fileImageImport)
-            fileImage = tk.Label(imageFrame, image=photo)
-            fileImage.image = photo
-            imageButtons.append(tk.Button(imageFrame, image=photo, highlightthickness=3, command=lambda i=i: selectImage(i, track, imageButtons[i-start], buttons, conflictPopup)))
-            imageButtons[len(imageButtons) - 1].pack(side="left", padx=(20, 20))
-            buttons.append(imageButtons[len(imageButtons) - 1])
-            imageResolutions.append(str(height) + "x" + str(width))
-
         resolutionsFrame = tk.Frame(conflictPopup, bg=bg)
         resolutionsFrame.pack(side="top")
-        # print resolutions underneath respective images
-        for i in imageResolutions: tk.Label(resolutionsFrame, text=i, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", padx=(90, 90), pady=(5, 5))
+        loadImageButtons(start, end, imageFrame, resolutionsFrame, conflictPopup, track, buttons, page)
+
         # page indicator
         pageFrame = tk.Frame(conflictPopup, bg=bg)
         pageFrame.pack()
         #left navigation button
-        leftButton = tk.Button(pageFrame, text=" < ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="w", state=DISABLED, command=lambda: navigateLeft(start, end, imageFrame, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail))
+        leftButton = tk.Button(pageFrame, text=" < ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="w", state=DISABLED, command=lambda: navigateLeft(start, end, imageFrame, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail, page))
         leftButton.pack(side="left", padx=(0, 15), pady=(15, 10))
         tk.Label(pageFrame, text=str(page+1) + "/" + str(math.ceil(float(imageCounter - initialCounter) / 2.0)), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", pady=(15, 10))
         tk.Button(conflictPopup, text="Select", font=("Proxima Nova Rg", 11), fg="white", bg=bg, command=lambda: saveImage(track, audio, conflictPopup)).pack(side="top", pady=(10, 10))
         # right navigation button
-        rightButton = tk.Button(pageFrame, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="e", command=lambda: navigateRight(start, end, imageFrame, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail))
+        rightButton = tk.Button(pageFrame, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="e", command=lambda: navigateRight(start, end, imageFrame, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail, page))
         if math.ceil(float(imageCounter - initialCounter) / 2.0) == 1: rightButton.config(state=DISABLED)
         rightButton.pack(side="right", padx=(15, 0), pady=(15, 10))
         conflictPopup.attributes("-topmost", True)
@@ -268,16 +260,6 @@ def skipOption(audio, track, options, window):
         else: track.genre = ''
     window.destroy()
 
-#selecting image to variable
-def selectImage(i, track, button, buttons, window):
-    track.imageSelection = i
-    #unhighlight all buttons
-    for item in buttons:
-        item.config(bg="white", highlightcolor="white")
-    #highlight selected button
-    button.config(bg="yellow", highlightcolor="yellow")
-    window.update()
-
 #saving image to file
 def saveImage(track, audio, window):
     # store image data, width, and height from downloaded image into imageSelection field
@@ -303,103 +285,3 @@ def saveImage(track, audio, window):
             image = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
             track.imageSelection = [image, "NA", "NA"]
     window.destroy()
-
-def navigateLeft(start, end, imageFrame, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail):
-    global page
-    page-=1
-    track.imageSelection = "THUMB"
-    # buttons starts off as a list already containing the thumbnail button
-    buttons = []
-    # reload thumbnailFrame, imageFrame, resolutions Frame, and pageFrame
-    reloadFrames(thumbnailFrame, imageFrame, resolutionsFrame, pageFrame)
-    # reload thumbnail
-    buttons = reloadThumbnail(thumbnail, track, buttons, conflictFrame, thumbnailFrame)
-    # reload image buttons
-    reloadButtons(start, end, imageFrame, resolutionsFrame, conflictFrame, track, buttons)
-    # reload navigation buttons and page indicator
-    reloadNavigation(start, end, pageFrame, imageFrame, resolutionsFrame, conflictFrame, thumbnailFrame, track, thumbnail, "left")
-
-
-def navigateRight(start, end, imageFrame, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail):
-    global page
-    page+=1
-    track.imageSelection = "THUMB"
-    # buttons starts off as a list already containing the thumbnail button
-    buttons = []
-    # reload thumbnailFrame, imageFrame, resolutions Frame, and pageFrame
-    reloadFrames(thumbnailFrame, imageFrame, resolutionsFrame, pageFrame)
-    # reload thumbnail
-    buttons = reloadThumbnail(thumbnail, track, buttons, conflictFrame, thumbnailFrame)
-    # reload image buttons
-    reloadButtons(start, end, imageFrame, resolutionsFrame, conflictFrame, track, buttons)
-    # reload navigation buttons and page indicator
-    reloadNavigation(start, end, pageFrame, imageFrame, resolutionsFrame, conflictFrame, thumbnailFrame, track, thumbnail, "right")
-
-def allWidgets(window):
-    _list = window.winfo_children()
-    for item in _list :
-        if item.winfo_children() :
-            _list.extend(item.winfo_children())
-    return _list
-
-def reloadFrames(thumbnailFrame, imageFrame, resolutionsFrame, pageFrame):
-    widgetList = allWidgets(thumbnailFrame)
-    for item in widgetList: item.pack_forget()
-    widgetList = allWidgets(imageFrame)
-    for item in widgetList: item.pack_forget()
-    widgetList = allWidgets(resolutionsFrame)
-    for item in widgetList: item.pack_forget()
-    widgetList = allWidgets(pageFrame)
-    for item in widgetList: item.pack_forget()
-
-def reloadThumbnail(thumbnail, track, buttons, conflictFrame, thumbnailFrame):
-    if type(thumbnail) != str:
-        photo = ImageTk.PhotoImage(thumbnail[0])
-        thumbnailImage = tk.Label(conflictFrame, image=photo)
-        thumbnailImage.image = photo
-        thumbnailButton = tk.Button(thumbnailFrame, image=photo, bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictFrame))
-        thumbnailButton.pack(side="top")
-        buttons.append(thumbnailButton)
-    else:
-        fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
-        fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-        photo = ImageTk.PhotoImage(fileImageImport)
-        fileImage = tk.Label(thumbnailFrame, image=photo, bg=bg)
-        fileImage.image = photo
-        thumbnailButton = tk.Button(thumbnailFrame, image=photo, font=("Proxima Nova Rg", 11), bg="yellow", highlightcolor='yellow', highlightthickness=3, command=lambda: selectImage("THUMB", track, thumbnailButton, buttons, conflictFrame))
-        thumbnailButton.pack(side="top", pady=(5, 10))
-        buttons.append(thumbnailButton)
-    return buttons
-
-def reloadButtons(start, end, imageFrame, resolutionsFrame, conflictFrame, track, buttons):
-    global page
-    imageButtons = []
-    imageResolutions = []
-    for i in range((start + (page * 2)), min((start + (page * 2) + 2), end)):
-        fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg")
-        width, height = fileImageImport.size
-        fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-        photo = ImageTk.PhotoImage(fileImageImport)
-        fileImage = tk.Label(imageFrame, image=photo)
-        fileImage.image = photo
-        imageButtons.append(tk.Button(imageFrame, image=photo, highlightthickness=3, command=lambda i=i: selectImage(i, track, imageButtons[i - (start + (page * 2))], buttons, conflictFrame)))
-        imageButtons[len(imageButtons) - 1].pack(side="left", padx=(20, 20))
-        buttons.append(imageButtons[len(imageButtons) - 1])
-        imageResolutions.append(str(height) + "x" + str(width))
-    # print resolutions underneath respective images
-    for i in imageResolutions:
-        tk.Label(resolutionsFrame, text=i, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", padx=(90, 90), pady=(5, 5))
-
-def reloadNavigation(start, end, pageFrame, imageFrame, resolutionsFrame, conflictFrame, thumbnailFrame, track, thumbnail, direction):
-    leftButton = tk.Button(pageFrame, text=" < ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="w", state=NORMAL, command=lambda: navigateLeft(start, end, imageFrame, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail))
-    leftButton.pack(side="left", padx=(0, 15), pady=(15, 10))
-    tk.Label(pageFrame, text=str(page + 1) + "/" + str(math.ceil(float(end - start) / 2.0)), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", pady=(15, 10))
-    # right button
-    rightButton = tk.Button(pageFrame, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="e",  state=NORMAL, command=lambda: navigateRight(start, end, imageFrame, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail))
-    rightButton.pack(side="left", padx=(15, 0), pady=(15, 10))
-    if direction == "left":
-        # deactivate left button if on first page
-        if page == 0: leftButton.config(state=DISABLED)
-    elif direction == "right":
-        # deactivate right button if on last page
-        if page+1 == math.ceil((end - start)/2.0): rightButton.config(state=DISABLED)

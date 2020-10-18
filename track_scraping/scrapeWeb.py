@@ -9,7 +9,7 @@ from web_scrapers.junodownloadSearch import junodownloadSearch
 from web_scrapers.beatportSearch import beatportSearch
 from web_scrapers.discogsSearch import discogsSearch
 
-def scrapeWeb(track, audio, filename, webScrapingWindow, characters, options, imageCounter, informalTagDict, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame):
+def scrapeWeb(track, audio, filename, webScrapingWindow, characters, options, imageCounter, informalTagDict, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, labelFrame, searchFrame, pageFrame, componentFrame):
     initialCounter = imageCounter
     search = str(track.artist) + " - " + str(track.title)
     # clean search query of ampersands (query ends upon reaching ampersand symbol)
@@ -23,13 +23,13 @@ def scrapeWeb(track, audio, filename, webScrapingWindow, characters, options, im
     # headers = {'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10",}
     # junodownload
     if options['Scrape Junodownload (B)'].get() == True:
-        track.yearList, track.BPMList, track.genreList, imageCounter, track.URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame = junodownloadSearch(filename, track.yearList, track.BPMList, track.genreList, track.URLList, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, audio, options, imageCounter)
+        track.yearList, track.BPMList, track.genreList, imageCounter, track.URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame = junodownloadSearch(filename, track.yearList, track.BPMList, track.genreList, track.URLList, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, labelFrame, searchFrame, pageFrame, componentFrame, audio, options, imageCounter)
     # beatport
     if options['Scrape Beatport (B)'].get() == True:
-        track.yearList, track.BPMList, track.keyList, track.genreList, imageCounter, track.URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame = beatportSearch(track.title, filename, track.yearList, track.BPMList, track.keyList, track.genreList, track.URLList, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, audio, options, imageCounter)
+        track.yearList, track.BPMList, track.keyList, track.genreList, imageCounter, track.URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame = beatportSearch(track.title, filename, track.yearList, track.BPMList, track.keyList, track.genreList, track.URLList, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, labelFrame, searchFrame, pageFrame, componentFrame, audio, options, imageCounter)
     # discogs
     if options['Scrape Discogs (B)'].get() == True:
-        track.yearList, track.genreList, imageCounter, track.URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame = discogsSearch(track.title, filename, track.yearList, track.genreList, track.URLList, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, options, imageCounter)
+        track.yearList, track.genreList, imageCounter, track.URLList, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame = discogsSearch(track.title, filename, track.yearList, track.genreList, track.URLList, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, labelFrame, searchFrame, pageFrame, componentFrame, audio, options, imageCounter)
     # spotify
     # apple music
     reportTitle, reportResults, webScrapingWindow, characters, imageSelection = handleTrackReport(track, track.yearList, track.BPMList, track.keyList, track.genreList, audio, filename, webScrapingWindow, characters, options, initialCounter, imageCounter, informalTagDict)
