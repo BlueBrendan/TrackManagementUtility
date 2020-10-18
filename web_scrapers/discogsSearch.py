@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter.tix import *
 import requests
 from PIL import Image, ImageTk
+from skimage.metrics import structural_similarity
+from skimage.transform import resize
+import matplotlib.pyplot as plt
 import getpass
 import webbrowser
 
@@ -152,8 +155,7 @@ def discogsRelease(soup, track, headers, webScrapingWindow, webScrapingLeftPane,
         # check
         if link[len(link)-5:len(link)-4]!='g': link = link + '.jpg'
         # write discogs image to drive
-        with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
-            file.write(requests.get(link, headers=headers).content)
+        with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file: file.write(requests.get(link, headers=headers).content)
         track.URLList.append(link)
         # load file icon
         fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
@@ -165,7 +167,19 @@ def discogsRelease(soup, track, headers, webScrapingWindow, webScrapingLeftPane,
         imageCounter += 1
         refresh(webScrapingWindow)
         webScrapingRightPane[webScrapingPage] = rightComponentFrame
-        if options["Reverse Image Search (B)"].get() == True and not track.stop: imageCounter, track = reverseImageSearch(link, headers, webScrapingWindow, imageCounter, track, options)
+        # perform image scraping if enabled in options
+        if options["Reverse Image Search (B)"].get() == True and not track.stop:
+            duplicate = False
+            # compare image with other scraped images
+            imageOne = resize(plt.imread(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter - 1) + ".jpg").astype(float), (2 ** 8, 2 ** 8))
+            for i in range(imageCounter - 1):
+                imageTwo = resize(plt.imread(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg").astype(float), (2 ** 8, 2 ** 8))
+                score, diff = structural_similarity(imageOne, imageTwo, full=True, multichannel=True)
+                if score > 0.6:
+                    widthOne, heightOne = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter - 1) + ".jpg").size
+                    widthTwo, heightTwo = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg").size
+                    if abs(widthTwo - widthOne) <= 200 and abs(heightTwo - heightTwo) <= 200: duplicate = True
+            if not duplicate: imageCounter, track = reverseImageSearch(link, headers, webScrapingWindow, imageCounter, track, options)
     else:
         tk.Label(leftComponentFrame, text="Track failed runtime comparison test", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
         webScrapingLeftPane[webScrapingPage] = leftComponentFrame

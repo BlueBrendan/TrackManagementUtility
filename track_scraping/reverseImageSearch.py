@@ -61,18 +61,16 @@ def reverseImageSearch(link, headers, window, imageCounter, track, options):
                             # avoid duplicates
                             if browser.current_url not in track.URLList:
                                 track.URLList.append(browser.current_url)
-                                with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
-                                    file.write(requests.get(browser.current_url, headers=headers).content)
-                                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
-                                imageCounter+=1
-                                # give time for image writing
-                                time.sleep(0.25)
-                                # check image parameters
-                                width, height = fileImageImport.size
-                                if options["Stop Search After Conditions (B)"].get() and width >= int(options["Stop Search After Finding Image of Resolution (S)"].get().split('x')[0]) and height >= int(options["Stop Search After Finding Image of Resolution (S)"].get().split('x')[1]):
-                                    print("FOUND")
-                                    track.stop=True
+                                try:
+                                    with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file: file.write(requests.get(browser.current_url, headers=headers).content)
+                                    fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
+                                    imageCounter += 1
+                                    # check image parameters
+                                    width, height = fileImageImport.size
+                                    if options["Stop Search After Conditions (B)"].get() and width >= int(options["Stop Search After Finding Image of Resolution (S)"].get().split('x')[0]) and height >= int(options["Stop Search After Finding Image of Resolution (S)"].get().split('x')[1]): track.stop = True
+                                except: pass
                             break
     browser.quit()
-    window.lift()
+    window.attributes("-topmost", 1)
+    window.attributes("-topmost", 0)
     return imageCounter, track

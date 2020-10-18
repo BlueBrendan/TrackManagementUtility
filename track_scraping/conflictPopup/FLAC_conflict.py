@@ -192,6 +192,7 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalT
         rightButton.pack(side="right", padx=(15, 0), pady=(15, 10))
         conflictPopup.attributes("-topmost", True)
         conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
+        conflictPopup.protocol("WM_DELETE_WINDOW", lambda: onExit(track, audio, conflictPopup))
         conflictPopup.wait_window()
 
 #four button options
@@ -265,3 +266,8 @@ def saveImage(track, audio, window):
             image = image.resize((200, 200), Image.ANTIALIAS)
             track.imageSelection = [image, "NA", "NA"]
     window.destroy()
+
+# this handles the user closing out the image selection window (thumbnail is selected by default)
+def onExit(track, audio, window):
+    track.imageSelection = "THUMB"
+    saveImage(track, audio, window)

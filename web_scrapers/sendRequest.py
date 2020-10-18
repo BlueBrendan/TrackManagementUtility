@@ -20,13 +20,13 @@ def prepareRequest(url, headers, webScrapingWindow, leftComponentFrame):
         waitThread.start()
         webScrapingWindow.after(100, lambda: checkQueue(q, webScrapingWindow))
         # generate random waiting time to avoid being blocked
-        time.sleep(random.uniform(0.5, 2))
+        time.sleep(random.uniform(0.5, 1.5))
         return soup
     except requests.exceptions.ConnectionError:
         tk.Label(leftComponentFrame, text="Connection refused", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), anchor='w')
         refresh(webScrapingWindow)
         # generate random waiting time to avoid being blocked
-        time.sleep(random.uniform(0.5, 2))
+        time.sleep(random.uniform(0.5, 1.5))
         return False
 
 def sendRequest(url, headers, q, s):
