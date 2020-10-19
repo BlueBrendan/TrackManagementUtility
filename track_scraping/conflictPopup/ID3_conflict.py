@@ -21,7 +21,7 @@ secondary_bg = "#364153"
 #global variables
 page = 0
 
-def ID3_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict):
+def ID3_conflict(audio, track, options, initialCounter, imageCounter, images, informalTagDict):
     global page
     page = 0
     tagAlert = False
@@ -130,13 +130,12 @@ def ID3_conflict(audio, track, options, initialCounter, imageCounter, informalTa
     if imageCounter >= 1:
         buttons = []
         conflictPopup = tk.Toplevel()
-
         conflictPopup.title("Conflicting Images")
         ws = conflictPopup.winfo_screenwidth()  # width of the screen
         hs = conflictPopup.winfo_screenheight()  # height of the screen
-        y = (hs / 2) - (770 / 2)
+        y = (hs / 2) - (803 / 2)
         x = (ws / 2) - ((350 + (200 * min((imageCounter - initialCounter), 2))) / 2)
-        conflictPopup.geometry('%dx%d+%d+%d' % (350 + (200 * min((imageCounter - initialCounter), 2)), 700, x, y))
+        conflictPopup.geometry('%dx%d+%d+%d' % (350 + (200 * min((imageCounter - initialCounter), 2)), 730, x, y))
         conflictPopup.config(bg=bg)
         # print current thumbnail
         tk.Label(conflictPopup, text="Current artwork", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(20, 10))
@@ -177,18 +176,18 @@ def ID3_conflict(audio, track, options, initialCounter, imageCounter, informalTa
         end = imageCounter
         resolutionsFrame = tk.Frame(conflictPopup, bg=bg)
         resolutionsFrame.pack(side="top")
-        loadImageButtons(start, end, imageFrame, resolutionsFrame, conflictPopup, track, buttons, page)
+        loadImageButtons(start, end, imageFrame, images, resolutionsFrame, conflictPopup, track, buttons, page)
 
         # page indicator
         pageFrame = tk.Frame(conflictPopup, bg=bg)
         pageFrame.pack()
         # left navigation button
-        leftButton = tk.Button(pageFrame, text=" < ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="w", state=DISABLED, command=lambda: navigateLeft(start, end, imageFrame, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail, page))
+        leftButton = tk.Button(pageFrame, text=" < ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="w", state=DISABLED, command=lambda: navigateLeft(start, end, imageFrame, images, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail, page))
         leftButton.pack(side="left", padx=(0, 15), pady=(15, 10))
         tk.Label(pageFrame, text=str(page + 1) + "/" + str(math.ceil(float(imageCounter - initialCounter) / 2.0)), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", pady=(15, 10))
-        tk.Button(conflictPopup, text="Select", font=("Proxima Nova Rg", 11), fg="white", bg=bg, command=lambda: saveImage(track, audio, conflictPopup)).pack(side="top", pady=(10, 10))
+        tk.Button(conflictPopup, text="Select", font=("Proxima Nova Rg", 11), fg="white", bg=bg, command=lambda: saveImage(track, audio, conflictPopup)).pack(side="top", pady=(25, 10))
         # right navigation button
-        rightButton = tk.Button(pageFrame, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="e", command=lambda: navigateRight(start, end, imageFrame, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail, page))
+        rightButton = tk.Button(pageFrame, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="e", command=lambda: navigateRight(start, end, imageFrame, images, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail, page))
         if math.ceil(float(imageCounter - initialCounter) / 2.0) == 1: rightButton.config(state=DISABLED)
         rightButton.pack(side="right", padx=(15, 0), pady=(15, 10))
         conflictPopup.attributes("-topmost", True)

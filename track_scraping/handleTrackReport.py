@@ -13,7 +13,7 @@ bg = "#282f3b"
 # secondary color
 secondary_bg = "#364153"
 
-def handleTrackReport(track, audio, filename, webScrapingWindow, characters, options, initialCounter, imageCounter, informalTagDict):
+def handleTrackReport(track, audio, filename, webScrapingWindow, characters, options, initialCounter, imageCounter, images, informalTagDict):
     conflict = False
     # check year for false values
     if "Release_Date" in options["Selected Tags (L)"] and len(track.yearList) != 0:
@@ -54,10 +54,10 @@ def handleTrackReport(track, audio, filename, webScrapingWindow, characters, opt
 
     #update audio tags
     if conflict == True or imageCounter > 0:
-        if filename.endswith(".flac"): FLAC_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict)
-        elif filename.endswith(".aiff") or filename.endswith(".mp3") or filename.endswith(".wav"): ID3_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict)
-        elif filename.endswith(".ogg"): Vorbis_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict)
-        elif filename.endswith(".m4a"): M4A_conflict(audio, track, options, initialCounter, imageCounter, informalTagDict)
+        if filename.endswith(".flac"): FLAC_conflict(audio, track, options, initialCounter, imageCounter, images, informalTagDict)
+        elif filename.endswith(".aiff") or filename.endswith(".mp3") or filename.endswith(".wav"): ID3_conflict(audio, track, options, initialCounter, imageCounter, images, informalTagDict)
+        elif filename.endswith(".ogg"): Vorbis_conflict(audio, track, options, initialCounter, imageCounter, images, informalTagDict)
+        elif filename.endswith(".m4a"): M4A_conflict(audio, track, options, initialCounter, imageCounter, images, informalTagDict)
     if len(str(track.artist) + " - " + str(track.title)) > characters: characters = len(str(track.artist) + " - " + str(track.title))
 
     title = str(track.artist) + " - " + str(track.title)

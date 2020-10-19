@@ -6,7 +6,7 @@ import requests
 from selenium import webdriver
 import getpass
 
-def reverseImageSearch(link, headers, window, imageCounter, track, options):
+def reverseImageSearch(link, headers, imageCounter, images, track, options):
     url = "https://images.google.com/searchbyimage?image_url=" + link
     if "https://" in link: link = link.replace("https://", '')
     elif "http://" in link: link = link.replace("http://", '')
@@ -39,10 +39,10 @@ def reverseImageSearch(link, headers, window, imageCounter, track, options):
             #search by the largest size
             browser.find_element_by_link_text(sizes[len(sizes)-1]).click()
             for i in range(1):
-                images = browser.find_elements_by_class_name("rg_i.Q4LuWd")
+                displayimages = browser.find_elements_by_class_name("rg_i.Q4LuWd")
                 #make sure images have actually appeared
-                if len(images) > 0:
-                    images[i].click()
+                if len(displayimages) > 0:
+                    displayimages[i].click()
                     time.sleep(1)
                     counter = 0
                     subImages = browser.find_elements_by_xpath("//img[@class='n3VNCb']")
@@ -67,10 +67,10 @@ def reverseImageSearch(link, headers, window, imageCounter, track, options):
                                     imageCounter += 1
                                     # check image parameters
                                     width, height = fileImageImport.size
+                                    fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+                                    images.append([fileImageImport, width, height])
                                     if options["Stop Search After Conditions (B)"].get() and width >= int(options["Stop Search After Finding Image of Resolution (S)"].get().split('x')[0]) and height >= int(options["Stop Search After Finding Image of Resolution (S)"].get().split('x')[1]): track.stop = True
                                 except: pass
                             break
     browser.quit()
-    window.attributes("-topmost", 1)
-    window.attributes("-topmost", 0)
-    return imageCounter, track
+    return imageCounter, images, track

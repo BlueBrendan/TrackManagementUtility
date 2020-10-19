@@ -42,6 +42,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE, window):
         finalTitles = []
         finalResults = []
         characters = 0
+        images = []
         thumbnails = []
         # create webscraping window on top left corner
         webScrapingWindow = Toplevel()
@@ -102,7 +103,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE, window):
                 if type(audio) != bool: track = M4A_Track(audio, options, informalTagDict)
             # search web for tags
             if type(audio) != bool:
-                reportTitle, reportResults, webScrapingWindow, characters, imageCounter, imageSelection, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame = scrapeWeb(track, audio, filename, webScrapingWindow, characters, options, imageCounter, informalTagDict, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, labelFrame, searchFrame, pageFrame, componentFrame)
+                reportTitle, reportResults, webScrapingWindow, characters, imageCounter, imageSelection, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame = scrapeWeb(track, audio, filename, webScrapingWindow, characters, options, imageCounter, images, informalTagDict, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, labelFrame, searchFrame, pageFrame, componentFrame)
                 finalTitles.append(reportTitle)
                 finalResults.append(reportResults)
                 imageSelections.append(imageSelection)

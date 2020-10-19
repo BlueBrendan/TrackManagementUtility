@@ -22,7 +22,7 @@ bg = "#282f3b"
 #secondary color
 secondary_bg = "#364153"
 
-def junodownloadSearch(filename, track, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, labelFrame, searchFrame, pageFrame, componentFrame, audio, options, imageCounter):
+def junodownloadSearch(filename, track, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, labelFrame, searchFrame, pageFrame, componentFrame, audio, options, imageCounter, images):
     #FIRST QUERY - JUNO DOWNLOAD
     widgetList = allWidgets(searchFrame)
     for item in widgetList: item.pack_forget()
@@ -109,7 +109,9 @@ def junodownloadSearch(filename, track, artistVariations, titleVariations, heade
                                             track.URLList.append(item)
                                             # load file icon
                                             fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
-                                            fileImageImport = fileImageImport.resize((180, 180), Image.ANTIALIAS)
+                                            width, height = fileImageImport.size
+                                            fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+                                            images.append([fileImageImport, width, height])
                                             photo = ImageTk.PhotoImage(fileImageImport)
                                             fileImage = tk.Label(rightComponentFrame, image=photo, bg=bg)
                                             fileImage.image = photo
@@ -121,21 +123,21 @@ def junodownloadSearch(filename, track, artistVariations, titleVariations, heade
                                             if options["Reverse Image Search (B)"].get() == True and not track.stop:
                                                 duplicate = False
                                                 # compare image with other scraped images
-                                                imageOne = resize(plt.imread(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter - 1) + ".jpg").astype(float), (2 ** 8, 2 ** 8))
+                                                imageOne = resize(plt.imread(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter - 1) + ".jpg").astype(float), (2 ** 8, 2 ** 8, 3))
                                                 for i in range(imageCounter - 1):
-                                                    imageTwo = resize(plt.imread(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg").astype(float), (2 ** 8, 2 ** 8))
+                                                    imageTwo = resize(plt.imread(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg").astype(float), (2 ** 8, 2 ** 8, 3))
                                                     score, diff = structural_similarity(imageOne, imageTwo, full=True, multichannel=True)
                                                     if score > 0.6:
                                                         widthOne, heightOne = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter - 1) + ".jpg").size
                                                         widthTwo, heightTwo = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg").size
                                                         if abs(widthTwo - widthOne) <= 200 and abs(heightTwo - heightTwo) <= 200: duplicate = True
-                                                if not duplicate: imageCounter, track = reverseImageSearch(item, headers, webScrapingWindow, imageCounter, track, options)
+                                                if not duplicate: imageCounter, images, track = reverseImageSearch(item, headers, imageCounter, images, track, options)
                             # avoid counting the same entry twice
                             if not finalMatch:
                                 tk.Label(leftComponentFrame, text="Track did not match with any of the listings", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
                                 refresh(webScrapingWindow)
                             break
-    return track, imageCounter, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame
+    return track, imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame
 
 def refresh(webScrapingWindow):
     webScrapingWindow.update()
