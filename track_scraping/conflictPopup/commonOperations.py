@@ -29,34 +29,39 @@ def reloadThumbnail(thumbnail, track, buttons, conflictFrame, thumbnailFrame):
     return buttons
 
 #needs to be updated
-def loadImageButtons(start, end, imageFrame, resolutionsFrame, conflictFrame, track, buttons, images, page):
+def loadImageButtons(start, end, imageFrame, images, resolutionsFrame, conflictFrame, track, buttons, page, options):
     imageButtons = []
     imageResolutions = []
-    for i in range((start + (page * 2)), min((start + (page * 2) + 2), end)):
+
+    for i in range((start + (page * options["Number of Images Per Page (I)"].get())), min((start + (page * options["Number of Images Per Page (I)"].get()) + options["Number of Images Per Page (I)"].get()), end)):
         fileImageImport = images[i][0]
         photo = ImageTk.PhotoImage(fileImageImport)
         fileImage = tk.Label(imageFrame, image=photo)
         fileImage.image = photo
-        imageButtons.append(tk.Button(imageFrame, image=photo, highlightthickness=3, command=lambda i=i: selectImage(i, track, imageButtons[i - (start + (page * 2))], buttons, conflictFrame)))
+        imageButtons.append(tk.Button(imageFrame, image=photo, highlightthickness=3, command=lambda i=i: selectImage(i, track, imageButtons[i - (start + (page * options["Number of Images Per Page (I)"].get()))], buttons, conflictFrame)))
         imageButtons[len(imageButtons) - 1].pack(side="left", padx=(20, 20))
         buttons.append(imageButtons[len(imageButtons) - 1])
         imageResolutions.append(str(images[i][1]) + "x" + str(images[i][2]))
     # print resolutions underneath respective images
     for i in imageResolutions: tk.Label(resolutionsFrame, text=i, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", padx=(90, 90), pady=(5, 5))
 
-def reloadNavigation(start, end, pageFrame, imageFrame, images, resolutionsFrame, conflictFrame, thumbnailFrame, track, thumbnail, page, direction):
-    leftButton = tk.Button(pageFrame, text=" < ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="w", state=NORMAL, command=lambda: navigateLeft(start, end, imageFrame, images, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail, page))
+def loadNavigation(start, end, pageFrame, imageFrame, images, resolutionsFrame, conflictFrame, thumbnailFrame, track, thumbnail, page, direction, options):
+    leftButton = tk.Button(pageFrame, text=" < ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="w", state=NORMAL, command=lambda: navigateLeft(start, end, imageFrame, images, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail, page, options))
     leftButton.pack(side="left", padx=(0, 15), pady=(15, 10))
-    tk.Label(pageFrame, text=str(page + 1) + "/" + str(math.ceil(float(end - start) / 2.0)), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", pady=(15, 10))
+    tk.Label(pageFrame, text=str(page + 1) + "/" + str(math.ceil(float(end - start) / float(options["Number of Images Per Page (I)"].get()))), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", pady=(15, 10))
     # right button
-    rightButton = tk.Button(pageFrame, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="e",  state=NORMAL, command=lambda: navigateRight(start, end, imageFrame, images, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail, page))
+    rightButton = tk.Button(pageFrame, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="e",  state=NORMAL, command=lambda: navigateRight(start, end, imageFrame, images, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail, page, options))
     rightButton.pack(side="left", padx=(15, 0), pady=(15, 10))
     if direction == "left":
         # deactivate left button if on first page
         if page == 0: leftButton.config(state=DISABLED)
     elif direction == "right":
         # deactivate right button if on last page
-        if page+1 == math.ceil((end - start)/2.0): rightButton.config(state=DISABLED)
+        if page+1 == math.ceil((end - start)/ float(options["Number of Images Per Page (I)"].get())): rightButton.config(state=DISABLED)
+    elif direction == "load":
+        # deactive right button if there is only one page
+        leftButton.config(state=DISABLED)
+        if math.ceil(float(end - start) / float(options["Number of Images Per Page (I)"].get())) == 1: rightButton.config(state=DISABLED)
 
 #selecting image to variable
 def selectImage(i, track, button, buttons, window):
@@ -67,7 +72,7 @@ def selectImage(i, track, button, buttons, window):
     button.config(bg="yellow", highlightcolor="yellow")
     window.update()
 
-def navigateLeft(start, end, imageFrame, images, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail, page):
+def navigateLeft(start, end, imageFrame, images, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail, page, options):
     page -= 1
     track.imageSelection = "THUMB"
     # buttons starts off as a list already containing the thumbnail button
@@ -77,11 +82,11 @@ def navigateLeft(start, end, imageFrame, images, resolutionsFrame, pageFrame, co
     # reload thumbnail
     buttons = reloadThumbnail(thumbnail, track, buttons, conflictFrame, thumbnailFrame)
     # reload image buttons
-    loadImageButtons(start, end, imageFrame, resolutionsFrame, conflictFrame, track, buttons, images, page)
+    loadImageButtons(start, end, imageFrame, images, resolutionsFrame, conflictFrame, track, buttons, page, options)
     # reload navigation buttons and page indicator
-    reloadNavigation(start, end, pageFrame, imageFrame, images, resolutionsFrame, conflictFrame, thumbnailFrame, track, thumbnail, page, "left")
+    loadNavigation(start, end, pageFrame, imageFrame, images, resolutionsFrame, conflictFrame, thumbnailFrame, track, thumbnail, page, "left", options)
 
-def navigateRight(start, end, imageFrame, images, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail, page):
+def navigateRight(start, end, imageFrame, images, resolutionsFrame, pageFrame, conflictFrame, thumbnailFrame, track, thumbnail, page, options):
     page += 1
     track.imageSelection = "THUMB"
     # buttons starts off as a list already containing the thumbnail button
@@ -91,9 +96,9 @@ def navigateRight(start, end, imageFrame, images, resolutionsFrame, pageFrame, c
     # reload thumbnail
     buttons = reloadThumbnail(thumbnail, track, buttons, conflictFrame, thumbnailFrame)
     # reload image buttons
-    loadImageButtons(start, end, imageFrame, resolutionsFrame, conflictFrame, track, buttons, images, page)
+    loadImageButtons(start, end, imageFrame, images, resolutionsFrame, conflictFrame, track, buttons, page, options)
     # reload navigation buttons and page indicator
-    reloadNavigation(start, end, pageFrame, imageFrame, images, resolutionsFrame, conflictFrame, thumbnailFrame, track, thumbnail, page, "right")
+    loadNavigation(start, end, pageFrame, imageFrame, images, resolutionsFrame, conflictFrame, thumbnailFrame, track, thumbnail, page, "right", options)
 
 def reloadFrames(thumbnailFrame, imageFrame, resolutionsFrame, pageFrame):
     widgetList = allWidgets(thumbnailFrame)

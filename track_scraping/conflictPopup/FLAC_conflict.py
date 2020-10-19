@@ -5,12 +5,10 @@ from mutagen import id3
 from PIL import Image, ImageTk
 from io import BytesIO
 import getpass
-import math
 
-#import methods
-from track_scraping.conflictPopup.commonOperations import navigateLeft
-from track_scraping.conflictPopup.commonOperations import navigateRight
+#import methods\
 from track_scraping.conflictPopup.commonOperations import loadImageButtons
+from track_scraping.conflictPopup.commonOperations import loadNavigation
 from track_scraping.conflictPopup.commonOperations import selectImage
 
 # main bg color
@@ -113,9 +111,8 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, images, i
             # buttons
             optionButtons = tk.Frame(conflictPopup, bg=bg)
             optionButtons.pack()
-            tk.Button(optionButtons, text="Overwrite", command=lambda: overwriteOption(audio, track, options, conflictPopup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
-            tk.Button(optionButtons, text="Merge (favor scraped data)", command=lambda: mergeScrapeOption(audio, track, options, conflictPopup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
-            tk.Button(optionButtons, text="Merge (favor source data)", command=lambda: mergeSourceOption(audio, track, options, conflictPopup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
+            tk.Button(optionButtons, text="Overwrite All", command=lambda: overwriteAllOption(audio, track, options, conflictPopup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
+            tk.Button(optionButtons, text="Overwrite Blanks", command=lambda: overwriteBlanksOptions(audio, track, options, conflictPopup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
             tk.Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, options, conflictPopup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
             conflictPopup.attributes("-topmost", True)
             conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
@@ -136,8 +133,8 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, images, i
         ws = conflictPopup.winfo_screenwidth()  # width of the screen
         hs = conflictPopup.winfo_screenheight()  # height of the screen
         y = (hs / 2) - (803 / 2)
-        x = (ws / 2) - ((350 + (200 * min((imageCounter - initialCounter), 2))) / 2)
-        conflictPopup.geometry('%dx%d+%d+%d' % ((350 + (200 * min((imageCounter - initialCounter), 2))), 730, x, y))
+        x = (ws / 2) - ((350 + (200 * min((imageCounter - initialCounter), options["Number of Images Per Page (I)"].get()))) / 2)
+        conflictPopup.geometry('%dx%d+%d+%d' % ((350 + (200 * min((imageCounter - initialCounter), options["Number of Images Per Page (I)"].get()))), 730, x, y))
         conflictPopup.config(bg=bg)
         # print current thumbnail
         Label(conflictPopup, text="Current artwork", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(20, 10))
@@ -176,35 +173,22 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, images, i
         end = imageCounter
         resolutionsFrame = tk.Frame(conflictPopup, bg=bg)
         resolutionsFrame.pack(side="top")
-        loadImageButtons(start, end, imageFrame, resolutionsFrame, conflictPopup, track, buttons, images, page)
+        loadImageButtons(start, end, imageFrame, images, resolutionsFrame, conflictPopup, track, buttons, page, options)
 
         # page indicator
         pageFrame = tk.Frame(conflictPopup, bg=bg)
         pageFrame.pack()
-        #left navigation button
-        leftButton = tk.Button(pageFrame, text=" < ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="w", state=DISABLED, command=lambda: navigateLeft(start, end, imageFrame, images, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail, page))
-        leftButton.pack(side="left", padx=(0, 15), pady=(15, 10))
-        tk.Label(pageFrame, text=str(page+1) + "/" + str(math.ceil(float(imageCounter - initialCounter) / 2.0)), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", pady=(15, 10))
+        # load navigational buttons and page number
+        loadNavigation(start, end, pageFrame, imageFrame, images, resolutionsFrame, conflictPopup, thumbnailFrame, track, thumbnail, page, "load", options)
+        # select button
         tk.Button(conflictPopup, text="Select", font=("Proxima Nova Rg", 11), fg="white", bg=bg, command=lambda: saveImage(track, audio, conflictPopup)).pack(side="top", pady=(25, 10))
-        # right navigation button
-        rightButton = tk.Button(pageFrame, text=" > ", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, anchor="e", command=lambda: navigateRight(start, end, imageFrame, images, resolutionsFrame, pageFrame, conflictPopup, thumbnailFrame, track, thumbnail, page))
-        if math.ceil(float(imageCounter - initialCounter) / 2.0) == 1: rightButton.config(state=DISABLED)
-        rightButton.pack(side="right", padx=(15, 0), pady=(15, 10))
         conflictPopup.attributes("-topmost", True)
         conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
         conflictPopup.protocol("WM_DELETE_WINDOW", lambda: onExit(track, audio, conflictPopup))
         conflictPopup.wait_window()
 
-#four button options
-def overwriteOption(audio, track, options, window):
-    if "Release_Date" in options["Selected Tags (L)"]: audio['date'] = str(track.release_date)
-    if "BPM" in options["Selected Tags (L)"]: audio['bpm'] = str(track.bpm)
-    if "Key" in options["Selected Tags (L)"]: audio['initialkey'] = track.key
-    if "Genre" in options["Selected Tags (L)"]: audio['genre'] = track.genre
-    audio.save()
-    window.destroy()
-
-def mergeScrapeOption(audio, track, options, window):
+# overwrite existing tags with all non-blank scraped tag fields
+def overwriteAllOption(audio, track, options, window):
     if "Release_Date" in options["Selected Tags (L)"] and str(track.release_date) != '': audio['date'] = str(track.release_date)
     if "BPM" in options["Selected Tags (L)"] and str(track.bpm) != '': audio['bpm'] = str(track.bpm)
     if "Key" in options["Selected Tags (L)"] and track.key != '': audio['initialkey'] = track.key
@@ -212,7 +196,8 @@ def mergeScrapeOption(audio, track, options, window):
     audio.save()
     window.destroy()
 
-def mergeSourceOption(audio, track, options, window):
+# overwrite existing blank tags with all scraped tag fields
+def overwriteBlanksOptions(audio, track, options, window):
     if "Release_Date" in options["Selected Tags (L)"]:
         if audio['date'] == ['']: audio['date'] = str(track.release_date)
         else: track.release_date = str(audio['date'][0])
@@ -228,6 +213,7 @@ def mergeSourceOption(audio, track, options, window):
     audio.save()
     window.destroy()
 
+# ignore scraped tags entirely, leave current tags untouched
 def skipOption(audio, track, options, window):
     if "Release_Date" in options["Selected Tags (L)"]: track.release_date = str(audio['date'][0])
     if "BPM" in options["Selected Tags (L)"]: track.bpm = str(audio['BPM'][0])
