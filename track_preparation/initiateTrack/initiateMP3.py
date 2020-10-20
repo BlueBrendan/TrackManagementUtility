@@ -9,6 +9,8 @@ import os
 from track_preparation.handleDiscrepancy import handleArtistTitleDiscrepancy
 from track_preparation.handleDiscrepancy import handleTitleDiscrepancy
 from track_preparation.handleTypo import handleTypo
+from track_preparation.initiateTrack.commonOperations import checkCapitalization
+from track_preparation.initiateTrack.commonOperations import rename
 from track_preparation.initiateTrack.commonOperations import saveThumbnail
 
 def initiateMP3(filename, directory, thumbnails, options):
@@ -127,7 +129,7 @@ def initiateMP3(filename, directory, thumbnails, options):
         thumbnails = saveThumbnail("NA", thumbnails)
     return audio, filename, informalTagDict, thumbnails, options
 
-def extractArtistAndTitle(audio, filename, directory, options, format):
+def extractArtistAndTitle(audio, filename, directory, options, namingConvention):
     extension = filename[filename.rfind('.'):]
     if ' - ' in filename:
         artist = str(audio["TPE1"])
@@ -142,10 +144,10 @@ def extractArtistAndTitle(audio, filename, directory, options, format):
         if title == '':
             title = filename[:-5]
     # run through list of possible typos
-    if options["Scan Filename and Tags (B)"]: audio, filename, options = checkTypos(audio, artist, title, directory, filename, extension, format, options)
+    if options["Scan Filename and Tags (B)"]: audio, filename, options = checkTypos(audio, artist, title, directory, filename, extension, namingConvention, options)
     return audio, filename, options
 
-def checkTypos(audio, artist, title, directory, filename, extension, format, options):
+def checkTypos(audio, artist, title, directory, filename, extension, namingConvention, options):
     # scan artist for numbering prefix
     if options["Check for Numbering Prefix (B)"].get() == True:
         if '.' in artist:
@@ -155,7 +157,7 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
             if '.' in artistPrefix[0:5]:
                 if any(char.isdigit() for char in artistPrefix[0:artistPrefix.index('.')]):
                     artist, title, options, renameFile = handleTypo(artist, newArtist, title, newTitle, "Prefix", options)
-                    if renameFile == True: audio, filename = rename(directory, filename, artist, title, extension, format)
+                    if renameFile == True: audio, filename = rename(directory, filename, artist, title, extension, namingConvention)
 
     # scan artist and title for hyphens
     if options["Check for Extraneous Hyphens (B)"].get() == True:
@@ -165,17 +167,12 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
             if '-' in artist: newArtist = artist.replace('-', ' ')
             if '-' in title: newTitle = title.replace('-', ' ')
             artist, title, options, renameFile = handleTypo(artist, newArtist, title, newTitle, "Hyphen", options)
-            if renameFile == True: audio, filename = rename(directory, filename, artist, title, extension, format)
+            if renameFile == True: audio, filename = rename(directory, filename, artist, title, extension, namingConvention)
 
     # scan artist and title for capitalization
     if options["Check for Capitalization (B)"].get()==True:
-        artistList = artist.split(' ')
-        titleList = title.split(' ')
-        newArtist, artist, filename = checkCapitalization(artistList, artist, title, "artist", directory, filename, format, options)
-        newTitle, title, filename = checkCapitalization(titleList, artist, title, "title", directory, filename, format, options)
-        if (artist != newArtist or title != newTitle):
-            artist, title, options, renameFile = handleTypo(artist, newArtist, title, newTitle, "Capitalization", options)
-            if renameFile == True: audio, filename = rename(directory, filename, artist, title, extension, format)
+        if namingConvention == "Artist - Title":audio, filename = checkCapitalization(artist, title, filename, directory, audio, options, extension, "Artist - Title")
+        elif namingConvention == "Title":audio, filename = checkCapitalization(artist, title, filename, directory, audio, options, extension, "Title")
     return audio, filename, options
 
 def compareArtistAndTitle(audio, artist, title, filename, directory, options):
@@ -287,49 +284,3 @@ def compareTitle(audio, title, filename, directory, options):
             extension = filename[filename.rfind('.'):]
             audio, filename = rename(directory, filename, str(audio["TPE1"]), str(audio["TIT2"]), extension, "Title")
     return audio, filename
-
-def checkCapitalization(list, artist, title, subject, directory, filename, format, options):
-    newString = ''
-    for word in list:
-        if word.lower() in (string.lower() for string in options["Always Capitalize (L)"]):
-            if word != word.capitalize():
-                # recreate correct spelling
-                if subject == "artist": artist = artist.replace(word, word.capitalize())
-                elif subject == "title": title = title.replace(word, word.capitalize())
-                audio, filename = rename(directory, filename, artist, title, ".flac", format)
-            newString += word.capitalize() + ' '
-        elif word.lower() in (string.lower() for string in options["Never Capitalize (L)"]):
-            if word != word.lower():
-                # recreate correct spelling
-                if subject == "artist": artist = artist.replace(word, word.lower())
-                elif subject == "title": title = title.replace(word, word.lower())
-                audio, filename = rename(directory, filename, artist, title, ".flac", format)
-            newString += word.lower() + ' '
-        else:
-            if word[:1].islower(): newString += word.capitalize() + ' '
-            else: newString += word + ' '
-    newString = newString.strip()
-    if subject == "artist": return newString, artist, filename
-    elif subject == "title": return newString, title, filename
-
-def rename(directory, filename, artist, title, extension, format):
-    if format == "Artist - Title":
-        try:
-            os.rename(directory + '/' + filename, str(directory) + '/' + str(artist) + ' - ' + str(title) + extension)
-            filename = str(artist) + ' - ' + str(title) + extension
-            audio = MP3(str(directory) + '/' + str(artist) + ' - ' + str(title) + extension)
-            audio["TPE1"] = TPE1(encoding=3, text=artist)
-            audio["TIT2"] = TIT2(encoding=3, text=title)
-            audio.save()
-            return audio, filename
-        except PermissionError:messagebox.showinfo("Permission Error", "File cannot be renamed, it may still be open")
-    elif format == "Title":
-        try:
-            os.rename(directory + '/' + filename, str(directory) + '/' + str(title) + extension)
-            filename = str(title) + extension
-            audio = MP3(str(directory) + '/' + str(title) + extension)
-            audio["TPE1"] = TPE1(encoding=3, text=artist)
-            audio["TIT2"] = TIT2(encoding=3, text=title)
-            audio.save()
-            return audio, filename
-        except PermissionError:messagebox.showinfo("Permission Error", "File cannot be renamed, it may still be open")

@@ -167,7 +167,7 @@ def handleDiscrepancy(original, new, index, type, options):
         originalName = ''
         for i in range(0, index+1): originalName += new[i] + ' '
         for i in range (index + 1, len(original)): originalName += original[i] + ' '
-        originalName.strip()
+        originalName = originalName.strip()
         return originalName, options, True
     return originalName, options, False
 
