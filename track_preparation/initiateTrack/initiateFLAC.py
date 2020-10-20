@@ -85,28 +85,28 @@ def initiateFLAC(filename, directory, thumbnails, options):
         # rename track so that the artist is appended at the front of the title
         if ' - ' not in filename:
             artist = str(audio['artist'][0])
-            os.rename(directory + '/' + filename, directory + '/' + artist + ' - ' + filename)
-            filename = artist + ' - ' + filename
-            audio = FLAC(directory + '/' + filename)
-        if options["Scan Filename and Tags (B)"].get() == True: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Artist - Title")
+            extension = filename[filename.rfind('.'):]
+            audio, filename = rename(directory, filename, artist, title, extension, "Artist - Title")
+        if options["Scan Filename and Tags (B)"].get() == True and type(audio) != bool: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Artist - Title")
 
     elif options["Audio naming format (S)"].get() == "Title":
         # rename track so that the artist is removed from the title
         if ' - ' in filename:
-            os.rename(directory + '/' + filename, directory + '/' + filename[filename.index(' - ')+3:])
-            filename = filename[filename.index(' - ')+3:]
-            audio = FLAC(directory + '/' + filename)
-        if options["Scan Filename and Tags (B)"].get() == True: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Title")
+            artist = str(audio['artist'][0])
+            extension = filename[filename.rfind('.'):]
+            audio, filename = rename(directory, filename, artist, title, extension, "Title")
+        if options["Scan Filename and Tags (B)"].get() == True and type(audio) != bool: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Title")
 
-    # save thumbnail to list
-    images = audio.pictures
-    # append thumbnail image to list if artwork exists
-    if len(images) > 0:
-        stream = BytesIO(images[0].data)
-        image = Image.open(stream).convert("RGBA")
-        thumbnails = saveThumbnail(image, thumbnails)
-        stream.close()
-    else: thumbnails = saveThumbnail("NA", thumbnails)
+    if type(audio) != bool:
+        # save thumbnail to list
+        images = audio.pictures
+        # append thumbnail image to list if artwork exists
+        if len(images) > 0:
+            stream = BytesIO(images[0].data)
+            image = Image.open(stream).convert("RGBA")
+            thumbnails = saveThumbnail(image, thumbnails)
+            stream.close()
+        else: thumbnails = saveThumbnail("NA", thumbnails)
     return audio, filename, informalTagDict, thumbnails, options
 
 def extractArtistAndTitle(audio, filename, directory, options, namingConvention):
@@ -127,7 +127,7 @@ def extractArtistAndTitle(audio, filename, directory, options, namingConvention)
     if options["Scan Filename and Tags (B)"]: audio, filename, options = checkTypos(audio, artist, title, directory, filename, extension, namingConvention, options)
     return audio, filename, options
 
-def checkTypos(audio, artist, title, directory, filename, extension, format, options):
+def checkTypos(audio, artist, title, directory, filename, extension, namingConvention, options):
     # scan artist for numbering prefix
     if options["Check for Numbering Prefix (B)"].get() == True:
         if '.' in artist:
@@ -137,7 +137,7 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
             if '.' in artistPrefix[0:5]:
                 if any(char.isdigit() for char in artistPrefix[0:artistPrefix.index('.')]):
                     artist, title, options, renameFile = handleTypo(artist, newArtist, title, newTitle, "Prefix", options)
-                    if renameFile==True: audio, filename = rename(directory, filename, artist, title, extension, format)
+                    if renameFile==True: audio, filename = rename(directory, filename, artist, title, extension, namingConvention)
 
     # scan artist and title for hyphens
     if options["Check for Extraneous Hyphens (B)"].get() == True:
@@ -147,12 +147,12 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
             if '-' in artist: newArtist = artist.replace('-', ' ')
             if '-' in title: newTitle = title.replace('-', ' ')
             artist, title, options, renameFile = handleTypo(artist, newArtist, title, newTitle, "Hyphen", options)
-            if renameFile == True: audio, filename = rename(directory, filename, artist, title, extension, format)
+            if renameFile == True: audio, filename = rename(directory, filename, artist, title, extension, namingConvention)
 
     # scan artist and title for capitalization
     if options["Check for Capitalization (B)"].get()==True:
-        if format == "Artist - Title": audio, filename = checkCapitalization(artist, title, filename, directory, audio, options, extension, "Artist - Title")
-        elif format == "Title": audio, filename = checkCapitalization(artist, title, filename, directory, audio, options, extension, "Title")
+        if namingConvention == "Artist - Title":audio, filename = checkCapitalization(artist, title, filename, directory, audio, options, extension, "Artist - Title")
+        elif namingConvention == "Title":audio, filename = checkCapitalization(artist, title, filename, directory, audio, options, extension, "Title")
     return audio, filename, options
 
 def compareArtistAndTitle(audio, artist, title, filename, directory, options):
@@ -182,6 +182,7 @@ def compareArtistAndTitle(audio, artist, title, filename, directory, options):
                     elif input == "tag":
                         extension = filename[filename.rfind('.'):]
                         audio, filename = rename(directory, filename, str(audio["artist"][0]), str(audio["title"][0]), extension, "Artist - Title")
+                    break
     else:
         input = handleArtistTitleDiscrepancy(artist, str(audio["artist"][0]), title, str(audio["title"][0]))
         if input == "file":
@@ -218,6 +219,7 @@ def compareArtistAndTitle(audio, artist, title, filename, directory, options):
                     elif input == "tag":
                         extension = filename[filename.rfind('.'):]
                         audio, filename = rename(directory, filename, str(audio["artist"][0]), str(audio["title"][0]), extension, "Artist - Title")
+                    break
     else:
         input = handleArtistTitleDiscrepancy(artist, str(audio["artist"][0]), title, str(audio["title"][0]))
         if input == "file":

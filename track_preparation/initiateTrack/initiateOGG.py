@@ -85,29 +85,28 @@ def initiateOGG(filename, directory, thumbnails, options):
         # rename track so that the artist is appended at the front of the title
         if ' - ' not in filename:
             artist = str(audio['artist'][0])
-            os.rename(directory + '/' + filename, directory + '/' + artist + ' - ' + filename)
-            filename = artist + ' - ' + filename
-            audio = OggVorbis(directory + '/' + filename)
-        if options["Scan Filename and Tags (B)"].get() == True: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Artist - Title")
+            extension = filename[filename.rfind('.'):]
+            audio, filename = rename(directory, filename, artist, title, extension, "Artist - Title")
+        if options["Scan Filename and Tags (B)"].get() == True and type(audio) != bool: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Artist - Title")
 
     elif options["Audio naming format (S)"].get() == "Title":
         # rename track so that the artist is removed from the title
         if ' - ' in filename:
-            os.rename(directory + '/' + filename, directory + '/' + filename[filename.index(' - ')+3:])
-            filename = filename[filename.index(' - ')+3:]
-            audio = OggVorbis(directory + '/' + filename)
-        if options["Scan Filename and Tags (B)"].get() == True: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Title")
-
-    # save thumbnail to list
-    images = audio["metadata_block_picture"]
-    if images[0] != '':
-        data = base64.b64decode(images[0])
-        image = Picture(data)
-        stream = BytesIO(image.data)
-        image = Image.open(stream).convert("RGBA")
-        thumbnails = saveThumbnail(image, thumbnails)
-        stream.close()
-    else: thumbnails = saveThumbnail("NA", thumbnails)
+            artist = str(audio['artist'][0])
+            extension = filename[filename.rfind('.'):]
+            audio, filename = rename(directory, filename, artist, title, extension, "Title")
+        if options["Scan Filename and Tags (B)"].get() == True and type(audio) != bool: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Title")
+    if type(audio) != bool:
+        # save thumbnail to list
+        images = audio["metadata_block_picture"]
+        if images[0] != '':
+            data = base64.b64decode(images[0])
+            image = Picture(data)
+            stream = BytesIO(image.data)
+            image = Image.open(stream).convert("RGBA")
+            thumbnails = saveThumbnail(image, thumbnails)
+            stream.close()
+        else: thumbnails = saveThumbnail("NA", thumbnails)
     return audio, filename, informalTagDict, thumbnails, options
 
 def extractArtistAndTitle(audio, filename, directory, options, namingConvention):
@@ -183,6 +182,7 @@ def compareArtistAndTitle(audio, artist, title, filename, directory, options):
                     elif input == "tag":
                         extension = filename[filename.rfind('.'):]
                         audio, filename = rename(directory, filename, str(audio["artist"][0]), str(audio["title"][0]), extension, "Artist - Title")
+                    break
     else:
         input = handleArtistTitleDiscrepancy(artist, str(audio["artist"][0]), title, str(audio["title"][0]))
         if input == "file":
@@ -219,6 +219,7 @@ def compareArtistAndTitle(audio, artist, title, filename, directory, options):
                     elif input == "tag":
                         extension = filename[filename.rfind('.'):]
                         audio, filename = rename(directory, filename, str(audio["artist"][0]), str(audio["title"][0]), extension, "Artist - Title")
+                    break
     else:
         input = handleArtistTitleDiscrepancy(artist, str(audio["artist"][0]), title, str(audio["title"][0]))
         if input == "file":

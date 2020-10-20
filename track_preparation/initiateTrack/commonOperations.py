@@ -76,56 +76,52 @@ def saveThumbnail(image, thumbnails):
     return thumbnails
 
 def rename(directory, filename, artist, title, extension, namingConvention):
-    print(namingConvention)
-    print(title)
     if namingConvention == "Artist - Title":
         try:
-            print("HERE")
             os.rename(directory + '/' + filename, str(directory) + '/' + str(artist) + ' - ' + str(title) + extension)
             filename = str(artist) + ' - ' + str(title) + extension
         except PermissionError:
             messagebox.showinfo("Permission Error", "File cannot be renamed, it may still be open")
-            return
+            return False, False
     elif namingConvention == "Title":
         try:
-            print('lol')
             os.rename(directory + '/' + filename, str(directory) + '/' + str(title) + extension)
             filename = str(title) + extension
         except PermissionError:
             messagebox.showinfo("Permission Error", "File cannot be renamed, it may still be open")
-            return
+            return False, False
     if extension == ".wav":
-        audio = WAVE(str(directory) + '/' + str(artist) + ' - ' + str(title) + extension)
+        audio = WAVE(str(directory) + '/' + filename)
         audio["TPE1"] = TPE1(encoding=3, text=artist)
         audio["TIT2"] = TIT2(encoding=3, text=title)
         audio.save()
         return audio, filename
     elif extension == ".flac":
-        audio = FLAC(str(directory) + '/' + str(title) + extension)
+        audio = FLAC(str(directory) + '/' + filename)
         audio['artist'] = artist
         audio['title'] = title
         audio.save()
         return audio, filename
     elif extension == ".aiff":
-        audio = AIFF(str(directory) + '/' + str(artist) + ' - ' + str(title) + extension)
+        audio = AIFF(str(directory) + '/' + filename)
         audio["TPE1"] = TPE1(encoding=3, text=artist)
         audio["TIT2"] = TIT2(encoding=3, text=title)
         audio.save()
         return audio, filename
     elif extension == ".m4a":
-        audio = MP4(str(directory) + '/' + str(title) + extension)
+        audio = MP4(str(directory) + '/' + filename)
         audio["\xa9ART"] = artist
         audio["\xa9nam"] = title
         audio.save()
         return audio, filename
     elif extension == ".mp3":
-        audio = MP3(str(directory) + '/' + str(title) + extension)
+        audio = MP3(str(directory) + '/' + filename)
         audio["TPE1"] = TPE1(encoding=3, text=artist)
         audio["TIT2"] = TIT2(encoding=3, text=title)
         audio.save()
         return audio, filename
     elif extension == ".ogg":
-        audio = OggVorbis(str(directory) + '/' + str(title) + extension)
+        audio = OggVorbis(str(directory) + '/' + filename)
         audio['artist'] = artist
         audio['title'] = title
         audio.save()

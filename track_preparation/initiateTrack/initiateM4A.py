@@ -90,7 +90,7 @@ def initiateM4A(filename, directory, thumbnails, options):
             os.rename(directory + '/' + filename, directory + '/' + artist + ' - ' + filename)
             filename = artist + ' - ' + filename
             audio = MP4(directory + '/' + filename)
-        if options["Scan Filename and Tags (B)"].get() == True: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Artist - Title")
+        if options["Scan Filename and Tags (B)"].get() == True and type(audio) != bool: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Artist - Title")
 
     elif options["Audio naming format (S)"].get() == "Title":
         # rename track so that the artist is removed from the title
@@ -98,16 +98,16 @@ def initiateM4A(filename, directory, thumbnails, options):
             os.rename(directory + '/' + filename, directory + '/' + filename[filename.index(' - ')+3:])
             filename = filename[filename.index(' - ')+3:]
             audio = MP4(directory + '/' + filename)
-        if options["Scan Filename and Tags (B)"].get() == True: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Title")
-
-    # save thumbnail to list
-    image = audio["covr"]
-    if len(image) != 0:
-        stream = BytesIO(image[0])
-        image = Image.open(stream).convert("RGBA")
-        thumbnails = saveThumbnail(image, thumbnails)
-        stream.close()
-    else: thumbnails = saveThumbnail("NA", thumbnails)
+        if options["Scan Filename and Tags (B)"].get() == True and type(audio) != bool: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Title")
+    if type(audio) != bool:
+        # save thumbnail to list
+        image = audio["covr"]
+        if len(image) != 0:
+            stream = BytesIO(image[0])
+            image = Image.open(stream).convert("RGBA")
+            thumbnails = saveThumbnail(image, thumbnails)
+            stream.close()
+        else: thumbnails = saveThumbnail("NA", thumbnails)
     return audio, filename, informalTagDict, thumbnails, options
 
 def extractArtistAndTitle(audio, filename, directory, options, namingConvention):
@@ -183,6 +183,7 @@ def compareArtistAndTitle(audio, artist, title, filename, directory, options):
                     elif input == "tag":
                         extension = filename[filename.rfind('.'):]
                         audio, filename = rename(directory, filename, str(audio["\xa9ART"][0]), str(audio["\xa9nam"][0]), extension, "Artist - Title")
+                    break
     else:
         input = handleArtistTitleDiscrepancy(artist, str(audio["\xa9ART"][0]), title, str(audio["\xa9nam"][0]))
         if input == "file":
@@ -219,6 +220,7 @@ def compareArtistAndTitle(audio, artist, title, filename, directory, options):
                     elif input == "tag":
                         extension = filename[filename.rfind('.'):]
                         audio, filename = rename(directory, filename, str(audio["\xa9ART"][0]), str(audio["\xa9nam"][0]), extension, "Artist - Title")
+                    break
     else:
         input = handleArtistTitleDiscrepancy(artist, str(audio["\xa9ART"][0]), title, str(audio["\xa9nam"][0]))
         if input == "file":

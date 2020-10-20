@@ -105,28 +105,26 @@ def initiateMP3(filename, directory, thumbnails, options):
         # rename track so that the artist is appended at the front of the title
         if ' - ' not in filename:
             artist = str(audio["TPE1"])
-            os.rename(directory + '/' + filename, directory + '/' + artist + ' - ' + filename)
-            filename = artist + ' - ' + filename
-            audio = MP3(directory + '/' + filename)
-        if options["Scan Filename and Tags (B)"].get() == True: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Artist - Title")
+            extension = filename[filename.rfind('.'):]
+            audio, filename = rename(directory, filename, artist, title, extension, "Artist - Title")
+        if options["Scan Filename and Tags (B)"].get() == True and type(audio) != bool: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Artist - Title")
 
     elif options["Audio naming format (S)"].get() == "Title":
         # rename track so that the artist is removed from the title
         if ' - ' in filename:
-            os.rename(directory + '/' + filename, directory + '/' + filename[filename.index(' - ')+3:])
-            filename = filename[filename.index(' - ')+3:]
-            audio = MP3(directory + '/' + filename)
-        if options["Scan Filename and Tags (B)"].get() == True: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Title")
-
-    # save thumbnail to list
-    image = audio["APIC:"]
-    if image.data != b'':
-        stream = BytesIO(image.data)
-        image = Image.open(stream).convert("RGBA")
-        thumbnails = saveThumbnail(image, thumbnails)
-        stream.close()
-    else:
-        thumbnails = saveThumbnail("NA", thumbnails)
+            artist = str(audio["TPE1"])
+            extension = filename[filename.rfind('.'):]
+            audio, filename = rename(directory, filename, artist, title, extension, "Title")
+        if options["Scan Filename and Tags (B)"].get() == True and type(audio) != bool: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Title")
+    if type(audio) != bool:
+        # save thumbnail to list
+        image = audio["APIC:"]
+        if image.data != b'':
+            stream = BytesIO(image.data)
+            image = Image.open(stream).convert("RGBA")
+            thumbnails = saveThumbnail(image, thumbnails)
+            stream.close()
+        else: thumbnails = saveThumbnail("NA", thumbnails)
     return audio, filename, informalTagDict, thumbnails, options
 
 def extractArtistAndTitle(audio, filename, directory, options, namingConvention):
@@ -202,6 +200,7 @@ def compareArtistAndTitle(audio, artist, title, filename, directory, options):
                     elif input == "tag":
                         extension = filename[filename.rfind('.'):]
                         audio, filename = rename(directory, filename, str(audio["TPE1"]), str(audio["TIT2"]), extension, "Artist - Title")
+                    break
     else:
         input = handleArtistTitleDiscrepancy(artist, str(audio["TPE1"]), title, str(audio["TIT2"]))
         if input == "file":
@@ -238,6 +237,7 @@ def compareArtistAndTitle(audio, artist, title, filename, directory, options):
                     elif input == "tag":
                         extension = filename[filename.rfind('.'):]
                         audio, filename = rename(directory, filename, str(audio["TPE1"]), str(audio["TIT2"]), extension, "Artist - Title")
+                    break
     else:
         input = handleArtistTitleDiscrepancy(artist, str(audio["TPE1"]), title, str(audio["TIT2"]))
         if input == "file":

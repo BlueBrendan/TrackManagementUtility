@@ -17,7 +17,6 @@ uncapitalize = False
 word = ''
 
 def handleTypo(artist, newArtist, title, newTitle, type, options):
-    print("heres")
     global change, word, capitalize, uncapitalize
     popup = tk.Toplevel()
 

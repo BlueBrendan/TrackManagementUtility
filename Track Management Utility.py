@@ -115,7 +115,6 @@ def selectCompare(CONFIG_FILE):
 # set preferences
 CONFIG_FILE = createConfigFile("N")
 options = readValuesFromConfig(CONFIG_FILE)
-# print(options)
 
 #file topmenu button
 optionMenu = tk.Frame(root, bg=bg)
