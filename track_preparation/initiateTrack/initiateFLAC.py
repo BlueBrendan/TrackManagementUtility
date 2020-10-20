@@ -153,6 +153,7 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
         titleList = title.split(' ')
         newArtist, artist, filename = checkCapitalization(artistList, artist, title, "artist", directory, filename, format, options)
         newTitle, title, filename = checkCapitalization(titleList, artist, title, "title", directory, filename, format, options)
+
         if (artist != newArtist or title != newTitle):
             artist, title, options, renameFile = handleTypo(artist, newArtist, title, newTitle, "Capitalization", options)
             if renameFile == True: audio, filename = rename(directory, filename, artist, title, extension, format)

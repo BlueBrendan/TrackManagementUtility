@@ -9,6 +9,7 @@ import os
 from track_preparation.handleDiscrepancy import handleArtistTitleDiscrepancy
 from track_preparation.handleDiscrepancy import handleTitleDiscrepancy
 from track_preparation.handleTypo import handleTypo
+from track_preparation.handleTypo import handleDiscrepancy
 from track_preparation.initiateTrack.commonOperations import saveThumbnail
 
 def initiateWAVE(filename, directory, thumbnails, options):
@@ -170,11 +171,20 @@ def checkTypos(audio, artist, title, directory, filename, extension, format, opt
     if options["Check for Capitalization (B)"].get() == True:
         artistList = artist.split(' ')
         titleList = title.split(' ')
-        newArtist, artist, filename = checkCapitalization(artistList, artist, title, "artist", directory, filename, format, options)
-        newTitle, title, filename = checkCapitalization(titleList, artist, title, "title", directory, filename, format, options)
-        if (artist != newArtist or title != newTitle):
-            artist, title, options, renameFile = handleTypo(artist, newArtist, title, newTitle, "Capitalization", options)
-            if renameFile == True: audio, filename = rename(directory, filename, artist, title, extension, format)
+        newArtistList, artistList, artist, filename = checkCapitalization(artistList, artist, title, "artist", directory, filename, format, options)
+        newTitleList, titleList, title, filename = checkCapitalization(titleList, artist, title, "title", directory, filename, format, options)
+        for index, (word, newWord) in enumerate(zip(artistList, newArtistList)):
+            if word != newWord:
+                artist, options, renameFile = handleDiscrepancy(artistList, newArtistList, index, "Capitalization", options)
+                if renameFile:
+                    audio, filename = rename(directory, filename, artist, title, extension, format)
+                    artistList[index] = newArtistList[index]
+        for index, (word, newWord) in enumerate(zip(titleList, newTitleList)):
+            if word != newWord:
+                title, options, renameFile = handleDiscrepancy(titleList, newTitleList, index, "Capitalization", options)
+                if renameFile:
+                    audio, filename = rename(directory, filename, artist, title, extension, format)
+                    titleList[index] = newTitleList[index]
     return audio, filename, options
 
 def compareArtistAndTitle(audio, artist, title, filename, directory, options):
@@ -288,28 +298,36 @@ def compareTitle(audio, title, filename, directory, options):
     return audio, filename
 
 def checkCapitalization(list, artist, title, subject, directory, filename, format, options):
-    newString = ''
-    for word in list:
+    newString = []
+    for index, word in enumerate(list, start=0):
         if word.lower() in (string.lower() for string in options["Always Capitalize (L)"]):
+            newString.append(word.capitalize())
             if word != word.capitalize():
                 # recreate correct spelling
-                if subject == "artist": artist = artist.replace(word, word.capitalize())
-                elif subject == "title": title = title.replace(word, word.capitalize())
+                if subject == "artist":
+                    artist = artist.replace(word, word.capitalize())
+                    list[index] = artist
+                elif subject == "title":
+                    title = title.replace(word, word.capitalize())
+                    list[index] = title
                 audio, filename = rename(directory, filename, artist, title, ".flac", format)
-            newString += word.capitalize() + ' '
         elif word.lower() in (string.lower() for string in options["Never Capitalize (L)"]):
+            newString.append(word.lower())
             if word != word.lower():
                 # recreate correct spelling
-                if subject == "artist": artist = artist.replace(word, word.lower())
-                elif subject == "title": title = title.replace(word, word.lower())
+                if subject == "artist":
+                    artist = artist.replace(word, word.lower())
+                    list[index] = artist
+                elif subject == "title":
+                    title = title.replace(word, word.lower())
+                    list[index] = title
                 audio, filename = rename(directory, filename, artist, title, ".flac", format)
-            newString += word.lower() + ' '
         else:
-            if word[:1].islower(): newString += word.capitalize() + ' '
-            else: newString += word + ' '
-    newString = newString.strip()
-    if subject == "artist": return newString, artist, filename
-    elif subject == "title": return newString, title, filename
+            if word[:1].islower():newString.append(word.capitalize())
+            else: newString.append(word)
+            list[index] = word
+    if subject == "artist": return newString, list, artist, filename
+    elif subject == "title": return newString, list, title, filename
 
 def rename(directory, filename, artist, title, extension, format):
     if format == "Artist - Title":
