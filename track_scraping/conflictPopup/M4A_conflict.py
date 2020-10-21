@@ -133,7 +133,7 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, images, in
         audio.save()
 
     # image conflict
-    if imageCounter >= 1:
+    if imageCounter - initialCounter >= 1:
         buttons = []
         conflictPopup = tk.Toplevel()
         conflictPopup.title("Conflicting Images")

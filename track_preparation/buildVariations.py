@@ -18,7 +18,7 @@ def buildVariations(artist, title):
         artist = artist[0:var] + "-" + artist[var + 1:]
     artistVariations.append(artist.lower())
 
-    triggerStrings = ["(", "'s", "pt.", ".", ",", "&", "-mix", "-extended", "-remix", "-version"]
+    triggerStrings = ["é", "(", "'s", "pt.", ".", ",", "&", "-mix", "-extended", "-remix", "-version"]
     title = title.lower()
     newTitle = title.lower()
     for string in triggerStrings:
@@ -44,6 +44,11 @@ def buildVariations(artist, title):
                 titleVariations.append(title.replace(string, "-mix").lower())
                 titleVariations.append(newTitle.replace(string, "-extended-remix").lower())
                 titleVariations.append(title.replace(string, "-extended-remix").lower())
+            elif string == "é":
+                titleVariations.append(newTitle.replace(string, "e").lower())
+                titleVariations.append(title.replace(string, "e").lower())
+                titleVariations.append(newTitle.replace(string, "é").lower())
+                titleVariations.append(title.replace(string, "é").lower())
             else:
                 newTitle = str(newTitle[0:newTitle.index(string)]) + str(newTitle[newTitle.index(string) + len(string):])
                 titleVariations.append(newTitle.lower())

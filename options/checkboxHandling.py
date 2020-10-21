@@ -7,6 +7,7 @@ def checkbox(CONFIG_FILE, term, suboptions, condition, count):
         with open(CONFIG_FILE, 'wt') as file:
             file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1]) + "True",str(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1])) + "False"))
         file.close()
+        # check options hierarchy dictionary
         if len(suboptions) > 0:
             #disable all provided suboptions
             for suboption in suboptions:
@@ -16,6 +17,7 @@ def checkbox(CONFIG_FILE, term, suboptions, condition, count):
         with open(CONFIG_FILE, 'wt') as file:
             file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1]) + "False",str(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1])) + "True"))
         file.close()
+        # check options hierarchy dictionary
         if len(suboptions) > 0:
             # enable all provided suboptions
             if condition:

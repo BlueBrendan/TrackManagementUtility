@@ -124,7 +124,7 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, images,
         audio.save()
 
     # image conflict
-    if imageCounter >= 1:
+    if imageCounter - initialCounter >= 1:
         buttons = []
         conflictPopup = tk.Toplevel()
         conflictPopup.title("Conflicting Images")

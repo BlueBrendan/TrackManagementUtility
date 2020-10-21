@@ -66,8 +66,8 @@ def buildCapitalizationList(list, artist, title, subject, directory, filename, n
 
 def saveThumbnail(image, thumbnails):
     if image != "NA":
-        image = image.resize((200, 200), Image.ANTIALIAS)
         width, height = image.size
+        image = image.resize((200, 200), Image.ANTIALIAS)
         thumbnails.append([image, width, height])
     else:
         fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")

@@ -126,7 +126,7 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, images, i
         audio.save()
 
     # image conflict
-    if imageCounter >= 1:
+    if imageCounter - initialCounter >= 1:
         buttons = []
         conflictPopup = tk.Toplevel()
         conflictPopup.title("Conflicting Images")
@@ -186,6 +186,10 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, images, i
         conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
         conflictPopup.protocol("WM_DELETE_WINDOW", lambda: onExit(track, audio, conflictPopup))
         conflictPopup.wait_window()
+    else:
+        image = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
+        image = image.resize((200, 200), Image.ANTIALIAS)
+        track.imageSelection = [image, "NA", "NA"]
 
 # overwrite existing tags with all non-blank scraped tag fields
 def overwriteAllOption(audio, track, options, window):

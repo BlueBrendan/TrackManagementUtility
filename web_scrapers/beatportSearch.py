@@ -39,7 +39,7 @@ def beatportSearch(filename, track, artistVariations, titleVariations, headers, 
         return track, imageCounter, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame
     for link in soup.find_all('a'):
         if "www.beatport.com" in link.get('href').split('&')[0]:
-            content = link.find('div', class_="BNeawe vvjwJb AP7Wnd").get_text().lower()
+            content = link.find('div', class_="BNeawe vvjwJb AP7Wnd").get_text().lower().replace(' ', "-")
             # all Beatport headers contain suffix "by [artistName] on Beatport"
             for i in range(4): content = content[:content.rfind(' ')]
             mismatch = True
@@ -50,7 +50,7 @@ def beatportSearch(filename, track, artistVariations, titleVariations, headers, 
                 else:
                     mismatch = compareTokens(variation, content)
                     if not mismatch: break
-            if mismatch == False:
+            if not mismatch:
                 link = link.get('href').split('&')[0].split('=')[1]
                 if "remix" in link and "remix" in track.title.lower() or "remix" not in track.title.lower() and "remix" not in link:
                     # clear component frames of existing content
