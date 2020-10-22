@@ -4,9 +4,12 @@ from PIL import Image, ImageTk
 import getpass
 import math
 
-#main bg color
+# import methods
+from track_preparation.initiateTrack.commonOperations import resource_path
+
+# main bg color
 bg = "#282f3b"
-#secondary color
+# secondary color
 secondary_bg = "#364153"
 
 def reloadThumbnail(thumbnail, track, buttons, conflictFrame, thumbnailFrame):
@@ -18,7 +21,7 @@ def reloadThumbnail(thumbnail, track, buttons, conflictFrame, thumbnailFrame):
         thumbnailButton.pack(side="top")
         buttons.append(thumbnailButton)
     else:
-        fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
+        fileImageImport = Image.open(resource_path('Thumbnail.png'))
         fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(fileImageImport)
         fileImage = tk.Label(thumbnailFrame, image=photo, bg=bg)

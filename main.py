@@ -3,10 +3,11 @@ import getpass
 import os
 from PIL import Image, ImageTk
 
-#import methods
+# import methods
 from compareDrives import compareDrives
 from track_preparation.scanTagsOnline import scanTagsOnline
 from options.updatePreferences import updatePreferences
+from track_preparation.initiateTrack.commonOperations import resource_path
 
 # #add proxima nova regular
 # pyglet.font.add_file("C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Proxima Nova Regular.ttf")
@@ -21,7 +22,7 @@ secondary_bg = "#364153"
 #global variables
 window = False
 
-#MAIN DRIVER CODE
+#MAIN DRIVER CODEd
 root = tk.Tk()
 root.title("Track Management Utility V1.0")
 ws = root.winfo_screenwidth() # width of the screen
@@ -30,7 +31,7 @@ x = (ws/2) - (1000/2)
 y = (hs/2) - (682/2)
 root.geometry('%dx%d+%d+%d' % (1000, 620, x, y))
 root.configure(bg=bg)
-root.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
+root.iconbitmap(resource_path('favicon.ico'))
 
 def createConfigFile(flag):
     CONFIG_FILE = r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt"
@@ -139,7 +140,7 @@ main.pack(fill="both")
 
 imageContainer = tk.Frame(main, bg=bg)
 imageContainer.pack(side="left", padx=(20, 0))
-fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Vinyl.png")
+fileImageImport = Image.open(resource_path("Vinyl.png"))
 fileImageImport = fileImageImport.resize((300, 300), Image.ANTIALIAS)
 photo = ImageTk.PhotoImage(fileImageImport)
 fileImage = tk.Label(imageContainer, image=photo, bg=bg)

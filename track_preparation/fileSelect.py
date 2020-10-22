@@ -10,8 +10,6 @@ from tkinter.tix import *
 import tkinter as tk
 import os
 
-import getpass
-
 #import classes
 from AudioClass import *
 
@@ -26,6 +24,7 @@ from track_scraping.scrapeWeb import scrapeWeb
 from track_scraping.handleFinalReport import handleFinalReport
 from web_scrapers.webScrapingWindowControl import enableControls
 from web_scrapers.webScrapingWindowControl import rerenderControls
+from track_preparation.initiateTrack.commonOperations import resource_path
 
 #main bg color
 bg = "#282f3b"
@@ -49,7 +48,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE, window):
         webScrapingWindow.title("Web Scraping Display")
         webScrapingWindow.configure(bg=bg)
         webScrapingWindow.geometry("1000x300+0+0")
-        webScrapingWindow.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
+        webScrapingWindow.iconbitmap(resource_path('favicon.ico'))
         # component for search label and page indicator
         labelFrame = tk.Frame(webScrapingWindow, bg=bg)
         labelFrame.pack(fill=X, pady=(10, 10))

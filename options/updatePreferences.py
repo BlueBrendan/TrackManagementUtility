@@ -6,6 +6,7 @@ import getpass
 from options.webScrapingTab import webScrapingTab
 from options.taggingTab import taggingTab
 from options.namingTab import namingTab
+from track_preparation.initiateTrack.commonOperations import resource_path
 
 #global variables
 global tagList
@@ -38,6 +39,6 @@ def updatePreferences(options, CONFIG_FILE, root):
     taggingTab(tab_parent, options, CONFIG_FILE)
     #Naming Tab
     namingTab(tab_parent, options, CONFIG_FILE)
-    window.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
+    window.iconbitmap(resource_path('favicon.ico'))
     root.mainloop()
 

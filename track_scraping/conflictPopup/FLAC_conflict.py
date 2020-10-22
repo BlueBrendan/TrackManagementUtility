@@ -10,6 +10,7 @@ import getpass
 from track_scraping.conflictPopup.commonOperations import loadImageButtons
 from track_scraping.conflictPopup.commonOperations import loadNavigation
 from track_scraping.conflictPopup.commonOperations import selectImage
+from track_preparation.initiateTrack.commonOperations import resource_path
 
 # main bg color
 bg = "#282f3b"
@@ -87,7 +88,6 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, images, i
                 else:
                     currentTagDict[i+1] = tk.Label(leftTags, text=list[i] + ": " + str(audio[informalTagDict[list[i]]][0]), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                     currentTagDict[i+1].pack(pady=(0, 0), anchor='w')
-
             #print scraped tags
             rightTags = tk.Frame(tags, bg=bg)
             rightTags.pack(side="right", padx=(50, 0), pady=(0, 50))
@@ -95,12 +95,9 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, images, i
             scrapedTagDict[0].pack(anchor="w", pady=(0, 15))
             for i in range(len(list)):
                 #Avoid printing the underscore
-                if list[i] == "Release_Date":
-                    scrapedTagDict[i+1] = tk.Label(rightTags, text="Release Date: " + str(getattr(track, list[i].lower())), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
-                    scrapedTagDict[i+1].pack(pady=(0, 0), anchor='w')
-                else:
-                    scrapedTagDict[i+1] = tk.Label(rightTags, text=list[i] + ": " + str(getattr(track, list[i].lower())), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
-                    scrapedTagDict[i+1].pack(pady=(0, 0), anchor='w')
+                if list[i] == "Release_Date": scrapedTagDict[i+1] = tk.Label(rightTags, text="Release Date: " + str(getattr(track, list[i].lower())), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                else: scrapedTagDict[i+1] = tk.Label(rightTags, text=list[i] + ": " + str(getattr(track, list[i].lower())), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                scrapedTagDict[i+1].pack(pady=(0, 0), anchor='w')
             #check if both tag dictionaries are of equal length
             if len(currentTagDict) == len(scrapedTagDict):
                 for i in range(1, len(currentTagDict)):
@@ -115,7 +112,7 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, images, i
             tk.Button(optionButtons, text="Overwrite Blanks", command=lambda: overwriteBlanksOptions(audio, track, options, conflictPopup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
             tk.Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, options, conflictPopup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
             conflictPopup.attributes("-topmost", True)
-            conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
+            conflictPopup.iconbitmap(resource_path('favicon.ico'))
             conflictPopup.wait_window()
     # no tags were collected, acquire tags directly from track
     else:
@@ -156,7 +153,7 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, images, i
             thumbnail = [thumbnailImageImport, width, height]
         else:
             thumbnail = "NA"
-            fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
+            fileImageImport = Image.open(resource_path('Thumbnail.png'))
             fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
             photo = ImageTk.PhotoImage(fileImageImport)
             fileImage = tk.Label(thumbnailFrame, image=photo, bg=bg)
@@ -183,13 +180,13 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, images, i
         # select button
         tk.Button(conflictPopup, text="Select", font=("Proxima Nova Rg", 11), fg="white", bg=bg, command=lambda: saveImage(track, audio, conflictPopup)).pack(side="top", pady=(25, 10))
         conflictPopup.attributes("-topmost", True)
-        conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
+        conflictPopup.iconbitmap(resource_path('favicon.ico'))
         conflictPopup.protocol("WM_DELETE_WINDOW", lambda: onExit(track, audio, conflictPopup))
         conflictPopup.wait_window()
     else:
-        image = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
+        image = Image.open(resource_path('Thumbnail.png'))
         image = image.resize((200, 200), Image.ANTIALIAS)
-        track.imageSelection = [image, "NA", "NA"]
+        track.imageSelection = [image, "", ""]
 
 # overwrite existing tags with all non-blank scraped tag fields
 def overwriteAllOption(audio, track, options, window):
@@ -252,9 +249,10 @@ def saveImage(track, audio, window):
             image = image.resize((200, 200), Image.ANTIALIAS)
             track.imageSelection = [image, width, height]
         else:
-            image = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
+            print("no thumb")
+            image = Image.open(resource_path('Thumbnail.png'))
             image = image.resize((200, 200), Image.ANTIALIAS)
-            track.imageSelection = [image, "NA", "NA"]
+            track.imageSelection = [image, '', '']
     window.destroy()
 
 # this handles the user closing out the image selection window (thumbnail is selected by default)

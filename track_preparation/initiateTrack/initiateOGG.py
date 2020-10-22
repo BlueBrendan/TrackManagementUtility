@@ -4,12 +4,11 @@ from tkinter import messagebox
 from PIL import Image
 from io import BytesIO
 import base64
-import os
 
 #import methods
 from track_preparation.handleDiscrepancy import handleArtistTitleDiscrepancy
 from track_preparation.handleDiscrepancy import handleTitleDiscrepancy
-from track_preparation.handleTypo import handleTypo
+from track_preparation.initiateTrack.commonOperations import handleTypo
 from track_preparation.initiateTrack.commonOperations import checkCapitalization
 from track_preparation.initiateTrack.commonOperations import rename
 from track_preparation.initiateTrack.commonOperations import saveThumbnail

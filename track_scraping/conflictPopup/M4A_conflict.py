@@ -8,6 +8,7 @@ import getpass
 from track_scraping.conflictPopup.commonOperations import loadImageButtons
 from track_scraping.conflictPopup.commonOperations import loadNavigation
 from track_scraping.conflictPopup.commonOperations import selectImage
+from track_preparation.initiateTrack.commonOperations import resource_path
 
 #main bg color
 bg = "#282f3b"
@@ -28,12 +29,11 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, images, in
     if tagAlert:
         #tag conflict
         tagConflict = False
-        if "Release_Date" in options["Selected Tags (L)"] and str(audio["\xa9day"])[2:-2] != str(track.release_date): tagConflict = True
-        if "BPM" in options["Selected Tags (L)"] and str(audio["tmpo"])[2:-2] != str(track.bpm): tagConflict = True
+        if "Release_Date" in options["Selected Tags (L)"] and len(audio["\xa9day"]) != 0 and str(audio["\xa9day"][0]) != str(track.release_date): tagConflict = True
+        if "BPM" in options["Selected Tags (L)"] and len(audio["tmpo"]) != 0 and str(audio["tmpo"][0]) != str(track.bpm): tagConflict = True
         # key is stored in byte form for m4A files, value cannot be casted to string directly
-        if "Key" in options["Selected Tags (L)"] and len(audio["----:com.apple.iTunes:INITIALKEY"]) != 0:
-                if str(audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')) != track.key: tagConflict = True
-        if "Genre" in options["Selected Tags (L)"] and str(audio["\xa9gen"])[2:-2] != track.genre: tagConflict = True
+        if "Key" in options["Selected Tags (L)"] and len(audio["----:com.apple.iTunes:INITIALKEY"]) != 0 and str(audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')) != track.key: tagConflict = True
+        if "Genre" in options["Selected Tags (L)"] and len(audio["\xa9gen"]) != 0 and str(audio["\xa9gen"][0]) != track.genre: tagConflict = True
         if tagConflict:
             conflictPopup = tk.Toplevel()
             conflictPopup.title("Conflicting Tags")
@@ -82,20 +82,18 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, images, in
             for i in range(len(list)):
                 # avoid printing the underscore
                 if list[i] == "Release_Date":
-                    currentTagDict[i + 1] = tk.Label(leftTags, text="Release Date: " + str(audio[informalTagDict[list[i]]])[2:-2], font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                    if len(audio[informalTagDict[list[i]]]) > 0: currentTagDict[i + 1] = tk.Label(leftTags, text="Release Date: " + str(audio[informalTagDict[list[i]]][0]), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                    else: currentTagDict[i + 1] = tk.Label(leftTags, text="Release Date: ", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                     currentTagDict[i + 1].pack(pady=(0, 0), anchor='w')
                 # decode key
                 elif list[i] == "Key":
-                    if len(audio[informalTagDict[list[i]]]) == 0:
-                        currentTagDict[i + 1] = tk.Label(leftTags, text="Key: ", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
-                        currentTagDict[i + 1].pack(pady=(0, 0), anchor='w')
-                    else:
-                        currentTagDict[i + 1] = tk.Label(leftTags, text="Key: " + str(audio[informalTagDict[list[i]]][0].decode('utf-8')), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
-                        currentTagDict[i + 1].pack(pady=(0, 0), anchor='w')
-                else:
-                    currentTagDict[i + 1] = tk.Label(leftTags, text=list[i] + ": " + str(audio[informalTagDict[list[i]]])[2:-2], font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                    if len(audio[informalTagDict[list[i]]]) == 0: currentTagDict[i + 1] = tk.Label(leftTags, text="Key: ", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                    else: currentTagDict[i + 1] = tk.Label(leftTags, text="Key: " + str(audio[informalTagDict[list[i]]][0].decode('utf-8')), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                     currentTagDict[i + 1].pack(pady=(0, 0), anchor='w')
-
+                else:
+                    if len(audio[informalTagDict[list[i]]]) > 0: currentTagDict[i + 1] = tk.Label(leftTags, text=list[i] + ": " + str(audio[informalTagDict[list[i]]][0]), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                    else: currentTagDict[i + 1] = tk.Label(leftTags, text=list[i] + ": ", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                    currentTagDict[i + 1].pack(pady=(0, 0), anchor='w')
             # print scraped tags
             rightTags = tk.Frame(tags, bg=bg)
             rightTags.pack(side="right", padx=(50, 0), pady=(0, 50))
@@ -123,7 +121,7 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, images, in
             tk.Button(optionButtons, text="Overwrite Blanks", command=lambda: overwriteBlanksOption(audio, track, options, conflictPopup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
             tk.Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, options, conflictPopup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
             conflictPopup.attributes("-topmost", True)
-            conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
+            conflictPopup.iconbitmap(resource_path('favicon.ico'))
             conflictPopup.wait_window()
     else:
         if "Release_Date" in options["Selected Tags (L)"]: audio["\xa9day"] = str(track.release_date)
@@ -164,7 +162,7 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, images, in
             thumbnail = [thumbnailImageImport, width, height]
         else:
             thumbnail = "NA"
-            fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
+            fileImageImport = Image.open(resource_path('Thumbnail.png'))
             fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
             photo = ImageTk.PhotoImage(fileImageImport)
             fileImage = tk.Label(thumbnailFrame, image=photo, bg=bg)
@@ -191,7 +189,7 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, images, in
         # select button
         tk.Button(conflictPopup, text="Select", font=("Proxima Nova Rg", 11), fg="white", bg=bg, command=lambda: saveImage(track, audio, conflictPopup)).pack(side="top", pady=(25, 10))
         conflictPopup.attributes("-topmost", True)
-        conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
+        conflictPopup.iconbitmap(resource_path('favicon.ico'))
         conflictPopup.wait_window()
 
 # overwrite existing tags with all non-blank scraped tag fields
@@ -211,10 +209,10 @@ def overwriteBlanksOption(audio, track, options, window):
             if len(audio["\xa9day"]) > 0: track.release_date = str(audio["\xa9day"][0])
             else: track.release_date = ''
     if "BPM" in options["Selected Tags (L)"]:
-        if len(str(audio["tmpo"])) == 0: audio["tmpo"] = [int(track.bpm)]
+        if len(audio["tmpo"]) == 0: audio["tmpo"] = [int(track.bpm)]
         else:
             if len(audio["tmpo"]) > 0: track.bpm = str(audio["tmpo"][0])
-            else: track.bpm = [int('')]
+            else: track.bpm = ['']
     if "Key" in options["Selected Tags (L)"]:
         if audio["----:com.apple.iTunes:INITIALKEY"] == ['']: audio["----:com.apple.iTunes:INITIALKEY"] = track.key.encode('utf-8')
         else:
@@ -223,7 +221,7 @@ def overwriteBlanksOption(audio, track, options, window):
     if "Genre" in options["Selected Tags (L)"]:
         if audio["\xa9gen"] == ['']: audio["\xa9gen"] = track.genre
         else:
-            if len(str(audio["\xa9gen"])) > 0: track.genre = str(audio["\xa9gen"][0])
+            if len(audio["\xa9gen"]) > 0: track.genre = str(audio["\xa9gen"][0])
             else: track.genre = ''
     audio.save()
     window.destroy()
@@ -234,13 +232,13 @@ def skipOption(audio, track, options, window):
         if len(audio["\xa9day"]) > 0: track.release_date = str(audio["\xa9day"][0])
         else:  track.release_date = ''
     if "BPM" in options["Selected Tags (L)"]:
-        if len(str(audio["tmpo"])) > 0: track.bpm = str(audio["tmpo"][0])
+        if len(audio["tmpo"]) > 0: track.bpm = str(audio["tmpo"][0])
         else: track.bpm = ''
     if "Key" in options["Selected Tags (L)"]:
-        if len(str(audio["----:com.apple.iTunes:INITIALKEY"])) > 0: track.key = audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')
+        if len(audio["----:com.apple.iTunes:INITIALKEY"]) > 0: track.key = audio["----:com.apple.iTunes:INITIALKEY"][0].decode('utf-8')
         else: track.key = ''
     if "Genre" in options["Selected Tags (L)"]:
-        if len(str(audio["\xa9gen"])) > 0: track.genre = str(audio["\xa9gen"][0])
+        if len(audio["\xa9gen"]) > 0: track.genre = str(audio["\xa9gen"][0])
         else: track.genre = ''
     window.destroy()
 
@@ -267,6 +265,6 @@ def saveImage(track, audio, window):
             image = image.resize((200, 200), Image.ANTIALIAS)
             track.imageSelection = [image, width, height]
         else:
-            image = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
-            track.imageSelection = [image, "NA", "NA"]
+            image = Image.open(resource_path('Thumbnail.png'))
+            track.imageSelection = [image, '', '']
     window.destroy()

@@ -10,6 +10,7 @@ import base64
 from track_scraping.conflictPopup.commonOperations import loadImageButtons
 from track_scraping.conflictPopup.commonOperations import loadNavigation
 from track_scraping.conflictPopup.commonOperations import selectImage
+from track_preparation.initiateTrack.commonOperations import resource_path
 
 #main bg color
 bg = "#282f3b"
@@ -94,12 +95,9 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, images,
             scrapedTagDict[0].pack(anchor="w", pady=(0, 15))
             for i in range(len(list)):
                 # Avoid printing the underscore
-                if list[i] == "Release_Date":
-                    scrapedTagDict[i + 1] = tk.Label(rightTags, text="Release Date: " + str(getattr(track, list[i].lower())), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
-                    scrapedTagDict[i + 1].pack(pady=(0, 0), anchor='w')
-                else:
-                    scrapedTagDict[i + 1] = tk.Label(rightTags, text=list[i] + ": " + str(getattr(track, list[i].lower())), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
-                    scrapedTagDict[i + 1].pack(pady=(0, 0), anchor='w')
+                if list[i] == "Release_Date": scrapedTagDict[i + 1] = tk.Label(rightTags, text="Release Date: " + str(getattr(track, list[i].lower())), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                else: scrapedTagDict[i + 1] = tk.Label(rightTags, text=list[i] + ": " + str(getattr(track, list[i].lower())), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+                scrapedTagDict[i + 1].pack(pady=(0, 0), anchor='w')
             # check if both tag dictionaries are of equal length
             if len(currentTagDict) == len(scrapedTagDict):
                 for i in range(1, len(currentTagDict)):
@@ -114,7 +112,7 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, images,
             tk.Button(optionButtons, text="Overwrite Blanks", command=lambda: overwriteBlanksOption(audio, track, options, conflictPopup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
             tk.Button(optionButtons, text="Skip", command=lambda: skipOption(audio, track, options, conflictPopup), font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg).pack(side="left", padx=(20, 20))
             conflictPopup.attributes("-topmost", True)
-            conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
+            conflictPopup.iconbitmap(resource_path('favicon.ico'))
             conflictPopup.wait_window()
     else:
         if "Release_Date" in options["Selected Tags (L)"]: audio['date'] = str(track.release_date)
@@ -157,7 +155,7 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, images,
             thumbnail = [thumbnailImageImport, width, height]
         else:
             thumbnail = "NA"
-            fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
+            fileImageImport = Image.open(resource_path('Thumbnail.png'))
             fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
             photo = ImageTk.PhotoImage(fileImageImport)
             fileImage = tk.Label(thumbnailFrame, image=photo, bg=bg)
@@ -185,7 +183,7 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, images,
         # select button
         tk.Button(conflictPopup, text="Select", font=("Proxima Nova Rg", 11), fg="white", bg=bg, command=lambda: saveImage(track, audio, conflictPopup)).pack(side="top", pady=(25, 10))
         conflictPopup.attributes("-topmost", True)
-        conflictPopup.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
+        conflictPopup.iconbitmap(resource_path('favicon.ico'))
         conflictPopup.wait_window()
 
 # overwrite existing tags with all non-blank scraped tag fields
@@ -254,6 +252,6 @@ def saveImage(track, audio, window):
             image = image.resize((200, 200), Image.ANTIALIAS)
             track.imageSelection = [image, width, height]
         else:
-            image = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Images/Thumbnail.png")
-            track.imageSelection = [image, "NA", "NA"]
+            image = Image.open(resource_path('Thumbnail.png'))
+            track.imageSelection = [image, '', '']
     window.destroy()

@@ -1,11 +1,12 @@
 import tkinter as tk
 from tkinter.tix import *
-from PIL import Image, ImageTk
+from PIL import ImageTk
 import getpass
 import os
 
 # import methods
 from track_scraping.conflictPopup.commonOperations import allWidgets
+from track_preparation.initiateTrack.commonOperations import resource_path
 
 #main bg color
 bg = "#282f3b"
@@ -62,7 +63,7 @@ def handleFinalReport(finalTitles, finalResults, characters, imageCounter, image
         tk.Checkbutton(closeWindowButtonFrame, var=options["Close Scraping Window (B)"], activebackground=bg, command=lambda: closeScrapingWindowSelection(CONFIG_FILE), bg=bg).pack(side="left", pady=(0,10))
         tk.Label(closeWindowButtonFrame, text="Close scraping window", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left", pady=(0,10))
         finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: completeSearch(finalReportWindow, webScrapingWindow, options))
-        finalReportWindow.iconbitmap(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/favicon.ico")
+        finalReportWindow.iconbitmap(resource_path('favicon.ico'))
         finalReportWindow.lift()
 
 def navigateLeft(leftNavigationButton, rightNavigationButton, titleFrame, contentFrame, imageFrame, finalTitles, finalResults, imageSelections, imageCounter, thumbnails, pageIndicator):
@@ -123,7 +124,8 @@ def renderImage(contentFrame, imageSelections, imageCounter, thumbnails, index):
         fileImage.image = photo
         fileImage.pack(side="top", pady=(10, 15))
         # resolution
-        tk.Label(contentFrame, text=str(thumbnails[index][1]) + "x" + str(thumbnails[index][2]), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(0, 10))
+        if thumbnails[index][1] == '' and thumbnails[index][2] == '': tk.Label(contentFrame, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(0, 10))
+        else: tk.Label(contentFrame, text=str(thumbnails[index][1]) + "x" + str(thumbnails[index][2]), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(0, 10))
 
 #handle subdirectory selection
 def closeScrapingWindowSelection(CONFIG_FILE):

@@ -76,16 +76,13 @@ def modeConflict(track, list, type):
     ws = popup.winfo_screenwidth()  # width of the screen
     hs = popup.winfo_screenheight()  # height of the screen
     initialWidth = 550
-    y = (hs / 2) - (242 / 2)
-    x = (ws / 2) - (initialWidth / 2)
-    popup.geometry('%dx%d+%d+%d' % (500, 220, x, y))
+    y = (hs / 2) - (253 / 2)
     for i in range(len(multimode(list))):
-        initialWidth += (len(multimode(list)[i]) * 7)
-        x = (ws / 2) - (initialWidth / 2)
-        popup.update_idletasks()
-        popup.geometry('%dx%d+%d+%d' % (initialWidth, 220, x, y))
-    tk.Label(popup, text= type.capitalize() + " Conflict", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(30, 15))
-    tk.Label(popup, text= "The search returned equal instances of multiple more than one " + type, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(10, 20))
+        initialWidth += (len(multimode(list)[i])) * 7
+    x = (ws / 2) - (initialWidth / 2)
+    popup.geometry('%dx%d+%d+%d' % (initialWidth, 230, x, y))
+    tk.Label(popup, text=type.capitalize() + " Conflict", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(30, 15))
+    tk.Label(popup, text="The search returned equal instances of multiple more than one " + type, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(10, 20))
     radioFrame = tk.Frame(popup)
     radioFrame.config(bg=bg)
     radioFrame.pack()
@@ -97,7 +94,7 @@ def modeConflict(track, list, type):
         option.pack(padx=(20, 0), side="left")
         tk.Label(radioFrame, text=list[i], font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     selectButton = tk.Button(popup, text="Select", font=("Proxima Nova Rg", 11), state=tk.DISABLED, fg="white", bg=bg, command=popup.destroy)
-    selectButton.pack(pady=(20, 0))
+    selectButton.pack(pady=(30, 0))
     originalGenre = track.genre
     popup.attributes("-topmost", True)
     popup.protocol("WM_DELETE_WINDOW", lambda track=track, popup=popup, genre=originalGenre: onExit(track, genre, popup, type))
