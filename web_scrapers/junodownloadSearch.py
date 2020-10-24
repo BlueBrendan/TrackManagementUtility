@@ -1,9 +1,6 @@
 import tkinter as tk
 from tkinter.tix import *
 from PIL import Image, ImageTk
-from skimage.metrics import structural_similarity
-from skimage.transform import resize
-import matplotlib.pyplot as plt
 import requests
 import webbrowser
 import getpass
@@ -15,7 +12,8 @@ from web_scrapers.webScrapingWindowControl import rerenderControls
 from web_scrapers.webScrapingWindowControl import resetLeftRightFrames
 from web_scrapers.sendRequest import prepareRequest
 from web_scrapers.compareRuntime import compareRuntime
-from track_scraping.conflictPopup.commonOperations import allWidgets
+from commonOperations import performSearch
+from commonOperations import allWidgets
 
 #main bg color
 bg = "#282f3b"
@@ -88,15 +86,15 @@ def junodownloadSearch(filename, track, artistVariations, titleVariations, heade
                                                 track.BPMList.append(int(BPM))
                                                 track.BPMList.append(int(BPM))
                                         #only push release and genre from header if title is found in tracklist
-                                        for link in soup.select('div[class=mb-3]'):
+                                        for data in soup.select('div[class=mb-3]'):
                                             # extract release date
                                             if "Release_Date" in options["Selected Tags (L)"]:
-                                                release = link.find("span", itemprop="datePublished").get_text()
+                                                release = data.find("span", itemprop="datePublished").get_text()
                                                 tk.Label(leftComponentFrame, text="Year: " + str(release), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
                                                 track.yearList.append(int(release[-4:]))
                                             # extract genre
                                             if "Genre" in options["Selected Tags (L)"]:
-                                                genre = link.find("a").get_text()
+                                                genre = data.find("a").get_text()
                                                 tk.Label(leftComponentFrame, text="Genre: " + str(genre), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
                                                 track.genreList.append(genre)
                                             webScrapingLeftPane[webScrapingPage] = leftComponentFrame
@@ -121,17 +119,7 @@ def junodownloadSearch(filename, track, artistVariations, titleVariations, heade
                                             webScrapingRightPane[webScrapingPage] = rightComponentFrame
                                             # perform image scraping if enabled in options
                                             if options["Reverse Image Search (B)"].get() == True and not track.stop:
-                                                duplicate = False
-                                                # compare image with other scraped images
-                                                imageOne = resize(plt.imread(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter - 1) + ".jpg").astype(float), (2 ** 8, 2 ** 8, 3))
-                                                for i in range(imageCounter - 1):
-                                                    imageTwo = resize(plt.imread(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg").astype(float), (2 ** 8, 2 ** 8, 3))
-                                                    score, diff = structural_similarity(imageOne, imageTwo, full=True, multichannel=True)
-                                                    if score > 0.6:
-                                                        widthOne, heightOne = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter - 1) + ".jpg").size
-                                                        widthTwo, heightTwo = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg").size
-                                                        if abs(widthTwo - widthOne) <= 200 and abs(heightTwo - heightTwo) <= 200: duplicate = True
-                                                if not duplicate: imageCounter, images, track = reverseImageSearch(item, headers, imageCounter, images, track, options)
+                                                if not performSearch(imageCounter): imageCounter, images, track = reverseImageSearch(link, headers, imageCounter, images, track, options)
                             # avoid counting the same entry twice
                             if not finalMatch:
                                 tk.Label(leftComponentFrame, text="Track did not match with any of the listings", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")

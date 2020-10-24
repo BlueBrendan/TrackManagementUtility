@@ -95,16 +95,20 @@ def modeConflict(track, list, type):
         tk.Label(radioFrame, text=list[i], font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     selectButton = tk.Button(popup, text="Select", font=("Proxima Nova Rg", 11), state=tk.DISABLED, fg="white", bg=bg, command=popup.destroy)
     selectButton.pack(pady=(30, 0))
-    originalGenre = track.genre
+    original = ''
+    if type == "genre": original = track.genre
+    elif type == "key": original = track.key
     popup.attributes("-topmost", True)
-    popup.protocol("WM_DELETE_WINDOW", lambda track=track, popup=popup, genre=originalGenre: onExit(track, genre, popup, type))
+    popup.protocol("WM_DELETE_WINDOW", lambda track=track, popup=popup, value=original: onExit(track, value, popup, type))
     popup.wait_window()
 
 def selectOption(track, list, i, selection, selectButton, type):
     selectButton.config(state=tk.NORMAL)
     selection.set(list[i])
     if type == "genre": track.genre = list[i]
+    elif type == "key": track.key = list[i]
 
-def onExit(track, genre, popup, type):
-    if type == "genre": track.genre = genre
+def onExit(track, value, popup, type):
+    if type == "genre": track.genre = value
+    elif type == "key": track.key = value
     popup.destroy()

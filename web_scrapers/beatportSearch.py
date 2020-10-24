@@ -3,9 +3,7 @@ from tkinter.tix import *
 import requests
 import getpass
 from PIL import Image, ImageTk
-from skimage.metrics import structural_similarity
-from skimage.transform import resize
-import matplotlib.pyplot as plt
+
 import webbrowser
 
 #import methods
@@ -15,7 +13,8 @@ from web_scrapers.webScrapingWindowControl import rerenderControls
 from web_scrapers.webScrapingWindowControl import resetLeftRightFrames
 from web_scrapers.sendRequest import prepareRequest
 from web_scrapers.compareRuntime import compareRuntime
-from track_scraping.conflictPopup.commonOperations import allWidgets
+from commonOperations import performSearch
+from commonOperations import allWidgets
 
 #main bg color
 bg = "#282f3b"
@@ -187,17 +186,7 @@ def extractInfo(soup, track, headers, leftComponentFrame, rightComponentFrame, w
             webScrapingRightPane[webScrapingPage] = rightComponentFrame
             # perform image scraping if enabled in options
             if options["Reverse Image Search (B)"].get() == True and not track.stop:
-                duplicate = False
-                # compare image with other scraped images
-                imageOne = resize(plt.imread(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter - 1) + ".jpg").astype(float), (2 ** 8, 2 ** 8, 3))
-                for i in range(imageCounter - 1):
-                    imageTwo = resize(plt.imread(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg").astype(float), (2 ** 8, 2 ** 8, 3))
-                    score, diff = structural_similarity(imageOne, imageTwo, full=True, multichannel=True)
-                    if score > 0.6:
-                        widthOne, heightOne = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter - 1) + ".jpg").size
-                        widthTwo, heightTwo = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg").size
-                        if abs(widthTwo - widthOne) <= 200 and abs(heightTwo - heightTwo) <= 200: duplicate = True
-                if not duplicate: imageCounter, images, track = reverseImageSearch(link, headers, imageCounter, images, track, options)
+                if not performSearch(imageCounter): imageCounter, images, track = reverseImageSearch(link, headers, imageCounter, images, track, options)
     return imageCounter, images, webScrapingLeftPane, webScrapingRightPane
 
 def refresh(webScrapingWindow):

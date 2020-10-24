@@ -7,9 +7,9 @@ from io import BytesIO
 import getpass
 
 #import methods
-from track_scraping.conflictPopup.commonOperations import loadImageButtons
-from track_scraping.conflictPopup.commonOperations import loadNavigation
-from track_scraping.conflictPopup.commonOperations import selectImage
+from commonOperations import loadImageButtons
+from commonOperations import loadNavigation
+from commonOperations import selectImage
 from track_preparation.initiateTrack.commonOperations import resource_path
 
 #main bg color

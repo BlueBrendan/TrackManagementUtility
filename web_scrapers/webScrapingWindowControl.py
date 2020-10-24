@@ -3,7 +3,7 @@ from tkinter.tix import *
 import webbrowser
 
 #import methods
-from track_scraping.conflictPopup.commonOperations import allWidgets
+from commonOperations import allWidgets
 
 #main bg color
 bg = "#282f3b"

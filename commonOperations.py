@@ -3,6 +3,9 @@ from tkinter.tix import *
 from PIL import Image, ImageTk
 import getpass
 import math
+from skimage.metrics import structural_similarity
+from skimage.transform import resize
+import matplotlib.pyplot as plt
 
 # import methods
 from track_preparation.initiateTrack.commonOperations import resource_path
@@ -12,6 +15,7 @@ bg = "#282f3b"
 # secondary color
 secondary_bg = "#364153"
 
+# FINAL REPORT WINDOW HANDLING
 def reloadThumbnail(thumbnail, track, buttons, conflictFrame, thumbnailFrame):
     if type(thumbnail) != str:
         photo = ImageTk.PhotoImage(thumbnail[0])
@@ -31,11 +35,9 @@ def reloadThumbnail(thumbnail, track, buttons, conflictFrame, thumbnailFrame):
         buttons.append(thumbnailButton)
     return buttons
 
-#needs to be updated
 def loadImageButtons(start, end, imageFrame, images, resolutionsFrame, conflictFrame, track, buttons, page, options):
     imageButtons = []
     imageResolutions = []
-
     for i in range((start + (page * options["Number of Images Per Page (I)"].get())), min((start + (page * options["Number of Images Per Page (I)"].get()) + options["Number of Images Per Page (I)"].get()), end)):
         fileImageImport = images[i][0]
         photo = ImageTk.PhotoImage(fileImageImport)
@@ -118,3 +120,19 @@ def allWidgets(window):
     for item in _list :
         if item.winfo_children() : _list.extend(item.winfo_children())
     return _list
+
+# REVERSE IMAGE SEARCH
+def performSearch(imageCounter):
+    duplicate = False
+    # compare image with other scraped images
+    imageOne = resize(plt.imread(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter - 1) + ".jpg").astype(float), (2 ** 8, 2 ** 8, 3))
+    for i in range(imageCounter - 1):
+        imageTwo = resize(plt.imread(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg").astype(float), (2 ** 8, 2 ** 8, 3))
+        score, diff = structural_similarity(imageOne, imageTwo, full=True, multichannel=True)
+        if score > 0.6:
+            widthOne, heightOne = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter - 1) + ".jpg").size
+            widthTwo, heightTwo = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg").size
+            print(widthOne)
+            print(widthTwo)
+            if abs(widthTwo - widthOne) <= 100 and abs(heightTwo - heightTwo) <= 100: duplicate = True
+    return duplicate

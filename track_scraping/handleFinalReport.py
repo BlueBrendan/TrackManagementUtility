@@ -5,7 +5,7 @@ import getpass
 import os
 
 # import methods
-from track_scraping.conflictPopup.commonOperations import allWidgets
+from commonOperations import allWidgets
 from track_preparation.initiateTrack.commonOperations import resource_path
 
 #main bg color

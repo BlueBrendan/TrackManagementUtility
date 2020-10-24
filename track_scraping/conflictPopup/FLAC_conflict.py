@@ -7,9 +7,9 @@ from io import BytesIO
 import getpass
 
 #import methods\
-from track_scraping.conflictPopup.commonOperations import loadImageButtons
-from track_scraping.conflictPopup.commonOperations import loadNavigation
-from track_scraping.conflictPopup.commonOperations import selectImage
+from commonOperations import loadImageButtons
+from commonOperations import loadNavigation
+from commonOperations import selectImage
 from track_preparation.initiateTrack.commonOperations import resource_path
 
 # main bg color
@@ -249,7 +249,6 @@ def saveImage(track, audio, window):
             image = image.resize((200, 200), Image.ANTIALIAS)
             track.imageSelection = [image, width, height]
         else:
-            print("no thumb")
             image = Image.open(resource_path('Thumbnail.png'))
             image = image.resize((200, 200), Image.ANTIALIAS)
             track.imageSelection = [image, '', '']
