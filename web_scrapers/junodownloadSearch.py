@@ -100,26 +100,28 @@ def junodownloadSearch(filename, track, artistVariations, titleVariations, heade
                                             webScrapingLeftPane[webScrapingPage] = leftComponentFrame
                                         # extract image
                                         if options["Extract Image from Website (B)"].get() == True:
-                                            item = soup.find('div', class_="jw-page")
-                                            item = item.find('img').get('data-src-full')
-                                            # write junodownload image to drive
-                                            with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file: file.write(requests.get(item, headers=headers).content)
-                                            track.URLList.append(item)
-                                            # load file icon
-                                            fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
-                                            width, height = fileImageImport.size
-                                            fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-                                            images.append([fileImageImport, width, height])
-                                            photo = ImageTk.PhotoImage(fileImageImport)
-                                            fileImage = tk.Label(rightComponentFrame, image=photo, bg=bg)
-                                            fileImage.image = photo
-                                            fileImage.pack(padx=(0, 100), anchor="e")
-                                            imageCounter += 1
-                                            refresh(webScrapingWindow)
-                                            webScrapingRightPane[webScrapingPage] = rightComponentFrame
-                                            # perform image scraping if enabled in options
-                                            if options["Reverse Image Search (B)"].get() == True and not track.stop:
-                                                if not performSearch(imageCounter): imageCounter, images, track = reverseImageSearch(link, headers, imageCounter, images, track, options)
+                                            try:
+                                                item = soup.find('div', class_="jw-page")
+                                                item = item.find('img').get('data-src-full')
+                                                # write junodownload image to drive
+                                                with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file: file.write(requests.get(item, headers=headers).content)
+                                                track.URLList.append(item)
+                                                # load file icon
+                                                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
+                                                width, height = fileImageImport.size
+                                                fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+                                                images.append([fileImageImport, width, height])
+                                                photo = ImageTk.PhotoImage(fileImageImport)
+                                                fileImage = tk.Label(rightComponentFrame, image=photo, bg=bg)
+                                                fileImage.image = photo
+                                                fileImage.pack(padx=(0, 100), anchor="e")
+                                                imageCounter += 1
+                                                refresh(webScrapingWindow)
+                                                webScrapingRightPane[webScrapingPage] = rightComponentFrame
+                                                # perform image scraping if enabled in options
+                                                if options["Reverse Image Search (B)"].get() == True and not track.stop:
+                                                    if not performSearch(imageCounter): imageCounter, images, track = reverseImageSearch(link, headers, imageCounter, images, track, options)
+                                            except: pass
                             # avoid counting the same entry twice
                             if not finalMatch:
                                 tk.Label(leftComponentFrame, text="Track did not match with any of the listings", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")

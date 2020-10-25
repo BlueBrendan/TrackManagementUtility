@@ -1,4 +1,3 @@
-from tkinter import *
 from tkinter.tix import *
 from PIL import Image, ImageTk
 import time
@@ -6,11 +5,14 @@ import requests
 from selenium import webdriver
 import getpass
 
+# import methods
+from track_preparation.initiateTrack.commonOperations import resource_path
+
 def reverseImageSearch(link, headers, imageCounter, images, track, options):
     url = "https://images.google.com/searchbyimage?image_url=" + link
     if "https://" in link: link = link.replace("https://", '')
     elif "http://" in link: link = link.replace("http://", '')
-    browser = webdriver.Firefox(executable_path=r'C:/Users/' + str(getpass.getuser()) + '/Documents/Track Management Utility/geckodriver.exe')
+    browser = webdriver.Firefox(executable_path=resource_path('geckodriver.exe'))
     browser.get(url)
     text = browser.find_elements_by_class_name("O1id0e")
     if len(text) > 0:

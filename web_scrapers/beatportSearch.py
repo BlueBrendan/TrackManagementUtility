@@ -3,7 +3,7 @@ from tkinter.tix import *
 import requests
 import getpass
 from PIL import Image, ImageTk
-
+from PIL import UnidentifiedImageError
 import webbrowser
 
 #import methods
@@ -173,20 +173,22 @@ def extractInfo(soup, track, headers, leftComponentFrame, rightComponentFrame, w
                 file.write(requests.get(link, headers=headers).content)
             track.URLList.append(link)
             # load file icon
-            fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
-            width, height = fileImageImport.size
-            fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-            images.append([fileImageImport, width, height])
-            photo = ImageTk.PhotoImage(fileImageImport)
-            fileImage = Label(rightComponentFrame, image=photo, bg=bg)
-            fileImage.image = photo
-            fileImage.pack(padx=(0, 100), anchor="e")
-            refresh(webScrapingWindow)
-            imageCounter+=1
-            webScrapingRightPane[webScrapingPage] = rightComponentFrame
-            # perform image scraping if enabled in options
-            if options["Reverse Image Search (B)"].get() == True and not track.stop:
-                if not performSearch(imageCounter): imageCounter, images, track = reverseImageSearch(link, headers, imageCounter, images, track, options)
+            try:
+                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
+                width, height = fileImageImport.size
+                fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
+                images.append([fileImageImport, width, height])
+                photo = ImageTk.PhotoImage(fileImageImport)
+                fileImage = Label(rightComponentFrame, image=photo, bg=bg)
+                fileImage.image = photo
+                fileImage.pack(padx=(0, 100), anchor="e")
+                refresh(webScrapingWindow)
+                imageCounter+=1
+                webScrapingRightPane[webScrapingPage] = rightComponentFrame
+                # perform image scraping if enabled in options
+                if options["Reverse Image Search (B)"].get() == True and not track.stop:
+                    if not performSearch(imageCounter): imageCounter, images, track = reverseImageSearch(link, headers, imageCounter, images, track, options)
+            except UnidentifiedImageError: pass
     return imageCounter, images, webScrapingLeftPane, webScrapingRightPane
 
 def refresh(webScrapingWindow):
