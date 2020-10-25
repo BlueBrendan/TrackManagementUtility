@@ -337,6 +337,15 @@ def addUncapitalizedList(keyword, popup):
     file.close()
     popup.destroy()
 
+# handle artist and title renaming for fixed naming convention
+def handleStaticNamingConvention(audio, filename, artist, title, directory, namingConvention):
+    extension = filename[filename.rfind('.'):]
+    # rename track so that the artist is appended at the front of the title
+    if ' - ' not in filename and namingConvention == 'Artist - Title': audio, filename = rename(directory, filename, artist, title, extension, "Artist - Title")
+    # rename track so that the artist is removed from the title
+    elif ' - ' in filename and namingConvention == 'Title': audio, filename = rename(directory, filename, artist, title, extension, "Title")
+    return audio, filename
+
 # accessing images
 def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))

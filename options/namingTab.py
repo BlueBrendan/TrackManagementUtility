@@ -95,12 +95,19 @@ def namingTab(tab_parent, options, CONFIG_FILE):
     formatFrame = tk.Frame(rightPane, bg=bg)
     formatFrame.pack(anchor="w")
     tk.Label(formatFrame, text="File Format", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(padx=(10, 0), pady=(20, 5), anchor="w")
-    # frame for first radio button
+
+    # frame for dynamic radio button
+    dynamicButtonFrame = tk.Frame(formatFrame, bg=bg)
+    dynamicButtonFrame.pack(anchor="w")
+    tk.Radiobutton(dynamicButtonFrame, variable=options["Audio naming format (S)"], value="Dynamic", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Dynamic"), activebackground=bg, selectcolor=bg, bg=bg, fg="white").pack(padx=(20, 0), side="left")
+    tk.Label(dynamicButtonFrame, text="Dynamic", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+
+    # frame for artist-title radio button
     artistTitleButtonFrame = tk.Frame(formatFrame, bg=bg)
     artistTitleButtonFrame.pack(anchor="w")
     tk.Radiobutton(artistTitleButtonFrame, variable=options["Audio naming format (S)"], value="Artist - Title", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Artist - Title"), activebackground=bg, selectcolor=bg, bg=bg, fg="white").pack(padx=(20, 0), side="left")
     tk.Label(artistTitleButtonFrame, text="Artist - Title", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
-    # frame for second radio button
+    # frame for title radio button
     titleButtonFrame = tk.Frame(formatFrame, bg=bg)
     titleButtonFrame.pack(anchor="w")
     tk.Radiobutton(formatFrame, variable=options["Audio naming format (S)"], value="Title", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Title"), activebackground=bg, selectcolor=bg, bg=bg, fg="white").pack(padx=(20, 0), side="left")

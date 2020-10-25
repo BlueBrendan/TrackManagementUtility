@@ -8,8 +8,9 @@ import os
 #import methods
 from track_preparation.handleDiscrepancy import handleArtistTitleDiscrepancy
 from track_preparation.handleDiscrepancy import handleTitleDiscrepancy
-from track_preparation.initiateTrack.commonOperations import checkCapitalization
 from track_preparation.initiateTrack.commonOperations import handleTypo
+from track_preparation.initiateTrack.commonOperations import checkCapitalization
+from track_preparation.initiateTrack.commonOperations import handleStaticNamingConvention
 from track_preparation.initiateTrack.commonOperations import rename
 from track_preparation.initiateTrack.commonOperations import saveThumbnail
 
@@ -98,21 +99,15 @@ def initiateWAVE(filename, directory, thumbnails, options):
                 audio["TIT2"] = TIT2(encoding=3, text=title)
                 audio.save()
             else: audio, filename = compareTitle(audio, title, filename, directory, options)
+
+
     # handle naming format and typo check
-    if options["Audio naming format (S)"].get() == "Artist - Title":
-        # rename track so that the artist is appended at the front of the title
-        if ' - ' not in filename:
-            artist = str(audio["TPE1"])
-            extension = filename[filename.rfind('.'):]
-            audio, filename = rename(directory, filename, artist, title, extension, "Artist - Title")
-        if options["Scan Filename and Tags (B)"].get() == True and type(audio) != bool: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Artist - Title")
-    elif options["Audio naming format (S)"].get() == "Title":
-        # rename track so that the artist is removed from the title
-        if ' - ' in filename:
-            artist = str(audio["TPE1"])
-            extension = filename[filename.rfind('.'):]
-            audio, filename = rename(directory, filename, artist, title, extension, "Title")
-        if options["Scan Filename and Tags (B)"].get() == True and type(audio) != bool: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, "Title")
+    if options["Audio naming format (S)"].get() == "Artist - Title" or options['Audio naming format (S)'].get() == 'Title':
+        namingConvention = options['Audio naming format (S)'].get()
+        artist = str(audio["TPE1"])
+        audio, filename = handleStaticNamingConvention(audio, filename, artist, title, directory, namingConvention)
+        if options["Scan Filename and Tags (B)"].get() == True and type(audio) != bool: audio, filename, options = extractArtistAndTitle(audio, filename, directory, options, namingConvention)
+
     if type(audio) != bool:
         # save thumbnail to list
         image = audio["APIC:"]
