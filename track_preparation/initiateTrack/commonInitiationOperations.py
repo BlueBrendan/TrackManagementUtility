@@ -89,14 +89,14 @@ def saveThumbnail(image, thumbnails):
     return thumbnails
 
 def rename(directory, filename, artist, title, extension, namingConvention):
-    if namingConvention == "Artist - Title":
+    if namingConvention == "Artist - Title" or (namingConvention == 'Dynamic' and ' - ' in filename):
         try:
             os.rename(directory + '/' + filename, str(directory) + '/' + str(artist) + ' - ' + str(title) + extension)
             filename = str(artist) + ' - ' + str(title) + extension
         except PermissionError:
             messagebox.showinfo("Permission Error", "File cannot be renamed, it may still be open")
             return False, False
-    elif namingConvention == "Title":
+    elif namingConvention == "Title" or (namingConvention == 'Dynamic' and ' - ' not in filename):
         try:
             os.rename(directory + '/' + filename, str(directory) + '/' + str(title) + extension)
             filename = str(title) + extension
@@ -139,6 +139,35 @@ def rename(directory, filename, artist, title, extension, namingConvention):
         audio['title'] = title
         audio.save()
         return audio, filename
+
+def checkTypos(audio, artist, title, directory, filename, extension, namingConvention, options):
+    # scan artist for numbering prefix
+    if options["Check for Numbering Prefix (B)"].get() == True:
+        if '.' in artist:
+            artistPrefix = artist[:artist.index('.') + 1]
+            newArtist = artist[artist.index('.') + 1:].strip()
+            newTitle = title
+            if '.' in artistPrefix[0:5]:
+                if any(char.isdigit() for char in artistPrefix[0:artistPrefix.index('.')]):
+                    artist, title, options, renameFile = handleTypo(artist, newArtist, title, newTitle, "Prefix", options)
+                    if renameFile==True: audio, filename = rename(directory, filename, artist, title, extension, namingConvention)
+
+    # scan artist and title for hyphens
+    if options["Check for Extraneous Hyphens (B)"].get() == True:
+        if '-' in artist or '-' in title:
+            newArtist = artist
+            newTitle = title
+            if '-' in artist: newArtist = artist.replace('-', ' ')
+            if '-' in title: newTitle = title.replace('-', ' ')
+            artist, title, options, renameFile = handleTypo(artist, newArtist, title, newTitle, "Hyphen", options)
+            if renameFile == True: audio, filename = rename(directory, filename, artist, title, extension, namingConvention)
+
+    # scan artist and title for capitalization
+    if options["Check for Capitalization (B)"].get()==True:
+        if namingConvention == 'Dynamic': audio, filename = checkCapitalization(artist, title, filename, directory, audio, options, extension, 'Dynamic')
+        if namingConvention == "Artist - Title": audio, filename = checkCapitalization(artist, title, filename, directory, audio, options, extension, "Artist - Title")
+        elif namingConvention == "Title": audio, filename = checkCapitalization(artist, title, filename, directory, audio, options, extension, "Title")
+    return audio, filename, options
 
 def handleTypo(artist, newArtist, title, newTitle, type, options):
     global change, word, capitalize, uncapitalize

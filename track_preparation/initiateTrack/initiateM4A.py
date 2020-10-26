@@ -2,13 +2,11 @@ from mutagen.mp4 import MP4
 from tkinter import messagebox
 from PIL import Image
 from io import BytesIO
-import os
 
 #import methods
 from track_preparation.handleDiscrepancy import handleArtistTitleDiscrepancy
 from track_preparation.handleDiscrepancy import handleTitleDiscrepancy
-from track_preparation.initiateTrack.commonInitiationOperations import handleTypo
-from track_preparation.initiateTrack.commonInitiationOperations import checkCapitalization
+from track_preparation.initiateTrack.commonInitiationOperations import checkTypos
 from track_preparation.initiateTrack.commonInitiationOperations import handleStaticNamingConvention
 from track_preparation.initiateTrack.commonInitiationOperations import rename
 from track_preparation.initiateTrack.commonInitiationOperations import saveThumbnail
@@ -118,34 +116,6 @@ def extractArtistAndTitle(audio, filename, directory, options, namingConvention)
             title = filename[:-5]
     # run through list of possible typos
     if options["Scan Filename and Tags (B)"]: audio, filename, options = checkTypos(audio, artist, title, directory, filename, extension, namingConvention, options)
-    return audio, filename, options
-
-def checkTypos(audio, artist, title, directory, filename, extension, namingConvention, options):
-    # scan artist for numbering prefix
-    if options["Check for Numbering Prefix (B)"].get() == True:
-        if '.' in artist:
-            artistPrefix = artist[:artist.index('.') + 1]
-            newArtist = artist[artist.index('.') + 1:].strip()
-            newTitle = title
-            if '.' in artistPrefix[0:5]:
-                if any(char.isdigit() for char in artistPrefix[0:artistPrefix.index('.')]):
-                    artist, title, options, renameFile = handleTypo(artist, newArtist, title, newTitle, "Prefix", options)
-                    if renameFile == True: audio, filename = rename(directory, filename, artist, title, extension, namingConvention)
-
-    # scan artist and title for hyphens
-    if options["Check for Extraneous Hyphens (B)"].get() == True:
-        if '-' in artist or '-' in title:
-            newArtist = artist
-            newTitle = title
-            if '-' in artist: newArtist = artist.replace('-', ' ')
-            if '-' in title: newTitle = title.replace('-', ' ')
-            artist, title, options, renameFile = handleTypo(artist, newArtist, title, newTitle, "Hyphen", options)
-            if renameFile == True: audio, filename = rename(directory, filename, artist, title, extension, namingConvention)
-
-    # scan artist and title for capitalization
-    if options["Check for Capitalization (B)"].get()==True:
-        if namingConvention == "Artist - Title":audio, filename = checkCapitalization(artist, title, filename, directory, audio, options, extension, "Artist - Title")
-        elif namingConvention == "Title":audio, filename = checkCapitalization(artist, title, filename, directory, audio, options, extension, "Title")
     return audio, filename, options
 
 def compareArtistAndTitle(audio, artist, title, filename, directory, options):

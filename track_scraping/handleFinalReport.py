@@ -115,7 +115,8 @@ def renderImage(contentFrame, imageSelections, imageCounter, thumbnails, index):
         fileImage.image = photo
         fileImage.pack(side="top", pady=(10, 15), anchor="n")
         # resolution
-        tk.Label(contentFrame, text=str(imageSelections[index][1]) + "x" + str(imageSelections[index][2]), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(0, 10), anchor="n")
+        if imageSelections[index][1] == '' and imageSelections[index][2] == '': tk.Label(contentFrame, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(0, 10))
+        else: tk.Label(contentFrame, text=str(imageSelections[index][1]) + "x" + str(imageSelections[index][2]), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(0, 10), anchor="n")
     # load thumbnail image
     else:
         fileImageImport = thumbnails[index][0]
