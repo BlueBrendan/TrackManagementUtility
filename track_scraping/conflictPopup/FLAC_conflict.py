@@ -6,11 +6,11 @@ from PIL import Image, ImageTk
 from io import BytesIO
 import getpass
 
-#import methods\
+#import methods
 from commonOperations import loadImageButtons
 from commonOperations import loadNavigation
 from commonOperations import selectImage
-from track_preparation.initiateTrack.commonOperations import resource_path
+from commonOperations import resource_path
 
 # main bg color
 bg = "#282f3b"

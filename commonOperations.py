@@ -7,9 +7,6 @@ from skimage.metrics import structural_similarity
 from skimage.transform import resize
 import matplotlib.pyplot as plt
 
-# import methods
-from track_preparation.initiateTrack.commonOperations import resource_path
-
 # main bg color
 bg = "#282f3b"
 # secondary color
@@ -134,3 +131,8 @@ def performSearch(imageCounter):
             widthTwo, heightTwo = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg").size
             if abs(widthTwo - widthOne) <= 100 and abs(heightTwo - heightTwo) <= 100: duplicate = True
     return duplicate
+
+# accessing images
+def resource_path(relative_path):
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)

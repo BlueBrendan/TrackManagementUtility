@@ -24,7 +24,7 @@ from track_scraping.scrapeWeb import scrapeWeb
 from track_scraping.handleFinalReport import handleFinalReport
 from web_scrapers.webScrapingWindowControl import enableControls
 from web_scrapers.webScrapingWindowControl import rerenderControls
-from track_preparation.initiateTrack.commonOperations import resource_path
+from commonOperations import resource_path
 
 #main bg color
 bg = "#282f3b"

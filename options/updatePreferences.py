@@ -6,7 +6,7 @@ import getpass
 from options.webScrapingTab import webScrapingTab
 from options.taggingTab import taggingTab
 from options.namingTab import namingTab
-from track_preparation.initiateTrack.commonOperations import resource_path
+from commonOperations import resource_path
 
 #global variables
 global tagList

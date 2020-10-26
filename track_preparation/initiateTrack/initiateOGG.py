@@ -8,11 +8,11 @@ import base64
 #import methods
 from track_preparation.handleDiscrepancy import handleArtistTitleDiscrepancy
 from track_preparation.handleDiscrepancy import handleTitleDiscrepancy
-from track_preparation.initiateTrack.commonOperations import handleTypo
-from track_preparation.initiateTrack.commonOperations import checkCapitalization
-from track_preparation.initiateTrack.commonOperations import handleStaticNamingConvention
-from track_preparation.initiateTrack.commonOperations import rename
-from track_preparation.initiateTrack.commonOperations import saveThumbnail
+from track_preparation.initiateTrack.commonInitiationOperations import handleTypo
+from track_preparation.initiateTrack.commonInitiationOperations import checkCapitalization
+from track_preparation.initiateTrack.commonInitiationOperations import handleStaticNamingConvention
+from track_preparation.initiateTrack.commonInitiationOperations import rename
+from track_preparation.initiateTrack.commonInitiationOperations import saveThumbnail
 
 def initiateOGG(filename, directory, thumbnails, options):
     audio = OggVorbis(str(directory) + "/" + str(filename))

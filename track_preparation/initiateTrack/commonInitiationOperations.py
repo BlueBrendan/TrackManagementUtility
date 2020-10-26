@@ -9,9 +9,11 @@ import tkinter as tk
 from PIL import Image
 from tkinter import messagebox
 import os
-import sys
 import getpass
 import math
+
+# import methods
+from commonOperations import resource_path
 
 # main bg color
 bg = "#282f3b"
@@ -291,16 +293,6 @@ def handleDiscrepancy(original, new, index, type, options):
         return originalName, options, True
     return originalName, options, False
 
-def setChange(popup):
-    global change
-    change = True
-    popup.destroy()
-
-def closePopup(popup):
-    global change
-    change = False
-    popup.destroy()
-
 def addCapitalizedList(keyword, popup):
     global change, capitalize, uncapitalize
     change = True
@@ -346,7 +338,12 @@ def handleStaticNamingConvention(audio, filename, artist, title, directory, nami
     elif ' - ' in filename and namingConvention == 'Title': audio, filename = rename(directory, filename, artist, title, extension, "Title")
     return audio, filename
 
-# accessing images
-def resource_path(relative_path):
-    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
-    return os.path.join(base_path, relative_path)
+def setChange(popup):
+    global change
+    change = True
+    popup.destroy()
+
+def closePopup(popup):
+    global change
+    change = False
+    popup.destroy()

@@ -7,7 +7,7 @@ from PIL import Image, ImageTk
 from compareDrives import compareDrives
 from track_preparation.scanTagsOnline import scanTagsOnline
 from options.updatePreferences import updatePreferences
-from track_preparation.initiateTrack.commonOperations import resource_path
+from commonOperations import resource_path
 
 # #add proxima nova regular
 # pyglet.font.add_file("C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Proxima Nova Regular.ttf")

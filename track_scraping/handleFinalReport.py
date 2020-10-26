@@ -6,7 +6,7 @@ import os
 
 # import methods
 from commonOperations import allWidgets
-from track_preparation.initiateTrack.commonOperations import resource_path
+from commonOperations import resource_path
 
 #main bg color
 bg = "#282f3b"

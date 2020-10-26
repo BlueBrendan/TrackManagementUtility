@@ -6,7 +6,7 @@ from selenium import webdriver
 import getpass
 
 # import methods
-from track_preparation.initiateTrack.commonOperations import resource_path
+from commonOperations import resource_path
 
 def reverseImageSearch(link, headers, imageCounter, images, track, options):
     url = "https://images.google.com/searchbyimage?image_url=" + link
