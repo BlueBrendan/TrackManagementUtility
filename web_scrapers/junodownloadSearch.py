@@ -120,7 +120,7 @@ def junodownloadSearch(filename, track, artistVariations, titleVariations, heade
                                                 webScrapingRightPane[webScrapingPage] = rightComponentFrame
                                                 # perform image scraping if enabled in options
                                                 if options["Reverse Image Search (B)"].get() == True and not track.stop:
-                                                    if not performSearch(imageCounter): imageCounter, images, track = reverseImageSearch(link, headers, imageCounter, images, track, options)
+                                                    if not performSearch(imageCounter): imageCounter, images, track = reverseImageSearch(item, headers, imageCounter, images, track, options)
                                             except: pass
                             # avoid counting the same entry twice
                             if not finalMatch:

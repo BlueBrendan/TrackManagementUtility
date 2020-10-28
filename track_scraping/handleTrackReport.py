@@ -52,7 +52,7 @@ def handleTrackReport(track, audio, filename, webScrapingWindow, characters, opt
             modeConflict(track, track.genreList, "genre")
             conflict = True
 
-    #update audio tags
+    # update audio tags
     if conflict == True or imageCounter > 0:
         if filename.endswith(".flac"): FLAC_conflict(audio, track, options, initialCounter, imageCounter, images, informalTagDict)
         elif filename.endswith(".aiff") or filename.endswith(".mp3") or filename.endswith(".wav"): ID3_conflict(audio, track, options, initialCounter, imageCounter, images, informalTagDict)

@@ -65,6 +65,8 @@ def fileSelect(options, imageCounter, CONFIG_FILE, window):
         webScrapingRightPane = {}
         webScrapingLinks = {}
         webScrapingPage = 0
+        track = ''
+        browser = ''
         for directory in directories:
             filename = os.path.basename(directory)
             directory = os.path.dirname(directory)
@@ -73,39 +75,42 @@ def fileSelect(options, imageCounter, CONFIG_FILE, window):
                 messagebox.showinfo("Error", extension + " is not a supported format")
                 if str(directory) + "/" + str(filename) == str(directories[len(directories)-1]): webScrapingWindow.destroy()
             audio = False
-            track = ''
+            if hasattr(track, 'browser'): browser = track.browser
             informalTagDict = ''
             #handle FLAC file
             if filename.endswith('.flac') and type(checkFileValidity(filename, directory, "FLAC"))!=str:
                 #handle naming preferences, tag settings, and replay gain
                 audio, filename, informalTagDict, thumbnails, options = initiateFLAC(filename, directory, thumbnails, options)
-                if type(audio) != bool: track = FLAC_Track(audio, options, informalTagDict)
+                if type(audio) != bool: track = FLAC_Track(audio, options, informalTagDict, browser)
             #handle AIFF file
             elif filename.endswith('.aiff') and type(checkFileValidity(filename, directory, "AIFF"))!=str:
                 audio, filename, informalTagDict, thumbnails, options = initiateAIFF(filename, directory, thumbnails, options)
-                if type(audio) != bool: track = ID3_Track(audio, options, informalTagDict)
+                if type(audio) != bool: track = ID3_Track(audio, options, informalTagDict, browser)
             #handle MP3 file
             elif filename.endswith('mp3') and type(checkFileValidity(filename, directory, "MP3"))!=str:
                 audio, filename, informalTagDict, thumbnails, options = initiateMP3(filename, directory, thumbnails, options)
-                if type(audio) != bool: track = ID3_Track(audio, options, informalTagDict)
+                if type(audio) != bool: track = ID3_Track(audio, options, informalTagDict, browser)
             #handle OGG file
             elif filename.endswith('.ogg') and type(checkFileValidity(filename, directory, "OGG"))!=str:
                 audio, filename, informalTagDict, thumbnails, options = initiateOGG(filename, directory, thumbnails, options)
-                if type(audio) != bool: track = Vorbis_Track(audio, options, informalTagDict)
+                if type(audio) != bool: track = Vorbis_Track(audio, options, informalTagDict, browser)
             #handle WAV file
             elif filename.endswith('.wav') and type(checkFileValidity(filename, directory, "WAV"))!=str:
                 audio, filename, informalTagDict, thumbnails, options = initiateWAVE(filename, directory, thumbnails, options)
-                if type(audio) != bool: track = ID3_Track(audio, options, informalTagDict)
+                if type(audio) != bool: track = ID3_Track(audio, options, informalTagDict, browser)
             #handle AAC and ALAC files
             elif filename.endswith('.m4a') and type(checkFileValidity(filename, directory, "M4A"))!=str:
                 audio, filename, informalTagDict, thumbnails, options = initiateM4A(filename, directory, thumbnails, options)
-                if type(audio) != bool: track = M4A_Track(audio, options, informalTagDict)
+                if type(audio) != bool: track = M4A_Track(audio, options, informalTagDict, browser)
             # search web for tags
             if type(audio) != bool:
                 reportTitle, reportResults, webScrapingWindow, characters, imageCounter, imageSelection, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame = scrapeWeb(track, audio, filename, webScrapingWindow, characters, options, imageCounter, images, informalTagDict, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, labelFrame, searchFrame, pageFrame, componentFrame)
                 finalTitles.append(reportTitle)
                 finalResults.append(reportResults)
                 imageSelections.append(imageSelection)
+        # close selenium browser if it exists
+        if track!='' and track.browser != '': track.browser.quit()
+
         # enable controls in web scraping window
         enableControls(searchFrame, pageFrame, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame)
         handleFinalReport(finalTitles, finalResults, characters, imageCounter, imageSelections, webScrapingWindow, thumbnails, options, CONFIG_FILE)
