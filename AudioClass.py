@@ -1,3 +1,8 @@
+from PIL import Image
+from mutagen.flac import Picture
+from io import BytesIO
+import base64
+
 # class for the FLAC format
 class FLAC_Track:
     def __init__(self, audio, options, informalTagDict, browser):
@@ -7,6 +12,13 @@ class FLAC_Track:
         if browser != '': self.browser = browser
         else: self.browser = ''
         self.stop = False
+        picture = audio.pictures
+        if len(picture) > 0:
+            stream = BytesIO(picture[0].data)
+            image = Image.open(stream).convert("RGBA")
+            width, height = image.size
+            if width >= int(options["Stop Search After Finding Image of Resolution (S)"].get().split('x')[0]) and height >= int(options["Stop Search After Finding Image of Resolution (S)"].get().split('x')[1]): self.stop = True
+            stream.close()
 
 # class for all file formats that use Vorbis tags (OGG)
 class Vorbis_Track:
@@ -17,6 +29,16 @@ class Vorbis_Track:
         if browser != '': self.browser = browser
         else: self.browser = ''
         self.stop = False
+        if "metadata_block_picture" in audio:
+            imageFrame = audio["metadata_block_picture"]
+            if imageFrame[0] != '':
+                data = base64.b64decode(imageFrame[0])
+                image = Picture(data)
+                stream = BytesIO(image.data)
+                image = Image.open(stream).convert("RGBA")
+                width, height = image.size
+                if width >= int(options["Stop Search After Finding Image of Resolution (S)"].get().split('x')[0]) and height >= int(options["Stop Search After Finding Image of Resolution (S)"].get().split('x')[1]): self.stop = True
+                stream.close()
 
 # class for all file formats that use ID3 tags (MP3, AIFF)
 class ID3_Track:
@@ -27,6 +49,14 @@ class ID3_Track:
         if browser != '': self.browser = browser
         else: self.browser = ''
         self.stop = False
+        if 'APIC:' in audio:
+            image = audio["APIC:"]
+            if image != b'':
+                stream = BytesIO(image.data)
+                image = Image.open(stream).convert("RGBA")
+                width, height = image.size
+                if width >= int(options["Stop Search After Finding Image of Resolution (S)"].get().split('x')[0]) and height >= int(options["Stop Search After Finding Image of Resolution (S)"].get().split('x')[1]): self.stop = True
+                stream.close()
 
 # class for ALAC file format (MP4)
 class M4A_Track:
@@ -43,3 +73,11 @@ class M4A_Track:
         if browser != '': self.browser = browser
         else: self.browser = ''
         self.stop = False
+        if "covr" in audio:
+            image = audio["covr"]
+            if len(image) != 0:
+                stream = BytesIO(image[0])
+                image = Image.open(stream).convert("RGBA")
+                width, height = image.size
+                if width >= int(options["Stop Search After Finding Image of Resolution (S)"].get().split('x')[0]) and height >= int(options["Stop Search After Finding Image of Resolution (S)"].get().split('x')[1]): self.stop = True
+                stream.close()

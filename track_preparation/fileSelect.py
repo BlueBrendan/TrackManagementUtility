@@ -1,5 +1,5 @@
 from tkinter import filedialog
-from mutagen.flac import FLAC, Picture
+from mutagen.flac import FLAC
 from mutagen.aiff import AIFF
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4

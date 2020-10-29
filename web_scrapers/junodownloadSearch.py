@@ -99,7 +99,7 @@ def junodownloadSearch(filename, track, artistVariations, titleVariations, heade
                                                 track.genreList.append(genre)
                                             webScrapingLeftPane[webScrapingPage] = leftComponentFrame
                                         # extract image
-                                        if options["Extract Image from Website (B)"].get() == True:
+                                        if options["Extract Image from Website (B)"].get() == True and track.stop == False:
                                             try:
                                                 item = soup.find('div', class_="jw-page")
                                                 item = item.find('img').get('data-src-full')

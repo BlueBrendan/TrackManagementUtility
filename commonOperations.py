@@ -129,7 +129,9 @@ def performSearch(imageCounter):
         if score > 0.6:
             widthOne, heightOne = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter - 1) + ".jpg").size
             widthTwo, heightTwo = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg").size
-            if abs(widthTwo - widthOne) <= 100 and abs(heightTwo - heightTwo) <= 100: duplicate = True
+            if abs(widthTwo - widthOne) <= 200 and abs(heightTwo - heightTwo) <= 200:
+                duplicate = True
+                break
     return duplicate
 
 # accessing images

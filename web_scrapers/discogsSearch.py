@@ -149,7 +149,7 @@ def discogsRelease(soup, track, headers, webScrapingWindow, webScrapingLeftPane,
     try:
         image = soup.find('div', class_="image_gallery image_gallery_large")['data-images']
         # extract image
-        if "full" in image and ".jpg" in image and options["Extract Image from Website (B)"].get() == True:
+        if "full" in image and ".jpg" in image and options["Extract Image from Website (B)"].get() == True and track.stop == False:
             link = image[image.index('full": ')+8:image.index(".jpg", image.index("full"))+4]
             # check
             if link[len(link)-5:len(link)-4]!='g': link = link + '.jpg'
@@ -171,10 +171,6 @@ def discogsRelease(soup, track, headers, webScrapingWindow, webScrapingLeftPane,
             # perform image scraping if enabled in options
             if options["Reverse Image Search (B)"].get() == True and not track.stop:
                 if not performSearch(imageCounter): imageCounter, images, track = reverseImageSearch(link, headers, imageCounter, images, track, options)
-        else:
-            tk.Label(leftComponentFrame, text="Track failed runtime comparison test", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
-            webScrapingLeftPane[webScrapingPage] = leftComponentFrame
-            refresh(webScrapingWindow)
     except: pass
     return imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage
 

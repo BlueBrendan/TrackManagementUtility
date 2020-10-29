@@ -164,7 +164,7 @@ def extractInfo(soup, track, headers, leftComponentFrame, rightComponentFrame, w
                 track.genreList.append(genre)
     webScrapingLeftPane[webScrapingPage] = leftComponentFrame
     #extract image
-    if options["Extract Image from Website (B)"].get() == True:
+    if options["Extract Image from Website (B)"].get() == True and track.stop == False:
         link = soup.find('img', class_="interior-track-release-artwork")
         if link!=None:
             link = link['src']

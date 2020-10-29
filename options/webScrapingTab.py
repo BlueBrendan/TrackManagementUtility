@@ -43,12 +43,7 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     tk.Checkbutton(discogsFrame, variable=options['Scrape Discogs (B)'], onvalue=True, offvalue=False,  activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scrape Discogs (B)', suboptions, options), bg=bg).pack(padx=(20, 0), side="left")
     tk.Label(discogsFrame, text="Discogs", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
 
-    # web image option
-    imageCheckFrame = tk.Frame(rightComponentFrame, bg=bg)
-    imageCheckFrame.pack(anchor="w")
-    extractCheckbox = tk.Checkbutton(imageCheckFrame, variable=options['Extract Image from Website (B)'], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Extract Image from Website (B)', optionsDict, options), bg=bg)
-    extractCheckbox.pack(padx=(20, 0), side="left")
-    tk.Label(imageCheckFrame, text="Extract Image from Website", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+
 
     # image scraping settings
     tk.Label(tab1, text="Image Scraping", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(padx=(10, 0), pady=(20, 5), anchor="w")
@@ -57,8 +52,17 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     suboptions = []
     imageOptionsContainer = tk.Frame(tab1, bg=bg)
     imageOptionsContainer.pack(fill=X)
+
+
     leftImageFrame = tk.Frame(imageOptionsContainer, bg=bg)
     leftImageFrame.pack(side="left", anchor="w")
+    # web image option
+    imageCheckFrame = tk.Frame(leftImageFrame, bg=bg)
+    imageCheckFrame.pack(anchor="w")
+    extractCheckbox = tk.Checkbutton(imageCheckFrame, variable=options['Extract Image from Website (B)'], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Extract Image from Website (B)', optionsDict, options), bg=bg)
+    extractCheckbox.pack(padx=(20, 0), side="left")
+    tk.Label(imageCheckFrame, text="Extract Image from Website", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+
     # reverse image search options
     reverseImageFrame = tk.Frame(leftImageFrame, bg=bg)
     reverseImageFrame.pack(anchor="w")
@@ -135,6 +139,16 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     heightEntrybox.pack(side="left")
     optionsDict['Threshold to Stop Search (px)'] = [widthEntrybox, heightEntrybox]
     tk.Label(disableResolutionFrame, text=" Threshold to Stop Search (px)", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+
+    # hide selenium window frame
+    hideSeleniumFrame = tk.Frame(rightImageFrame, bg=bg)
+    hideSeleniumFrame.pack(padx=(40, 0), anchor="w")
+    # disable search checkbox
+    hideSeleniumCheckbox = tk.Checkbutton(hideSeleniumFrame, variable=options['Hide Selenium Browser (B)'], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Hide Selenium Browser (B)', optionsDict, options), bg=bg)
+    hideSeleniumCheckbox.pack(side="left")
+    if options["Extract Image from Website (B)"].get() == False or options["Reverse Image Search (B)"].get() == False: hideSeleniumCheckbox.config(state=DISABLED)
+    # disable resolution frame
+    tk.Label(hideSeleniumFrame, text="Hide Selenium Browser", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
 
 def resolutionEntrybox(CONFIG_FILE, term, value, dimension):
     config_file = open(CONFIG_FILE, 'r').read()
