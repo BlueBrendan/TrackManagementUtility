@@ -89,10 +89,10 @@ def modeConflict(track, list, type):
     selection = tk.StringVar()
     selection.set(None)
     for i in range(len(multimode(list))):
-        option = tk.Radiobutton(radioFrame, value=list[i], variable=selection, command=lambda i=i: selectOption(track, list, i, selection, selectButton, type), activebackground=bg, selectcolor=bg, bg=bg, fg="white")
+        option = tk.Radiobutton(radioFrame, variable=selection, value=multimode(list)[i], command=lambda i=i: selectOption(track, multimode(list), i, selection, selectButton, type), activebackground=bg, selectcolor=bg, bg=bg, fg="white")
         option.deselect()
         option.pack(padx=(20, 0), side="left")
-        tk.Label(radioFrame, text=list[i], font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+        tk.Label(radioFrame, text=multimode(list)[i], font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     selectButton = tk.Button(popup, text="Select", font=("Proxima Nova Rg", 11), state=tk.DISABLED, fg="white", bg=bg, command=popup.destroy)
     selectButton.pack(pady=(30, 0))
     original = ''

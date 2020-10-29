@@ -18,17 +18,23 @@ def buildVariations(artist, title):
         artist = artist[0:var] + "-" + artist[var + 1:]
     artistVariations.append(artist.lower())
 
-    triggerStrings = ["é", "(", "'s", "pt.", ".", ",", "&", "-mix", "-extended", "-remix", "-version"]
+    triggerStrings = ["feat.", "é", "(", "'s", "pt.", ".", ",", "&", "-mix", "-extended", "-remix", "-version"]
     title = title.lower()
     newTitle = title.lower()
     for string in triggerStrings:
         if string.lower() in newTitle:
-            # unique character that implies the existence of )
-            if string == "(":
-                if ")" in title:
-                    newTitle = str(newTitle[0:newTitle.index("(")]) + str(newTitle[newTitle.index("(") + len("("):])
-                    newTitle = str(newTitle[0:newTitle.index(")")]) + str(newTitle[newTitle.index(")") + len(")"):])
-                    titleVariations.append(newTitle.lower())
+            if string == 'feat.':
+                if '(' in title:
+                    newTitle = str(newTitle[0:newTitle.index("feat.")]) + str(newTitle[newTitle.index("("):])
+                    titleVariations.append(newTitle)
+                else:
+                    newTitle = str(newTitle[0:newTitle.index("feat.")])
+                    titleVariations.append(newTitle)
+            # unique character ( implies the existence of )
+            elif string == "(" and ")" in title:
+                newTitle = str(newTitle[0:newTitle.index("(")]) + str(newTitle[newTitle.index("(") + len("("):])
+                newTitle = str(newTitle[0:newTitle.index(")")]) + str(newTitle[newTitle.index(")") + len(")"):])
+                titleVariations.append(newTitle.lower())
             elif string == "&":
                 titleVariations.append(newTitle.replace("&", "and").lower())
                 titleVariations.append(title.replace("&", "and").lower())
