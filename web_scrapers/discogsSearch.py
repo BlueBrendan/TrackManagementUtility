@@ -20,7 +20,7 @@ bg = "#282f3b"
 #secondary color
 secondary_bg = "#364153"
 
-def discogsSearch(filename, track, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, labelFrame, searchFrame, pageFrame, componentFrame, audio, options, imageCounter, images):
+def discogsSearch(filename, track, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, labelFrame, searchFrame, pageFrame, componentFrame, audio, options, initialCounter, imageCounter, images):
     # THIRD QUERY - DISCOGS
     widgetList = allWidgets(searchFrame)
     for item in widgetList: item.pack_forget()
@@ -36,14 +36,14 @@ def discogsSearch(filename, track, artistVariations, titleVariations, headers, s
             if "www.discogs.com" in str(result.find('a').get('href')).lower().split('&')[0]:
                 searchTitle = track.title
                 if ' (' in track.title and ')' in track.title: searchTitle = track.title[:track.title.index(' (')]
-                if searchTitle.lower() in str(result).lower(): imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, leftComponentFrame, rightComponentFrame, componentFrame, titleVariations, audio, options, imageCounter, images)
+                if searchTitle.lower() in str(result).lower(): imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, leftComponentFrame, rightComponentFrame, componentFrame, titleVariations, audio, options, initialCounter, imageCounter, images)
                 else:
                     for variation in titleVariations:
                         variation = variation.replace('-', ' ')
-                        if variation.lower() in str(result).lower(): imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, leftComponentFrame, rightComponentFrame, componentFrame, titleVariations, audio, options, imageCounter, images)
+                        if variation.lower() in str(result).lower(): imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, leftComponentFrame, rightComponentFrame, componentFrame, titleVariations, audio, options, initialCounter, imageCounter, images)
     return track, imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame
 
-def searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, leftComponentFrame, rightComponentFrame, componentFrame, titleVariations, audio, options, imageCounter, images):
+def searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, leftComponentFrame, rightComponentFrame, componentFrame, titleVariations, audio, options, initialCounter, imageCounter, images):
     link = str(result.find('a').get('href')).split('&')[0].split('=')[1]
     soup = prepareRequest(link, headers, webScrapingWindow, leftComponentFrame)
     if soup != False:
@@ -81,7 +81,7 @@ def searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, 
                             if remix.lower() not in name.lower() and '(' in name: name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
                     if track.title.lower() == name.lower():
                         finalMatch = True
-                        imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = discogsRelease(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, imageCounter, images)
+                        imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = discogsRelease(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
                         break
                     else:
                         for title in titleVariations:
@@ -89,7 +89,7 @@ def searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, 
                             mismatch = compareTokens(title, name)
                             if mismatch == False:
                                 finalMatch = True
-                                imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = discogsRelease(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, imageCounter, images)
+                                imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = discogsRelease(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
                                 break
             #title format
             elif link.find('td', class_="track tracklist_track_title")!=None:
@@ -105,7 +105,7 @@ def searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, 
                     # check if title and name are exact matches
                     if track.title.lower() == name.lower() and not compareRuntime(runtime, audio):
                         finalMatch = True
-                        imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = discogsRelease(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, imageCounter, images)
+                        imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = discogsRelease(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
                         break
                     else:
                         for title in titleVariations:
@@ -113,14 +113,14 @@ def searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, 
                             mismatch = compareTokens(title, name)
                             if mismatch == False and not compareRuntime(runtime, audio):
                                 finalMatch = True
-                                imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = discogsRelease(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, imageCounter, images)
+                                imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = discogsRelease(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
                                 break
             if not finalMatch:
                 tk.Label(leftComponentFrame, text="Track did not match with any of the listings", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
                 refresh(webScrapingWindow)
     return imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage
 
-def discogsRelease(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, imageCounter, images):
+def discogsRelease(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images):
     # in case of multiple genres
     scrapedGenreList = []
     for link in soup.find_all('div', class_="content"):
@@ -170,7 +170,7 @@ def discogsRelease(soup, track, headers, webScrapingWindow, webScrapingLeftPane,
             webScrapingRightPane[webScrapingPage] = rightComponentFrame
             # perform image scraping if enabled in options
             if options["Reverse Image Search (B)"].get() == True and not track.stop:
-                if not performSearch(imageCounter): imageCounter, images, track = reverseImageSearch(link, headers, imageCounter, images, track, options)
+                if not performSearch(initialCounter, imageCounter): imageCounter, images, track = reverseImageSearch(link, headers, imageCounter, images, track, options)
     except: pass
     return imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage
 

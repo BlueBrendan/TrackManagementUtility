@@ -20,7 +20,7 @@ bg = "#282f3b"
 #secondary color
 secondary_bg = "#364153"
 
-def junodownloadSearch(filename, track, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, labelFrame, searchFrame, pageFrame, componentFrame, audio, options, imageCounter, images):
+def junodownloadSearch(filename, track, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, labelFrame, searchFrame, pageFrame, componentFrame, audio, options, initialCounter, imageCounter, images):
     #FIRST QUERY - JUNO DOWNLOAD
     widgetList = allWidgets(searchFrame)
     for item in widgetList: item.pack_forget()
@@ -120,7 +120,7 @@ def junodownloadSearch(filename, track, artistVariations, titleVariations, heade
                                                 webScrapingRightPane[webScrapingPage] = rightComponentFrame
                                                 # perform image scraping if enabled in options
                                                 if options["Reverse Image Search (B)"].get() == True and not track.stop:
-                                                    if not performSearch(imageCounter): imageCounter, images, track = reverseImageSearch(item, headers, imageCounter, images, track, options)
+                                                    if not performSearch(initialCounter, imageCounter): imageCounter, images, track = reverseImageSearch(item, headers, imageCounter, images, track, options)
                                             except: pass
                             # avoid counting the same entry twice
                             if not finalMatch:

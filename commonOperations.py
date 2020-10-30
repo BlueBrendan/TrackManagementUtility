@@ -119,11 +119,11 @@ def allWidgets(window):
     return _list
 
 # REVERSE IMAGE SEARCH
-def performSearch(imageCounter):
+def performSearch(initialCounter, imageCounter):
     duplicate = False
     # compare image with other scraped images
     imageOne = resize(plt.imread(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter - 1) + ".jpg").astype(float), (2 ** 8, 2 ** 8, 3))
-    for i in range(imageCounter - 1):
+    for i in range(initialCounter, imageCounter - 1):
         imageTwo = resize(plt.imread(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg").astype(float), (2 ** 8, 2 ** 8, 3))
         score, diff = structural_similarity(imageOne, imageTwo, full=True, multichannel=True)
         if score > 0.6:

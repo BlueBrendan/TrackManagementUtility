@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
 import tkinter as tk
-import time
 import random
 import queue
 import threading
@@ -30,13 +29,17 @@ def prepareRequest(url, headers, webScrapingWindow, leftComponentFrame):
         return False
 
 def sendRequest(url, headers, q, s):
-    response = requests.get(url, headers=headers)
-    soup = BeautifulSoup(response.text, "html.parser")
-    s.put(soup)
-    q.put("Finished")
+    try:
+        response = requests.get(url, headers=headers)
+        soup = BeautifulSoup(response.text, "html.parser")
+        s.put(soup)
+        q.put("Finished")
+    except:
+        s.put(False)
+        q.put("Finished")
 
 def wait(q):
-    time.sleep(random.uniform(1, 3.5))
+    time.sleep(random.uniform(0.5, 1.5))
     q.put("Finished")
 
 def checkQueue(q, webScrapingWindow):

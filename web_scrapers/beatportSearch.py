@@ -21,7 +21,7 @@ bg = "#282f3b"
 #secondary color
 secondary_bg = "#364153"
 
-def beatportSearch(filename, track, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, labelFrame, searchFrame, pageFrame, componentFrame, audio, options, imageCounter, images):
+def beatportSearch(filename, track, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, labelFrame, searchFrame, pageFrame, componentFrame, audio, options, initialCounter, imageCounter, images):
     #SECOND QUERY - BEATPORT
     widgetList = allWidgets(searchFrame)
     for item in widgetList: item.pack_forget()
@@ -75,14 +75,14 @@ def beatportSearch(filename, track, artistVariations, titleVariations, headers, 
                     if soup != False and "Oops... the page you were looking for could not be found" not in str(soup):
                         #check if page is a track (single) or a release (album)
                         #case 1: release
-                        if link[25:32] == "release": imageCounter, images, webScrapingLeftPane, webScrapingRightPane = beatportRelease(soup, titleVariations, track, headers, audio, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter, images)
+                        if link[25:32] == "release": imageCounter, images, webScrapingLeftPane, webScrapingRightPane = beatportRelease(soup, titleVariations, track, headers, audio, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, initialCounter, imageCounter, images)
                         #case 2: track
-                        elif link[25:30] == "track": imageCounter, images, webScrapingLeftPane, webScrapingRightPane = beatportTrack(soup, track, headers, audio, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter, images)
+                        elif link[25:30] == "track": imageCounter, images, webScrapingLeftPane, webScrapingRightPane = beatportTrack(soup, track, headers, audio, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, initialCounter, imageCounter, images)
                     else: tk.Label(leftComponentFrame, text="Track failed due to dead link or territory restriction", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
     return track, imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame
 
 #search beatport releases, filter individual tracks
-def beatportRelease(soup, titleVariations, track, headers, audio, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter, images):
+def beatportRelease(soup, titleVariations, track, headers, audio, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, initialCounter, imageCounter, images):
     for link in soup.find_all('li', class_="bucket-item ec-item track"):
         # find all tracks in the release that contain the title
         link = link.find('p', class_="buk-track-title")
@@ -93,11 +93,11 @@ def beatportRelease(soup, titleVariations, track, headers, audio, leftComponentF
                 tk.Label(leftComponentFrame, text="Connection Failure", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(anchor='w')
                 refresh(webScrapingWindow)
                 return track, imageCounter, webScrapingLeftPane, webScrapingRightPane
-            imageCounter, images, webScrapingLeftPane, webScrapingRightPane = beatportTrack(soup, track, headers, audio, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter, images)
+            imageCounter, images, webScrapingLeftPane, webScrapingRightPane = beatportTrack(soup, track, headers, audio, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, initialCounter, imageCounter, images)
     return imageCounter, images, webScrapingLeftPane, webScrapingRightPane
 
 #search beatport tracks, extract info in the event of a match
-def beatportTrack(soup, track, headers, audio, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter, images):
+def beatportTrack(soup, track, headers, audio, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, initialCounter, imageCounter, images):
     link = soup.find('div', class_="interior-track-content")
     if link is not None:
         # check runtime
@@ -109,11 +109,11 @@ def beatportTrack(soup, track, headers, audio, leftComponentFrame, rightComponen
             trackMix = trackHeader.find('h1', class_="remixed").get_text()
             if trackMix != '' and 'original' not in trackMix.lower() and '(' in track.title and ')' in track.title:
                 remix = track.title[track.title.rfind('(') + 1:track.title.rfind(')')]
-                if compareTokens(remix, trackMix) == False: imageCounter, images, webScrapingLeftPane, webScrapingRightPane = extractInfo(soup, track, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter, images)
+                if compareTokens(remix, trackMix) == False: imageCounter, images, webScrapingLeftPane, webScrapingRightPane = extractInfo(soup, track, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, initialCounter, imageCounter, images)
                 else:
                     tk.Label(leftComponentFrame, text="Track failed string comparison test, likely a remix or a different track entirely", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
                     refresh(webScrapingWindow)
-            else: imageCounter, images, webScrapingLeftPane, webScrapingRightPane = extractInfo(soup, track, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter, images)
+            else: imageCounter, images, webScrapingLeftPane, webScrapingRightPane = extractInfo(soup, track, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, initialCounter, imageCounter, images)
         else:
             tk.Label(leftComponentFrame, text="Track failed runtime comparison test", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
             refresh(webScrapingWindow)
@@ -121,7 +121,7 @@ def beatportTrack(soup, track, headers, audio, leftComponentFrame, rightComponen
     return imageCounter, images, webScrapingLeftPane, webScrapingRightPane
 
 #extract year, BPM, key, and genre
-def extractInfo(soup, track, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, imageCounter, images):
+def extractInfo(soup, track, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, initialCounter, imageCounter, images):
     for link in soup.find_all('ul', class_="interior-track-content-list"):
         # extract release date
         if "Release_Date" in options["Selected Tags (L)"]:
@@ -187,7 +187,7 @@ def extractInfo(soup, track, headers, leftComponentFrame, rightComponentFrame, w
                 webScrapingRightPane[webScrapingPage] = rightComponentFrame
                 # perform image scraping if enabled in options
                 if options["Reverse Image Search (B)"].get() == True and not track.stop:
-                    if not performSearch(imageCounter): imageCounter, images, track = reverseImageSearch(link, headers, imageCounter, images, track, options)
+                    if not performSearch(initialCounter, imageCounter): imageCounter, images, track = reverseImageSearch(link, headers, imageCounter, images, track, options)
             except UnidentifiedImageError: pass
     return imageCounter, images, webScrapingLeftPane, webScrapingRightPane
 
