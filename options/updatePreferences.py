@@ -36,10 +36,11 @@ def updatePreferences(options, CONFIG_FILE, root):
     s = ttk.Style()
     try:
         s.theme_create("Track Management Utility", parent="alt", settings={
-        "TNotebook": {"configure": {"tabmargins": [2, 5, 2, 0], "background": secondary_bg}},
-        "TNotebook.Tab": {"configure": {"padding": [13, 5], "font": ('Proxima Nova Rg', '11'), "background": bg, 'foreground': 'white'}, }})
+        "TNotebook": {"configure": {"tabmargins": [2, 5, 2, 0], "background": secondary_bg, 'borderwidth': 0}},
+        "TNotebook.Tab": {"configure": {"padding": [13, 5], "font": ('Proxima Nova Rg', '11'), "background": secondary_bg, 'foreground': 'white', 'borderwidth': 1}, "map": {"background": [("selected", bg)], "expand": [("selected", [1, 1, 1, 0])] } } } )
     except: pass
     s.theme_use("Track Management Utility")
+
 
     # web scraping tab
     webScrapingTab(tab_parent, options, CONFIG_FILE)

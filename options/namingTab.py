@@ -20,7 +20,7 @@ def namingTab(tab_parent, options, CONFIG_FILE):
     tab_parent.add(tab3, text="Naming")
     leftPane = Frame(tab3, bg=bg)
     leftPane.pack(padx=(5, 0), side="left", anchor="nw")
-    tk.Label(leftPane, text="Keywords", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(padx=(10, 0), pady=(20, 5), anchor="w")
+    tk.Label(leftPane, text="Keywords", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(padx=(20, 0), pady=(20, 5), anchor="w")
     # container for capitalized keywords
     leftListboxFrame = tk.Frame(leftPane, bg=bg)
     leftListboxFrame.pack(side="left")
@@ -46,9 +46,9 @@ def namingTab(tab_parent, options, CONFIG_FILE):
     for keyword in options["Always Capitalize (L)"]: capitalizedListbox.insert(END, keyword)
     for keyword in options["Never Capitalize (L)"]:
         uncapitalizedListbox.insert(END, keyword)
-    capitalizedListbox.pack(padx=(20, 5), pady=(5, 5))
+    capitalizedListbox.pack(padx=(30, 5), pady=(5, 5))
     capitalizeAdd = tk.Button(leftListboxControls, text="Add", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, width=5, command=lambda: addKeywordPrompt("Always Capitalize (L)", "Never Capitalize (L)", capitalizedListbox, options))
-    capitalizeAdd.pack(side="left", padx=(15, 20))
+    capitalizeAdd.pack(side="left", padx=(25, 20))
     capitalizeDelete = tk.Button(leftListboxControls, text="Delete", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, state=DISABLED)
     capitalizeDelete.pack(side="left", padx=(20, 0))
     uncapitalizedListbox.pack(padx=(20, 5), pady=(5, 5))
@@ -63,57 +63,57 @@ def namingTab(tab_parent, options, CONFIG_FILE):
 
     rightPane = Frame(tab3, bg=bg)
     rightPane.pack(padx=(0, 50), side="right", anchor="nw")
-    tk.Label(rightPane, text="Audio Formatting", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(padx=(5, 0), pady=(20, 5), anchor="w")
+    tk.Label(rightPane, text="Audio Formatting", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(padx=(30, 0), pady=(20, 5), anchor="w")
 
     # frame for scan filename and tags checkbutton
     scanButtonFrame = tk.Frame(rightPane, bg=bg)
     scanButtonFrame.pack(anchor="w")
     scanFilenameTags = tk.Checkbutton(scanButtonFrame, variable=options["Scan Filename and Tags (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scan Filename and Tags (B)', optionsDict, options), bg=bg)
-    scanFilenameTags.pack(padx=(10, 0), side="left")
+    scanFilenameTags.pack(padx=(30, 0), side="left")
     tk.Label(scanButtonFrame, text="Scan Filename and Tags", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     optionsDict['Scan Filename and Tags (B)'] = scanFilenameTags
     # frame for numbering prefix checkbutton
     prefixButtonFrame = tk.Frame(rightPane, bg=bg)
     prefixButtonFrame.pack(anchor="w")
     numberingPrefix = tk.Checkbutton(prefixButtonFrame, variable=options["Check for Numbering Prefix (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Check for Numbering Prefix (B)", optionsDict, options), bg=bg)
-    numberingPrefix.pack(padx=(20, 0), side="left")
+    numberingPrefix.pack(padx=(40, 0), side="left")
     tk.Label(prefixButtonFrame, text="Check for Numbering Prefix", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     optionsDict['Check for Numbering Prefix (B)'] = numberingPrefix
     # frame for hyphen checkbutton
     hyphenButtonFrame = tk.Frame(rightPane, bg=bg)
     hyphenButtonFrame.pack(anchor="w")
     hyphenCheck = tk.Checkbutton(hyphenButtonFrame, variable=options["Check for Extraneous Hyphens (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Check for Extraneous Hyphens (B)", optionsDict, options), bg=bg)
-    hyphenCheck.pack(padx=(20, 0), side="left")
+    hyphenCheck.pack(padx=(40, 0), side="left")
     tk.Label(hyphenButtonFrame, text="Check for Extraneous Hyphens", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     optionsDict['Check for Extraneous Hyphens (B)'] = hyphenCheck
     # frame for capitalization checkbutton
     capitalizationButtonFrame = tk.Frame(rightPane, bg=bg)
     capitalizationButtonFrame.pack(anchor="w")
     capitalizationCheck = tk.Checkbutton(capitalizationButtonFrame, variable=options["Check for Capitalization (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Check for Capitalization (B)", optionsDict, options), bg=bg)
-    capitalizationCheck.pack(padx=(20, 0), side="left")
+    capitalizationCheck.pack(padx=(40, 0), side="left")
     optionsDict['Check for Capitalization (B)'] = capitalizationCheck
     tk.Label(capitalizationButtonFrame, text="Check for Capitalization", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
 
     # frame for file format
     formatFrame = tk.Frame(rightPane, bg=bg)
     formatFrame.pack(anchor="w")
-    tk.Label(formatFrame, text="File Format", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(padx=(10, 0), pady=(20, 5), anchor="w")
+    tk.Label(formatFrame, text="File Format", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(padx=(30, 0), pady=(20, 5), anchor="w")
 
     # frame for dynamic radio button
     dynamicButtonFrame = tk.Frame(formatFrame, bg=bg)
     dynamicButtonFrame.pack(anchor="w")
-    tk.Radiobutton(dynamicButtonFrame, variable=options["Audio naming format (S)"], value="Dynamic", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Dynamic"), activebackground=bg, selectcolor=bg, bg=bg, fg="white").pack(padx=(20, 0), side="left")
+    tk.Radiobutton(dynamicButtonFrame, variable=options["Audio naming format (S)"], value="Dynamic", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Dynamic"), activebackground=bg, selectcolor=bg, bg=bg, fg="white").pack(padx=(40, 0), side="left")
     tk.Label(dynamicButtonFrame, text="Dynamic", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
 
     # frame for artist-title radio button
     artistTitleButtonFrame = tk.Frame(formatFrame, bg=bg)
     artistTitleButtonFrame.pack(anchor="w")
-    tk.Radiobutton(artistTitleButtonFrame, variable=options["Audio naming format (S)"], value="Artist - Title", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Artist - Title"), activebackground=bg, selectcolor=bg, bg=bg, fg="white").pack(padx=(20, 0), side="left")
+    tk.Radiobutton(artistTitleButtonFrame, variable=options["Audio naming format (S)"], value="Artist - Title", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Artist - Title"), activebackground=bg, selectcolor=bg, bg=bg, fg="white").pack(padx=(40, 0), side="left")
     tk.Label(artistTitleButtonFrame, text="Artist - Title", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     # frame for title radio button
     titleButtonFrame = tk.Frame(formatFrame, bg=bg)
     titleButtonFrame.pack(anchor="w")
-    tk.Radiobutton(formatFrame, variable=options["Audio naming format (S)"], value="Title", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Title"), activebackground=bg, selectcolor=bg, bg=bg, fg="white").pack(padx=(20, 0), side="left")
+    tk.Radiobutton(formatFrame, variable=options["Audio naming format (S)"], value="Title", command=lambda: namingRadiobutton(CONFIG_FILE, 'Audio naming format (S)', "Title"), activebackground=bg, selectcolor=bg, bg=bg, fg="white").pack(padx=(40, 0), side="left")
     tk.Label(formatFrame, text="Title", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
 
     if options["Scan Filename and Tags (B)"].get() == False:

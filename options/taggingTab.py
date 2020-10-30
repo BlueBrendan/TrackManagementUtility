@@ -19,7 +19,7 @@ def taggingTab(tab_parent, options, CONFIG_FILE):
     tab_parent.add(tab2, text="Tagging")
     tagFrame = Frame(tab2, bg=bg)
     tagFrame.pack(side="left", anchor="nw", padx=(5, 0))
-    tk.Label(tagFrame, text="Tags", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(padx=(10, 0), pady=(20, 5), anchor="w")
+    tk.Label(tagFrame, text="Tags", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(padx=(20, 0), pady=(20, 5), anchor="w")
     tagList = options["Selected Tags (L)"]
 
     # top row of tagFrame
@@ -35,7 +35,7 @@ def taggingTab(tab_parent, options, CONFIG_FILE):
     rightListbox = Frame(tagFrameTopRow, bg=bg)
     rightListbox.pack(side="left")
     # Default Tag settings
-    tk.Label(leftListbox, text="Unselected Tags", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack()
+    tk.Label(leftListbox, text="Unselected Tags", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0))
     unselectedListbox = tk.Listbox(leftListbox, font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, highlightbackground="black", highlightcolor="grey", selectbackground=bg, activestyle="none")
 
     tk.Label(rightListbox, text="Selected Tags", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack()
@@ -45,13 +45,13 @@ def taggingTab(tab_parent, options, CONFIG_FILE):
     # insert tags in their corresponding listbox
     for tag in comprehensiveList:
         if tag not in options['Selected Tags (L)']:
-            #remove underscore
+            # remove underscore
             if tag == "Release_Date": unselectedListbox.insert(END, "Release Date")
             else: unselectedListbox.insert(END, tag)
         else:
             if tag == "Release_Date": selectedListbox.insert(END, "Release Date")
             else: selectedListbox.insert(END, tag)
-    unselectedListbox.pack(padx=(20, 5), pady=(5, 5))
+    unselectedListbox.pack(padx=(30, 5), pady=(5, 5))
 
     select = tk.Button(listboxButtons, text="Select", width=7, state=DISABLED, font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg)
     select.pack(side="top")
@@ -65,8 +65,8 @@ def taggingTab(tab_parent, options, CONFIG_FILE):
     tagCheckboxFrame = Frame(tagFrame, bg=bg)
     tagCheckboxFrame.pack(side="left")
     deleteUnselected = tk.Checkbutton(tagCheckboxFrame, variable=options["Delete Unselected Tags (B)"], activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Delete Unselected Tags (B)', optionsDict, options), bg=bg)
-    deleteUnselected.pack(padx=(20, 0), pady=(20, 0), side="left")
-    tk.Label(tagCheckboxFrame, text="Delete Unselected Tags from File", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(pady=(20, 0), side="left")
+    deleteUnselected.pack(padx=(40, 0), pady=(40, 0), side="left")
+    tk.Label(tagCheckboxFrame, text="Delete Unselected Tags from File", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(pady=(40, 0), side="left")
     optionsDict['Delete Unselected Tags (B)'] = deleteUnselected
 
 #handle listbox click interaction
