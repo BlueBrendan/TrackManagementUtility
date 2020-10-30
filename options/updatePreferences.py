@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import getpass
+import tkinter.font as tkFont
 
 # import methods
 from options.webScrapingTab import webScrapingTab
@@ -29,10 +29,17 @@ def updatePreferences(options, CONFIG_FILE, root):
     ws = window.winfo_screenwidth()  # width of the screen
     hs = window.winfo_screenheight()  # height of the screen
     x = (ws / 2) - (750 / 2)
-    y = (hs / 2) - (385 / 2)
-    window.geometry('%dx%d+%d+%d' % (750, 350, x, y))
+    y = (hs / 2) - (407 / 2)
+    window.geometry('%dx%d+%d+%d' % (750, 370, x, y))
     window.configure(bg=bg)
     tab_parent = ttk.Notebook(window)
+    s = ttk.Style()
+    try:
+        s.theme_create("Track Management Utility", parent="alt", settings={
+        "TNotebook": {"configure": {"tabmargins": [2, 5, 2, 0], "background": secondary_bg}},
+        "TNotebook.Tab": {"configure": {"padding": [13, 5], "font": ('Proxima Nova Rg', '11'), "background": bg, 'foreground': 'white'}, }})
+    except: pass
+    s.theme_use("Track Management Utility")
 
     # web scraping tab
     webScrapingTab(tab_parent, options, CONFIG_FILE)

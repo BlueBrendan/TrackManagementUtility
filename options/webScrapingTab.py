@@ -111,6 +111,18 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     # right image options
     rightImageFrame = tk.Frame(imageOptionsContainer, bg=bg)
     rightImageFrame.pack(side="left", anchor="nw")
+
+    # hide selenium window frame
+    hideSeleniumFrame = tk.Frame(rightImageFrame, bg=bg)
+    hideSeleniumFrame.pack(padx=(40, 0), anchor="w")
+    # disable search checkbox
+    hideSeleniumCheckbox = tk.Checkbutton(hideSeleniumFrame, variable=options['Hide Selenium Browser (B)'], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Hide Selenium Browser (B)', optionsDict, options), bg=bg)
+    hideSeleniumCheckbox.pack(side="left")
+    optionsDict['Hide Selenium Browser (B)'] = hideSeleniumCheckbox
+    if options["Extract Image from Website (B)"].get() == False or options["Reverse Image Search (B)"].get() == False: hideSeleniumCheckbox.config(state=DISABLED)
+    # disable resolution frame
+    tk.Label(hideSeleniumFrame, text="Hide Selenium Browser", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+
     # disable search frame
     disableSearchFrame = tk.Frame(rightImageFrame, bg=bg)
     disableSearchFrame.pack(padx=(40, 0), anchor="w")
@@ -138,16 +150,7 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     optionsDict['Threshold to Stop Search (px)'] = [widthEntrybox, heightEntrybox]
     tk.Label(disableResolutionFrame, text=" Threshold to Stop Search (px)", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
 
-    # hide selenium window frame
-    hideSeleniumFrame = tk.Frame(rightImageFrame, bg=bg)
-    hideSeleniumFrame.pack(padx=(40, 0), anchor="w")
-    # disable search checkbox
-    hideSeleniumCheckbox = tk.Checkbutton(hideSeleniumFrame, variable=options['Hide Selenium Browser (B)'], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Hide Selenium Browser (B)', optionsDict, options), bg=bg)
-    hideSeleniumCheckbox.pack(side="left")
-    optionsDict['Hide Selenium Browser (B)'] = hideSeleniumCheckbox
-    if options["Extract Image from Website (B)"].get() == False or options["Reverse Image Search (B)"].get() == False: hideSeleniumCheckbox.config(state=DISABLED)
-    # disable resolution frame
-    tk.Label(hideSeleniumFrame, text="Hide Selenium Browser", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+
 
 def resolutionEntrybox(CONFIG_FILE, term, value, dimension):
     config_file = open(CONFIG_FILE, 'r').read()
