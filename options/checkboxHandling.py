@@ -2,9 +2,12 @@ from tkinter.tix import *
 
 # global variables
 optionsHierarchyDict = {
+    # web scraping tab
     'Extract Image from Website (B)': 'Reverse Image Search (B)',
-    'Reverse Image Search (B)': ['Delete Stored Images (B)', 'Image Load Wait Time (I)', 'Number of Images Per Page (I)', 'Stop Search After Conditions (B)'],
+    'Reverse Image Search (B)': ['Delete Stored Images (B)', 'Image Load Wait Time (I)', 'Number of Images Per Page (I)', 'Stop Search After Conditions (B)', 'Hide Selenium Browser (B)'],
     'Stop Search After Conditions (B)': 'Threshold to Stop Search (px)',
+    # naming tab
+    'Scan Filename and Tags (B)': ['Check for Numbering Prefix (B)', 'Check for Extraneous Hyphens (B)', 'Check for Capitalization (B)']
 }
 
 def checkbox(CONFIG_FILE, term, suboptions, options):

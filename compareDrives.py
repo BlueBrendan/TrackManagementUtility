@@ -18,7 +18,7 @@ bg = "#282f3b"
 secondary_bg = "#364153"
 
 complete = False
-def compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory, root):
+def compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory, options, root):
     global complete
     if firstDefaultDirectory == '': first_directory = filedialog.askdirectory(master=root, title="Select First Directory")
     else: first_directory = filedialog.askdirectory(initialdir=firstDefaultDirectory, title="Select First Directory")
@@ -35,12 +35,12 @@ def compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory, ro
                 secondDirectoryFileCount=0
                 differenceCount=0
                 directoryCount=0
-                firstDirectoryFileCount, differenceCount, directoryCount = directorySearch(first_directory, second_directory, firstDirectoryFileCount, differenceCount, directoryCount)
-                secondDirectoryFileCount, differenceCount, directoryCount = directorySearch(second_directory, first_directory, secondDirectoryFileCount, differenceCount, directoryCount)
+                firstDirectoryFileCount, differenceCount, directoryCount = directorySearch(first_directory, second_directory, firstDirectoryFileCount, differenceCount, directoryCount, options)
+                secondDirectoryFileCount, differenceCount, directoryCount = directorySearch(second_directory, first_directory, secondDirectoryFileCount, differenceCount, directoryCount, options)
                 messagebox.showinfo(title="Search Complete", message="Files in First Directory: " + str(firstDirectoryFileCount) + "\nFiles in Second Directory: " + str(secondDirectoryFileCount) + "\nTotal File Difference: " + str(differenceCount) + "\nTotal Directory Difference: " + str(directoryCount) + '\n')
             else: messagebox.showinfo(title="Identical Directories", message="You selected the same directory twice, genius")
 
-def directorySearch(first_directory, second_directory, directoryFileCount, differenceCount, directoryCount):
+def directorySearch(first_directory, second_directory, directoryFileCount, differenceCount, directoryCount, options):
     if complete == True:
         return differenceCount, directoryCount
     first_directory_files = os.listdir(first_directory)
@@ -64,13 +64,13 @@ def directorySearch(first_directory, second_directory, directoryFileCount, diffe
                 tk.Label(popup, text="Not found in " + second_directory, wraplength=500, font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(pady=(5, 20))
                 buttonFrame = tk.Frame(popup, bg=bg)
                 buttonFrame.pack()
-                tk.Button(buttonFrame, text='Copy', command=lambda: copyDirectory(first_directory, second_directory, var, popup), font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left", padx=(20, 20))
+                tk.Button(buttonFrame, text='Copy', command=lambda: copyDirectory(first_directory, second_directory, var, options, popup), font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left", padx=(20, 20))
                 tk.Button(buttonFrame, text='Delete', command=lambda: deleteDirectory(first_directory, var, popup), font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left", padx=(20, 20))
                 tk.Button(buttonFrame, text='Ignore', command=popup.destroy, font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left", padx=(20, 20))
                 popup.protocol("WM_DELETE_WINDOW", lambda arg=popup: on_exit(arg))
                 popup.wait_window()
             #check files within that directory with those in the directory of second_directory
-            else: directoryFileCount, differenceCount, directoryCount = directorySearch(first_directory + '/' + var, second_directory + '/' + var, directoryFileCount, differenceCount, directoryCount)
+            else: directoryFileCount, differenceCount, directoryCount = directorySearch(first_directory + '/' + var, second_directory + '/' + var, directoryFileCount, differenceCount, directoryCount, options)
         elif complete==False:
             directoryFileCount+=1
             #check if second_directory has the same file
@@ -175,13 +175,19 @@ def deleteFile(first_directory, var, popup):
     os.remove(str(first_directory) + '/' + str(var))
     popup.destroy()
 
-def copyDirectory(first_directory, second_directory, var, popup):
-    #recursively copy directory var from first_directory to second_directory
-    shutil.copytree(str(first_directory) + '/' + str(var), str(second_directory) + '/' + str(var))
-    popup.destroy()
+def copyDirectory(first_directory, second_directory, var, options, popup):
+    # check if directory contents should be copied as well
+    if options['Copy Directory Contents (B)'].get():
+        # recursively copy directory var from first_directory to second_directory
+        shutil.copytree(str(first_directory) + '/' + str(var), str(second_directory) + '/' + str(var))
+        popup.destroy()
+    else:
+        # copy the directory but not its contents
+        os.mkdir(str(second_directory) + '/' + str(var))
+        popup.destroy()
 
 def deleteDirectory(first_directory, var, popup):
-    #recursively delete directory var from first_directory
+    # recursively delete directory var from first_directory
     shutil.rmtree(str(first_directory) + '/' + str(var))
     popup.destroy()
 

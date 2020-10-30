@@ -32,15 +32,15 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     # website options
     junodownloadFrame = tk.Frame(leftComponentFrame, bg=bg)
     junodownloadFrame.pack(anchor="w")
-    tk.Checkbutton(junodownloadFrame, variable=options['Scrape Junodownload (B)'], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scrape Junodownload (B)', suboptions, options), bg=bg).pack(padx=(20, 0), side="left")
+    tk.Checkbutton(junodownloadFrame, variable=options['Scrape Junodownload (B)'], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scrape Junodownload (B)', optionsDict, options), bg=bg).pack(padx=(20, 0), side="left")
     tk.Label(junodownloadFrame, text="Junodownload", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     beatportFrame = tk.Frame(leftComponentFrame, bg=bg)
     beatportFrame.pack(anchor="w")
-    tk.Checkbutton(beatportFrame, variable=options['Scrape Beatport (B)'], onvalue=True, offvalue=False,  activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scrape Beatport (B)', suboptions, options), bg=bg).pack(padx=(20, 0), side="left")
+    tk.Checkbutton(beatportFrame, variable=options['Scrape Beatport (B)'], onvalue=True, offvalue=False,  activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scrape Beatport (B)', optionsDict, options), bg=bg).pack(padx=(20, 0), side="left")
     tk.Label(beatportFrame, text="Beatport", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     discogsFrame = tk.Frame(leftComponentFrame, bg=bg)
     discogsFrame.pack(anchor="w")
-    tk.Checkbutton(discogsFrame, variable=options['Scrape Discogs (B)'], onvalue=True, offvalue=False,  activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scrape Discogs (B)', suboptions, options), bg=bg).pack(padx=(20, 0), side="left")
+    tk.Checkbutton(discogsFrame, variable=options['Scrape Discogs (B)'], onvalue=True, offvalue=False,  activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scrape Discogs (B)', optionsDict, options), bg=bg).pack(padx=(20, 0), side="left")
     tk.Label(discogsFrame, text="Discogs", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
 
 
@@ -49,7 +49,6 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     tk.Label(tab1, text="Image Scraping", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(padx=(10, 0), pady=(20, 5), anchor="w")
 
     # left image options
-    suboptions = []
     imageOptionsContainer = tk.Frame(tab1, bg=bg)
     imageOptionsContainer.pack(fill=X)
 
@@ -119,7 +118,6 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     disableImageSearchCheckbox = tk.Checkbutton(disableSearchFrame, variable=options['Stop Search After Conditions (B)'], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Stop Search After Conditions (B)', optionsDict, options), bg=bg)
     disableImageSearchCheckbox.pack(side="left")
     if options["Extract Image from Website (B)"].get() == False or options["Reverse Image Search (B)"].get() == False: disableImageSearchCheckbox.config(state=DISABLED)
-    suboptions.append(disableImageSearchCheckbox)
     optionsDict['Stop Search After Conditions (B)'] = disableImageSearchCheckbox
     # disable resolution frame
     tk.Label(disableSearchFrame, text="Stop Search After Conditions", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
@@ -131,11 +129,11 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     height.trace("w", lambda name, index, mode, height=height: resolutionEntrybox(CONFIG_FILE, "Stop Search After Finding Image of Resolution (S)", height, "height"))
 
     widthEntrybox = tk.Entry(disableResolutionFrame, width=4, text='Threshold to Stop Search (px)', textvariable=width, validate="key", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg)
-    if options["Extract Image from Website (B)"].get() == False or options["Reverse Image Search (B)"].get() == False: widthEntrybox.config(state=DISABLED)
+    if options["Extract Image from Website (B)"].get() == False or options["Reverse Image Search (B)"].get() == False or options['Stop Search After Conditions (B)'].get() == False: widthEntrybox.config(state=DISABLED)
     widthEntrybox.pack(padx=(40, 0), side="left")
     tk.Label(disableResolutionFrame, text="  x  ", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     heightEntrybox = tk.Entry(disableResolutionFrame, width=4, text='Threshold to Stop Search (px)', textvariable=height, validate="key", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg)
-    if options["Extract Image from Website (B)"].get() == False or options["Reverse Image Search (B)"].get() == False: heightEntrybox.config(state=DISABLED)
+    if options["Extract Image from Website (B)"].get() == False or options["Reverse Image Search (B)"].get() == False or options['Stop Search After Conditions (B)'].get() == False: heightEntrybox.config(state=DISABLED)
     heightEntrybox.pack(side="left")
     optionsDict['Threshold to Stop Search (px)'] = [widthEntrybox, heightEntrybox]
     tk.Label(disableResolutionFrame, text=" Threshold to Stop Search (px)", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
@@ -146,6 +144,7 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     # disable search checkbox
     hideSeleniumCheckbox = tk.Checkbutton(hideSeleniumFrame, variable=options['Hide Selenium Browser (B)'], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Hide Selenium Browser (B)', optionsDict, options), bg=bg)
     hideSeleniumCheckbox.pack(side="left")
+    optionsDict['Hide Selenium Browser (B)'] = hideSeleniumCheckbox
     if options["Extract Image from Website (B)"].get() == False or options["Reverse Image Search (B)"].get() == False: hideSeleniumCheckbox.config(state=DISABLED)
     # disable resolution frame
     tk.Label(hideSeleniumFrame, text="Hide Selenium Browser", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")

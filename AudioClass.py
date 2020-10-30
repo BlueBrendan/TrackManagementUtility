@@ -13,7 +13,7 @@ class FLAC_Track:
         else: self.browser = ''
         self.stop = False
         picture = audio.pictures
-        if len(picture) > 0:
+        if len(picture) > 0 and options['Stop Search After Conditions (B)'].get():
             stream = BytesIO(picture[0].data)
             image = Image.open(stream).convert("RGBA")
             width, height = image.size
@@ -29,7 +29,7 @@ class Vorbis_Track:
         if browser != '': self.browser = browser
         else: self.browser = ''
         self.stop = False
-        if "metadata_block_picture" in audio:
+        if "metadata_block_picture" in audio and options['Stop Search After Conditions (B)'].get():
             imageFrame = audio["metadata_block_picture"]
             if imageFrame[0] != '':
                 data = base64.b64decode(imageFrame[0])
@@ -49,7 +49,7 @@ class ID3_Track:
         if browser != '': self.browser = browser
         else: self.browser = ''
         self.stop = False
-        if 'APIC:' in audio:
+        if 'APIC:' in audio and options['Stop Search After Conditions (B)'].get():
             image = audio["APIC:"]
             if image != b'':
                 stream = BytesIO(image.data)
@@ -73,7 +73,7 @@ class M4A_Track:
         if browser != '': self.browser = browser
         else: self.browser = ''
         self.stop = False
-        if "covr" in audio:
+        if "covr" in audio and options['Stop Search After Conditions (B)'].get():
             image = audio["covr"]
             if len(image) != 0:
                 stream = BytesIO(image[0])

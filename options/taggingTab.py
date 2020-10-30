@@ -4,12 +4,14 @@ from tkinter.tix import *
 # import methods
 from options.checkboxHandling import checkbox
 
+# global variables
 # main bg color
 bg = "#282f3b"
 # secondary color
 secondary_bg = "#364153"
 # invalid selection color
 invalid_bg = "#801212"
+optionsDict = {}
 
 def taggingTab(tab_parent, options, CONFIG_FILE):
     # Tag Settings Tab
@@ -62,8 +64,10 @@ def taggingTab(tab_parent, options, CONFIG_FILE):
     # bottom row of tagFrame
     tagCheckboxFrame = Frame(tagFrame, bg=bg)
     tagCheckboxFrame.pack(side="left")
-    tk.Checkbutton(tagCheckboxFrame, variable=options["Delete Unselected Tags (B)"], activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Delete Unselected Tags (B)', [], True, 0), bg=bg).pack(padx=(20, 0), pady=(20, 0), side="left")
+    deleteUnselected = tk.Checkbutton(tagCheckboxFrame, variable=options["Delete Unselected Tags (B)"], activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Delete Unselected Tags (B)', optionsDict, options), bg=bg)
+    deleteUnselected.pack(padx=(20, 0), pady=(20, 0), side="left")
     tk.Label(tagCheckboxFrame, text="Delete Unselected Tags from File", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(pady=(20, 0), side="left")
+    optionsDict['Delete Unselected Tags (B)'] = deleteUnselected
 
 #handle listbox click interaction
 def selectTag(firstListbox, secondListbox, list, select, deselect):

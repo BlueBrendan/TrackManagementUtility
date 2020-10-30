@@ -6,6 +6,7 @@ import getpass
 from options.webScrapingTab import webScrapingTab
 from options.taggingTab import taggingTab
 from options.namingTab import namingTab
+from options.comparisonTab import comparisonTab
 from commonOperations import resource_path
 
 #global variables
@@ -33,12 +34,14 @@ def updatePreferences(options, CONFIG_FILE, root):
     window.configure(bg=bg)
     tab_parent = ttk.Notebook(window)
 
-    #Web Scraping Tab
+    # web scraping tab
     webScrapingTab(tab_parent, options, CONFIG_FILE)
-    #Tagging Tab
+    # tagging tab
     taggingTab(tab_parent, options, CONFIG_FILE)
-    #Naming Tab
+    # naming tab
     namingTab(tab_parent, options, CONFIG_FILE)
+    # drive comparison tab
+    comparisonTab(tab_parent, options, CONFIG_FILE)
     window.iconbitmap(resource_path('favicon.ico'))
     root.mainloop()
 

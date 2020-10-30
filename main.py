@@ -28,8 +28,8 @@ root.title("Track Management Utility V1.0")
 ws = root.winfo_screenwidth() # width of the screen
 hs = root.winfo_screenheight() # height of the screen
 x = (ws/2) - (1000/2)
-y = (hs/2) - (682/2)
-root.geometry('%dx%d+%d+%d' % (1000, 620, x, y))
+y = (hs/2) - (660/2)
+root.geometry('%dx%d+%d+%d' % (1000, 600, x, y))
 root.configure(bg=bg)
 root.iconbitmap(resource_path('favicon.ico'))
 
@@ -42,7 +42,7 @@ def createConfigFile(flag):
             os.mkdir(path + "/Track Management Utility")
         # create setttings file
         file = open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt", 'w')
-        file.write("-GENERAL-\nSubdirectories (B):True\nClose Scraping Window (B):True\nFirst Default Directory (S):\nSecond Default Directory (S):\n\n"
+        file.write("-GENERAL-\nSubdirectories (B):True\nClose Scraping Window (B):True\nFirst Default Directory (S):\nSecond Default Directory (S):\nCopy Directory Contents (B):True\n\n"
                    "-SCRAPING SETTINGS-\nScrape Junodownload (B):True\nScrape Beatport (B):True\nScrape Discogs (B):True\nExtract Image from Website (B):True\n\n"
                    "-IMAGE SCRAPING-\nReverse Image Search (B):True\nDelete Stored Images (B):True\nImage Load Wait Time (I):5\nNumber of Images Per Page (I):3\nStop Search After Conditions (B):True\nStop Search After Finding Image of Resolution (S):2000x2000\nHide Selenium Browser (B):True\n\n"
                    "-TAGGING-\nScan Filename and Tags (B):True\nCheck for Numbering Prefix (B):True\nCheck for Extraneous Hyphens (B):True\nCheck for Capitalization (B):True\nAlways Capitalize (L):\nNever Capitalize (L):\nAudio naming format (S):Dynamic\nSelected Tags (L):Artist, BPM, Genre, Image, Key, Release_Date, ReplayGain, Title\nDelete Unselected Tags (B):False\n")
@@ -55,11 +55,11 @@ def compareDirectories(CONFIG_FILE):
     firstDefaultDirectory = config_file[config_file.index(term) + len(term):config_file.index('\n', config_file.index(term) + len(term))]
     term = "Second Default Directory (S):"
     secondDefaultDirectory = config_file[config_file.index(term) + len(term):config_file.index('\n', config_file.index(term) + len(term))]
-    compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory, root)
+    compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory, options, root)
 
 def readValuesFromConfig(CONFIG_FILE):
     config_file = open(CONFIG_FILE, 'r').read()
-    terms = ["Subdirectories (B)", "Close Scraping Window (B)", "First Default Directory (S)", "Second Default Directory (S)",
+    terms = ["Subdirectories (B)", "Close Scraping Window (B)", "First Default Directory (S)", "Second Default Directory (S)", "Copy Directory Contents (B)",
              "Scrape Junodownload (B)", "Scrape Beatport (B)", 'Scrape Discogs (B)', "Extract Image from Website (B)",
              "Reverse Image Search (B)", "Delete Stored Images (B)", "Image Load Wait Time (I)", "Number of Images Per Page (I)", "Stop Search After Conditions (B)", "Stop Search After Finding Image of Resolution (S)", "Hide Selenium Browser (B)",
              "Scan Filename and Tags (B)", "Check for Numbering Prefix (B)", "Check for Extraneous Hyphens (B)", "Check for Capitalization (B)", "Always Capitalize (L)", "Never Capitalize (L)", "Audio naming format (S)", "Selected Tags (L)", "Delete Unselected Tags (B)"]
@@ -152,22 +152,17 @@ fileImage.pack(side="left", anchor="w")
 
 textContainer = tk.Frame(main, bg=bg)
 textContainer.pack(side="left", padx=(35, 0))
-titleLabel = tk.Label(textContainer, text="TRACK\nMANAGEMENT\nUTILITY", font=('ProximaNova-Bold', 55), fg="#ffdd33", bg=bg, justify="left").pack(pady=(60,45))
+titleLabel = tk.Label(textContainer, text="TRACK\nMANAGEMENT\nUTILITY", font=('ProximaNova-Bold', 55), fg="#ffdd33", bg=bg, justify="left").pack(pady=(60,55))
 
 buttons = tk.Frame(root, bg=bg)
 buttons.pack(fill="both")
 
 # Scans for files in a directory and find their tags online
 tk.Button(buttons, text="Perform Tag Analysis", command=lambda: selectSearchTags(CONFIG_FILE), font=('Proxima Nova Rg', 13), fg="white", bg=secondary_bg, width=18, height=1).pack(pady=(0,15))
-tk.Label(buttons, text="Scan for files in a directory and find their tags online", font=('Proxima Nova Rg', 12), fg="white", bg=bg).pack(pady=(0,30))
+tk.Label(buttons, text="Scan for files in a directory and find their tags online", font=('Proxima Nova Rg', 12), fg="white", bg=bg).pack(pady=(0,35))
 # Scans for differences in files between two separate directories
 tk.Button(buttons, text="Compare Directories", command=lambda: selectCompare(CONFIG_FILE), font=('Proxima Nova Rg', 13), fg="white", bg=secondary_bg, width=18, height=1).pack(pady=(0,15))
 tk.Label(buttons, text="Scan for differences in files and folders between\ntwo separate directories", font=('Proxima Nova Rg', 12), fg="white", bg=bg).pack()
-
-bottom = tk.Frame(root, bg=bg)
-bottom.pack(side="left")
-tk.Checkbutton(bottom, var=options['Subdirectories (B)'], activebackground=bg, bg=bg).pack(padx=(10,0), pady=(0, 5), side='left')
-tk.Label(bottom, text="Include Subdirectories", font=('Proxima Nova Rg', 12), fg="white", bg=bg).pack(side="left")
 root.mainloop()
 
 

@@ -6,12 +6,14 @@ import getpass
 # import methods
 from options.checkboxHandling import checkbox
 
+# global variables
 # main bg color
 bg = "#282f3b"
 # secondary color
 secondary_bg = "#364153"
 # invalid selection color
 invalid_bg = "#801212"
+optionsDict = {}
 
 def namingTab(tab_parent, options, CONFIG_FILE):
     tab3 = tk.Frame(tab_parent, bg=bg)
@@ -62,34 +64,35 @@ def namingTab(tab_parent, options, CONFIG_FILE):
     rightPane = Frame(tab3, bg=bg)
     rightPane.pack(padx=(0, 50), side="right", anchor="nw")
     tk.Label(rightPane, text="Audio Formatting", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(padx=(5, 0), pady=(20, 5), anchor="w")
-    typoSuboptions = []
 
     # frame for scan filename and tags checkbutton
     scanButtonFrame = tk.Frame(rightPane, bg=bg)
     scanButtonFrame.pack(anchor="w")
-    tk.Checkbutton(scanButtonFrame, variable=options["Scan Filename and Tags (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scan Filename and Tags (B)', typoSuboptions, True, 0), bg=bg).pack(padx=(10, 0), side="left")
+    scanFilenameTags = tk.Checkbutton(scanButtonFrame, variable=options["Scan Filename and Tags (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scan Filename and Tags (B)', optionsDict, options), bg=bg)
+    scanFilenameTags.pack(padx=(10, 0), side="left")
     tk.Label(scanButtonFrame, text="Scan Filename and Tags", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+    optionsDict['Scan Filename and Tags (B)'] = scanFilenameTags
     # frame for numbering prefix checkbutton
     prefixButtonFrame = tk.Frame(rightPane, bg=bg)
     prefixButtonFrame.pack(anchor="w")
-    numberingPrefix = tk.Checkbutton(prefixButtonFrame, variable=options["Check for Numbering Prefix (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Check for Numbering Prefix (B)", [], True, 0), bg=bg)
+    numberingPrefix = tk.Checkbutton(prefixButtonFrame, variable=options["Check for Numbering Prefix (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Check for Numbering Prefix (B)", optionsDict, options), bg=bg)
     numberingPrefix.pack(padx=(20, 0), side="left")
     tk.Label(prefixButtonFrame, text="Check for Numbering Prefix", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
-    typoSuboptions.append(numberingPrefix)
+    optionsDict['Check for Numbering Prefix (B)'] = numberingPrefix
     # frame for hyphen checkbutton
     hyphenButtonFrame = tk.Frame(rightPane, bg=bg)
     hyphenButtonFrame.pack(anchor="w")
-    hyphenCheck = tk.Checkbutton(hyphenButtonFrame, variable=options["Check for Extraneous Hyphens (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Check for Extraneous Hyphens (B)", [], True, 0), bg=bg)
+    hyphenCheck = tk.Checkbutton(hyphenButtonFrame, variable=options["Check for Extraneous Hyphens (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Check for Extraneous Hyphens (B)", optionsDict, options), bg=bg)
     hyphenCheck.pack(padx=(20, 0), side="left")
     tk.Label(hyphenButtonFrame, text="Check for Extraneous Hyphens", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
-    typoSuboptions.append(hyphenCheck)
+    optionsDict['Check for Extraneous Hyphens (B)'] = hyphenCheck
     # frame for capitalization checkbutton
     capitalizationButtonFrame = tk.Frame(rightPane, bg=bg)
     capitalizationButtonFrame.pack(anchor="w")
-    capitalizationCheck = tk.Checkbutton(capitalizationButtonFrame, variable=options["Check for Capitalization (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Check for Capitalization (B)", [], True, 0), bg=bg)
+    capitalizationCheck = tk.Checkbutton(capitalizationButtonFrame, variable=options["Check for Capitalization (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Check for Capitalization (B)", optionsDict, options), bg=bg)
     capitalizationCheck.pack(padx=(20, 0), side="left")
+    optionsDict['Check for Capitalization (B)'] = capitalizationCheck
     tk.Label(capitalizationButtonFrame, text="Check for Capitalization", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
-    typoSuboptions.append(capitalizationCheck)
 
     # frame for file format
     formatFrame = tk.Frame(rightPane, bg=bg)
