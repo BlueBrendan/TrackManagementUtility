@@ -45,7 +45,7 @@ def createConfigFile(flag):
         file.write("-GENERAL-\nSubdirectories (B):True\nClose Scraping Window (B):True\nFirst Default Directory (S):\nSecond Default Directory (S):\nCopy Directory Contents (B):True\n\n"
                    "-SCRAPING SETTINGS-\nScrape Junodownload (B):True\nScrape Beatport (B):True\nScrape Discogs (B):True\nExtract Image from Website (B):True\n\n"
                    "-IMAGE SCRAPING-\nReverse Image Search (B):True\nDelete Stored Images (B):True\nImage Load Wait Time (I):5\nNumber of Images Per Page (I):3\nStop Search After Conditions (B):True\nStop Search After Finding Image of Resolution (S):2000x2000\nHide Selenium Browser (B):True\n\n"
-                   "-TAGGING-\nScan Filename and Tags (B):True\nCheck for Numbering Prefix (B):True\nCheck for Extraneous Hyphens (B):True\nCheck for Capitalization (B):True\nAlways Capitalize (L):\nNever Capitalize (L):\nAudio naming format (S):Dynamic\nSelected Tags (L):Artist, BPM, Genre, Image, Key, Release_Date, ReplayGain, Title\nDelete Unselected Tags (B):False\n")
+                   "-TAGGING-\nScan Filename and Tags (B):True\nCheck for Numbering Prefix (B):True\nCheck for Extraneous Hyphens (B):True\nCheck for Underscores (B):True\nCheck for Capitalization (B):True\nAlways Capitalize (L):\nNever Capitalize (L):\nAudio naming format (S):Dynamic\nSelected Tags (L):Artist, BPM, Genre, Image, Key, Release_Date, ReplayGain, Title\nDelete Unselected Tags (B):False\n")
         file.close()
     return CONFIG_FILE
 
@@ -62,7 +62,7 @@ def readValuesFromConfig(CONFIG_FILE):
     terms = ["Subdirectories (B)", "Close Scraping Window (B)", "First Default Directory (S)", "Second Default Directory (S)", "Copy Directory Contents (B)",
              "Scrape Junodownload (B)", "Scrape Beatport (B)", 'Scrape Discogs (B)', "Extract Image from Website (B)",
              "Reverse Image Search (B)", "Delete Stored Images (B)", "Image Load Wait Time (I)", "Number of Images Per Page (I)", "Stop Search After Conditions (B)", "Stop Search After Finding Image of Resolution (S)", "Hide Selenium Browser (B)",
-             "Scan Filename and Tags (B)", "Check for Numbering Prefix (B)", "Check for Extraneous Hyphens (B)", "Check for Capitalization (B)", "Always Capitalize (L)", "Never Capitalize (L)", "Audio naming format (S)", "Selected Tags (L)", "Delete Unselected Tags (B)"]
+             "Scan Filename and Tags (B)", "Check for Numbering Prefix (B)", "Check for Extraneous Hyphens (B)", "Check for Underscores (B)", "Check for Capitalization (B)", "Always Capitalize (L)", "Never Capitalize (L)", "Audio naming format (S)", "Selected Tags (L)", "Delete Unselected Tags (B)"]
     options = {}
     for term in terms:
         if term in config_file:

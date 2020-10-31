@@ -71,18 +71,18 @@ def handleTrackReport(track, audio, filename, webScrapingWindow, characters, opt
 # enter when the mode returns two or more values for any parameter
 def modeConflict(track, list, type):
     popup = tk.Toplevel()
-    popup.title("Genre Conflict")
+    popup.title(type.capitalize() + 'Conflict')
     popup.configure(bg=bg)
     ws = popup.winfo_screenwidth()  # width of the screen
     hs = popup.winfo_screenheight()  # height of the screen
     initialWidth = 550
-    y = (hs / 2) - (253 / 2)
-    for i in range(len(multimode(list))):
-        initialWidth += (len(multimode(list)[i])) * 7
+    y = (hs / 2) - (297 / 2)
+    for i in range(len(multimode(list))): initialWidth += (len(multimode(list)[i])) * 7
     x = (ws / 2) - (initialWidth / 2)
-    popup.geometry('%dx%d+%d+%d' % (initialWidth, 230, x, y))
+    popup.geometry('%dx%d+%d+%d' % (initialWidth, 270, x, y))
     tk.Label(popup, text=type.capitalize() + " Conflict", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(30, 15))
-    tk.Label(popup, text="The search returned equal instances of multiple more than one " + type, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(10, 20))
+    tk.Label(popup, text="The search returned equal instances of multiple more than one " + type, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(10, 10))
+    tk.Label(popup, text=track.artist + ' ' + track.title, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(0, 30))
     radioFrame = tk.Frame(popup)
     radioFrame.config(bg=bg)
     radioFrame.pack()

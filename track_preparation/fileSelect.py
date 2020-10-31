@@ -110,10 +110,10 @@ def fileSelect(options, imageCounter, CONFIG_FILE, window):
                 imageSelections.append(imageSelection)
         # close selenium browser if it exists
         if track!='' and track.browser != '': track.browser.quit()
-
         # enable controls in web scraping window
-        enableControls(searchFrame, pageFrame, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame)
-        handleFinalReport(finalTitles, finalResults, characters, imageCounter, imageSelections, webScrapingWindow, thumbnails, options, CONFIG_FILE)
+        if webScrapingPage > 0:
+            enableControls(searchFrame, pageFrame, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame)
+            handleFinalReport(finalTitles, finalResults, characters, imageCounter, imageSelections, webScrapingWindow, thumbnails, options, CONFIG_FILE)
     return webScrapingWindow
 #check if mutagen object can be made from file
 def checkFileValidity(filename, directory, format):

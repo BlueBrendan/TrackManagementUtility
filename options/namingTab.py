@@ -72,6 +72,7 @@ def namingTab(tab_parent, options, CONFIG_FILE):
     scanFilenameTags.pack(padx=(30, 0), side="left")
     tk.Label(scanButtonFrame, text="Scan Filename and Tags", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     optionsDict['Scan Filename and Tags (B)'] = scanFilenameTags
+
     # frame for numbering prefix checkbutton
     prefixButtonFrame = tk.Frame(rightPane, bg=bg)
     prefixButtonFrame.pack(anchor="w")
@@ -79,6 +80,7 @@ def namingTab(tab_parent, options, CONFIG_FILE):
     numberingPrefix.pack(padx=(40, 0), side="left")
     tk.Label(prefixButtonFrame, text="Check for Numbering Prefix", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     optionsDict['Check for Numbering Prefix (B)'] = numberingPrefix
+
     # frame for hyphen checkbutton
     hyphenButtonFrame = tk.Frame(rightPane, bg=bg)
     hyphenButtonFrame.pack(anchor="w")
@@ -86,6 +88,15 @@ def namingTab(tab_parent, options, CONFIG_FILE):
     hyphenCheck.pack(padx=(40, 0), side="left")
     tk.Label(hyphenButtonFrame, text="Check for Extraneous Hyphens", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     optionsDict['Check for Extraneous Hyphens (B)'] = hyphenCheck
+
+    # frame for hyphen checkbutton
+    underscoreFrame = tk.Frame(rightPane, bg=bg)
+    underscoreFrame.pack(anchor="w")
+    underscoreCheck = tk.Checkbutton(underscoreFrame, variable=options["Check for Underscores (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Check for Underscores (B)", optionsDict, options), bg=bg)
+    underscoreCheck.pack(padx=(40, 0), side="left")
+    tk.Label(underscoreFrame, text="Check for Underscores", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+    optionsDict['Check for Underscores (B)'] = underscoreCheck
+
     # frame for capitalization checkbutton
     capitalizationButtonFrame = tk.Frame(rightPane, bg=bg)
     capitalizationButtonFrame.pack(anchor="w")

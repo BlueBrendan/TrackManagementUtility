@@ -1,4 +1,5 @@
 import tkinter as tk
+import re
 
 # import methods
 from commonOperations import resource_path
@@ -29,24 +30,27 @@ def handleArtistTitleDiscrepancy(fileArtist, tagArtist, fileTitle, tagTitle):
     tk.Label(popup, text="The title and artist in filename conflict with their corresponding tags.\nChoose between the file and tag name\n", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(20, 10))
     # pack a label for each individual word in the file name
     tk.Label(popup, text="File Name", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack()
-    filename = (str(fileArtist) + " - " + str(fileTitle)).split(' ')
+    filename = re.split("_space_|_hyphen_", fileArtist.replace(' ', '_space_ _space_').replace('-', '_hyphen_-_hyphen_'))
+    filename.append(' - ')
+    filename += re.split("_space_|_hyphen_", fileTitle.replace(' ', '_space_ _space_').replace('-', '_hyphen_-_hyphen_'))
     filenameContainer = tk.Label(popup, justify="left", bg=bg)
     filenameContainer.pack(pady=(0, 15))
     filenameDict = {}
     for i in range(len(filename)):
-        filenameDict[i] = tk.Label(filenameContainer, text=filename[i], borderwidth=-2,  font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+        filenameDict[i] = tk.Label(filenameContainer, text=filename[i], borderwidth=-2, font=("Proxima Nova Rg", 11), fg="white", bg=bg)
         filenameDict[i].pack(side="left")
-        if i != len(filename) - 1: tk.Label(filenameContainer, text='', borderwidth=-2,  font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+        # if i != len(filename) - 1: tk.Label(filenameContainer, text='', borderwidth=-2,  font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     # pack a label for each individual word in the tag name
     tk.Label(popup, text="Tag Name",  font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(pady=(20, 0))
-    tagname = (str(tagArtist) + " - " + str(tagTitle)).split(' ')
+    tagname = re.split("_space_|_hyphen_", tagArtist.replace(' ', '_space_ _space_').replace('-', '_hyphen_-_hyphen_'))
+    tagname.append(' - ')
+    tagname += re.split("_space_|_hyphen_", tagTitle.replace(' ', '_space_ _space_').replace('-', '_hyphen_-_hyphen_'))
     tagnameContainer = tk.Label(popup, justify="left", bg=bg)
     tagnameContainer.pack(pady=(0, 10))
     tagnameDict = {}
     for i in range(len(tagname)):
-        tagnameDict[i] = tk.Label(tagnameContainer, text=tagname[i], borderwidth=-2,  font=("Proxima Nova Rg", 11), fg="white", bg=bg)
+        tagnameDict[i] = tk.Label(tagnameContainer, text=tagname[i], borderwidth=-2, font=("Proxima Nova Rg", 11), fg="white", bg=bg)
         tagnameDict[i].pack(side="left")
-        if i != len(tagname) - 1: tk.Label(tagnameContainer, text='', borderwidth=-2,  font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
         # highlight word if it does not match with the current filename
         if len(filename) == len(tagname) and filename[i] != tagname[i]:
             filenameDict[i].configure(fg="black", background="yellow")
