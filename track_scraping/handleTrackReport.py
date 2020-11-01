@@ -23,7 +23,7 @@ def handleTrackReport(track, audio, filename, webScrapingWindow, characters, opt
             for i in range(len(commonYearList) - 1):
                 # prioritize older years to avoid quoting re-releases
                 if len(track.yearList) <= 5 and int(commonYearList[0]) > int(commonYearList[i + 1]) and track.yearList.count(commonYearList[0]) <= track.yearList.count(commonYearList[i + 1]) * 2: commonYear = commonYearList[i + 1]
-                elif int(commonYearList[0]) > int(commonYearList[i + 1]) and track.yearList.count(commonYearList[0]) <= track.yearList.count(commonYearList[i + 1]) * 2 and track.yearList.count(commonYearList[0]) > 1: commonYear = commonYearList[i + 1]
+                elif int(commonYearList[0]) > int(commonYearList[i + 1]) and track.yearList.count(commonYearList[0]) <= track.yearList.count(commonYearList[i + 1]) * 1.5 and track.yearList.count(commonYearList[0]) > 1: commonYear = commonYearList[i + 1]
         if track.release_date != str(commonYear):
             track.release_date = str(commonYear)
             conflict = True

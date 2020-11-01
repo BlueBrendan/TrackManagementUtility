@@ -36,14 +36,14 @@ def discogsSearch(filename, track, artistVariations, titleVariations, headers, s
             if "www.discogs.com" in str(result.find('a').get('href')).lower().split('&')[0]:
                 searchTitle = track.title
                 if ' (' in track.title and ')' in track.title: searchTitle = track.title[:track.title.index(' (')]
-                if searchTitle.lower() in str(result).lower(): imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, leftComponentFrame, rightComponentFrame, componentFrame, titleVariations, audio, options, initialCounter, imageCounter, images)
+                if searchTitle.lower() in str(result).lower(): imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, leftComponentFrame, componentFrame, artistVariations, titleVariations, audio, options, initialCounter, imageCounter, images)
                 else:
                     for variation in titleVariations:
                         variation = variation.replace('-', ' ')
-                        if variation.lower() in str(result).lower(): imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, leftComponentFrame, rightComponentFrame, componentFrame, titleVariations, audio, options, initialCounter, imageCounter, images)
+                        if variation.lower() in str(result).lower(): imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, leftComponentFrame, componentFrame, artistVariations, titleVariations, audio, options, initialCounter, imageCounter, images)
     return track, imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame
 
-def searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, leftComponentFrame, rightComponentFrame, componentFrame, titleVariations, audio, options, initialCounter, imageCounter, images):
+def searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, leftComponentFrame, componentFrame, artistVariations, titleVariations, audio, options, initialCounter, imageCounter, images):
     link = str(result.find('a').get('href')).split('&')[0].split('=')[1]
     soup = prepareRequest(link, headers, webScrapingWindow, leftComponentFrame)
     if soup != False:
@@ -72,25 +72,31 @@ def searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, 
 
             #artist + title format
             if link.find('td', class_="track tracklist_track_title mini_playlist_track_has_artist")!=None:
-                for temp in link.find_all('td', class_="track tracklist_track_title mini_playlist_track_has_artist"):
+                # for temp in link.find_all('td', class_="track tracklist_track_title mini_playlist_track_has_artist"):
+                for temp in link.find_all('tr', class_="tracklist_track track"):
+                    artist = temp.find('td', class_="tracklist_track_artists").find('a').get_text()
                     name = temp.find('span', class_="tracklist_track_title").get_text()
                     #extra tags attached
                     for tag in temp.find_all('span', class_="tracklist_extra_artist_span"):
                         if 'Remix' in tag.get_text():
                             remix = tag.find('a').get_text()
                             if remix.lower() not in name.lower() and '(' in name: name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
-                    if track.title.lower() == name.lower():
+                    if track.title.lower() == name.lower() and track.artist.lower() == artist.lower():
                         finalMatch = True
                         imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = discogsRelease(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
                         break
                     else:
-                        for title in titleVariations:
-                            title = title.replace('-', ' ')
-                            mismatch = compareTokens(title, name)
-                            if mismatch == False:
-                                finalMatch = True
-                                imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = discogsRelease(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
-                                break
+                        for item in artistVariations:
+                            mismatch = compareTokens(artist.replace('-', ' '), item)
+                            if not mismatch:
+                                for title in titleVariations:
+                                    title = title.replace('-', ' ')
+                                    mismatch = compareTokens(title, name)
+                                    if not mismatch:
+                                        finalMatch = True
+                                        imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = discogsRelease(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
+                                        break
+                    if finalMatch: break
             #title format
             elif link.find('td', class_="track tracklist_track_title")!=None:
                 tracks = link.find_all('td', class_="track tracklist_track_title")
