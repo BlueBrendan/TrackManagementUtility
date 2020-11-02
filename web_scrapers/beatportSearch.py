@@ -16,20 +16,23 @@ from web_scrapers.compareRuntime import compareRuntime
 from commonOperations import performSearch
 from commonOperations import allWidgets
 
-#main bg color
+# global variables
+# main bg color
 bg = "#282f3b"
-#secondary color
+# secondary color
 secondary_bg = "#364153"
+# counter to store number of matches
+count = 0
 
 def beatportSearch(filename, track, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, labelFrame, searchFrame, pageFrame, componentFrame, audio, options, initialCounter, imageCounter, images):
-    #SECOND QUERY - BEATPORT
+    global count
     widgetList = allWidgets(searchFrame)
     for item in widgetList: item.pack_forget()
     if len(filename) > 60: tk.Label(searchFrame, text="\nSearching Beatport for " + str(filename)[0:59] + "...", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="left", padx=(10, 0), anchor='w')
     else: tk.Label(searchFrame, text="\nSearching Beatport for " + str(filename), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="left", padx=(10, 0), anchor='w')
-
     leftComponentFrame, rightComponentFrame = resetLeftRightFrames(componentFrame)
     refresh(webScrapingWindow)
+
     url = "https://www.google.co.in/search?q=" + search + " Beatport"
     soup = prepareRequest(url, headers, webScrapingWindow, leftComponentFrame)
     if soup == False:
@@ -79,21 +82,27 @@ def beatportSearch(filename, track, artistVariations, titleVariations, headers, 
                         #case 2: track
                         elif link[25:30] == "track": imageCounter, images, webScrapingLeftPane, webScrapingRightPane = beatportTrack(soup, track, headers, audio, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, initialCounter, imageCounter, images)
                     else: tk.Label(leftComponentFrame, text="Track failed due to dead link or territory restriction", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
+                    if options['Limit Number of Matches per Site (B)'].get() and count >= options['Match Limit (I)'].get(): break
     return track, imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame
 
-#search beatport releases, filter individual tracks
+# search beatport releases, filter individual tracks
 def beatportRelease(soup, titleVariations, track, headers, audio, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, initialCounter, imageCounter, images):
+    match = False
     for link in soup.find_all('li', class_="bucket-item ec-item track"):
         # find all tracks in the release that contain the title
         link = link.find('p', class_="buk-track-title")
-        if link.find('a')['href'].lower() in titleVariations:
-            url = "https://www.beatport.com" + str(link.find('a')['href'])
-            soup = prepareRequest(url, headers, webScrapingWindow, leftComponentFrame)
-            if soup == False:
-                tk.Label(leftComponentFrame, text="Connection Failure", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(anchor='w')
-                refresh(webScrapingWindow)
-                return track, imageCounter, webScrapingLeftPane, webScrapingRightPane
-            imageCounter, images, webScrapingLeftPane, webScrapingRightPane = beatportTrack(soup, track, headers, audio, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, initialCounter, imageCounter, images)
+        for title in titleVariations:
+            if title in str(link.find('a')['href'].lower()):
+                url = "https://www.beatport.com" + str(link.find('a')['href'])
+                soup = prepareRequest(url, headers, webScrapingWindow, leftComponentFrame)
+                if soup == False:
+                    tk.Label(leftComponentFrame, text="Connection Failure", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(anchor='w')
+                    refresh(webScrapingWindow)
+                    return track, imageCounter, webScrapingLeftPane, webScrapingRightPane
+                match = True
+                imageCounter, images, webScrapingLeftPane, webScrapingRightPane = beatportTrack(soup, track, headers, audio, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, initialCounter, imageCounter, images)
+                break
+        if match: break
     return imageCounter, images, webScrapingLeftPane, webScrapingRightPane
 
 #search beatport tracks, extract info in the event of a match
@@ -122,6 +131,8 @@ def beatportTrack(soup, track, headers, audio, leftComponentFrame, rightComponen
 
 #extract year, BPM, key, and genre
 def extractInfo(soup, track, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, initialCounter, imageCounter, images):
+    global count
+    count += 1
     for link in soup.find_all('ul', class_="interior-track-content-list"):
         # extract release date
         if "Release_Date" in options["Selected Tags (L)"]:

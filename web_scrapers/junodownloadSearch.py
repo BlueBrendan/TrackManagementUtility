@@ -15,20 +15,22 @@ from web_scrapers.compareRuntime import compareRuntime
 from commonOperations import performSearch
 from commonOperations import allWidgets
 
-#main bg color
+# main bg color
 bg = "#282f3b"
-#secondary color
+# secondary color
 secondary_bg = "#364153"
 
 def junodownloadSearch(filename, track, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, labelFrame, searchFrame, pageFrame, componentFrame, audio, options, initialCounter, imageCounter, images):
-    #FIRST QUERY - JUNO DOWNLOAD
+    # FIRST QUERY - JUNO DOWNLOAD
     widgetList = allWidgets(searchFrame)
     for item in widgetList: item.pack_forget()
     if len(filename) > 60: tk.Label(searchFrame, text="\nSearching Juno Download for " + str(filename)[0:59] + "...", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="left", padx=(10, 0), anchor='w')
     else: tk.Label(searchFrame, text="\nSearching Juno Download for " + str(filename), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="left", padx=(10, 0), anchor='w')
-
     leftComponentFrame, rightComponentFrame = resetLeftRightFrames(componentFrame)
     refresh(webScrapingWindow)
+
+    # counter to store number of matches
+    count = 0
     url = "https://www.google.co.in/search?q=" + search + " Junodownload"
     soup = prepareRequest(url, headers, webScrapingWindow, leftComponentFrame)
     if soup!=False:
@@ -75,6 +77,7 @@ def junodownloadSearch(filename, track, artistVariations, titleVariations, heade
                                     #check runtime to ensure track is correct
                                     runtime = item.find('div', class_="col-1 d-none d-lg-block text-center").get_text()
                                     if not compareRuntime(runtime, audio):
+                                        count+=1
                                         finalMatch = True
                                         for value in item.find_all('div', class_="col-1 d-none d-lg-block text-center"):
                                             # extract BPM
@@ -127,6 +130,7 @@ def junodownloadSearch(filename, track, artistVariations, titleVariations, heade
                                 tk.Label(leftComponentFrame, text="Track did not match with any of the listings", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
                                 refresh(webScrapingWindow)
                             break
+                if options['Limit Number of Matches per Site (B)'].get() and count >= options['Match Limit (I)'].get(): break
     return track, imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame
 
 def refresh(webScrapingWindow):
