@@ -12,14 +12,14 @@ def reverseImageSearch(link, headers, imageCounter, images, track, options):
     if track.browser == 'NA':
         try:
             seleniumOptions = webdriver.FirefoxOptions()
-            if options['Hide Selenium Browser (B)'].get(): seleniumOptions.add_argument('-headless')
+            if options['Hide Selenium Browser (B)'].get(): seleniumOptions.add_argument('--headless')
             browser = webdriver.Firefox(executable_path=resource_path('geckodriver.exe'), options=seleniumOptions, service_log_path='nul')
             track.browser = browser
         except: pass
     url = "https://images.google.com/searchbyimage?image_url=" + link
     if "https://" in link: link = link.replace("https://", '')
     elif "http://" in link: link = link.replace("http://", '')
-    if track.browser != '':
+    if track.browser != 'NA':
         try:
             browser = track.browser
             browser.set_window_position(0, 0)

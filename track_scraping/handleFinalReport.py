@@ -108,7 +108,7 @@ def navigateRight(leftNavigationButton, rightNavigationButton, titleFrame, conte
 
 def renderImage(contentFrame, imageSelections, imageCounter, thumbnails, index):
     # load non-thumbnailimage
-    if imageCounter >= 1 and imageSelections[index][0] != 'THUMB':
+    if imageCounter >= 1 and imageSelections[index] != 'THUMB':
         fileImageImport = imageSelections[index][0]
         photo = ImageTk.PhotoImage(fileImageImport)
         fileImage = tk.Label(contentFrame, image=photo, bg=bg)
