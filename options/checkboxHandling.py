@@ -3,6 +3,7 @@ from tkinter.tix import *
 # global variables
 optionsHierarchyDict = {
     # web scraping tab
+    'Limit Number of Matches per Site (B)': 'Match Limit (I)',
     'Extract Image from Website (B)': 'Reverse Image Search (B)',
     'Reverse Image Search (B)': ['Delete Stored Images (B)', 'Image Load Wait Time (I)', 'Number of Images Per Page (I)', 'Stop Search After Conditions (B)', 'Hide Selenium Browser (B)'],
     'Stop Search After Conditions (B)': 'Threshold to Stop Search (px)',

@@ -43,6 +43,27 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     tk.Checkbutton(discogsFrame, variable=options['Scrape Discogs (B)'], onvalue=True, offvalue=False,  activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Scrape Discogs (B)', optionsDict, options), bg=bg).pack(padx=(30, 0), side="left")
     tk.Label(discogsFrame, text="Discogs", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
 
+    # limit checkbox
+    limitMatchFrame = tk.Frame(rightComponentFrame, bg=bg)
+    limitMatchFrame.pack(anchor="w")
+    limitMatchCheckbox = tk.Checkbutton(limitMatchFrame, variable=options['Limit Number of Matches per Site (B)'], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, 'Limit Number of Matches per Site (B)', optionsDict, options), bg=bg)
+    limitMatchCheckbox.pack(padx=(30, 0), side="left")
+    tk.Label(limitMatchFrame, text="Limit Number of Matches per Site", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+    optionsDict['Limit Number of Matches per Site (B)'] = limitMatchCheckbox
+    limitNumberFrame = tk.Frame(rightComponentFrame, bg=bg)
+    limitNumberFrame.pack(anchor="w")
+
+    # limit entry
+    matchCount = StringVar(value=options["Match Limit (I)"].get())
+    matchCount.trace("w", lambda name, index, mode, matchCount=matchCount: entryInput(CONFIG_FILE, "Match Limit (I)", matchCount))
+    matchCountForm = tk.Entry(limitNumberFrame, width=3, textvariable=matchCount, validate="key", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg)
+    if options['Limit Number of Matches per Site (B)'].get() == False: matchCountForm.config(state=DISABLED)
+    optionsDict['Match Limit (I)'] = matchCountForm
+    validate = (matchCountForm.register(checkInt))
+    matchCountForm.configure(validatecommand=(validate, '%S'))
+    matchCountForm.pack(padx=(35, 0), pady=(5, 0), side="left")
+    tk.Label(limitNumberFrame, text="Max Number of Matches per Site", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), side="left")
+    optionsDict['Limit Number of Matches per Site (B)'] = limitMatchCheckbox
 
 
     # image scraping settings
@@ -50,7 +71,6 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     # left image options
     imageOptionsContainer = tk.Frame(tab1, bg=bg)
     imageOptionsContainer.pack(fill=X)
-
 
     leftImageFrame = tk.Frame(imageOptionsContainer, bg=bg)
     leftImageFrame.pack(side="left", anchor="w")
@@ -84,26 +104,26 @@ def webScrapingTab(tab_parent, options, CONFIG_FILE):
     waitTimeForm.pack(anchor="w")
     waitTimeText = tk.Label(waitTimeForm, text="Image Load Wait Time (I)", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
     time = StringVar(value=options["Image Load Wait Time (I)"].get())
-    time.trace("w", lambda name, index, mode, time=time: timeEntrybox(CONFIG_FILE, "Image Load Wait Time (I)", time))
-    waitTime = tk.Entry(waitTimeForm, width=3, textvariable=time, validate="key", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg)
-    optionsDict['Image Load Wait Time (I)'] = waitTime
-    validate = (waitTime.register(checkTimeValue))
-    waitTime.configure(validatecommand=(validate, '%S'))
-    if options["Extract Image from Website (B)"].get()==False or options["Reverse Image Search (B)"].get() == False: waitTime.config(state=DISABLED)
-    waitTime.pack(padx=(35, 0), pady=(5, 0), side="left")
+    time.trace("w", lambda name, index, mode, time=time: entryInput(CONFIG_FILE, "Image Load Wait Time (I)", time))
+    waitTimeForm = tk.Entry(waitTimeForm, width=3, textvariable=time, validate="key", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg)
+    optionsDict['Image Load Wait Time (I)'] = waitTimeForm
+    validate = (waitTimeForm.register(checkInt))
+    waitTimeForm.configure(validatecommand=(validate, '%S'))
+    if options["Extract Image from Website (B)"].get()==False or options["Reverse Image Search (B)"].get() == False: waitTimeForm.config(state=DISABLED)
+    waitTimeForm.pack(padx=(35, 0), pady=(5, 0), side="left")
     waitTimeText.pack(padx=(10, 0), pady=(5, 0), side="left")
     # image display count
     imageDisplayCountForm = tk.Frame(leftImageFrame, bg=bg)
     imageDisplayCountForm.pack(anchor="w")
     imageDisplayText = tk.Label(imageDisplayCountForm, text="Number of Images Per Page (1-5)", font=("Proxima Nova Rg", 11), fg="white", bg=bg)
     imageCount = StringVar(value=options["Number of Images Per Page (I)"].get())
-    imageCount.trace("w", lambda name, index, mode, imageCount=imageCount: imageEntrybox(CONFIG_FILE, "Number of Images Per Page (I)", imageCount))
+    imageCount.trace("w", lambda name, index, mode, imageCount=imageCount: entryInput(CONFIG_FILE, "Number of Images Per Page (I)", imageCount))
 
     imageCountForm = tk.Entry(imageDisplayCountForm, width=3, textvariable=imageCount, validate="key", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg)
     if options["Extract Image from Website (B)"].get() == False or options["Reverse Image Search (B)"].get() == False: imageCountForm.config(state=DISABLED)
     optionsDict['Number of Images Per Page (I)'] = imageCountForm
     validate = (imageCountForm.register(checkImageValue))
-    imageCountForm.configure(validatecommand=(validate, "%S", "%P"))
+    imageCountForm.configure(validatecommand=(validate, "%S"))
     imageCountForm.pack(padx=(35, 0), pady=(5, 0), side="left")
     imageDisplayText.pack(padx=(10, 0), pady=(5, 0), side="left")
 
@@ -165,26 +185,17 @@ def resolutionEntrybox(CONFIG_FILE, term, value, dimension):
             with open(CONFIG_FILE, 'wt') as file: file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term) + 1:config_file.index('x', config_file.index(term)) + 1])) + str(value.get())))
     file.close()
 
-def timeEntrybox(CONFIG_FILE, term, value):
+def entryInput(CONFIG_FILE, term, value):
     config_file = open(CONFIG_FILE, 'r').read()
     # convert to term
-    if value.get() == '':
-        with open(CONFIG_FILE, 'wt') as file: file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1])) + str(0)))
-    else:
-        with open(CONFIG_FILE, 'wt') as file: file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1])) + str(value.get())))
-    file.close()
-
-def imageEntrybox(CONFIG_FILE, term, value):
-    config_file = open(CONFIG_FILE, 'r').read()
-    # convert to term
-    if value.get() == '':
+    if value.get() == '' or value.get() == '0':
         with open(CONFIG_FILE, 'wt') as file: file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1])) + str(1)))
     else:
         with open(CONFIG_FILE, 'wt') as file: file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1])) + str(value.get())))
     file.close()
 
 #check if input is an integer, reject if not
-def checkTimeValue(value):
+def checkInt(value):
     try:
         int(value)
         return True
@@ -192,11 +203,10 @@ def checkTimeValue(value):
         return False
 
 #check if input is an integer equal to or below 5, reject if not
-def checkImageValue(value, imageCount):
-    if imageCount == '': return True
+def checkImageValue(value):
+    if value == '': return True
     try:
-        int(value)
-        if int(imageCount) <= 5: return True
+        if int(value) <= 5: return True
         return False
     except ValueError:
         return False
