@@ -15,22 +15,20 @@ from web_scrapers.compareRuntime import compareRuntime
 from commonOperations import performSearch
 from commonOperations import allWidgets
 
-# main bg color
-bg = "#282f3b"
-# secondary color
-secondary_bg = "#364153"
+# global variables
+bg = "#282f3b"  # main bg color
+secondary_bg = "#364153"    # secondary color
+count = 0   # counter to store number of matches
 
 def junodownloadSearch(filename, track, artistVariations, titleVariations, headers, search, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, labelFrame, searchFrame, pageFrame, componentFrame, audio, options, initialCounter, imageCounter, images):
-    # FIRST QUERY - JUNO DOWNLOAD
+    global count
+    count = 0
     widgetList = allWidgets(searchFrame)
     for item in widgetList: item.pack_forget()
     if len(filename) > 60: tk.Label(searchFrame, text="\nSearching Juno Download for " + str(filename)[0:59] + "...", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="left", padx=(10, 0), anchor='w')
     else: tk.Label(searchFrame, text="\nSearching Juno Download for " + str(filename), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="left", padx=(10, 0), anchor='w')
     leftComponentFrame, rightComponentFrame = resetLeftRightFrames(componentFrame)
     refresh(webScrapingWindow)
-
-    # counter to store number of matches
-    count = 0
     url = "https://www.google.co.in/search?q=" + search + " Junodownload"
     soup = prepareRequest(url, headers, webScrapingWindow, leftComponentFrame)
     if soup!=False:

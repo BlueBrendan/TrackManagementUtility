@@ -9,7 +9,7 @@ import getpass
 from commonOperations import resource_path
 
 def reverseImageSearch(link, headers, imageCounter, images, track, options):
-    if track.browser == '':
+    if track.browser == 'NA':
         try:
             seleniumOptions = webdriver.FirefoxOptions()
             if options['Hide Selenium Browser (B)'].get(): seleniumOptions.add_argument('-headless')

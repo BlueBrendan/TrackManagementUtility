@@ -109,7 +109,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE, window):
                 finalResults.append(reportResults)
                 imageSelections.append(imageSelection)
         # close selenium browser if it exists
-        if track!='' and track.browser != '': track.browser.quit()
+        if track!='' and track.browser != 'NA': track.browser.quit()
         # enable controls in web scraping window
         if webScrapingPage > 0:
             enableControls(searchFrame, pageFrame, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame)

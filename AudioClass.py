@@ -9,8 +9,8 @@ class FLAC_Track:
         for tag in options["Selected Tags (L)"]:
             if tag in informalTagDict: setattr(self, tag.lower(), str(audio[informalTagDict[tag]][0]))
         self.imageSelection = "THUMB"
-        if browser != '': self.browser = browser
-        else: self.browser = ''
+        if browser != '':  self.browser = browser
+        else: self.browser = 'NA'
         self.stop = False
         picture = audio.pictures
         if len(picture) > 0 and options['Stop Search After Conditions (B)'].get():
@@ -27,7 +27,7 @@ class Vorbis_Track:
             if tag in informalTagDict: setattr(self, tag.lower(), str(audio[informalTagDict[tag]][0]))
         self.imageSelection = "THUMB"
         if browser != '': self.browser = browser
-        else: self.browser = ''
+        else: self.browser = 'NA'
         self.stop = False
         if "metadata_block_picture" in audio and options['Stop Search After Conditions (B)'].get():
             imageFrame = audio["metadata_block_picture"]
@@ -47,7 +47,7 @@ class ID3_Track:
             if tag in informalTagDict: setattr(self, tag.lower(), str(audio[informalTagDict[tag]]))
         self.imageSelection = "THUMB"
         if browser != '': self.browser = browser
-        else: self.browser = ''
+        else: self.browser = 'NA'
         self.stop = False
         if 'APIC:' in audio and options['Stop Search After Conditions (B)'].get():
             image = audio["APIC:"]
@@ -71,7 +71,7 @@ class M4A_Track:
                 else: setattr(self, tag.lower(), "")
         self.imageSelection = "THUMB"
         if browser != '': self.browser = browser
-        else: self.browser = ''
+        else: self.browser = 'NA'
         self.stop = False
         if "covr" in audio and options['Stop Search After Conditions (B)'].get():
             image = audio["covr"]
