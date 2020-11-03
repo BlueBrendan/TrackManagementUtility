@@ -3,7 +3,8 @@ import getpass
 import os
 from PIL import Image, ImageTk
 from matplotlib import font_manager
-import pyglet
+from fontTools.ttLib import TTFont
+from ctypes import windll, byref, create_unicode_buffer, create_string_buffer
 
 # import methods
 from compareDrives import compareDrives
@@ -11,14 +12,29 @@ from track_preparation.scanTagsOnline import scanTagsOnline
 from options.updatePreferences import updatePreferences
 from commonOperations import resource_path
 
+# load font into tkinter if not installed
+FR_PRIVATE  = 0x10
+FR_NOT_ENUM = 0x20
+def loadfont(fontpath, private=True, enumerable=False):
+    if isinstance(fontpath, bytes):
+        pathbuf = create_string_buffer(fontpath)
+        AddFontResourceEx = windll.gdi32.AddFontResourceExA
+    elif isinstance(fontpath, str):
+        pathbuf = create_unicode_buffer(fontpath)
+        AddFontResourceEx = windll.gdi32.AddFontResourceExW
+    else: raise TypeError('fontpath must be of type str or unicode')
+    flags = (FR_PRIVATE if private else 0) | (FR_NOT_ENUM if not enumerable else 0)
+    numFontsAdded = AddFontResourceEx(byref(pathbuf), flags, 0)
+    return bool(numFontsAdded)
+
 proximaNovaRegular = False
 proximaNovaBold = False
 # check if font proxima nova is installed
 for font in font_manager.win32InstalledFonts():
     if 'proxima nova bold' in font.lower(): proximaNovaBold = True
     elif 'proxima nova' in font.lower(): proximaNovaRegular = True
-if not proximaNovaRegular: pyglet.font.add_file(resource_path('Proxima Nova Regular.ttf'))
-if not proximaNovaBold: pyglet.font.add_file(resource_path('Proxima Nova Bold.ttf'))
+if not proximaNovaRegular: loadfont(resource_path('Proxima Nova Regular.ttf'))
+if not proximaNovaBold: loadfont(resource_path('Proxima Nova Bold.ttf'))
 
 #main bg color
 bg = "#282f3b"
