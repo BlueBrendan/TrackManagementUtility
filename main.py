@@ -2,6 +2,8 @@ import tkinter as tk
 import getpass
 import os
 from PIL import Image, ImageTk
+from matplotlib import font_manager
+import pyglet
 
 # import methods
 from compareDrives import compareDrives
@@ -9,10 +11,14 @@ from track_preparation.scanTagsOnline import scanTagsOnline
 from options.updatePreferences import updatePreferences
 from commonOperations import resource_path
 
-# #add proxima nova regular
-# pyglet.font.add_file("C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Proxima Nova Regular.ttf")
-# #add proxima nova bold
-# pyglet.font.add_file("C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Proxima Nova Bold.otf")
+proximaNovaRegular = False
+proximaNovaBold = False
+# check if font proxima nova is installed
+for font in font_manager.win32InstalledFonts():
+    if 'proxima nova bold' in font.lower(): proximaNovaBold = True
+    elif 'proxima nova' in font.lower(): proximaNovaRegular = True
+if not proximaNovaRegular: pyglet.font.add_file(resource_path('Proxima Nova Regular.ttf'))
+if not proximaNovaBold: pyglet.font.add_file(resource_path('Proxima Nova Bold.ttf'))
 
 #main bg color
 bg = "#282f3b"
@@ -152,7 +158,7 @@ fileImage.pack(side="left", anchor="w")
 
 textContainer = tk.Frame(main, bg=bg)
 textContainer.pack(side="left", padx=(35, 0))
-titleLabel = tk.Label(textContainer, text="TRACK\nMANAGEMENT\nUTILITY", font=('ProximaNova-Bold', 55), fg="#ffdd33", bg=bg, justify="left").pack(pady=(60,55))
+titleLabel = tk.Label(textContainer, text="TRACK\nMANAGEMENT\nUTILITY", font=('Proxima Nova Bold', 55), fg="#ffdd33", bg=bg, justify="left").pack(pady=(25,45))
 
 buttons = tk.Frame(root, bg=bg)
 buttons.pack(fill="both")
