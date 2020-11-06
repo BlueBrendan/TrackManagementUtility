@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter.tix import *
 from PIL import ImageTk
-import getpass
 import os
 
 # import methods
@@ -149,5 +148,5 @@ def completeSearch(finalReportWindow, webScrapingWindow, options):
     else: webScrapingWindow.lift()
     # delete all images in temp if both revese image search and delete stored image options are both true
     if options["Delete Stored Images (B)"].get() == True:
-        images = os.listdir(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/")
-        for image in images: os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(image))
+        images = os.listdir(resource_path('Temp/'))
+        for image in images: os.remove(resource_path('Temp/' + str(image)))

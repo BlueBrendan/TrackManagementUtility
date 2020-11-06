@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter.tix import *
 import requests
-import getpass
 from PIL import Image, ImageTk
 from PIL import UnidentifiedImageError
 import webbrowser
@@ -15,6 +14,7 @@ from web_scrapers.sendRequest import prepareRequest
 from web_scrapers.compareRuntime import compareRuntime
 from commonOperations import performSearch
 from commonOperations import allWidgets
+from commonOperations import resource_path
 
 # global variables
 bg = "#282f3b"  # main bg color
@@ -178,12 +178,12 @@ def extractInfo(soup, track, headers, leftComponentFrame, rightComponentFrame, w
         if link!=None:
             link = link['src']
             # write beatport image to drive
-            with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file:
+            with open(resource_path('Temp/' + str(imageCounter) + '.jpg'), "wb") as file:
                 file.write(requests.get(link, headers=headers).content)
             track.URLList.append(link)
             # load file icon
             try:
-                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
+                fileImageImport = Image.open(resource_path('Temp/' + str(imageCounter) + '.jpg'))
                 width, height = fileImageImport.size
                 fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
                 images.append([fileImageImport, width, height])

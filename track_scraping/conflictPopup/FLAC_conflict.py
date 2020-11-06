@@ -4,7 +4,6 @@ from mutagen.flac import Picture
 from mutagen import id3
 from PIL import Image, ImageTk
 from io import BytesIO
-import getpass
 
 #import methods
 from commonOperations import loadImageButtons
@@ -229,12 +228,12 @@ def saveImage(track, audio, window):
         # first clear all images from audio file
         audio.clear_pictures()
         # file image import will be used as a thumbnail in various windows
-        fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(track.imageSelection) + ".jpg")
+        fileImageImport = Image.open(resource_path('Temp/' + str(track.imageSelection) + '.jpg'))
         width, height = fileImageImport.size
         fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
         # image will be saved directly to the file
         image = Picture()
-        with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(track.imageSelection) + ".jpg", 'rb') as f: image.data = f.read()
+        with open(resource_path('Temp/' + str(track.imageSelection) + '.jpg'), 'rb') as f: image.data = f.read()
         image.type = id3.PictureType.COVER_FRONT
         image.mime = u"image/jpeg"
         audio.add_picture(image)

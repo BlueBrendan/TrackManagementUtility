@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter.tix import *
 import requests
 from PIL import Image, ImageTk
-import getpass
 import webbrowser
 
 # import methods
@@ -14,6 +13,7 @@ from web_scrapers.webScrapingWindowControl import rerenderControls
 from web_scrapers.compareRuntime import compareRuntime
 from commonOperations import performSearch
 from commonOperations import allWidgets
+from commonOperations import resource_path
 
 # global variables
 bg = "#282f3b"  # main bg color
@@ -165,10 +165,10 @@ def extractInfo(soup, track, headers, webScrapingWindow, webScrapingLeftPane, we
             # check
             if link[len(link)-5:len(link)-4]!='g': link = link + '.jpg'
             # write discogs image to drive
-            with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file: file.write(requests.get(link, headers=headers).content)
+            with open(resource_path('Temp/' + str(imageCounter) + '.jpg'), "wb") as file: file.write(requests.get(link, headers=headers).content)
             track.URLList.append(link)
             # load file icon
-            fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
+            fileImageImport = Image.open(resource_path('Temp/' + str(imageCounter) + '.jpg'))
             width, height = fileImageImport.size
             fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
             images.append([fileImageImport, width, height])

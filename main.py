@@ -1,9 +1,7 @@
 import tkinter as tk
-import getpass
 import os
 from PIL import Image, ImageTk
 from matplotlib import font_manager
-from fontTools.ttLib import TTFont
 from ctypes import windll, byref, create_unicode_buffer, create_string_buffer
 
 # import methods
@@ -54,16 +52,11 @@ y = (hs/2) - (660/2)
 root.geometry('%dx%d+%d+%d' % (1000, 600, x, y))
 root.configure(bg=bg)
 root.iconbitmap(resource_path('favicon.ico'))
-
 def createConfigFile(flag):
-    CONFIG_FILE = r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt"
+    CONFIG_FILE = resource_path('Settings.txt')
     if flag=='F' or (flag=="N" and not os.path.exists(CONFIG_FILE)):
-        # create settings folder
-        if not os.path.isdir(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility"):
-            path = r"C:/Users/" + str(getpass.getuser()) + "/Documents"
-            os.mkdir(path + "/Track Management Utility")
         # create setttings file
-        file = open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt", 'w')
+        file = open(CONFIG_FILE, 'w')
         file.write("-GENERAL-\nSubdirectories (B):True\nClose Scraping Window (B):True\nFirst Default Directory (S):\nSecond Default Directory (S):\nCopy Directory Contents (B):True\n\n"
                    "-SCRAPING SETTINGS-\nScrape Junodownload (B):True\nScrape Beatport (B):True\nScrape Discogs (B):True\nExtract Image from Website (B):True\nLimit Number of Matches per Site (B):True\nMatch Limit (I):4\n\n"
                    "-IMAGE SCRAPING-\nReverse Image Search (B):True\nDelete Stored Images (B):True\nImage Load Wait Time (I):5\nNumber of Images Per Page (I):3\nStop Search After Conditions (B):True\nStop Search After Finding Image of Resolution (S):2000x2000\nHide Selenium Browser (B):True\n\n"
@@ -92,21 +85,21 @@ def readValuesFromConfig(CONFIG_FILE):
             if (term[len(term) - 2:len(term) - 1]) == 'B':
                 try: options[term] = tk.BooleanVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.find('\n', config_file.index(term) + len(term))])
                 except:
-                    os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
+                    os.remove(resource_path('Settings.txt'))
                     CONFIG_FILE = createConfigFile("F")
                     readValuesFromConfig(CONFIG_FILE)
             #string
             elif (term[len(term) - 2:len(term) - 1]) == 'S':
                 try: options[term] = tk.StringVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
                 except:
-                    os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
+                    os.remove(resource_path('Settings.txt'))
                     CONFIG_FILE = createConfigFile("F")
                     readValuesFromConfig(CONFIG_FILE)
             #integer
             elif (term[len(term) - 2:len(term) - 1]) == 'I':
                 try:options[term] = tk.IntVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
                 except:
-                    os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
+                    os.remove(resource_path('Settings.txt'))
                     CONFIG_FILE = createConfigFile("F")
                     readValuesFromConfig(CONFIG_FILE)
             #list
@@ -115,11 +108,11 @@ def readValuesFromConfig(CONFIG_FILE):
                     if (config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))].split(', ')) == ['']:options[term] = []
                     else: options[term] = config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))].split(', ')
                 except:
-                    os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
+                    os.remove(resource_path('Settings.txt'))
                     CONFIG_FILE = createConfigFile("F")
                     readValuesFromConfig(CONFIG_FILE)
         else:
-            os.remove(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt")
+            os.remove(resource_path('Settings.txt'))
             CONFIG_FILE = createConfigFile("F")
             readValuesFromConfig(CONFIG_FILE)
     return options

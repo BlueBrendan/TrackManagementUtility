@@ -1,10 +1,10 @@
 import tkinter as tk
 from tkinter.tix import *
 from tkinter import messagebox
-import getpass
 
 # import methods
 from options.checkboxHandling import checkbox
+from commonOperations import resource_path
 
 # global variables
 # main bg color
@@ -89,13 +89,13 @@ def namingTab(tab_parent, options, CONFIG_FILE):
     tk.Label(hyphenButtonFrame, text="Check for Extraneous Hyphens", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
     optionsDict['Check for Extraneous Hyphens (B)'] = hyphenCheck
 
-    # frame for hyphen checkbutton
-    underscoreFrame = tk.Frame(rightPane, bg=bg)
-    underscoreFrame.pack(anchor="w")
-    underscoreCheck = tk.Checkbutton(underscoreFrame, variable=options["Check for Underscores (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Check for Underscores (B)", optionsDict, options), bg=bg)
-    underscoreCheck.pack(padx=(40, 0), side="left")
-    tk.Label(underscoreFrame, text="Check for Underscores", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
-    optionsDict['Check for Underscores (B)'] = underscoreCheck
+    # frame for underscore checkbutton (not yet implemented)
+    # underscoreFrame = tk.Frame(rightPane, bg=bg)
+    # underscoreFrame.pack(anchor="w")
+    # underscoreCheck = tk.Checkbutton(underscoreFrame, variable=options["Check for Underscores (B)"], onvalue=True, offvalue=False, activebackground=bg, command=lambda: checkbox(CONFIG_FILE, "Check for Underscores (B)", optionsDict, options), bg=bg)
+    # underscoreCheck.pack(padx=(40, 0), side="left")
+    # tk.Label(underscoreFrame, text="Check for Underscores", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="left")
+    # optionsDict['Check for Underscores (B)'] = underscoreCheck
 
     # frame for capitalization checkbutton
     capitalizationButtonFrame = tk.Frame(rightPane, bg=bg)
@@ -170,7 +170,7 @@ def addKeywordToList(term, alternateTerm, listbox, userInput, options, popup):
         messagebox.showinfo(parent=popup, title="Error", message=userInput.get().lower() + " is already in the other list; keywords cannot be stored in both lists")
         userInput.set("")
     else:
-        CONFIG_FILE = r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt"
+        CONFIG_FILE = resource_path('Settings.txt')
         config_file = open(CONFIG_FILE, 'r').read()
         # convert to term
         originalListValues = options[term]
@@ -193,7 +193,7 @@ def updateInput(input, button):
 
 #remove keyword from list and settings file
 def deleteKeyword(term, listbox, index, select, options):
-    CONFIG_FILE = r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt"
+    CONFIG_FILE = resource_path('Settings.txt')
     config_file = open(CONFIG_FILE, 'r').read()
     # convert to term
     originalListValues = options[term]

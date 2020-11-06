@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter.tix import *
 from PIL import Image, ImageTk
-import getpass
 import math
 from skimage.metrics import structural_similarity
 from skimage.transform import resize
@@ -122,13 +121,13 @@ def allWidgets(window):
 def performSearch(initialCounter, imageCounter):
     duplicate = False
     # compare image with other scraped images
-    imageOne = resize(plt.imread(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter - 1) + ".jpg").astype(float), (2 ** 8, 2 ** 8, 3))
+    imageOne = resize(plt.imread(resource_path('Temp/' + str(imageCounter - 1) + '.jpg')).astype(float), (2 ** 8, 2 ** 8, 3))
     for i in range(initialCounter, imageCounter - 1):
-        imageTwo = resize(plt.imread(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg").astype(float), (2 ** 8, 2 ** 8, 3))
+        imageTwo = resize(plt.imread(resource_path('Temp/' + str(i) + '.jpg')).astype(float), (2 ** 8, 2 ** 8, 3))
         score, diff = structural_similarity(imageOne, imageTwo, full=True, multichannel=True)
         if score > 0.6:
-            widthOne, heightOne = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter - 1) + ".jpg").size
-            widthTwo, heightTwo = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(i) + ".jpg").size
+            widthOne, heightOne = Image.open(resource_path('Temp/' + str(imageCounter - 1) + '.jpg')).size
+            widthTwo, heightTwo = Image.open(resource_path('Temp/' + str(i) + '.jpg')).size
             if abs(widthTwo - widthOne) <= 200 and abs(heightTwo - heightTwo) <= 200:
                 duplicate = True
                 break

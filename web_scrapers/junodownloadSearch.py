@@ -3,7 +3,6 @@ from tkinter.tix import *
 from PIL import Image, ImageTk
 import requests
 import webbrowser
-import getpass
 
 #import methods
 from track_scraping.compareTokens import compareTokens
@@ -14,6 +13,7 @@ from web_scrapers.sendRequest import prepareRequest
 from web_scrapers.compareRuntime import compareRuntime
 from commonOperations import performSearch
 from commonOperations import allWidgets
+from commonOperations import resource_path
 
 # global variables
 bg = "#282f3b"  # main bg color
@@ -105,10 +105,10 @@ def junodownloadSearch(filename, track, artistVariations, titleVariations, heade
                                                 item = soup.find('div', class_="jw-page")
                                                 item = item.find('img').get('data-src-full')
                                                 # write junodownload image to drive
-                                                with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file: file.write(requests.get(item, headers=headers).content)
+                                                with open(resource_path('Temp/' + str(imageCounter) + '.jpg'), "wb") as file: file.write(requests.get(item, headers=headers).content)
                                                 track.URLList.append(item)
                                                 # load file icon
-                                                fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
+                                                fileImageImport = Image.open(resource_path('Temp/' + str(imageCounter) + '.jpg'))
                                                 width, height = fileImageImport.size
                                                 fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
                                                 images.append([fileImageImport, width, height])

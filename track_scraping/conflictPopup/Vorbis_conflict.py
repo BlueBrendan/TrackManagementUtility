@@ -3,7 +3,6 @@ from tkinter.tix import *
 from mutagen.flac import Picture
 from PIL import Image, ImageTk
 from io import BytesIO
-import getpass
 import base64
 
 #import methods
@@ -228,10 +227,10 @@ def saveImage(track, audio, window):
         # first clear all images from audio file
         audio['metadata_block_picture'] = ''
         # file image import will be used as a thumbnail in various windows
-        fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(track.imageSelection) + ".jpg")
+        fileImageImport = Image.open(resource_path('Temp/' + str(track.imageSelection) + '.jpg'))
         width, height = fileImageImport.size
         fileImageImport = fileImageImport.resize((200, 200), Image.ANTIALIAS)
-        with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(track.imageSelection) + ".jpg", 'rb') as f: image.data = f.read()
+        with open(resource_path('Temp/' + str(track.imageSelection) + '.jpg'), 'rb') as f: image.data = f.read()
         image.type = 17
         image.mime = u"image/jpeg"
         image = image.write()

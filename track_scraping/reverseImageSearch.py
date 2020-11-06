@@ -3,7 +3,6 @@ from PIL import Image
 import time
 import requests
 from selenium import webdriver
-import getpass
 
 # import methods
 from commonOperations import resource_path
@@ -75,8 +74,8 @@ def reverseImageSearch(link, headers, imageCounter, images, track, options):
                                     if browser.current_url not in track.URLList:
                                         track.URLList.append(browser.current_url)
                                         try:
-                                            with open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg", "wb") as file: file.write(requests.get(browser.current_url, headers=headers).content)
-                                            fileImageImport = Image.open(r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Temp/" + str(imageCounter) + ".jpg")
+                                            with open(resource_path('Temp/' + str(imageCounter) + '.jpg'), "wb") as file: file.write(requests.get(browser.current_url, headers=headers).content)
+                                            fileImageImport = Image.open(resource_path('Temp/' + str(imageCounter) + '.jpg'))
                                             imageCounter += 1
                                             # check image parameters
                                             width, height = fileImageImport.size

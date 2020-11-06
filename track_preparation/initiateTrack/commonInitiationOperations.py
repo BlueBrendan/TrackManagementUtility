@@ -9,9 +9,7 @@ import tkinter as tk
 from PIL import Image
 from tkinter import messagebox
 import os
-import getpass
 import math
-import re
 
 # import methods
 from commonOperations import resource_path
@@ -338,7 +336,7 @@ def addCapitalizedList(keyword, popup):
     change = True
     capitalize = True
     uncapitalize = False
-    CONFIG_FILE = r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt"
+    CONFIG_FILE = resource_path('Settings.txt')
     config_file = open(CONFIG_FILE, 'r').read()
     # convert to term
     term = "Always Capitalize (L)"
@@ -356,7 +354,7 @@ def addUncapitalizedList(keyword, popup):
     change = False
     capitalize = False
     uncapitalize = True
-    CONFIG_FILE = r"C:/Users/" + str(getpass.getuser()) + "/Documents/Track Management Utility/Settings.txt"
+    CONFIG_FILE = resource_path('Settings.txt')
     config_file = open(CONFIG_FILE, 'r').read()
     # convert to term
     term = "Never Capitalize (L)"
