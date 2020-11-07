@@ -7,7 +7,7 @@ This description mostly applies to DJs, live performers, audiophiles, and seriou
 Track Management Utility currently supports six audio formats: .FLAC, .WAV, .MP3, .M4A, .AIFF, and .OGG. It will not recognize files with any other extension.
 
 ## Setup
-1. Download the Track Management Utility folder from link
+1. Download the Track Management Utility folder from https://drive.google.com/drive/folders/1JeQbg10mIm5QU4qEjOOVwoe2vtmDOfqA?usp=sharing
 2. Run Track Management Utility.exe
 
 Do not delete or tamper with any of the other files in the folder; they are required for Track Management Utility to run properly. You can create a shortcut of the .exe file on the Desktop for easier access.
