@@ -1,4 +1,4 @@
-# Track Management Utility V1.0
+# Track Management Utility V1.0 - 11/7/20
 
 ## Preface
 Track Management Utility is targeted at a narrow niche of music connoisseurs who care enough about music to store, manage, and organize their (digital) collection on a local hard disk. 
