@@ -11,10 +11,10 @@ This description mostly applies to DJs, live performers, audiophiles, and seriou
 Do not delete or tamper with any of the other files in the folder; they are required for Track Management Utility to run properly. You can create a shortcut of the .exe file on the Desktop for easier access.
 
 ## Overview
-Track Management Utility scrapes tags from music stores/DJ pools Junodownload and Beatport, as well as the music database Discogs. The operation details can be found in the Track Management Utility Instructions PDF.
+Track Management Utility scrapes tags from music stores/DJ pools Junodownload and Beatport, as well as the music database Discogs. The operation details can be found in the Track Management Utility Documentation PDF.
 
 ## Dependencies
 Track Management Utility is written in Python and uses Tkinter, Python's standard out-of-the-box graphical interface. Dependencies include Mutagen for audio file handling/tag editing, Beautiful Soup for preliminary tag scraping from the web, Selenium for reverse image search, and Pillow for image handling.
 
 ## Contact
-If you'd like to report an issue or make a suggestion about Track Management Utility, you can contact me at brendanchoudj@gmail.com
+If you'd like to report an issue or make a suggestion, you can contact me at brendanchoudj@gmail.com
