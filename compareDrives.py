@@ -12,9 +12,13 @@ from PIL import Image, ImageTk
 from io import BytesIO
 import base64
 
-#main bg color
+# import methods
+from commonOperations import resource_path
+
+# global variables
+# main bg color
 bg = "#282f3b"
-#secondary color
+# secondary color
 secondary_bg = "#364153"
 
 complete = False
@@ -68,6 +72,7 @@ def directorySearch(first_directory, second_directory, directoryFileCount, diffe
                 tk.Button(buttonFrame, text='Delete', command=lambda: deleteDirectory(first_directory, var, popup), font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left", padx=(20, 20))
                 tk.Button(buttonFrame, text='Ignore', command=popup.destroy, font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left", padx=(20, 20))
                 popup.protocol("WM_DELETE_WINDOW", lambda arg=popup: on_exit(arg))
+                popup.iconbitmap(resource_path('favicon.ico'))
                 popup.wait_window()
             #check files within that directory with those in the directory of second_directory
             else: directoryFileCount, differenceCount, directoryCount = directorySearch(first_directory + '/' + var, second_directory + '/' + var, directoryFileCount, differenceCount, directoryCount, options)
@@ -162,6 +167,7 @@ def directorySearch(first_directory, second_directory, directoryFileCount, diffe
                 tk.Button(buttonFrame, text='Delete', command=lambda: deleteFile(first_directory, var, popup), font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left", padx=(20, 20))
                 tk.Button(buttonFrame, text='Ignore', command=popup.destroy, font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(side="left", padx=(20, 20))
                 popup.protocol("WM_DELETE_WINDOW", lambda arg=popup: on_exit(arg))
+                popup.iconbitmap(resource_path('favicon.ico'))
                 popup.wait_window()
     return directoryFileCount, differenceCount, directoryCount
 

@@ -23,7 +23,7 @@ def initiateAIFF(filename, directory, thumbnails, options):
     formalTagDict = {
         'TPE1': 'Artist',
         'TALB': 'Album',
-        'TPE2': 'Album Artist',
+        'TPE2': 'Album_Artist',
         'TBPM': 'BPM',
         'COMM::eng': 'Comment',
         'TCMP': 'Compilation',

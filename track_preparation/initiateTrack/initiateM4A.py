@@ -22,7 +22,7 @@ def initiateM4A(filename, directory, thumbnails, options):
     formalTagDict = {
         "\xa9ART": 'Artist',
         "\alb": 'Album',
-        "aART": 'Album Artist',
+        "aART": 'Album_Artist',
         "tmpo": 'BPM',
         "\xa9cmt": 'Comment',
         "cpil": 'Compilation', #bool

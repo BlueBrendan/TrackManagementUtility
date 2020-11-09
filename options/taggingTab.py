@@ -40,16 +40,19 @@ def taggingTab(tab_parent, options, CONFIG_FILE):
 
     tk.Label(rightListbox, text="Selected Tags", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack()
     selectedListbox = tk.Listbox(rightListbox, font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, highlightbackground="black", highlightcolor="grey", selectbackground=bg, activestyle="none")
-    comprehensiveList = ['Artist', 'Album', 'Album Artist', 'BPM', 'Comment', 'Compilation', 'Copyright', 'Discnumber', 'Genre', 'Key', 'Release_Date', 'Title', 'ReplayGain']
+    comprehensiveList = ['Artist', 'Album', 'Album_Artist', 'BPM', 'Comment', 'Compilation', 'Copyright', 'Discnumber', 'Genre', 'Key', 'Release_Date', 'Title', 'ReplayGain']
 
     # insert tags in their corresponding listbox
     for tag in comprehensiveList:
         if tag not in options['Selected Tags (L)']:
-            # remove underscore
+            # handle underscore
             if tag == "Release_Date": unselectedListbox.insert(END, "Release Date")
+            elif tag == 'Album_Artist': unselectedListbox.insert(END, 'Album Artist')
             else: unselectedListbox.insert(END, tag)
         else:
+            # handle underscore
             if tag == "Release_Date": selectedListbox.insert(END, "Release Date")
+            elif tag == 'Album_Artist': selectedListbox.insert(END, 'Album Artist')
             else: selectedListbox.insert(END, tag)
     unselectedListbox.pack(padx=(30, 5), pady=(5, 5))
 
@@ -58,8 +61,8 @@ def taggingTab(tab_parent, options, CONFIG_FILE):
     deselect = tk.Button(listboxButtons, text="Deselect", width=7, state=DISABLED, font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg)
     deselect.pack(side="top")
     selectedListbox.pack(padx=(5, 0), pady=(5, 5))
-    unselectedListbox.bind('<<ListboxSelect>>', lambda event, firstListbox=unselectedListbox, secondListbox=selectedListbox, list=tagList, select=select, deselect=deselect: selectTag(firstListbox, secondListbox, list, select, deselect))
-    selectedListbox.bind('<<ListboxSelect>>', lambda event, firstListbox=selectedListbox, secondListbox=unselectedListbox, list=tagList, select=select, deselect=deselect: selectTag(firstListbox, secondListbox, list, select, deselect))
+    unselectedListbox.bind('<<ListboxSelect>>', lambda event, firstListbox=unselectedListbox, secondListbox=selectedListbox, list=tagList, select=select, deselect=deselect: selectTag(firstListbox, secondListbox, list, select, deselect, CONFIG_FILE))
+    selectedListbox.bind('<<ListboxSelect>>', lambda event, firstListbox=selectedListbox, secondListbox=unselectedListbox, list=tagList, select=select, deselect=deselect: selectTag(firstListbox, secondListbox, list, select, deselect, CONFIG_FILE))
 
     # bottom row of tagFrame
     tagCheckboxFrame = Frame(tagFrame, bg=bg)
@@ -70,7 +73,7 @@ def taggingTab(tab_parent, options, CONFIG_FILE):
     optionsDict['Delete Unselected Tags (B)'] = deleteUnselected
 
 #handle listbox click interaction
-def selectTag(firstListbox, secondListbox, list, select, deselect):
+def selectTag(firstListbox, secondListbox, list, select, deselect, CONFIG_FILE):
     if len(firstListbox.curselection()) > 0:
         index = int(firstListbox.curselection()[0])
         tag = firstListbox.get(index)
@@ -84,50 +87,49 @@ def selectTag(firstListbox, secondListbox, list, select, deselect):
             firstListbox.config(selectbackground=bg)
             if tag in list:
                 select.config(state=DISABLED)
-                deselect.config(state=NORMAL, command=lambda: disableTag(firstListbox, secondListbox, tag, index, list, deselect))
+                deselect.config(state=NORMAL, command=lambda: disableTag(firstListbox, secondListbox, tag, index, list, deselect, CONFIG_FILE))
             else:
-                select.config(state=NORMAL, command=lambda: enableTag(firstListbox, secondListbox, tag, index, list, select))
+                select.config(state=NORMAL, command=lambda: enableTag(firstListbox, secondListbox, tag, index, list, select, CONFIG_FILE))
                 deselect.config(state=DISABLED)
 
-def enableTag(firstListbox, secondListbox, tag, index, list, button):
-    #first listbox is the unselected listbox, second listbox is the selected listbox
-    global tagList, CONFIG
-    config_file = open(CONFIG, 'r').read()
+def enableTag(firstListbox, secondListbox, tag, index, list, button, CONFIG_FILE):
+    # first listbox is the unselected listbox, second listbox is the selected listbox
+    config_file = open(CONFIG_FILE, 'r').read()
     firstListbox.delete(index, index)
+    # handle underscore
     if tag == "Release_Date": secondListbox.insert(END, "Release Date")
+    elif tag == 'Album_Artist': secondListbox.insert(END, "Album Artist")
     else: secondListbox.insert(END, tag)
     list.append(tag)
     list.sort()
-    tagList = list
     button.configure(state=DISABLED)
 
-    term = "Selected Tags (L)"
-    originalListValues = str(config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
-    newListValues = ''
-    for tag in list:
-        newListValues += tag + ', '
-    newListValues = newListValues[:-2]
-    with open(CONFIG, 'wt') as file:
-        file.write(config_file.replace(str(originalListValues), str(newListValues)))
-    file.close()
-
-def disableTag(firstListbox, secondListbox, tag, index, list, button):
-    # first listbox is the selected listbox, second listbox is the unselected listbox
-    global tagList, CONFIG
-    config_file = open(CONFIG, 'r').read()
-    firstListbox.delete(index, index)
-    if tag == "Release_Date": secondListbox.insert(END, "Release Date")
-    else: secondListbox.insert(END, tag)
-    list.remove(tag)
-    list.sort()
-    tagList = list
-    button.configure(state=DISABLED)
-
+    # write to file
     term = "Selected Tags (L)"
     originalListValues = str(config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
     newListValues = ''
     for tag in list: newListValues += tag + ', '
     newListValues = newListValues[:-2]
-    with open(CONFIG, 'wt') as file:
-        file.write(config_file.replace(str(originalListValues), str(newListValues)))
+    with open(CONFIG_FILE, 'wt') as file: file.write(config_file.replace(str(originalListValues), str(newListValues)))
+    file.close()
+
+def disableTag(firstListbox, secondListbox, tag, index, list, button, CONFIG_FILE):
+    # first listbox is the selected listbox, second listbox is the unselected listbox
+    config_file = open(CONFIG_FILE, 'r').read()
+    firstListbox.delete(index, index)
+    # handle underscore
+    if tag == "Release_Date": secondListbox.insert(END, "Release Date")
+    elif tag == 'Album_Artist': secondListbox.insert(END, "Album Artist")
+    else: secondListbox.insert(END, tag)
+    list.remove(tag)
+    list.sort()
+    button.configure(state=DISABLED)
+
+    # write to file
+    term = "Selected Tags (L)"
+    originalListValues = str(config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
+    newListValues = ''
+    for tag in list: newListValues += tag + ', '
+    newListValues = newListValues[:-2]
+    with open(CONFIG_FILE, 'wt') as file: file.write(config_file.replace(str(originalListValues), str(newListValues)))
     file.close()

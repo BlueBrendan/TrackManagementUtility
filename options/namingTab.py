@@ -44,20 +44,19 @@ def namingTab(tab_parent, options, CONFIG_FILE):
 
     # populate listboxes
     for keyword in options["Always Capitalize (L)"]: capitalizedListbox.insert(END, keyword)
-    for keyword in options["Never Capitalize (L)"]:
-        uncapitalizedListbox.insert(END, keyword)
+    for keyword in options["Never Capitalize (L)"]: uncapitalizedListbox.insert(END, keyword)
     capitalizedListbox.pack(padx=(30, 5), pady=(5, 5))
-    capitalizeAdd = tk.Button(leftListboxControls, text="Add", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, width=5, command=lambda: addKeywordPrompt("Always Capitalize (L)", "Never Capitalize (L)", capitalizedListbox, options))
+    capitalizeAdd = tk.Button(leftListboxControls, text="Add", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, width=5, command=lambda: addKeywordPrompt("Always Capitalize (L)", "Never Capitalize (L)", capitalizeAdd, uncapitalizeAdd, capitalizedListbox, options))
     capitalizeAdd.pack(side="left", padx=(25, 20))
     capitalizeDelete = tk.Button(leftListboxControls, text="Delete", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, state=DISABLED)
     capitalizeDelete.pack(side="left", padx=(20, 0))
     uncapitalizedListbox.pack(padx=(20, 5), pady=(5, 5))
-    uncapitalizeAdd = tk.Button(rightListboxControls, text="Add", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, width=5, command=lambda: addKeywordPrompt("Never Capitalize (L)", "Always Capitalize (L)", uncapitalizedListbox, options))
+    uncapitalizeAdd = tk.Button(rightListboxControls, text="Add", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, width=5, command=lambda: addKeywordPrompt("Never Capitalize (L)", "Always Capitalize (L)", capitalizeAdd, uncapitalizeAdd, uncapitalizedListbox, options))
     uncapitalizeAdd.pack(side="left", padx=(15, 20))
     uncapitalizeDelete = tk.Button(rightListboxControls, text="Delete", font=("Proxima Nova Rg", 11), fg="white", bg=secondary_bg, state=DISABLED)
     uncapitalizeDelete.pack(side="left", padx=(20, 0))
 
-    #bind listboxes to buttons
+    # bind listboxes to buttons
     capitalizedListbox.bind('<<ListboxSelect>>', lambda event, listbox=capitalizedListbox, select=capitalizeDelete, deselect=uncapitalizeDelete: selectKeyword(listbox, select, deselect, "Always Capitalize (L)", options))
     uncapitalizedListbox.bind('<<ListboxSelect>>', lambda event, listbox=uncapitalizedListbox, select=uncapitalizeDelete, deselect=capitalizeDelete: selectKeyword(listbox, select, deselect, "Never Capitalize (L)", options))
 
@@ -138,7 +137,7 @@ def selectKeyword(listbox, select, deselect, list, options):
         deselect.config(state=DISABLED)
 
 #prompt popup window to add keyword
-def addKeywordPrompt(list, alternateList, listbox, options):
+def addKeywordPrompt(list, alternateList, capitalizeAdd, uncapitalizeAdd, listbox, options):
     popup = tk.Toplevel()
     popup.title("Add Keyword")
     ws = popup.winfo_screenwidth()  # width of the screen
@@ -147,6 +146,9 @@ def addKeywordPrompt(list, alternateList, listbox, options):
     y = (hs / 2) - (187 / 2)
     popup.geometry('%dx%d+%d+%d' % (400, 170, x, y))
     popup.configure(bg=bg)
+    # temporarily disable add buttons to prevent multiple prompts
+    capitalizeAdd.config(state=DISABLED)
+    uncapitalizeAdd.config(state=DISABLED)
     if list == "Always Capitalize (L)": tk.Label(popup, text="Enter the keyword to add to the capitalized list", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(pady=(25, 10))
     elif list == "Never Capitalize (L)": tk.Label(popup, text="Enter the keyword to add to the uncapitalized list", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(pady=(25, 0))
     userInput = StringVar()
@@ -155,14 +157,18 @@ def addKeywordPrompt(list, alternateList, listbox, options):
     inputWidget.pack(pady=(20, 20))
     buttonFrame = tk.Frame(popup, bg=bg)
     buttonFrame.pack()
-    confirmButton = tk.Button(buttonFrame, text="OK", font=("Proxima Nova Rg", 11), fg="white", width=5, bg=bg, state=DISABLED, command=lambda: addKeywordToList(list, alternateList, listbox, userInput, options, popup))
+    confirmButton = tk.Button(buttonFrame, text="OK", font=("Proxima Nova Rg", 11), fg="white", width=5, bg=bg, state=DISABLED, command=lambda: addKeywordToList(list, alternateList, capitalizeAdd, uncapitalizeAdd, listbox, userInput, options, popup))
     confirmButton.pack(side="left", padx=(0, 30))
-    tk.Button(buttonFrame, text="Cancel", font=("Proxima Nova Rg", 11), fg="white", bg=bg, command=lambda: popup.destroy()).pack(side="left", padx=(30, 0))
-    #monitor changes to user input form
+    tk.Button(buttonFrame, text="Cancel", font=("Proxima Nova Rg", 11), fg="white", bg=bg, command=lambda: exit_add(popup, capitalizeAdd, uncapitalizeAdd)).pack(side="left", padx=(30, 0))
+    # monitor changes to user input form
     userInput.trace("w", lambda name, index, mode, input=userInput, button=confirmButton: updateInput(input, button))
+    popup.protocol("WM_DELETE_WINDOW", lambda popup=popup, capitalizeAdd=capitalizeAdd, uncapitalizeAdd=uncapitalizeAdd: exit_add(popup, capitalizeAdd, uncapitalizeAdd))
 
 #add keyword to list
-def addKeywordToList(term, alternateTerm, listbox, userInput, options, popup):
+def addKeywordToList(term, alternateTerm, capitalizeAdd, uncapitalizeAdd, listbox, userInput, options, popup):
+    # re-enable add buttons
+    capitalizeAdd.config(state=NORMAL)
+    uncapitalizeAdd.config(state=NORMAL)
     if userInput.get().lower() in (string.lower() for string in options[term]):
         messagebox.showinfo(parent=popup, title="Error", message=userInput.get().lower() + " is already in the list, you cretin")
         userInput.set("")
@@ -207,7 +213,7 @@ def deleteKeyword(term, listbox, index, select, options):
     file.close()
     # remove from listbox
     listbox.delete(index, index)
-    #disable delete button
+    # disable delete button
     select.config(state=DISABLED)
 
 def namingRadiobutton(CONFIG_FILE, term, value):
@@ -217,3 +223,10 @@ def namingRadiobutton(CONFIG_FILE, term, value):
         with open(CONFIG_FILE, 'wt') as file:
             file.write(config_file.replace(str(config_file[config_file.index(term):config_file.index('\n', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term):config_file.index(':', config_file.index(term)) + 1])) + value))
         file.close()
+
+# handle when the user closes the add word prompt
+def exit_add(popup, capitalizeAdd, uncapitalizeAdd):
+    popup.destroy()
+    # re-enable add buttons
+    capitalizeAdd.config(state=NORMAL)
+    uncapitalizeAdd.config(state=NORMAL)

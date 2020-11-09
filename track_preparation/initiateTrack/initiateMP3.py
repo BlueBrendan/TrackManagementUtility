@@ -15,7 +15,7 @@ from track_preparation.initiateTrack.commonInitiationOperations import saveThumb
 def initiateMP3(filename, directory, thumbnails, options):
     audio = MP3(str(directory) + "/" + str(filename))
     # verify artist information is present before preceeding
-    if ' - ' not in filename and str(audio['TCON']) == '':
+    if ' - ' not in filename and str(audio['TPE1']) == '':
         messagebox.showinfo("No artist information found, aborting procedure")
         return False, False, False
 
@@ -23,7 +23,7 @@ def initiateMP3(filename, directory, thumbnails, options):
     formalTagDict = {
         'TPE1': 'Artist',
         'TALB': 'Album',
-        'TPE2': 'Album Artist',
+        'TPE2': 'Album_Artist',
         'TBPM': 'BPM',
         'COMM::eng': 'Comment',
         'TCMP': 'Compilation',

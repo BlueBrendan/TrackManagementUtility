@@ -9,10 +9,6 @@ from options.namingTab import namingTab
 from options.comparisonTab import comparisonTab
 from commonOperations import resource_path
 
-#global variables
-global tagList
-global CONFIG
-
 #main bg color
 bg = "#282f3b"
 #secondary color
@@ -21,9 +17,6 @@ secondary_bg = "#364153"
 invalid_bg = "#801212"
 
 def updatePreferences(options, CONFIG_FILE, root):
-    global tagList
-    global CONFIG
-    CONFIG = CONFIG_FILE
     window = tk.Toplevel(master=root)
     window.title("Preferences Window")
     ws = window.winfo_screenwidth()  # width of the screen

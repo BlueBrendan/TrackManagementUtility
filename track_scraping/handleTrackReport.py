@@ -81,7 +81,7 @@ def modeConflict(track, list, type):
     x = (ws / 2) - (initialWidth / 2)
     popup.geometry('%dx%d+%d+%d' % (initialWidth, 270, x, y))
     tk.Label(popup, text=type.capitalize() + " Conflict", font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="top", pady=(30, 15))
-    tk.Label(popup, text="The search returned equal instances of multiple more than one " + type, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(10, 10))
+    tk.Label(popup, text="The search returned more than one " + type, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(10, 10))
     tk.Label(popup, text=track.artist + ' - ' + track.title, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(0, 30))
     radioFrame = tk.Frame(popup)
     radioFrame.config(bg=bg)

@@ -24,7 +24,7 @@ def initiateOGG(filename, directory, thumbnails, options):
     formalTagDict = {
         'artist': 'Artist',
         'album': 'Album',
-        'albumartist': 'Album Artist',
+        'albumartist': 'Album_Artist',
         'bpm': 'BPM',
         'comment': 'Comment',
         'compilation': 'Compilation',
