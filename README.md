@@ -17,4 +17,4 @@ Track Management Utility scrapes tags from music stores/DJ pools Junodownload an
 Track Management Utility is written in Python and uses Tkinter, Python's standard out-of-the-box graphical interface. Dependencies include Mutagen for audio file handling/tag editing, Beautiful Soup for preliminary tag scraping from the web, Selenium for reverse image search, and Pillow for image handling.
 
 ## Contact
-If you'd like to report an issue or make a suggestion about Track Management Utility, you can contact me at brendanchoudj@gmail.com
+If you'd like to send a private message about Track Management Utility or want to contribute to the development of the project, you can contact Brendan at brendanchoudj@gmail.com
