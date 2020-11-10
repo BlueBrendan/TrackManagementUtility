@@ -63,7 +63,7 @@ class M4A_Track:
     def __init__(self, audio, options, informalTagDict, browser):
         for tag in options["Selected Tags (L)"]:
             if tag in informalTagDict and tag != "Image" and tag != "Compilation":
-                #key value contained in bytes form
+                # key value contained in bytes form
                 if tag.lower() == 'key':
                     if len(audio[informalTagDict[tag]]) > 0: setattr(self, tag.lower(), audio[informalTagDict[tag]][0].decode('utf-8'))
                     else: setattr(self, tag.lower(), "")

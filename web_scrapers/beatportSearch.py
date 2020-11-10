@@ -5,7 +5,7 @@ from PIL import Image, ImageTk
 from PIL import UnidentifiedImageError
 import webbrowser
 
-#import methods
+# import methods
 from track_scraping.compareTokens import compareTokens
 from track_scraping.reverseImageSearch import reverseImageSearch
 from web_scrapers.webScrapingWindowControl import rerenderControls
@@ -74,10 +74,10 @@ def beatportSearch(filename, track, artistVariations, titleVariations, headers, 
                     refresh(webScrapingWindow)
                     soup = prepareRequest(link, headers, webScrapingWindow, leftComponentFrame)
                     if soup != False and "Oops... the page you were looking for could not be found" not in str(soup):
-                        #check if page is a track (single) or a release (album)
-                        #case 1: release
+                        # check if page is a track (single) or a release (album)
+                        # case 1: release
                         if link[25:32] == "release": imageCounter, images, webScrapingLeftPane, webScrapingRightPane = beatportRelease(soup, titleVariations, track, headers, audio, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, initialCounter, imageCounter, images)
-                        #case 2: track
+                        # case 2: track
                         elif link[25:30] == "track": imageCounter, images, webScrapingLeftPane, webScrapingRightPane = beatportTrack(soup, track, headers, audio, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, initialCounter, imageCounter, images)
                     else: tk.Label(leftComponentFrame, text="Track failed due to dead link or territory restriction", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
                     if options['Limit Number of Matches per Site (B)'].get() and count >= options['Match Limit (I)'].get(): break
@@ -103,7 +103,7 @@ def beatportRelease(soup, titleVariations, track, headers, audio, leftComponentF
         if match: break
     return imageCounter, images, webScrapingLeftPane, webScrapingRightPane
 
-#search beatport tracks, extract info in the event of a match
+# search beatport tracks, extract info in the event of a match
 def beatportTrack(soup, track, headers, audio, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, initialCounter, imageCounter, images):
     link = soup.find('div', class_="interior-track-content")
     if link is not None:
@@ -127,7 +127,7 @@ def beatportTrack(soup, track, headers, audio, leftComponentFrame, rightComponen
     else: tk.Label(leftComponentFrame, text="Track failed due to dead link or territory restriction", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor='w')
     return imageCounter, images, webScrapingLeftPane, webScrapingRightPane
 
-#extract year, BPM, key, and genre
+# extract year, BPM, key, and genre
 def extractInfo(soup, track, headers, leftComponentFrame, rightComponentFrame, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, options, initialCounter, imageCounter, images):
     global count
     count += 1
@@ -172,7 +172,7 @@ def extractInfo(soup, track, headers, leftComponentFrame, rightComponentFrame, w
                 refresh(webScrapingWindow)
                 track.genreList.append(genre)
     webScrapingLeftPane[webScrapingPage] = leftComponentFrame
-    #extract image
+    # extract image
     if options["Extract Image from Website (B)"].get() == True and track.stop == False:
         link = soup.find('img', class_="interior-track-release-artwork")
         if link!=None:

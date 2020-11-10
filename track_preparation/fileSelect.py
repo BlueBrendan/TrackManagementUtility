@@ -10,10 +10,10 @@ from tkinter.tix import *
 import tkinter as tk
 import os
 
-#import classes
+# import classes
 from AudioClass import *
 
-#import methods
+# import methods
 from track_preparation.initiateTrack.initiateFLAC import initiateFLAC
 from track_preparation.initiateTrack.initiateAIFF import initiateAIFF
 from track_preparation.initiateTrack.initiateMP3 import initiateMP3
@@ -27,14 +27,13 @@ from web_scrapers.webScrapingWindowControl import rerenderControls
 from commonOperations import resource_path
 
 # global variables
-# main bg color
-bg = "#282f3b"
-# secondary color
-secondary_bg = "#364153"
+bg = "#282f3b" # main bg color
+secondary_bg = "#364153" # secondary color
 
 def fileSelect(options, imageCounter, CONFIG_FILE, window):
     directories = filedialog.askopenfilenames(title="Select File")
     webScrapingWindow = False
+    webScrapingPage = 0
     if directories != '':
         # delete previous web scraping window from previous session
         if type(window)!=bool: window.destroy()
@@ -65,7 +64,6 @@ def fileSelect(options, imageCounter, CONFIG_FILE, window):
         webScrapingLeftPane = {}
         webScrapingRightPane = {}
         webScrapingLinks = {}
-        webScrapingPage = 0
         track = ''
         browser = ''
         for directory in directories:
@@ -116,6 +114,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE, window):
             enableControls(searchFrame, pageFrame, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame)
             handleFinalReport(finalTitles, finalResults, characters, imageCounter, imageSelections, webScrapingWindow, thumbnails, options, CONFIG_FILE)
     return webScrapingWindow, webScrapingPage
+
 # check if mutagen object can be made from file
 def checkFileValidity(filename, directory, format):
     audio = ""
@@ -145,14 +144,14 @@ def checkFileValidity(filename, directory, format):
             messagebox.showinfo("Error", "Invalid or Corrupt File")
             return "Invalid or corrupt file\n"
     elif format=="M4A":
-        #M4A is deprecated in mutagen, MP4 is suggested instead
+        # M4A is deprecated in mutagen, MP4 is suggested instead
         try: audio = MP4(str(directory) + "/" + str(filename))
         except:
             messagebox.showinfo("Error", "Invalid or Corrupt File")
             return "Invalid or corrupt file\n"
     return audio
 
-#check if filetype is supported
+# check if filetype is supported
 def checkValidity(filename):
     if filename.endswith('.flac') or filename.endswith(".aiff") or filename.endswith(".mp3") or filename.endswith(".ogg") or filename.endswith(".wav") or filename.endswith(".m4a"): return True
     return False

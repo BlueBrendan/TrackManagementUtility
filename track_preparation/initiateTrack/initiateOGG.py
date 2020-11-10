@@ -5,7 +5,7 @@ from PIL import Image
 from io import BytesIO
 import base64
 
-#import methods
+# import methods
 from track_preparation.handleDiscrepancy import handleArtistTitleDiscrepancy
 from track_preparation.handleDiscrepancy import handleTitleDiscrepancy
 from track_preparation.initiateTrack.commonInitiationOperations import checkTypos
@@ -58,8 +58,8 @@ def initiateOGG(filename, directory, thumbnails, options):
                     messagebox.showinfo("Permission Error", "Unable to save tags, file may be open somewhere")
                     return False, False, False
 
-    #check for discrepancies between tags and filename
-    #check both artist and title tags
+    # check for discrepancies between tags and filename
+    # check both artist and title tags
     if ' - ' in filename:
         artist = filename.split(' - ')[0]
         title = filename[filename.index(filename.split(' - ')[1]):filename.rfind('.')]
@@ -70,11 +70,11 @@ def initiateOGG(filename, directory, thumbnails, options):
                 audio['title'] = title
                 audio.save()
             else: audio, filename = compareArtistAndTitle(audio, artist, title, filename, directory, options)
-    #only check title tag
+    # only check title tag
     else:
         title = filename[:filename.rfind('.')]
         if title!=str(audio['title'][0]):
-            #save title to tag if tag is empty
+            # save title to tag if tag is empty
             if str(audio['title'][0])=='':
                 audio['title'] = title
                 audio.save()

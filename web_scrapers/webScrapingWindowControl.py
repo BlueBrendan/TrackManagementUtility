@@ -2,15 +2,12 @@ import tkinter as tk
 from tkinter.tix import *
 import webbrowser
 
-#import methods
+# import methods
 from commonOperations import allWidgets
 
-#main bg color
-bg = "#282f3b"
-#secondary color
-secondary_bg = "#364153"
-
-#global variables
+# global variables
+bg = "#282f3b" # main bg color
+secondary_bg = "#364153" # secondary color
 currentPage = 0
 
 def rerenderControls(pageFrame, webScrapingPage):
@@ -24,7 +21,7 @@ def rerenderControls(pageFrame, webScrapingPage):
 def enableControls(searchFrame, pageFrame, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame):
     global currentPage
     currentPage = webScrapingPage
-    #clear page frame
+    # clear page frame
     widgetList = allWidgets(searchFrame)
     for item in widgetList: item.pack_forget()
     widgetList = allWidgets(pageFrame)
@@ -85,7 +82,7 @@ def navigateRight(leftButton, farLeftButton, rightButton, farRightButton, pageIn
     for item in widgetList: item.pack_forget()
     leftComponentFrame, rightComponentFrame = resetLeftRightFrames(componentFrame)
 
-    #left component
+    # left component
     renderLeftComponent(webScrapingLeftPane, leftComponentFrame, webScrapingLinks, currentPage)
     # right component
     renderRightComponent(webScrapingRightPane, rightComponentFrame, currentPage)

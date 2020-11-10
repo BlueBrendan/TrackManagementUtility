@@ -136,7 +136,7 @@ def selectKeyword(listbox, select, deselect, list, options):
         select.config(state=NORMAL, command=lambda: deleteKeyword(list, listbox, listbox.curselection(), select, options))
         deselect.config(state=DISABLED)
 
-#prompt popup window to add keyword
+# prompt popup window to add keyword
 def addKeywordPrompt(list, alternateList, capitalizeAdd, uncapitalizeAdd, listbox, options):
     popup = tk.Toplevel()
     popup.title("Add Keyword")
@@ -164,7 +164,7 @@ def addKeywordPrompt(list, alternateList, capitalizeAdd, uncapitalizeAdd, listbo
     userInput.trace("w", lambda name, index, mode, input=userInput, button=confirmButton: updateInput(input, button))
     popup.protocol("WM_DELETE_WINDOW", lambda popup=popup, capitalizeAdd=capitalizeAdd, uncapitalizeAdd=uncapitalizeAdd: exit_add(popup, capitalizeAdd, uncapitalizeAdd))
 
-#add keyword to list
+# add keyword to list
 def addKeywordToList(term, alternateTerm, capitalizeAdd, uncapitalizeAdd, listbox, userInput, options, popup):
     # re-enable add buttons
     capitalizeAdd.config(state=NORMAL)
@@ -188,16 +188,16 @@ def addKeywordToList(term, alternateTerm, capitalizeAdd, uncapitalizeAdd, listbo
         with open(CONFIG_FILE, 'wt') as file:
             file.write(config_file.replace(term + ":" + originalListValues, term + ":" + newListValues))
         file.close()
-        #add to the keywords listbox
+        # add to the keywords listbox
         listbox.insert(END, userInput.get())
         popup.destroy()
 
-#update button according to user input (adding keyword)
+# update button according to user input (adding keyword)
 def updateInput(input, button):
     if len(input.get()) > 0: button.config(state=NORMAL)
     else: button.config(state=DISABLED)
 
-#remove keyword from list and settings file
+# remove keyword from list and settings file
 def deleteKeyword(term, listbox, index, select, options):
     CONFIG_FILE = resource_path('Settings.txt')
     config_file = open(CONFIG_FILE, 'r').read()

@@ -28,13 +28,13 @@ def reverseImageSearch(link, headers, imageCounter, images, track, options):
             if len(text) > 0:
                 text = text[0]
                 sizes = []
-                #append all sizes to list (in case of non-english language)
+                # append all sizes to list (in case of non-english language)
                 imageLinks = text.find_elements_by_class_name('gl')
                 if len(imageLinks) > 0:
                     for image in imageLinks:
                         text = image.text.replace('-', '').strip()
                         sizes.append(text)
-                    #check for popups
+                    # check for popups
                     time.sleep(1)
                     popups = browser.find_elements_by_xpath("//iframe")
                     if len(popups) > 0:
@@ -43,22 +43,22 @@ def reverseImageSearch(link, headers, imageCounter, images, track, options):
                             if 'consent.google.com/' in popup.get_attribute('src'):
                                 link = popup.get_attribute('src').replace("consent.google.com/", "consent.google.com")
                                 break
-                        #switch frames
+                        # switch frames
                         browser.switch_to.frame(browser.find_element_by_xpath("//iframe[@src='" + link + "']"))
                         browser.find_element_by_xpath("//form[@class='A28uDc']").click()
-                        #return to original frame
+                        # return to original frame
                         browser.switch_to.default_content()
-                    #search by the largest size
+                    # search by the largest size
                     browser.find_element_by_link_text(sizes[len(sizes)-1]).click()
                     for i in range(2):
                         displayimages = browser.find_elements_by_class_name("rg_i.Q4LuWd")
-                        #make sure images have actually appeared
+                        # make sure images have actually appeared
                         if len(displayimages) > 0:
                             displayimages[i].click()
                             time.sleep(0.5)
                             counter = 0
                             subImages = browser.find_elements_by_xpath("//img[@class='n3VNCb']")
-                            #wait for image to load with 1/2 second increments
+                            # wait for image to load with 1/2 second increments
                             while subImages==None and counter < int(options["Image Load Wait Time (I)"].get()):
                                 time.sleep(0.5)
                                 subImages = browser.find_elements_by_xpath("//img[@class='n3VNCb']")

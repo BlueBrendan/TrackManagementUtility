@@ -6,12 +6,11 @@ from skimage.metrics import structural_similarity
 from skimage.transform import resize
 import matplotlib.pyplot as plt
 
-# main bg color
-bg = "#282f3b"
-# secondary color
-secondary_bg = "#364153"
+# global variables
+bg = "#282f3b" # main bg color
+secondary_bg = "#364153" # secondary color
 
-# FINAL REPORT WINDOW HANDLING
+# thumbnail handling
 def reloadThumbnail(thumbnail, track, buttons, conflictFrame, thumbnailFrame):
     if type(thumbnail) != str:
         photo = ImageTk.PhotoImage(thumbnail[0])
@@ -31,6 +30,7 @@ def reloadThumbnail(thumbnail, track, buttons, conflictFrame, thumbnailFrame):
         buttons.append(thumbnailButton)
     return buttons
 
+# scraped image handling
 def loadImageButtons(start, end, imageFrame, images, resolutionsFrame, conflictFrame, track, buttons, page, options):
     imageButtons = []
     imageResolutions = []
@@ -60,16 +60,16 @@ def loadNavigation(start, end, pageFrame, imageFrame, images, resolutionsFrame, 
         # deactivate right button if on last page
         if page+1 == math.ceil((end - start)/ float(options["Number of Images Per Page (I)"].get())): rightButton.config(state=DISABLED)
     elif direction == "load":
-        # deactive right button if there is only one page
+        # deactivate right button if there is only one page
         leftButton.config(state=DISABLED)
         if math.ceil(float(end - start) / float(options["Number of Images Per Page (I)"].get())) == 1: rightButton.config(state=DISABLED)
 
-#selecting image to variable
+# selecting image to variable
 def selectImage(i, track, button, buttons, window):
     track.imageSelection = i
-    #unhighlight all buttons
+    # unhighlight all buttons
     for item in buttons: item.config(bg="white", highlightcolor="white")
-    #highlight selected button
+    # highlight selected button
     button.config(bg="yellow", highlightcolor="yellow")
     window.update()
 
@@ -117,7 +117,7 @@ def allWidgets(window):
         if item.winfo_children() : _list.extend(item.winfo_children())
     return _list
 
-# REVERSE IMAGE SEARCH
+# reverse image search
 def performSearch(initialCounter, imageCounter):
     duplicate = False
     # compare image with other scraped images

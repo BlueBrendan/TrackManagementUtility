@@ -2,16 +2,15 @@ import tkinter as tk
 from statistics import mode, multimode
 from collections import Counter
 
-#import methods
+# import methods
 from track_scraping.conflictPopup.FLAC_conflict import FLAC_conflict
 from track_scraping.conflictPopup.ID3_conflict import ID3_conflict
 from track_scraping.conflictPopup.Vorbis_conflict import Vorbis_conflict
 from track_scraping.conflictPopup.M4A_conflict import M4A_conflict
 
-# main bg color
-bg = "#282f3b"
-# secondary color
-secondary_bg = "#364153"
+# global variables
+bg = "#282f3b" # main bg color
+secondary_bg = "#364153" # secondary color
 
 def handleTrackReport(track, audio, filename, webScrapingWindow, characters, options, initialCounter, imageCounter, images, informalTagDict):
     conflict = False

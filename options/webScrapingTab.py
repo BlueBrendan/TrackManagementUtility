@@ -5,14 +5,10 @@ from tkinter.tix import *
 from options.checkboxHandling import checkbox
 
 # global variables
-# main bg color
-bg = "#282f3b"
-# secondary color
-secondary_bg = "#364153"
-# invalid selection color
-invalid_bg = "#801212"
-# mapping phrases to widgets
-optionsDict = {}
+bg = "#282f3b" # main bg color
+secondary_bg = "#364153" # secondary color
+invalid_bg = "#801212" # invalid selection color
+optionsDict = {} # mapping phrases to widgets
 
 
 def webScrapingTab(tab_parent, options, CONFIG_FILE):
@@ -194,7 +190,7 @@ def entryInput(CONFIG_FILE, term, value):
         with open(CONFIG_FILE, 'wt') as file: file.write(config_file.replace(str(config_file[config_file.index(term) + 1:config_file.index('\n', config_file.index(term) + len(term))]), str(str(config_file[config_file.index(term) + 1:config_file.index(':', config_file.index(term)) + 1])) + str(value.get())))
     file.close()
 
-#check if input is an integer, reject if not
+# check if input is an integer, reject if not
 def checkInt(value):
     try:
         int(value)
@@ -202,7 +198,7 @@ def checkInt(value):
     except ValueError:
         return False
 
-#check if input is an integer equal to or below 5, reject if not
+# check if input is an integer equal to or below 5, reject if not
 def checkImageValue(value):
     if value == '': return True
     try:

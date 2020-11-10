@@ -5,18 +5,17 @@ from mutagen import id3
 from PIL import Image, ImageTk
 from io import BytesIO
 
-#import methods
+# import methods
 from commonOperations import loadImageButtons
 from commonOperations import loadNavigation
 from commonOperations import selectImage
 from commonOperations import resource_path
 
+# global variables
 # main bg color
 bg = "#282f3b"
 # secondary color
 secondary_bg = "#364153"
-
-# global variables
 page = 0
 
 def FLAC_conflict(audio, track, options, initialCounter, imageCounter, images, informalTagDict):
@@ -46,12 +45,12 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, images, i
                 x = (ws / 2) - ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)) / 2)
                 conflictPopup.geometry('%dx%d+%d+%d' % ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)), 240, x, y))
             conflictPopup.config(bg=bg)
-            #tag conflict window
+            # tag conflict window
             tk.Label(conflictPopup, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(30, 40), side="top")
             tags = tk.Frame(conflictPopup, bg=bg)
             tags.pack()
 
-            #print current tags
+            # print current tags
             leftTags = tk.Frame(tags, bg=bg)
             leftTags.pack(side="left", padx=(0, 50), pady=(0, 50))
             currentTagDict = {}
@@ -87,20 +86,20 @@ def FLAC_conflict(audio, track, options, initialCounter, imageCounter, images, i
                 else:
                     currentTagDict[i+1] = tk.Label(leftTags, text=list[i] + ": " + str(audio[informalTagDict[list[i]]][0]), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                     currentTagDict[i+1].pack(pady=(0, 0), anchor='w')
-            #print scraped tags
+            # print scraped tags
             rightTags = tk.Frame(tags, bg=bg)
             rightTags.pack(side="right", padx=(50, 0), pady=(0, 50))
             scrapedTagDict[0] = tk.Label(rightTags, text="SCRAPED TAGS:", font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left", bd=-10)
             scrapedTagDict[0].pack(anchor="w", pady=(0, 15))
             for i in range(len(list)):
-                #Avoid printing the underscore
+                # avoid printing the underscore
                 if list[i] == "Release_Date": scrapedTagDict[i+1] = tk.Label(rightTags, text="Release Date: " + str(getattr(track, list[i].lower())), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                 else: scrapedTagDict[i+1] = tk.Label(rightTags, text=list[i] + ": " + str(getattr(track, list[i].lower())), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                 scrapedTagDict[i+1].pack(pady=(0, 0), anchor='w')
-            #check if both tag dictionaries are of equal length
+            # check if both tag dictionaries are of equal length
             if len(currentTagDict) == len(scrapedTagDict):
                 for i in range(1, len(currentTagDict)):
-                    #highlight yellow
+                    # highlight yellow
                     if str(currentTagDict[i]["text"])!=str(scrapedTagDict[i]["text"]):
                         currentTagDict[i].config(fg="black", bg="yellow")
                         scrapedTagDict[i].config(fg="black", bg="yellow")
@@ -221,7 +220,7 @@ def skipOption(audio, track, options, window):
     if "Genre" in options["Selected Tags (L)"]:track.genre = str(audio['genre'][0])
     window.destroy()
 
-#saving image to file
+# saving image to file
 def saveImage(track, audio, window):
     # store image data, width, and height from downloaded image into imageSelection field
     if track.imageSelection != "THUMB":

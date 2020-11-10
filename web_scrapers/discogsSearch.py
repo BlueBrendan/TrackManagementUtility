@@ -33,7 +33,7 @@ def discogsSearch(filename, track, artistVariations, titleVariations, headers, s
     url = "https://www.google.co.in/search?q=" + search + " Discogs"
     soup = prepareRequest(url, headers, webScrapingWindow, leftComponentFrame)
     if soup != False:
-        #result includes link and description
+        # result includes link and description
         for result in soup.find_all('div', class_="ZINbbc xpd O9g5cc uUPGi"):
             if "www.discogs.com" in str(result.find('a').get('href')).lower().split('&')[0]:
                 searchTitle = track.title
@@ -73,13 +73,13 @@ def searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, 
             refresh(webScrapingWindow)
             finalMatch = False
 
-            #artist + title format
+            # artist + title format
             if link.find('td', class_="track tracklist_track_title mini_playlist_track_has_artist")!=None:
                 # for temp in link.find_all('td', class_="track tracklist_track_title mini_playlist_track_has_artist"):
                 for temp in link.find_all('tr', class_="tracklist_track track"):
                     artist = temp.find('td', class_="tracklist_track_artists").find('a').get_text()
                     name = temp.find('span', class_="tracklist_track_title").get_text()
-                    #extra tags attached
+                    # extra tags attached
                     for tag in temp.find_all('span', class_="tracklist_extra_artist_span"):
                         if 'Remix' in tag.get_text():
                             remix = tag.find('a').get_text()
@@ -100,7 +100,7 @@ def searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, 
                                         imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = extractInfo(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
                                         break
                     if finalMatch: break
-            #title format
+            # title format
             elif link.find('td', class_="track tracklist_track_title")!=None:
                 tracks = link.find_all('td', class_="track tracklist_track_title")
                 runtimes = link.find_all('td', class_="tracklist_track_duration")
@@ -132,7 +132,7 @@ def searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, 
 def extractInfo(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images):
     global count
     count += 1
-    # in case of multiple genres
+    # in case there are multiple genres
     scrapedGenreList = []
     for link in soup.find_all('div', class_="content"):
         for link in link.find_all('a'):

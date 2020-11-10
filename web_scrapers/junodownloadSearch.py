@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 import requests
 import webbrowser
 
-#import methods
+# import methods
 from track_scraping.compareTokens import compareTokens
 from track_scraping.reverseImageSearch import reverseImageSearch
 from web_scrapers.webScrapingWindowControl import rerenderControls
@@ -72,7 +72,7 @@ def junodownloadSearch(filename, track, artistVariations, titleVariations, heade
                                     trackArtist = ''
                                     trackTitle = item.find('span').get_text()
                                 if not compareTokens(variation, trackTitle):
-                                    #check runtime to ensure track is correct
+                                    # check runtime to ensure track is correct
                                     runtime = item.find('div', class_="col-1 d-none d-lg-block text-center").get_text()
                                     if not compareRuntime(runtime, audio):
                                         count+=1
@@ -86,7 +86,7 @@ def junodownloadSearch(filename, track, artistVariations, titleVariations, heade
                                                 refresh(webScrapingWindow)
                                                 track.BPMList.append(int(BPM))
                                                 track.BPMList.append(int(BPM))
-                                        #only push release and genre from header if title is found in tracklist
+                                        # only push release and genre from header if title is found in tracklist
                                         for data in soup.select('div[class=mb-3]'):
                                             # extract release date
                                             if "Release_Date" in options["Selected Tags (L)"]:

@@ -9,12 +9,11 @@ from options.namingTab import namingTab
 from options.comparisonTab import comparisonTab
 from commonOperations import resource_path
 
-#main bg color
-bg = "#282f3b"
-#secondary color
-secondary_bg = "#364153"
-#invalid selection color
-invalid_bg = "#801212"
+# global variables
+
+bg = "#282f3b" # main bg color
+secondary_bg = "#364153" # secondary color
+invalid_bg = "#801212" # invalid selection color
 
 def updatePreferences(options, CONFIG_FILE, root):
     window = tk.Toplevel(master=root)

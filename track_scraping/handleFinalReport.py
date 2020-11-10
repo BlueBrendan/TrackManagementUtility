@@ -7,12 +7,9 @@ import os
 from commonOperations import allWidgets
 from commonOperations import resource_path
 
-#main bg color
-bg = "#282f3b"
-#secondary color
-secondary_bg = "#364153"
-
-#global variables
+# global variables
+bg = "#282f3b" # main bg color
+secondary_bg = "#364153" # secondary color
 currentPage = 1
 
 def handleFinalReport(finalTitles, finalResults, characters, imageCounter, imageSelections, webScrapingWindow, thumbnails, options, CONFIG_FILE):
@@ -127,16 +124,16 @@ def renderImage(contentFrame, imageSelections, imageCounter, thumbnails, index):
         if thumbnails[index][1] == '' and thumbnails[index][2] == '': tk.Label(contentFrame, font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(0, 10))
         else: tk.Label(contentFrame, text=str(thumbnails[index][1]) + "x" + str(thumbnails[index][2]), font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(side="top", pady=(0, 10))
 
-#handle subdirectory selection
+# handle subdirectory selection
 def closeScrapingWindowSelection(CONFIG_FILE):
     config_file = open(CONFIG_FILE, 'r').read()
-    #if true, turn option to false
+    # if true, turn option to false
     term = "Close Scraping Window (B)"
     if config_file[config_file.index(term) + len(term)+1:config_file.index('\n', config_file.index(term) + len(term))]=="True":
         with open(CONFIG_FILE, 'wt') as file:
             file.write(config_file.replace(str(config_file[config_file.index(term)+1:config_file.index(':', config_file.index(term))+1]) + "True", str(str(config_file[config_file.index(term)+1:config_file.index(':', config_file.index(term))+1])) + "False"))
         file.close()
-    #if false, turn option to true
+    # if false, turn option to true
     elif config_file[config_file.index(term) + len(term)+1:config_file.index('\n', config_file.index(term) + len(term))]=="False":
         with open(CONFIG_FILE, 'wt') as file:
             file.write(config_file.replace(str(config_file[config_file.index(term)+1:config_file.index(':', config_file.index(term)) + 1]) + "False", str(str(config_file[config_file.index(term)+1:config_file.index(':', config_file.index(term)) + 1])) + "True"))

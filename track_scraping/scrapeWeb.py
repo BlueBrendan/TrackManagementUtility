@@ -1,8 +1,4 @@
-import threading
-import queue
-import time
-
-#import methods
+# import methods
 from track_scraping.handleTrackReport import handleTrackReport
 from track_preparation.buildVariations import buildVariations
 from web_scrapers.junodownloadSearch import junodownloadSearch
@@ -14,7 +10,7 @@ def scrapeWeb(track, audio, filename, webScrapingWindow, characters, options, im
     search = str(track.artist) + " - " + str(track.title)
     # clean search query of ampersands (query ends upon reaching ampersand symbol)
     if '&' in search: search = search.replace('&', 'and')
-    #lists for year/release date, BPM values, key, genre, and artowrk image URLs
+    # lists for year/release date, BPM values, key, genre, and artowrk image URLs
     track.yearList, track.BPMList, track.keyList, track.genreList, track.URLList = [], [], [], [], []
     # build list of artist and track title variations to prepare for scraping
     artistVariations, titleVariations = buildVariations(track.artist, track.title)

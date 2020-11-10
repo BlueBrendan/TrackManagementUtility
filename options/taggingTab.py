@@ -72,13 +72,13 @@ def taggingTab(tab_parent, options, CONFIG_FILE):
     tk.Label(tagCheckboxFrame, text="Delete Unselected Tags from File", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(pady=(40, 0), side="left")
     optionsDict['Delete Unselected Tags (B)'] = deleteUnselected
 
-#handle listbox click interaction
+# handle listbox click interaction
 def selectTag(firstListbox, secondListbox, list, select, deselect, CONFIG_FILE):
     if len(firstListbox.curselection()) > 0:
         index = int(firstListbox.curselection()[0])
         tag = firstListbox.get(index)
         tag = tag.replace(' ', "_")
-        #lock1 artist and title tags
+        # lock artist and title tags
         if tag == "Artist" or tag=="Title":
             firstListbox.config(selectbackground=invalid_bg)
             select.config(state=DISABLED)

@@ -16,10 +16,8 @@ import base64
 from commonOperations import resource_path
 
 # global variables
-# main bg color
-bg = "#282f3b"
-# secondary color
-secondary_bg = "#364153"
+bg = "#282f3b" # main bg color
+secondary_bg = "#364153" # secondary color
 
 complete = False
 def compareDrives(CONFIG_FILE, firstDefaultDirectory, secondDefaultDirectory, options, root):
@@ -50,9 +48,9 @@ def directorySearch(first_directory, second_directory, directoryFileCount, diffe
     first_directory_files = os.listdir(first_directory)
     second_directory_files = os.listdir(second_directory)
     for var in first_directory_files:
-        #check if file var is a directory
+        # check if file var is a directory
         if os.path.isdir(str(first_directory) + '/' + str(var)) and complete==False:
-            #check if second_directory has the same directory
+            # check if second_directory has the same directory
             if var not in second_directory_files:
                 directoryCount+=1
                 popup = tk.Toplevel()
@@ -74,11 +72,11 @@ def directorySearch(first_directory, second_directory, directoryFileCount, diffe
                 popup.protocol("WM_DELETE_WINDOW", lambda arg=popup: on_exit(arg))
                 popup.iconbitmap(resource_path('favicon.ico'))
                 popup.wait_window()
-            #check files within that directory with those in the directory of second_directory
+            # check files within that directory with those in the directory of second_directory
             else: directoryFileCount, differenceCount, directoryCount = directorySearch(first_directory + '/' + var, second_directory + '/' + var, directoryFileCount, differenceCount, directoryCount, options)
         elif complete==False:
             directoryFileCount+=1
-            #check if second_directory has the same file
+            # check if second_directory has the same file
             if var not in second_directory_files:
                 differenceCount+=1
                 popup = tk.Toplevel()
@@ -95,7 +93,7 @@ def directorySearch(first_directory, second_directory, directoryFileCount, diffe
                 tk.Label(popup, text=var, font=('Proxima Nova Rg', 13), fg="white", bg=bg).pack(pady=(25,26))
                 tk.Label(popup, text="Present in " + first_directory, wraplength=500, font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(pady=(0,30))
                 tk.Label(popup, text="Missing in " + second_directory, wraplength=500, font=('Proxima Nova Rg', 11), fg="white", bg=bg).pack(pady=(0,30))
-                #artwork from FLAC
+                # artwork from FLAC
                 if var.endswith(".flac"):
                     audio = FLAC(first_directory + '/' + var)
                     picture = audio.pictures
@@ -172,12 +170,12 @@ def directorySearch(first_directory, second_directory, directoryFileCount, diffe
     return directoryFileCount, differenceCount, directoryCount
 
 def copyFile(first_directory, second_directory, var, popup):
-    #copy file var from first_directory to second_directory
+    # copy file var from first_directory to second_directory
     shutil.copy(str(first_directory) + '/' + str(var), str(second_directory) + '/' + str(var))
     popup.destroy()
 
 def deleteFile(first_directory, var, popup):
-    #delete file var from first_directory
+    # delete file var from first_directory
     os.remove(str(first_directory) + '/' + str(var))
     popup.destroy()
 
@@ -205,13 +203,11 @@ def on_exit(popup):
 def writeFirstDefaultDirectory(CONFIG_FILE, first_directory):
     config_file=open(CONFIG_FILE, 'r').read()
     term = "First Default Directory (S):"
-    with open(CONFIG_FILE, 'wt', encoding='utf-8') as file:
-        file.write(config_file.replace(str(config_file[config_file.index(term):config_file.index('\n', config_file.index(term))]), term + first_directory))
+    with open(CONFIG_FILE, 'wt', encoding='utf-8') as file: file.write(config_file.replace(str(config_file[config_file.index(term):config_file.index('\n', config_file.index(term))]), term + first_directory))
     file.close()
 
 def writeSecondDefaultDirectory(CONFIG_FILE, second_directory):
     config_file=open(CONFIG_FILE, 'r').read()
     term = "Second Default Directory (S):"
-    with open(CONFIG_FILE, 'wt', encoding='utf-8') as file:
-        file.write(config_file.replace(str(config_file[config_file.index(term):config_file.index('\n', config_file.index(term))]), term + second_directory))
+    with open(CONFIG_FILE, 'wt', encoding='utf-8') as file: file.write(config_file.replace(str(config_file[config_file.index(term):config_file.index('\n', config_file.index(term))]), term + second_directory))
     file.close()

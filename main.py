@@ -34,15 +34,12 @@ for font in font_manager.win32InstalledFonts():
 if not proximaNovaRegular: loadfont(resource_path('Proxima Nova Regular.ttf'))
 if not proximaNovaBold: loadfont(resource_path('Proxima Nova Bold.ttf'))
 
-#main bg color
-bg = "#282f3b"
-#secondary color
-secondary_bg = "#364153"
-
-#global variables
+# global variables
+bg = "#282f3b" # main bg color
+secondary_bg = "#364153" # secondary color
 window = False
 
-#MAIN DRIVER CODEd
+# main driver code
 root = tk.Tk()
 root.title("Track Management Utility V1.0")
 ws = root.winfo_screenwidth() # width of the screen
@@ -64,7 +61,7 @@ def createConfigFile(flag):
         file.close()
     return CONFIG_FILE
 
-def compareDirectories(CONFIG_FILE):
+def compareDirectories(CONFIG_FILE, options):
     config_file = open(CONFIG_FILE, 'r').read()
     term = "First Default Directory (S):"
     firstDefaultDirectory = config_file[config_file.index(term) + len(term):config_file.index('\n', config_file.index(term) + len(term))]
@@ -81,28 +78,28 @@ def readValuesFromConfig(CONFIG_FILE):
     options = {}
     for term in terms:
         if term in config_file:
-            #boolean
+            # boolean
             if (term[len(term) - 2:len(term) - 1]) == 'B':
                 try: options[term] = tk.BooleanVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.find('\n', config_file.index(term) + len(term))])
                 except:
                     os.remove(resource_path('Settings.txt'))
                     CONFIG_FILE = createConfigFile("F")
                     readValuesFromConfig(CONFIG_FILE)
-            #string
+            # string
             elif (term[len(term) - 2:len(term) - 1]) == 'S':
                 try: options[term] = tk.StringVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
                 except:
                     os.remove(resource_path('Settings.txt'))
                     CONFIG_FILE = createConfigFile("F")
                     readValuesFromConfig(CONFIG_FILE)
-            #integer
+            # integer
             elif (term[len(term) - 2:len(term) - 1]) == 'I':
                 try:options[term] = tk.IntVar(value=config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))])
                 except:
                     os.remove(resource_path('Settings.txt'))
                     CONFIG_FILE = createConfigFile("F")
                     readValuesFromConfig(CONFIG_FILE)
-            #list
+            # list
             elif (term[len(term) - 2:len(term) - 1]) == 'L':
                 try:
                     if (config_file[config_file.index(term) + len(term) + 1:config_file.index('\n', config_file.index(term) + len(term))].split(', ')) == ['']:options[term] = []
@@ -126,17 +123,17 @@ def selectSearchTags(CONFIG_FILE):
     options = readValuesFromConfig(CONFIG_FILE)
     webScrapingWindow, webScrapingPage = scanTagsOnline(options, CONFIG_FILE, window)
     if webScrapingPage > 0: window = webScrapingWindow
-    else: webScrapingWindow.destroy()
+    if type(webScrapingWindow) != bool: webScrapingWindow.destroy()
 
 def selectCompare(CONFIG_FILE):
     options = readValuesFromConfig(CONFIG_FILE)
-    compareDirectories(CONFIG_FILE)
+    compareDirectories(CONFIG_FILE, options)
 
 # set preferences
 CONFIG_FILE = createConfigFile("N")
 options = readValuesFromConfig(CONFIG_FILE)
 
-#file topmenu button
+# file topmenu button
 optionMenu = tk.Frame(root, bg=bg)
 optionMenu.pack(fill="both")
 menufile = tk.Menubutton(optionMenu, text="File", font=('Proxima Nova Rg', 10), fg="white", bg=bg, anchor="w")
@@ -146,7 +143,7 @@ updates = tk.IntVar()
 exit = tk.IntVar()
 menufile.menu.add_command(label="Exit", font=('Proxima Nova Rg', 10), command=root.destroy)
 
-#option topmenu button
+# option topmenu button
 menuoption = tk.Menubutton(optionMenu, text="Option", font=('Proxima Nova Rg', 10), fg="white", bg=bg)
 menuoption.menu = tk.Menu(menuoption, tearoff=0)
 menuoption['menu'] = menuoption.menu
@@ -173,10 +170,10 @@ titleLabel = tk.Label(textContainer, text="TRACK\nMANAGEMENT\nUTILITY", font=('P
 buttons = tk.Frame(root, bg=bg)
 buttons.pack(fill="both")
 
-# Scans for files in a directory and find their tags online
+# scans for files in a directory and find their tags online
 tk.Button(buttons, text="Perform Tag Analysis", command=lambda: selectSearchTags(CONFIG_FILE), font=('Proxima Nova Rg', 13), fg="white", bg=secondary_bg, width=18, height=1).pack(pady=(0,15))
 tk.Label(buttons, text="Scan for files in a directory and find their tags online", font=('Proxima Nova Rg', 12), fg="white", bg=bg).pack(pady=(0,35))
-# Scans for differences in files between two separate directories
+# scans for differences in files between two separate directories
 tk.Button(buttons, text="Compare Directories", command=lambda: selectCompare(CONFIG_FILE), font=('Proxima Nova Rg', 13), fg="white", bg=secondary_bg, width=18, height=1).pack(pady=(0,15))
 tk.Label(buttons, text="Scan for differences in files and folders between\ntwo separate directories", font=('Proxima Nova Rg', 12), fg="white", bg=bg).pack()
 root.mainloop()

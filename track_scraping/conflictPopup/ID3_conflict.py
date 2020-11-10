@@ -5,18 +5,15 @@ from mutagen import id3
 from PIL import Image, ImageTk
 from io import BytesIO
 
-#import methods
+# import methods
 from commonOperations import loadImageButtons
 from commonOperations import loadNavigation
 from commonOperations import selectImage
 from commonOperations import resource_path
 
-#main bg color
-bg = "#282f3b"
-#secondary color
-secondary_bg = "#364153"
-
-#global variables
+# global variables
+bg = "#282f3b" # main bg color
+secondary_bg = "#364153" # secondary color
 page = 0
 
 def ID3_conflict(audio, track, options, initialCounter, imageCounter, images, informalTagDict):
@@ -79,7 +76,7 @@ def ID3_conflict(audio, track, options, initialCounter, imageCounter, images, in
             currentTagDict[0] = tk.Label(leftTags, text="CURRENT TAGS:", font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left", bd=-10)
             currentTagDict[0].pack(anchor="w", pady=(0, 15))
             for i in range(len(list)):
-                # Avoid printing the underscore
+                # avoid printing the underscore
                 if list[i] == "Release_Date":
                     currentTagDict[i + 1] = tk.Label(leftTags, text="Release Date: " + str(audio[informalTagDict[list[i]]]), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                     currentTagDict[i + 1].pack(pady=(0, 0), anchor='w')

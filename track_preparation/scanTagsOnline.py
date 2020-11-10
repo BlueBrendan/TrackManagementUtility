@@ -1,15 +1,15 @@
 from tkinter.tix import *
 
-#import methods
+# import methods
 from track_preparation.fileSelect import fileSelect
 from commonOperations import resource_path
 
-#global variables
+# global variables
 imageCounter = 0
 
 def scanTagsOnline(options, CONFIG_FILE, window):
     global imageCounter
-    #delete all images stored in temp before proceeding
+    # delete all images stored in temp before proceeding
     if not os.path.isdir(resource_path('Temp/')): os.mkdir(resource_path('Temp/'))
     else:
         images = os.listdir(resource_path('Temp/'))

@@ -1,10 +1,10 @@
 def compareTokens(one, two):
     mismatch = False
-    #string manipulations
+    # string manipulations
     one = one.lower().replace("(", "").replace(")", "").replace("-", ' ').replace(" extended", "").replace(" extended mix", "").replace(" original mix", "")
     two = two.lower().replace("(", "").replace(")", "").replace("-", ' ').replace(" extended", "").replace(" extended mix", "").replace(" original mix", "")
 
-    #test one
+    # test one
     tokens = two.split(' ')
     comparisonTokens = one.split(' ')
     difference = 0
@@ -23,7 +23,7 @@ def compareTokens(one, two):
     if difference/len(one) > 0.15:
         mismatch = True
         return mismatch
-    #test two
+    # test two
     tokens = one.split(' ')
     comparisonTokens = two.split(' ')
     difference = 0

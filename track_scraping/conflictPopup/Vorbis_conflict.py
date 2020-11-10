@@ -5,18 +5,15 @@ from PIL import Image, ImageTk
 from io import BytesIO
 import base64
 
-#import methods
+# import methods
 from commonOperations import loadImageButtons
 from commonOperations import loadNavigation
 from commonOperations import selectImage
 from commonOperations import resource_path
 
-#main bg color
-bg = "#282f3b"
-#secondary color
-secondary_bg = "#364153"
-
-#global variables
+# global variables
+bg = "#282f3b" # main bg color
+secondary_bg = "#364153" # secondary color
 page = 0
 
 def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, images, informalTagDict):
@@ -79,7 +76,7 @@ def Vorbis_conflict(audio, track, options, initialCounter, imageCounter, images,
             currentTagDict[0] = tk.Label(leftTags, text="CURRENT TAGS:", font=("Proxima Nova Rg", 11), fg="white", bg=bg, justify="left", bd=-10)
             currentTagDict[0].pack(anchor="w", pady=(0, 15))
             for i in range(len(list)):
-                # Avoid printing the underscore
+                # avoid printing the underscore
                 if list[i] == "Release_Date":
                     currentTagDict[i + 1] = tk.Label(leftTags, text="Release Date: " + str(audio[informalTagDict[list[i]]][0]), font=("Proxima Nova Rg", 11), fg="white", bg=bg)
                     currentTagDict[i + 1].pack(pady=(0, 0), anchor='w')
@@ -219,7 +216,7 @@ def skipOption(audio, track, options, window):
     if "Genre" in options["Selected Tags (L)"]: track.genre = str(audio['genre'][0])
     window.destroy()
 
-#saving image to file
+# saving image to file
 def saveImage(track, audio, window):
     # store image data, width, and height from downloaded image into imageSelection field
     if track.imageSelection != "THUMB":

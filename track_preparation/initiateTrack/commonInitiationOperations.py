@@ -14,12 +14,10 @@ import math
 # import methods
 from commonOperations import resource_path
 
-# main bg color
-bg = "#282f3b"
-# secondary color
-secondary_bg = "#364153"
-
 # global variable
+
+bg = "#282f3b" # main bg color
+secondary_bg = "#364153" # secondary color
 change = False
 capitalize = False
 uncapitalize = False
@@ -201,7 +199,7 @@ def handleTypo(artist, newArtist, title, newTitle, type, options):
         currentFilenameDict[i] = tk.Label(currentFilenameContainer, text=currentFilename[i], borderwidth=-2, font=("Proxima Nova Rg", 11), fg="white", bg=bg)
         currentFilenameDict[i].pack(side="left")
         if i != len(currentFilename) - 1: tk.Label(currentFilenameContainer, text='', borderwidth=-2, fg="white", bg=bg).pack(side="left")
-    #pack a label for each individual word in the proposed filename
+    # pack a label for each individual word in the proposed filename
     tk.Label(popup, text="Proposed filename", font=("Proxima Nova Rg", 12), fg="white", bg=bg).pack(pady=(10, 0))
     newFilename = str(newArtist).split(' ')
     newFilename.append('-')
@@ -213,7 +211,7 @@ def handleTypo(artist, newArtist, title, newTitle, type, options):
         newFilenameDict[i] = tk.Label(newFilenameContainer, text=str(newFilename[i].replace('*hyphen*', ' ')), borderwidth=-2, font=("Proxima Nova Rg", 11), fg="white", bg=bg)
         newFilenameDict[i].pack(side="left")
         if i!=len(newFilename)-1: tk.Label(newFilenameContainer, text='', borderwidth=-2, fg="white", bg=bg).pack(side="left")
-        #highlight word if it does not match with the current filename; only highlight the first mismatched word
+        # highlight word if it does not match with the current filename; only highlight the first mismatched word
         if type == 'Hyphen':
             if len(currentFilename) == len(newFilename) and currentFilename[i] != newFilename[i]:
                 currentFilenameDict[i].configure(fg="black", bg="yellow")

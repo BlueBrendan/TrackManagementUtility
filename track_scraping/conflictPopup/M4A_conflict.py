@@ -3,18 +3,15 @@ from tkinter.tix import *
 from PIL import Image, ImageTk
 from io import BytesIO
 
-#import methods
+# import methods
 from commonOperations import loadImageButtons
 from commonOperations import loadNavigation
 from commonOperations import selectImage
 from commonOperations import resource_path
 
-#main bg color
-bg = "#282f3b"
-#secondary color
-secondary_bg = "#364153"
-
-#global variables
+# global variables
+bg = "#282f3b" # main bg color
+secondary_bg = "#364153" # secondary color
 page = 0
 
 def M4A_conflict(audio, track, options, initialCounter, imageCounter, images, informalTagDict):
@@ -26,7 +23,7 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, images, in
     if "Key" in options["Selected Tags (L)"] and len(audio["----:com.apple.iTunes:INITIALKEY"]) != 0: tagAlert = True
     if "Genre" in options["Selected Tags (L)"] and len(audio["\xa9gen"]) != 0: tagAlert = True
     if tagAlert:
-        #tag conflict
+        # tag conflict
         tagConflict = False
         if "Release_Date" in options["Selected Tags (L)"] and len(audio["\xa9day"]) != 0 and str(audio["\xa9day"][0]) != str(track.release_date): tagConflict = True
         if "BPM" in options["Selected Tags (L)"] and len(audio["tmpo"]) != 0 and str(audio["tmpo"][0]) != str(track.bpm): tagConflict = True
@@ -45,7 +42,7 @@ def M4A_conflict(audio, track, options, initialCounter, imageCounter, images, in
                 x = (ws / 2) - ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)) / 2)
                 conflictPopup.geometry('%dx%d+%d+%d' % ((650 + (len(str(track.artist) + " - " + str(track.title)) * 1.5)), 240, x, y))
             conflictPopup.config(bg=bg)
-            #tag conflict window
+            # tag conflict window
             tk.Label(conflictPopup, text="Conflicting tags in " + str(track.artist) + " - " + str(track.title), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(pady=(30, 40), side="top")
             tags = tk.Frame(conflictPopup, bg=bg)
             tags.pack()
