@@ -26,9 +26,10 @@ from web_scrapers.webScrapingWindowControl import enableControls
 from web_scrapers.webScrapingWindowControl import rerenderControls
 from commonOperations import resource_path
 
-#main bg color
+# global variables
+# main bg color
 bg = "#282f3b"
-#secondary color
+# secondary color
 secondary_bg = "#364153"
 
 def fileSelect(options, imageCounter, CONFIG_FILE, window):
@@ -77,28 +78,28 @@ def fileSelect(options, imageCounter, CONFIG_FILE, window):
             audio = False
             if hasattr(track, 'browser'): browser = track.browser
             informalTagDict = ''
-            #handle FLAC file
+            # handle FLAC file
             if filename.endswith('.flac') and type(checkFileValidity(filename, directory, "FLAC"))!=str:
-                #handle naming preferences, tag settings, and replay gain
+                # handle naming preferences, tag settings, and replay gain
                 audio, filename, informalTagDict, thumbnails, options = initiateFLAC(filename, directory, thumbnails, options)
                 if type(audio) != bool: track = FLAC_Track(audio, options, informalTagDict, browser)
-            #handle AIFF file
+            # handle AIFF file
             elif filename.endswith('.aiff') and type(checkFileValidity(filename, directory, "AIFF"))!=str:
                 audio, filename, informalTagDict, thumbnails, options = initiateAIFF(filename, directory, thumbnails, options)
                 if type(audio) != bool: track = ID3_Track(audio, options, informalTagDict, browser)
-            #handle MP3 file
+            # handle MP3 file
             elif filename.endswith('mp3') and type(checkFileValidity(filename, directory, "MP3"))!=str:
                 audio, filename, informalTagDict, thumbnails, options = initiateMP3(filename, directory, thumbnails, options)
                 if type(audio) != bool: track = ID3_Track(audio, options, informalTagDict, browser)
-            #handle OGG file
+            # handle OGG file
             elif filename.endswith('.ogg') and type(checkFileValidity(filename, directory, "OGG"))!=str:
                 audio, filename, informalTagDict, thumbnails, options = initiateOGG(filename, directory, thumbnails, options)
                 if type(audio) != bool: track = Vorbis_Track(audio, options, informalTagDict, browser)
-            #handle WAV file
+            # handle WAV file
             elif filename.endswith('.wav') and type(checkFileValidity(filename, directory, "WAV"))!=str:
                 audio, filename, informalTagDict, thumbnails, options = initiateWAVE(filename, directory, thumbnails, options)
                 if type(audio) != bool: track = ID3_Track(audio, options, informalTagDict, browser)
-            #handle AAC and ALAC files
+            # handle AAC and ALAC files
             elif filename.endswith('.m4a') and type(checkFileValidity(filename, directory, "M4A"))!=str:
                 audio, filename, informalTagDict, thumbnails, options = initiateM4A(filename, directory, thumbnails, options)
                 if type(audio) != bool: track = M4A_Track(audio, options, informalTagDict, browser)
@@ -114,8 +115,8 @@ def fileSelect(options, imageCounter, CONFIG_FILE, window):
         if webScrapingPage > 0:
             enableControls(searchFrame, pageFrame, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame)
             handleFinalReport(finalTitles, finalResults, characters, imageCounter, imageSelections, webScrapingWindow, thumbnails, options, CONFIG_FILE)
-    return webScrapingWindow
-#check if mutagen object can be made from file
+    return webScrapingWindow, webScrapingPage
+# check if mutagen object can be made from file
 def checkFileValidity(filename, directory, format):
     audio = ""
     if format=="FLAC":

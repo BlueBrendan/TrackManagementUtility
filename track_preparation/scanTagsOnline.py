@@ -14,8 +14,8 @@ def scanTagsOnline(options, CONFIG_FILE, window):
     else:
         images = os.listdir(resource_path('Temp/'))
         for image in images: os.remove(resource_path('Temp/' + str(image)))
-    webScrapingWindow = fileSelect(options, imageCounter, CONFIG_FILE, window)
-    return webScrapingWindow
+    webScrapingWindow, webScrapingPage = fileSelect(options, imageCounter, CONFIG_FILE, window)
+    return webScrapingWindow, webScrapingPage
 
 
 

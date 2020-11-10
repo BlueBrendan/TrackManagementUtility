@@ -70,9 +70,9 @@ def initiateAIFF(filename, directory, thumbnails, options):
             # add tags of interest if missing
             if tag not in fileParameters:
                 try:
-                    if "COMM" in tag: audio[tag] = COMM(encoding=3, lang="eng", test="")
-                    elif "TXXX" in tag: audio[tag] = TXXX(encoding=3, desc="replaygain_track_gain", test="")
-                    else: audio[tag] = ID3Frames[tag](encoding=3, test="")
+                    if "COMM" in tag: audio[tag] = COMM(encoding=3, lang="eng", text="")
+                    elif "TXXX" in tag: audio[tag] = TXXX(encoding=3, desc="replaygain_track_gain", text="")
+                    else: audio[tag] = ID3Frames[tag](encoding=3, text="")
                     audio.save()
                 except:
                     messagebox.showinfo("Permission Error", "Unable to save tags, file may be open somewhere")

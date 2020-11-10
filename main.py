@@ -124,8 +124,9 @@ def openPreferences(CONFIG_FILE, root):
 def selectSearchTags(CONFIG_FILE):
     global window
     options = readValuesFromConfig(CONFIG_FILE)
-    webScrapingWindow = scanTagsOnline(options, CONFIG_FILE, window)
-    if type(webScrapingWindow)!=bool: window = webScrapingWindow
+    webScrapingWindow, webScrapingPage = scanTagsOnline(options, CONFIG_FILE, window)
+    if webScrapingPage > 0: window = webScrapingWindow
+    else: webScrapingWindow.destroy()
 
 def selectCompare(CONFIG_FILE):
     options = readValuesFromConfig(CONFIG_FILE)

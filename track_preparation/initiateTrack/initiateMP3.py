@@ -14,11 +14,10 @@ from track_preparation.initiateTrack.commonInitiationOperations import saveThumb
 
 def initiateMP3(filename, directory, thumbnails, options):
     audio = MP3(str(directory) + "/" + str(filename))
-    # verify artist information is present before preceeding
-    if ' - ' not in filename and str(audio['TPE1']) == '':
-        messagebox.showinfo("No artist information found, aborting procedure")
-        return False, False, False
-
+    # verify artist information is present before preceding
+    if ' - ' not in filename and str(audio.get('TPE1')) == 'None':
+        messagebox.showinfo('Error', 'No artist information found, aborting procedure')
+        return False, False, False, False, False
     # transcribe formal tagnames into informal counterpart
     formalTagDict = {
         'TPE1': 'Artist',
@@ -54,7 +53,6 @@ def initiateMP3(filename, directory, thumbnails, options):
         'TDRC': TDRC,
         'TIT2': TIT2,
         'TXXX': TXXX,
-
     }
     fileParameters = []
     tagList = list(audio.keys())
@@ -70,13 +68,13 @@ def initiateMP3(filename, directory, thumbnails, options):
             # add tags of interest if missing
             if tag not in fileParameters:
                 try:
-                    if "COMM" in tag: audio[tag] = COMM(encoding=3, lang="eng", test="")
-                    elif "TXXX" in tag: audio[tag] = TXXX(encoding=3, desc="replaygain_track_gain", test="")
-                    else: audio[tag] = ID3Frames[tag](encoding=3, test="")
+                    if "COMM" in tag: audio[tag] = COMM(encoding=3, lang="eng", text="")
+                    elif "TXXX" in tag: audio[tag] = TXXX(encoding=3, desc="replaygain_track_gain", text="")
+                    else: audio[tag] = ID3Frames[tag](encoding=3, text="")
                     audio.save()
                 except:
                     messagebox.showinfo("Permission Error", "Unable to save tags, file may be open somewhere")
-                    return False, False, False
+                    return False, False, False, False, False
     #check for discrepancies between tags and filename
     #check both artist and title tags
     if ' - ' in filename:
@@ -89,7 +87,7 @@ def initiateMP3(filename, directory, thumbnails, options):
                 audio["TIT2"] = TIT2(encoding=3, text=title)
                 audio.save()
             else: audio, filename = compareArtistAndTitle(audio, artist, title, filename, directory, options)
-    #only check title tag
+    # only check title tag
     else:
         title = filename[:filename.rfind('.')]
         if title!=str(audio["TIT2"]):
@@ -233,7 +231,8 @@ def compareTitle(audio, title, filename, directory, options):
                 else:
                     input = handleTitleDiscrepancy(title, str(audio["TIT2"]))
                     if input == "file":
-                        audio["title"] = title
+                        print(title)
+                        audio['TIT2'] = TIT2(encoding=3, text=title)
                         audio.save()
                     elif input == "tag":
                         extension = filename[filename.rfind('.'):]
