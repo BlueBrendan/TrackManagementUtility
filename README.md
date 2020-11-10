@@ -18,3 +18,6 @@ Track Management Utility is written in Python and uses Tkinter, Python's standar
 
 ## Contact
 If you'd like to send a private message about Track Management Utility or want to contribute to the development of the project, you can contact Brendan at brendanchoudj@gmail.com
+
+You can also report bugs with this Google form 
+https://forms.gle/q97KosCg5ZjWWLPX7
