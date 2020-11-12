@@ -29,7 +29,6 @@ def discogsSearch(filename, track, artistVariations, titleVariations, headers, s
     else: tk.Label(searchFrame, text="\nSearching Discogs for " + str(filename), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="left", padx=(10, 0), anchor='w')
     leftComponentFrame, rightComponentFrame = resetLeftRightFrames(componentFrame)
     refresh(webScrapingWindow)
-
     url = "https://www.google.co.in/search?q=" + search + " Discogs"
     soup = prepareRequest(url, headers, webScrapingWindow, leftComponentFrame)
     if soup != False:
@@ -40,9 +39,12 @@ def discogsSearch(filename, track, artistVariations, titleVariations, headers, s
                 if ' (' in track.title and ')' in track.title: searchTitle = track.title[:track.title.index(' (')]
                 if searchTitle.lower() in str(result).lower(): imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, leftComponentFrame, componentFrame, artistVariations, titleVariations, audio, options, initialCounter, imageCounter, images)
                 else:
+                    resultString = str(result).replace('-', ' ').lower()
                     for variation in titleVariations:
                         variation = variation.replace('-', ' ')
-                        if variation.lower() in str(result).lower(): imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, leftComponentFrame, componentFrame, artistVariations, titleVariations, audio, options, initialCounter, imageCounter, images)
+                        if variation.lower() in resultString:
+                            imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, pageFrame, leftComponentFrame, componentFrame, artistVariations, titleVariations, audio, options, initialCounter, imageCounter, images)
+                            break
                 if options['Limit Number of Matches per Site (B)'].get() and count >= options['Match Limit (I)'].get(): break
     return track, imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, searchFrame, pageFrame, componentFrame
 

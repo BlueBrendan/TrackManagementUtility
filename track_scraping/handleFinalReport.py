@@ -61,6 +61,7 @@ def handleFinalReport(finalTitles, finalResults, characters, imageCounter, image
         finalReportWindow.protocol('WM_DELETE_WINDOW', lambda: completeSearch(finalReportWindow, webScrapingWindow, options))
         finalReportWindow.iconbitmap(resource_path('favicon.ico'))
         finalReportWindow.lift()
+        finalReportWindow.wait_window()
 
 def navigateLeft(leftNavigationButton, rightNavigationButton, titleFrame, contentFrame, imageFrame, finalTitles, finalResults, imageSelections, imageCounter, thumbnails, pageIndicator):
     global currentPage
@@ -130,13 +131,11 @@ def closeScrapingWindowSelection(CONFIG_FILE):
     # if true, turn option to false
     term = "Close Scraping Window (B)"
     if config_file[config_file.index(term) + len(term)+1:config_file.index('\n', config_file.index(term) + len(term))]=="True":
-        with open(CONFIG_FILE, 'wt') as file:
-            file.write(config_file.replace(str(config_file[config_file.index(term)+1:config_file.index(':', config_file.index(term))+1]) + "True", str(str(config_file[config_file.index(term)+1:config_file.index(':', config_file.index(term))+1])) + "False"))
+        with open(CONFIG_FILE, 'wt') as file: file.write(config_file.replace(str(config_file[config_file.index(term)+1:config_file.index(':', config_file.index(term))+1]) + "True", str(str(config_file[config_file.index(term)+1:config_file.index(':', config_file.index(term))+1])) + "False"))
         file.close()
     # if false, turn option to true
     elif config_file[config_file.index(term) + len(term)+1:config_file.index('\n', config_file.index(term) + len(term))]=="False":
-        with open(CONFIG_FILE, 'wt') as file:
-            file.write(config_file.replace(str(config_file[config_file.index(term)+1:config_file.index(':', config_file.index(term)) + 1]) + "False", str(str(config_file[config_file.index(term)+1:config_file.index(':', config_file.index(term)) + 1])) + "True"))
+        with open(CONFIG_FILE, 'wt') as file: file.write(config_file.replace(str(config_file[config_file.index(term)+1:config_file.index(':', config_file.index(term)) + 1]) + "False", str(str(config_file[config_file.index(term)+1:config_file.index(':', config_file.index(term)) + 1])) + "True"))
         file.close()
 
 def completeSearch(finalReportWindow, webScrapingWindow, options):

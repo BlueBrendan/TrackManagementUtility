@@ -18,45 +18,73 @@ def buildVariations(artist, title):
         artist = artist[0:var] + "-" + artist[var + 1:]
     artistVariations.append(artist.lower())
 
-    triggerStrings = ["feat.", "é", "(", "'s", "pt.", ".", ",", "&", "-mix", "-extended", "-remix", "-version"]
-    title = title.lower()
-    newTitle = title.lower()
+    triggerStrings = ["feat.", "é", '(', "'s", "pt.", ".", ",", "&", "-mix", '-extended', '-original', '-instrumental', "-remix", "-version"]
     for string in triggerStrings:
-        if string.lower() in newTitle:
-            if string == 'feat.':
-                if '(' in title:
-                    newTitle = str(newTitle[0:newTitle.index("feat.")]) + str(newTitle[newTitle.index("("):])
-                    titleVariations.append(newTitle)
-                else:
-                    newTitle = str(newTitle[0:newTitle.index("feat.")])
-                    titleVariations.append(newTitle)
-            # unique character ( implies the existence of )
-            elif string == "(" and ")" in title:
-                newTitle = str(newTitle[0:newTitle.index("(")]) + str(newTitle[newTitle.index("(") + len("("):])
-                newTitle = str(newTitle[0:newTitle.index(")")]) + str(newTitle[newTitle.index(")") + len(")"):])
-                titleVariations.append(newTitle.lower())
-            elif string == "&":
-                titleVariations.append(newTitle.replace("&", "and").lower())
-                titleVariations.append(title.replace("&", "and").lower())
-                newTitle = str(newTitle[0:newTitle.index(string)]) + str(newTitle[newTitle.index(string) + len(string):])
-                titleVariations.append(newTitle.lower())
-                titleVariations.append(str(title[0:title.index(string)]).lower() + str(title[title.index(string) + len(string):]).lower())
-            elif string == "pt.":
-                titleVariations.append(title.replace(string, "part").lower())
-                titleVariations.append(title.replace(string, "pt").lower())
-                newTitle = str(newTitle[0:newTitle.index(string)]) + str("part") + str(newTitle[newTitle.index(string) + len(string):])
-            elif string == "-remix":
-                titleVariations.append(newTitle.replace(string, "-mix").lower())
-                titleVariations.append(title.replace(string, "-mix").lower())
-                titleVariations.append(newTitle.replace(string, "-extended-remix").lower())
-                titleVariations.append(title.replace(string, "-extended-remix").lower())
-            elif string == "é":
-                titleVariations.append(newTitle.replace(string, "e").lower())
-                titleVariations.append(title.replace(string, "e").lower())
-                titleVariations.append(newTitle.replace(string, "é").lower())
-                titleVariations.append(title.replace(string, "é").lower())
-            else:
-                newTitle = str(newTitle[0:newTitle.index(string)]) + str(newTitle[newTitle.index(string) + len(string):])
-                titleVariations.append(newTitle.lower())
-                if string in title: titleVariations.append(str(title[0:title.index(string)]).lower() + str(title[title.index(string) + len(string):]).lower())
+        # feat.
+        if string == 'feat.':
+            for title in titleVariations:
+                if ' feat.' in title: titleVariations.append(title.replace(' feat.', '').lower())
+                elif 'feat. ' in title: titleVariations.append(title.replace('feat. ', '').lower())
+        # é
+        if string == 'é':
+            titleVariations = stringReplace(string, titleVariations, "é", 'e')
+            titleVariations = stringReplace(string, titleVariations, "é", 'é')
+        # parenthesis
+        elif string == '(':
+            for title in titleVariations:
+                if '(' in title and ')' in title: titleVariations.append(title.replace('(', '').replace(')', '').lower())
+        # apostrophe
+        elif string == "'s": titleVariations = stringReplace(string, titleVariations, "'s", 's')
+        # pt.
+        elif string == 'pt.': titleVariations = stringReplace(string, titleVariations, 'pt.', 'part')
+        # part
+        elif string == 'part': titleVariations = stringReplace(string, titleVariations, 'part', 'pt.')
+        # dot
+        elif string == '.': titleVariations = stringReplace(string, titleVariations, '.', '')
+        # comma
+        elif string == ',': titleVariations = stringReplace(string, titleVariations, ',', '')
+        # ampersand
+        elif string == '&':
+            for title in titleVariations:
+                if '-&' in title:
+                    titleVariations.append(title.replace('&', 'and').lower())
+                    titleVariations.append(title.replace('-&', '').lower())
+                elif '&-' in title:
+                    titleVariations.append(title.replace('&', 'and').lower())
+                    titleVariations.append(title.replace('&-', '').lower())
+        # -mix
+        elif string == '-mix':
+            titleVariations = stringReplace(string, titleVariations, '-mix', '')
+            titleVariations = stringReplace(string, titleVariations, 'mix', 'remix')
+        # -remix
+        elif string == '-remix':
+            titleVariations = stringReplace(string, titleVariations, '-remix', '')
+            titleVariations = stringReplace(string, titleVariations, 'remix', 'mix')
+        # -extended
+        elif string == '-extended':
+            titleVariations = stringReplace(string, titleVariations, '-extended', '')
+            titleVariations = stringCutoff('-extended', titleVariations)
+        # -original
+        elif string == '-original':
+            titleVariations = stringReplace(string, titleVariations, '-original', '')
+            titleVariations = stringCutoff('-original', titleVariations)
+        # instrumental
+        elif string == '-instrumental':
+            titleVariations = stringReplace(string, titleVariations, '-instrumental', '')
+            titleVariations = stringCutoff('-instrumental', titleVariations)
+        # version
+        elif string == '-version':
+            titleVariations = stringReplace(string, titleVariations, 'version', 'mix')
+            titleVariations = stringReplace(string, titleVariations, 'version', 'remix')
+            titleVariations = stringCutoff('-version', titleVariations)
     return artistVariations, titleVariations
+
+def stringReplace(string, titleVariations, before, after):
+    for title in titleVariations:
+        if string in title: titleVariations.append(title.replace(before, after))
+    return titleVariations
+
+def stringCutoff(string, titleVariations):
+    for title in titleVariations:
+        if string in title: titleVariations.append(str(title[0:title.index(string)]).lower())
+    return titleVariations

@@ -34,9 +34,10 @@ def junodownloadSearch(filename, track, artistVariations, titleVariations, heade
     if soup!=False:
         for result in soup.find_all('div', class_="ZINbbc xpd O9g5cc uUPGi"):
             if 'junodownload.com' and 'products' in result.find('a').get('href').split('&')[0].lower():
+                resultString = str(result).replace('&amp;', 'and').lower()
                 for variation in titleVariations:
                     variation = variation.replace('-', ' ')
-                    if variation.lower() in str(result).lower():
+                    if variation.lower() in resultString:
                         link = result.find('a').get('href').split('&')[0][7:]
                         refresh(webScrapingWindow)
                         soup = prepareRequest(link, headers, webScrapingWindow, leftComponentFrame)

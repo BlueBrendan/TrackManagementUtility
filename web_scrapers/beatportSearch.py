@@ -30,7 +30,6 @@ def beatportSearch(filename, track, artistVariations, titleVariations, headers, 
     else: tk.Label(searchFrame, text="\nSearching Beatport for " + str(filename), font=("Proxima Nova Rg", 13), fg="white", bg=bg).pack(side="left", padx=(10, 0), anchor='w')
     leftComponentFrame, rightComponentFrame = resetLeftRightFrames(componentFrame)
     refresh(webScrapingWindow)
-
     url = "https://www.google.co.in/search?q=" + search + " Beatport"
     soup = prepareRequest(url, headers, webScrapingWindow, leftComponentFrame)
     if soup == False:

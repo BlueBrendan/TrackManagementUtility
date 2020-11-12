@@ -27,8 +27,8 @@ from web_scrapers.webScrapingWindowControl import rerenderControls
 from commonOperations import resource_path
 
 # global variables
-bg = "#282f3b" # main bg color
-secondary_bg = "#364153" # secondary color
+bg = "#282f3b"  # main bg color
+secondary_bg = "#364153"    # secondary color
 
 def fileSelect(options, imageCounter, CONFIG_FILE, window):
     directories = filedialog.askopenfilenames(title="Select File")
@@ -110,7 +110,7 @@ def fileSelect(options, imageCounter, CONFIG_FILE, window):
         # close selenium browser if it exists
         if track!='' and track.browser != 'NA': track.browser.quit()
         # enable controls in web scraping window
-        if webScrapingPage > 0:
+        if type(webScrapingWindow) != bool:
             enableControls(searchFrame, pageFrame, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage, componentFrame)
             handleFinalReport(finalTitles, finalResults, characters, imageCounter, imageSelections, webScrapingWindow, thumbnails, options, CONFIG_FILE)
     return webScrapingWindow, webScrapingPage

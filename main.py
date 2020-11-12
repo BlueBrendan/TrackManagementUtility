@@ -123,7 +123,7 @@ def selectSearchTags(CONFIG_FILE):
     options = readValuesFromConfig(CONFIG_FILE)
     webScrapingWindow, webScrapingPage = scanTagsOnline(options, CONFIG_FILE, window)
     if webScrapingPage > 0: window = webScrapingWindow
-    if type(webScrapingWindow) != bool: webScrapingWindow.destroy()
+    # if type(webScrapingWindow) != bool and webScrapingPage == 0: webScrapingWindow.destroy()
 
 def selectCompare(CONFIG_FILE):
     options = readValuesFromConfig(CONFIG_FILE)

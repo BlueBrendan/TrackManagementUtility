@@ -231,7 +231,6 @@ def compareTitle(audio, title, filename, directory, options):
                 else:
                     input = handleTitleDiscrepancy(title, str(audio["TIT2"]))
                     if input == "file":
-                        print(title)
                         audio['TIT2'] = TIT2(encoding=3, text=title)
                         audio.save()
                     elif input == "tag":
