@@ -80,7 +80,9 @@ def fileSelect(options, imageCounter, CONFIG_FILE, window):
             if filename.endswith('.flac') and type(checkFileValidity(filename, directory, "FLAC"))!=str:
                 # handle naming preferences, tag settings, and replay gain
                 audio, filename, informalTagDict, thumbnails, options = initiateFLAC(filename, directory, thumbnails, options)
-                if type(audio) != bool: track = FLAC_Track(audio, options, informalTagDict, browser)
+                if type(audio) != bool:
+                    track = FLAC_Track(audio, options, informalTagDict, browser)
+
             # handle AIFF file
             elif filename.endswith('.aiff') and type(checkFileValidity(filename, directory, "AIFF"))!=str:
                 audio, filename, informalTagDict, thumbnails, options = initiateAIFF(filename, directory, thumbnails, options)
