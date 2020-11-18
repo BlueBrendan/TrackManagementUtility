@@ -74,87 +74,82 @@ def searchQuery(track, result, headers, webScrapingWindow, webScrapingLeftPane, 
             webScrapingLinks[webScrapingPage] = weblink
             refresh(webScrapingWindow)
             finalMatch = False
-
             # artist + title format
             if link.find('td', class_="track tracklist_track_title mini_playlist_track_has_artist")!=None:
                 # first entry goes by different class name
                 temp = link.find('tr', class_='first tracklist_track track')
-                if temp != None:
-                    artist = temp.find('td', class_="tracklist_track_artists").find('a').get_text()
-                    name = temp.find('span', class_="tracklist_track_title").get_text()
-                    # extra tags attached
-                    for tag in temp.find_all('span', class_="tracklist_extra_artist_span"):
-                        if 'Remix' in tag.get_text():
-                            remix = tag.find('a').get_text()
-                            if remix.lower() not in name.lower() and '(' in name: name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
-                    if track.title.lower() == name.lower() and track.artist.lower() == artist.lower():
-                        finalMatch = True
-                        imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = extractInfo(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks,leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
-                    else:
-                        for item in artistVariations:
-                            mismatch = compareTokens(artist.replace('-', ' '), item)
-                            if not mismatch:
-                                for title in titleVariations:
-                                    title = title.replace('-', ' ')
-                                    mismatch = compareTokens(title, name)
-                                    if not mismatch:
-                                        finalMatch = True
-                                        print('MATCH')
-                                        imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = extractInfo(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
-                                        break
+                if temp != None: finalMatch, imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = artistTitleSearch(temp, artistVariations, titleVariations, audio, soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
                 # remaining entries
-                for temp in link.find_all('tr', class_="tracklist_track track"):
-                    artist = temp.find('td', class_="tracklist_track_artists").find('a').get_text()
-                    name = temp.find('span', class_="tracklist_track_title").get_text()
-                    # extra tags attached
-                    for tag in temp.find_all('span', class_="tracklist_extra_artist_span"):
-                        if 'Remix' in tag.get_text():
-                            remix = tag.find('a').get_text()
-                            if remix.lower() not in name.lower() and '(' in name: name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
-                    if track.title.lower() == name.lower() and track.artist.lower() == artist.lower():
-                        finalMatch = True
-                        imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = extractInfo(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
-                        break
-                    else:
-                        for item in artistVariations:
-                            mismatch = compareTokens(artist.replace('-', ' '), item)
-                            if not mismatch:
-                                for title in titleVariations:
-                                    title = title.replace('-', ' ')
-                                    mismatch = compareTokens(title, name)
-                                    if not mismatch:
-                                        finalMatch = True
-                                        imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = extractInfo(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
-                                        break
-                    if finalMatch: break
+                if not finalMatch:
+                    for temp in link.find_all('tr', class_="tracklist_track track"):
+                        finalMatch, imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = artistTitleSearch(temp, artistVariations, titleVariations, audio, soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
+                        if finalMatch: break
             # title format
             elif link.find('td', class_="track tracklist_track_title")!=None:
-                tracks = link.find_all('td', class_="track tracklist_track_title")
-                runtimes = link.find_all('td', class_="tracklist_track_duration")
-                for i in range(len(tracks)):
-                    name = tracks[i].find('span', class_="tracklist_track_title").get_text()
-                    runtime = runtimes[i].find('span').get_text()
-                    if tracks[i].find('span', class_="tracklist_extra_artist_span") != None:
-                        remix = tracks[i].find('span', class_="tracklist_extra_artist_span")
-                        remix = remix.find('a').get_text()
-                        if remix.lower() not in name.lower() and '(' in name: name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
-                    # check if title and name are exact matches
-                    if track.title.lower() == name.lower() and not compareRuntime(runtime, audio):
-                        finalMatch = True
-                        imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = extractInfo(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
-                        break
-                    else:
-                        for title in titleVariations:
-                            title = title.replace('-', ' ')
-                            mismatch = compareTokens(title, name)
-                            if mismatch == False and not compareRuntime(runtime, audio):
-                                finalMatch = True
-                                imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = extractInfo(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
-                                break
+                # first entry goes by different class name
+                temp = link.find('tr', class_='first tracklist_track track')
+                if temp != None: finalMatch, imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = titleSearch(temp, titleVariations, audio, soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
+                # remaining entries
+                if not finalMatch:
+                    for temp in link.find_all('tr', class_="tracklist_track track"):
+                        finalMatch, imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = titleSearch(temp, titleVariations, audio, soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
+                        if finalMatch: break
             if not finalMatch:
                 tk.Label(leftComponentFrame, text="Track did not match with any of the listings", font=("Proxima Nova Rg", 11), fg="white", bg=bg).pack(padx=(10, 0), pady=(5, 0), anchor="w")
                 refresh(webScrapingWindow)
     return imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage
+
+def artistTitleSearch(temp, artistVariations, titleVariations, audio, soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images):
+    finalMatch = False
+    artist = temp.find('td', class_="tracklist_track_artists").find('a').get_text()
+    name = temp.find('span', class_="tracklist_track_title").get_text()
+    if temp.find('td', class_='tracklist_track_duration') != None: runtime = temp.find('td', class_='tracklist_track_duration').find('span').get_text()
+    else: runtime = ''
+    # extra tags attached
+    for tag in temp.find_all('span', class_="tracklist_extra_artist_span"):
+        if 'Remix' in tag.get_text():
+            remix = tag.find('a').get_text()
+            if remix.lower() not in name.lower() and '(' in name: name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
+    # check if title are exact matches
+    if track.title.lower() == name.lower() and track.artist.lower() == artist.lower() and not compareRuntime(runtime, audio):
+        finalMatch = True
+        imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = extractInfo(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
+    else:
+        for item in artistVariations:
+            mismatch = compareTokens(artist.replace('-', ' '), item)
+            if not mismatch:
+                for title in titleVariations:
+                    title = title.replace('-', ' ')
+                    mismatch = compareTokens(title, name)
+                    if not mismatch and not compareRuntime(runtime, audio):
+                        finalMatch = True
+                        imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = extractInfo(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
+                        break
+    return finalMatch, imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage
+
+def titleSearch(temp, titleVariations, audio, soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images):
+    finalMatch = False
+    name = temp.find('span', class_="tracklist_track_title").get_text()
+    if temp.find('td', class_='tracklist_track_duration')!=None: runtime = temp.find('td', class_='tracklist_track_duration').find('span').get_text()
+    else: runtime = ''
+    # extra tags attached
+    for tag in temp.find_all('span', class_="tracklist_extra_artist_span"):
+        if 'Remix' in tag.get_text():
+            remix = tag.find('a').get_text()
+            if remix.lower() not in name.lower() and '(' in name: name = name[0:name.index('(') + 1] + remix + " " + name[name.index("(") + 1:]
+    # check if title and name are exact matches
+    if track.title.lower() == name.lower() and not compareRuntime(runtime, audio):
+        finalMatch = True
+        imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = extractInfo(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
+    else:
+        for title in titleVariations:
+            title = title.replace('-', ' ')
+            mismatch = compareTokens(title, name)
+            if mismatch == False and not compareRuntime(runtime, audio):
+                finalMatch = True
+                imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage = extractInfo(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images)
+                break
+    return finalMatch, imageCounter, images, webScrapingLeftPane, webScrapingRightPane, webScrapingLinks, webScrapingPage
 
 def extractInfo(soup, track, headers, webScrapingWindow, webScrapingLeftPane, webScrapingRightPane, webScrapingPage, webScrapingLinks, leftComponentFrame, rightComponentFrame, options, initialCounter, imageCounter, images):
     global count
